@@ -1,0 +1,90 @@
+.how-it-works {
+  padding: 100px 40px;
+  max-width: 1160px;
+  margin: 0 auto;
+  background: var(--bg-light);
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 32px;
+  margin-bottom: 60px;
+}
+
+.step-card {
+  position: relative;
+  padding: 32px 24px;
+  background: var(--bg-white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  transition: all 0.3s;
+}
+
+.step-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(28, 27, 31, 0.1);
+  border-color: var(--orange-light);
+}
+
+.step-icon {
+  font-size: 40px;
+  margin-bottom: 16px;
+}
+
+.step-number {
+  font-family: var(--font-serif);
+  font-size: 60px;
+  font-weight: 700;
+  color: var(--orange);
+  opacity: 0.15;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  line-height: 1;
+}
+
+.step-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.step-card p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.how-it-works-cta {
+  text-align: center;
+  margin-top: 48px;
+}
+
+.btn-secondary {
+  display: inline-block;
+  padding: 14px 36px;
+  background: transparent;
+  border: 2px solid var(--orange);
+  color: var(--orange);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 100px;
+  transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+  background: var(--orange);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(232, 112, 75, 0.3);
+}
+
+@media (max-width: 768px) {
+  .steps-grid {
+    grid-template-columns: 1fr;
+  }
+}

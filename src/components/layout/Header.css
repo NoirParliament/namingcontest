@@ -1,0 +1,117 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 100;
+  background: var(--bg-dark);
+  border-bottom: 1px solid rgba(232, 112, 75, 0.18);
+  padding: 0 40px;
+  height: 60px;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header-logo {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+
+.header-logo span {
+  color: var(--orange);
+}
+
+.header-menu-toggle {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.header-menu-toggle span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.6);
+  transition: all 0.2s;
+}
+
+.header-nav {
+  display: none;
+  position: absolute;
+  top: 60px;
+  left: 0;
+  right: 0;
+  background: rgba(17, 16, 16, 0.97);
+  backdrop-filter: blur(10px);
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px 32px;
+  gap: 0;
+  border-bottom: 1px solid rgba(232, 112, 75, 0.18);
+}
+
+.header-nav.header-nav-open {
+  display: flex;
+}
+
+.header-nav a {
+  display: block;
+  width: 100%;
+  padding: 13px 0;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  transition: color 0.2s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.header-nav a:hover {
+  color: var(--orange);
+}
+
+.header-nav a:last-child {
+  border-bottom: none;
+}
+
+@media (min-width: 768px) {
+  .header-menu-toggle {
+    display: none;
+  }
+
+  .header-nav {
+    display: flex;
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    gap: 32px;
+    padding: 0;
+    background: transparent;
+    border-bottom: none;
+  }
+
+  .header-nav a {
+    width: auto;
+    padding: 0;
+    border-bottom: none;
+  }
+}

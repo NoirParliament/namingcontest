@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/ITWORK/Downloads/COMPLETE-FINAL/**)",
+      "Bash(npm install:*)",
+      "Read(//usr/local/bin/**)",
+      "Bash(command -v npm)",
+      "Read(//c/Users/ITWORK/Downloads/COMPLETE-FINAL/src/$USERPROFILE/AppData/Roaming/npm/**)",
+      "Read(//c/Program Files/nodejs/**)",
+      "Read(//c/Users/ITWORK/AppData/Roaming/**)",
+      "Read(//c/Users/ITWORK/AppData/Local/**)",
+      "Bash(winget --version)",
+      "Bash(winget install:*)",
+      "Bash(export PATH=\"/c/Program Files/nodejs:$PATH\")",
+      "Bash(npm --version)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npx vite:*)",
+      "WebFetch(domain:catchwordbranding.com)",
+      "WebFetch(domain:web.archive.org)"
+    ]
+  }
+}

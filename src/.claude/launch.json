@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "namingcontest",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "C:\\Users\\ITWORK\\Downloads\\COMPLETE-FINAL\\start-dev.cmd"],
+      "port": 5173
+    }
+  ]
+}
