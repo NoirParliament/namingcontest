@@ -364,7 +364,7 @@ export default function ResultsPage() {
                 'product-name':   { body: 'Lock it in — trademark your product name before a competitor does.',         cta: 'File a trademark →' },
                 'project-name':   { body: 'Great project name. Protect it before it gets used elsewhere.',              cta: 'Protect your name →' },
                 'rebrand':        { body: 'Rebrand complete — update your trademark to match the new name.',            cta: 'Update trademark →' },
-                'other-business': { body: 'You have a winning name — make sure it's legally yours.',                    cta: 'Protect your name →' },
+                'other-business': { body: "You have a winning name — make sure it's legally yours.",                    cta: 'Protect your name →' },
               };
               const { body, cta } = subCTA[meta.sub] || subCTA['company-name'];
               return (
