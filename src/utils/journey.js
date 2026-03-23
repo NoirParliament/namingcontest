@@ -10,8 +10,9 @@ export const TIER = {
 
 // Fallback: map demo contest IDs → group (used when no localStorage context)
 const DEMO_GROUP = {
-  'demo-1': 'business', 'demo-2': 'team', 'demo-3': 'personal',
-  'demo-4': 'business', 'demo-5': 'team', 'demo-8': 'personal',
+  'demo-1': 'business', 'demo-2': 'team',     'demo-3': 'personal',
+  'demo-4': 'business', 'demo-5': 'team',     'demo-6': 'business',
+  'demo-7': 'team',     'demo-8': 'personal',
 };
 
 export const SUB_LABELS = {

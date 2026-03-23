@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import namicoIcon from '../assets/namico-icon.svg';
 import { Trophy, Copy, Check, DownloadSimple, Share, ArrowRight, TwitterLogo, LinkedinLogo, Brain, Scales, Target, Envelope } from '@phosphor-icons/react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import confetti from 'canvas-confetti';
 import { getJourneyMeta } from '../utils/journey';
 
 const TIER = {
@@ -26,6 +25,181 @@ function CopyBtn({ text, label }) {
       {copied ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> {label}</>}
     </button>
   );
+}
+
+function ParticleCanvas({ baseHue }) {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const particlesArr = [], dustArr = [], ripplesArr = [], fwArr = [];
+    let frameCount = 0, animId;
+    const mouse = { x: null, y: null };
+
+    class Particle {
+      constructor(x, y, isFW = false) {
+        const spd = isFW ? Math.random() * 2 + 1 : Math.random() * 0.5 + 0.3;
+        Object.assign(this, {
+          isFW, x, y,
+          vx: Math.cos(Math.random() * Math.PI * 2) * spd,
+          vy: Math.sin(Math.random() * Math.PI * 2) * spd,
+          size: isFW ? Math.random() * 2 + 2 : Math.random() * 2.5 + 0.8,
+          hue: baseHue + (Math.random() - 0.5) * 50,
+          alpha: 1, sizeDir: Math.random() < 0.5 ? -1 : 1, trail: [],
+        });
+      }
+      update() {
+        const dist = mouse.x !== null ? (mouse.x - this.x) ** 2 + (mouse.y - this.y) ** 2 : 0;
+        if (!this.isFW) {
+          const force = dist && dist < 22500 ? (22500 - dist) / 22500 : 0;
+          if (mouse.x === null) { this.vx += (Math.random() - 0.5) * 0.03; this.vy += (Math.random() - 0.5) * 0.03; }
+          if (dist) { const sd = Math.sqrt(dist); this.vx += ((mouse.x - this.x) / sd) * force * 0.1; this.vy += ((mouse.y - this.y) / sd) * force * 0.1; }
+          this.vx *= mouse.x !== null ? 0.99 : 0.998;
+          this.vy *= mouse.y !== null ? 0.99 : 0.998;
+          // Repel from centre text zone (ellipse covering ~middle 60% x 50% of canvas)
+          const cx = canvas.width / 2, cy = canvas.height / 2;
+          const rx = canvas.width * 0.30, ry = canvas.height * 0.28;
+          const ex = (this.x - cx) / rx, ey = (this.y - cy) / ry;
+          const ed = ex * ex + ey * ey;
+          if (ed < 1) {
+            const strength = (1 - ed) * 0.6;
+            const angle = Math.atan2(this.y - cy, this.x - cx);
+            this.vx += Math.cos(angle) * strength;
+            this.vy += Math.sin(angle) * strength;
+          }
+        } else { this.alpha -= 0.02; }
+        this.x += this.vx; this.y += this.vy;
+        if (this.x <= 0 || this.x >= canvas.width) this.vx *= -0.9;
+        if (this.y <= 0 || this.y >= canvas.height) this.vy *= -0.9;
+        this.size += this.sizeDir * 0.05;
+        if (this.size > 3.5 || this.size < 0.8) this.sizeDir *= -1;
+        this.hue = baseHue + Math.sin(frameCount * 0.01 + this.x * 0.005) * 25;
+        if (frameCount % 2 === 0 && (Math.abs(this.vx) > 0.1 || Math.abs(this.vy) > 0.1)) {
+          this.trail.push({ x: this.x, y: this.y, hue: this.hue, alpha: this.alpha });
+          if (this.trail.length > 10) this.trail.shift();
+        }
+      }
+      draw() {
+        const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+        g.addColorStop(0, `hsla(${this.hue},75%,65%,${Math.max(this.alpha, 0)})`);
+        g.addColorStop(1, `hsla(${this.hue + 20},70%,35%,${Math.max(this.alpha, 0)})`);
+        ctx.fillStyle = g; ctx.shadowBlur = 8; ctx.shadowColor = `hsl(${this.hue},75%,55%)`;
+        ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+        if (this.trail.length > 1) {
+          ctx.lineWidth = 1;
+          for (let i = 0; i < this.trail.length - 1; i++) {
+            const t = this.trail[i], t2 = this.trail[i + 1];
+            ctx.strokeStyle = `hsla(${t.hue},75%,60%,${Math.max(t.alpha * 0.25, 0)})`;
+            ctx.beginPath(); ctx.moveTo(t.x, t.y); ctx.lineTo(t2.x, t2.y); ctx.stroke();
+          }
+        }
+      }
+      isDead() { return this.isFW && this.alpha <= 0; }
+      isDone() { return false; }
+    }
+
+    class Dust {
+      constructor() {
+        Object.assign(this, {
+          x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+          size: Math.random() * 1 + 0.3, hue: baseHue + (Math.random() - 0.5) * 40,
+          vx: (Math.random() - 0.5) * 0.05, vy: (Math.random() - 0.5) * 0.05,
+        });
+      }
+      update() { this.x = (this.x + this.vx + canvas.width) % canvas.width; this.y = (this.y + this.vy + canvas.height) % canvas.height; }
+      draw() { ctx.fillStyle = `hsla(${this.hue},35%,65%,0.18)`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+      isDead() { return false; }
+      isDone() { return false; }
+    }
+
+    class Ripple {
+      constructor(x, y) { Object.assign(this, { x, y, radius: 0, alpha: 0.35, hue: baseHue }); }
+      update() { this.radius += 1.5; this.alpha -= 0.012; }
+      draw() { ctx.strokeStyle = `hsla(${this.hue},75%,60%,${this.alpha})`; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.stroke(); }
+      isDone() { return this.alpha <= 0; }
+      isDead() { return false; }
+    }
+
+    function spawnOutsideCenter() {
+      // Keep trying random positions until one lands outside the repulsion ellipse
+      const cx = canvas.width / 2, cy = canvas.height / 2;
+      const rx = canvas.width * 0.30, ry = canvas.height * 0.28;
+      let x, y;
+      do {
+        x = Math.random() * canvas.width;
+        y = Math.random() * canvas.height;
+      } while (((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 < 1);
+      return { x, y };
+    }
+
+    function build() {
+      particlesArr.length = 0; dustArr.length = 0;
+      const area = canvas.width * canvas.height;
+      const count = Math.min(55, Math.max(15, Math.floor(area / 9000)));
+      for (let i = 0; i < count; i++) { const { x, y } = spawnOutsideCenter(); particlesArr.push(new Particle(x, y)); }
+      for (let i = 0; i < 70; i++) dustArr.push(new Dust());
+    }
+
+    function connect() {
+      const gs = 100; const grid = new Map();
+      particlesArr.forEach(p => { const k = `${Math.floor(p.x / gs)},${Math.floor(p.y / gs)}`; if (!grid.has(k)) grid.set(k, []); grid.get(k).push(p); });
+      ctx.lineWidth = 1;
+      particlesArr.forEach(p => {
+        const gx = Math.floor(p.x / gs), gy = Math.floor(p.y / gs);
+        for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
+          (grid.get(`${gx + dx},${gy + dy}`) || []).forEach(n => {
+            if (n === p) return;
+            const d = (n.x - p.x) ** 2 + (n.y - p.y) ** 2;
+            if (d < 9000) { ctx.strokeStyle = `hsla(${(p.hue + n.hue) / 2},70%,60%,${1 - Math.sqrt(d) / 95})`; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(n.x, n.y); ctx.stroke(); }
+          });
+        }
+      });
+    }
+
+    function animate() {
+      ctx.fillStyle = 'rgba(20,20,22,0.88)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      [dustArr, particlesArr, ripplesArr, fwArr].forEach(arr => {
+        for (let i = arr.length - 1; i >= 0; i--) { arr[i].update(); arr[i].draw(); if (arr[i].isDone() || arr[i].isDead()) arr.splice(i, 1); }
+      });
+      connect();
+      frameCount++;
+      animId = requestAnimationFrame(animate);
+    }
+
+    function resize() {
+      const p = canvas.parentElement; if (!p) return;
+      const r = p.getBoundingClientRect();
+      canvas.width = r.width; canvas.height = r.height; build();
+    }
+
+    const onMove = e => { const r = canvas.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; ripplesArr.push(new Ripple(mouse.x, mouse.y)); };
+    const onLeave = () => { mouse.x = null; mouse.y = null; };
+    const onClick = e => {
+      const r = canvas.getBoundingClientRect(); const x = e.clientX - r.left, y = e.clientY - r.top;
+      ripplesArr.push(new Ripple(x, y));
+      for (let i = 0; i < 12; i++) { const p = new Particle(x, y, true); p.vx = Math.cos(Math.random() * Math.PI * 2) * (Math.random() * 2 + 1); p.vy = Math.sin(Math.random() * Math.PI * 2) * (Math.random() * 2 + 1); fwArr.push(p); }
+    };
+
+    canvas.addEventListener('mousemove', onMove);
+    canvas.addEventListener('mouseleave', onLeave);
+    canvas.addEventListener('click', onClick);
+    const ro = new ResizeObserver(resize);
+    ro.observe(canvas.parentElement);
+    resize();
+    animate();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      canvas.removeEventListener('mousemove', onMove);
+      canvas.removeEventListener('mouseleave', onLeave);
+      canvas.removeEventListener('click', onClick);
+      ro.disconnect();
+    };
+  }, [baseHue]);
+
+  return <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', borderRadius: 20, zIndex: 0, display: 'block', opacity: 1 }} />;
 }
 
 function SimBtn({ label, icon }) {
@@ -90,18 +264,14 @@ export default function ResultsPage() {
   const shareUrl = `namingcontest.com/r/${contestId || 'demo'}`;
 
   const [copied, setCopied] = useState(false);
+  const [countdown, setCountdown] = useState(3);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      confetti({
-        particleCount: 150,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#eaef09', '#8B5CF6', '#10B981', '#ffffff'],
-      });
-    }, 300);
-    return () => clearTimeout(timer);
-  }, []);
+    if (countdown <= 0) return;
+    const t = setTimeout(() => setCountdown(c => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [countdown]);
+
 
   // Read prizes from localStorage (set by BriefBuilder)
   const prizeData = (() => {
@@ -126,6 +296,12 @@ export default function ResultsPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#0a0a0a', fontFamily: 'Inter, sans-serif' }}>
+      <style>{`
+        @keyframes countPop { 0% { transform: scale(2.2); opacity: 0; } 30% { opacity: 1; } 75% { transform: scale(1); opacity: 1; } 100% { transform: scale(0.8); opacity: 0; } }
+        @keyframes winnerReveal { 0% { opacity: 0; transform: scale(0.85); filter: blur(16px); } 60% { filter: blur(0); } 100% { opacity: 1; transform: scale(1); } }
+        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes overlayOut { 0% { opacity: 1; } 100% { opacity: 0; pointer-events: none; } }
+      `}</style>
       {/* Nav */}
       <div style={{ background: '#141414', borderBottom: '0.5px solid rgba(255,255,255,0.06)', padding: '0 32px', height: 52, display: 'flex', alignItems: 'center', gap: 12 }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 7, textDecoration: 'none' }}>
@@ -144,53 +320,68 @@ export default function ResultsPage() {
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '40px 24px' }}>
 
         {/* Zone 1: Winner Announcement */}
-        <div style={{ textAlign: 'center', marginBottom: 48, padding: '48px 24px', background: '#1a1a1a', borderRadius: 20, border: `0.5px solid rgba(${tc.rgb},0.2)` }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', background: `rgba(${tc.rgb},0.12)`, border: `1px solid rgba(${tc.rgb},0.3)`, borderRadius: 20, fontSize: 12, fontWeight: 700, color: tc.color, textTransform: 'uppercase', marginBottom: 20 }}>
-            <Trophy size={14} weight="bold" /> Winner
-          </div>
-          <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 64, fontWeight: 800, color: '#fff', lineHeight: 1.1, marginBottom: 12 }}>
-            {winner?.name || 'Hollow Signal'}
-          </div>
-          {winner?.rationale && (
-            <div style={{ maxWidth: 520, margin: '0 auto 16px', fontSize: 15, color: '#a1a1a1', lineHeight: 1.65 }}>
-              {winner.rationale}
+        <div style={{ position: 'relative', textAlign: 'center', marginBottom: 48, padding: '48px 24px', borderRadius: 20, border: `0.5px solid rgba(${tc.rgb},0.25)`, overflow: 'hidden' }}>
+          <ParticleCanvas baseHue={tc.color === '#eaef09' ? 63 : tc.color === '#8B5CF6' ? 262 : 160} />
+          {/* Winner content — always rendered at full size, revealed after countdown */}
+          <div style={{ position: 'relative', zIndex: 1, pointerEvents: 'none', animation: countdown === 0 ? 'winnerReveal 0.9s cubic-bezier(0.22,1,0.36,1) forwards' : 'none', opacity: countdown > 0 ? 0 : undefined }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', background: `rgba(${tc.rgb},0.18)`, border: `1px solid rgba(${tc.rgb},0.4)`, borderRadius: 20, fontSize: 12, fontWeight: 700, color: tc.color, textTransform: 'uppercase', marginBottom: 20, boxShadow: `0 0 12px rgba(${tc.rgb},0.5), 0 0 32px rgba(${tc.rgb},0.25)` }}>
+              <Trophy size={14} weight="bold" /> Winner
             </div>
-          )}
-          <div style={{ fontSize: 16, color: '#a1a1a1', marginBottom: 24 }}>
-            <span style={{ color: tc.color, fontWeight: 700, fontSize: 20 }}>{winnerPct}%</span> of votes
-          </div>
-          {/* Prize Fulfillment */}
-          {(prizeData.submitter || prizeData.voter) && (
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 16 }}>
-              {prizeData.submitter && (
-                <div style={{ padding: '14px 18px', background: 'linear-gradient(135deg, rgba(234,239,9,0.06), rgba(139,92,246,0.04))', border: '1px solid rgba(234,239,9,0.2)', borderRadius: 10, maxWidth: 320, textAlign: 'left' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                    <Trophy size={14} color="#eaef09" weight="fill" />
-                    <span style={{ fontSize: 11, fontWeight: 700, color: '#eaef09', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Submitter Prize</span>
-                  </div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{prizeData.submitter.name}</div>
-                  {prizeData.submitter.desc && <div style={{ fontSize: 12, color: '#7a7a7a', marginBottom: 8 }}>{prizeData.submitter.desc}</div>}
-                  {prizeData.winnerContact && <div style={{ fontSize: 12, color: '#a1a1a1' }}>Submitted by: <strong style={{ color: '#fff' }}>{prizeData.winnerContact.name}</strong> · {prizeData.winnerContact.email}</div>}
-                </div>
-              )}
-              {prizeData.voter && (
-                <div style={{ padding: '14px 18px', background: 'rgba(139,92,246,0.04)', border: '1px solid rgba(139,92,246,0.15)', borderRadius: 10, maxWidth: 320, textAlign: 'left' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                    <Trophy size={14} color="#8B5CF6" weight="fill" />
-                    <span style={{ fontSize: 11, fontWeight: 700, color: '#8B5CF6', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Voter Prize</span>
-                  </div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{prizeData.voter.name}</div>
-                  {prizeData.voter.desc && <div style={{ fontSize: 12, color: '#7a7a7a', marginBottom: 8 }}>{prizeData.voter.desc}</div>}
-                  {prizeData.voterWinner && <div style={{ fontSize: 12, color: '#a1a1a1' }}>Random voter: <strong style={{ color: '#fff' }}>{prizeData.voterWinner.name}</strong> · {prizeData.voterWinner.email}</div>}
-                </div>
-              )}
+            <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 64, fontWeight: 800, color: '#fff', lineHeight: 1.1, marginBottom: 12, animation: countdown === 0 ? 'fadeSlideUp 0.7s 0.3s cubic-bezier(0.22,1,0.36,1) both' : 'none' }}>
+              {winner?.name || 'Hollow Signal'}
             </div>
-          )}
+            {winner?.rationale && (
+              <div style={{ maxWidth: 520, margin: '0 auto 16px', fontSize: 15, color: '#a1a1a1', lineHeight: 1.65, animation: countdown === 0 ? 'fadeSlideUp 0.7s 0.5s cubic-bezier(0.22,1,0.36,1) both' : 'none' }}>
+                {winner.rationale}
+              </div>
+            )}
+            <div style={{ fontSize: 16, color: '#a1a1a1', marginBottom: 24, animation: countdown === 0 ? 'fadeSlideUp 0.7s 0.65s cubic-bezier(0.22,1,0.36,1) both' : 'none' }}>
+              <span style={{ color: tc.color, fontWeight: 700, fontSize: 20 }}>{winnerPct}%</span> of votes
+            </div>
+            {(prizeData.submitter || prizeData.voter) && (
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 16 }}>
+                {prizeData.submitter && (
+                  <div style={{ padding: '14px 18px', background: 'linear-gradient(135deg, rgba(234,239,9,0.06), rgba(139,92,246,0.04))', border: '1px solid rgba(234,239,9,0.2)', borderRadius: 10, maxWidth: 320, textAlign: 'left' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}><Trophy size={14} color="#eaef09" weight="fill" /><span style={{ fontSize: 11, fontWeight: 700, color: '#eaef09', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Submitter Prize</span></div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{prizeData.submitter.name}</div>
+                    {prizeData.submitter.desc && <div style={{ fontSize: 12, color: '#7a7a7a', marginBottom: 8 }}>{prizeData.submitter.desc}</div>}
+                    {prizeData.winnerContact && <div style={{ fontSize: 12, color: '#a1a1a1' }}>Submitted by: <strong style={{ color: '#fff' }}>{prizeData.winnerContact.name}</strong> · {prizeData.winnerContact.email}</div>}
+                  </div>
+                )}
+                {prizeData.voter && (
+                  <div style={{ padding: '14px 18px', background: 'rgba(139,92,246,0.04)', border: '1px solid rgba(139,92,246,0.15)', borderRadius: 10, maxWidth: 320, textAlign: 'left' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}><Trophy size={14} color="#8B5CF6" weight="fill" /><span style={{ fontSize: 11, fontWeight: 700, color: '#8B5CF6', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Voter Prize</span></div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{prizeData.voter.name}</div>
+                    {prizeData.voter.desc && <div style={{ fontSize: 12, color: '#7a7a7a', marginBottom: 8 }}>{prizeData.voter.desc}</div>}
+                    {prizeData.voterWinner && <div style={{ fontSize: 12, color: '#a1a1a1' }}>Random voter: <strong style={{ color: '#fff' }}>{prizeData.voterWinner.name}</strong> · {prizeData.voterWinner.email}</div>}
+                  </div>
+                )}
+              </div>
+            )}
+            {isBusiness && (() => {
+              const subCTA = {
+                'company-name':   { body: 'You have a winning name — register your LLC before someone else does.',       cta: 'Register your business →' },
+                'product-name':   { body: 'Lock it in — trademark your product name before a competitor does.',         cta: 'File a trademark →' },
+                'project-name':   { body: 'Great project name. Protect it before it gets used elsewhere.',              cta: 'Protect your name →' },
+                'rebrand':        { body: 'Rebrand complete — update your trademark to match the new name.',            cta: 'Update trademark →' },
+                'other-business': { body: 'You have a winning name — make sure it's legally yours.',                    cta: 'Protect your name →' },
+              };
+              const { body, cta } = subCTA[meta.sub] || subCTA['company-name'];
+              return (
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '12px 20px', background: '#141414', border: '0.5px solid rgba(234,239,9,0.3)', borderRadius: 10, fontSize: 13, color: '#a1a1a1' }}>
+                  {body}
+                  <a href="#" style={{ color: '#eaef09', fontWeight: 600, textDecoration: 'none', pointerEvents: 'auto', whiteSpace: 'nowrap' }}>{cta}</a>
+                </div>
+              );
+            })()}
+          </div>
 
-          {isBusiness && (
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '12px 20px', background: '#141414', border: '0.5px solid rgba(249,115,22,0.25)', borderRadius: 10, fontSize: 13, color: '#a1a1a1' }}>
-              You have a winning name — register your LLC before someone else does.
-              <a href="#" style={{ color: '#f97316', fontWeight: 600, textDecoration: 'none' }}>Register your business →</a>
+          {/* Countdown overlay — sits on top, fades out when done */}
+          {countdown > 0 && (
+            <div style={{ position: 'absolute', inset: 0, zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 20 }}>
+              <div key={countdown} style={{ fontSize: 140, fontWeight: 900, color: tc.color, lineHeight: 1, textShadow: `0 0 60px rgba(${tc.rgb},1), 0 0 120px rgba(${tc.rgb},0.5)`, animation: 'countPop 0.85s cubic-bezier(0.22,1,0.36,1) forwards' }}>
+                {countdown}
+              </div>
             </div>
           )}
         </div>
