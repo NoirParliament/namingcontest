@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import namicoIcon from '../../assets/namico-icon.svg';
 import {
   Trophy, House, ListBullets, ChartBar, GearSix, Plus,
   Users, Lightning, ArrowRight, Bell, Export, Eye
@@ -14,9 +15,9 @@ const TIER = {
 };
 
 const PHASE_LABELS = {
-  submissions: { label: '📝 Submissions', color: '#3B82F6' },
-  voting: { label: '🗳️ Voting', color: '#8B5CF6' },
-  results: { label: '📊 Results', color: '#10B981' },
+  submissions: { label: 'Submissions', color: '#7a7a7a' },
+  voting: { label: 'Voting', color: '#7a7a7a' },
+  results: { label: 'Results', color: '#7a7a7a' },
 };
 
 function SegmentPill({ group }) {
@@ -30,29 +31,14 @@ function SegmentPill({ group }) {
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [activeNav, setActiveNav] = useState('dashboard');
-  const [showCreditModal, setShowCreditModal] = useState(false);
-  const [creditPurchased, setCreditPurchased] = useState(false);
-  const [credits, setCredits] = useState(3);
+  const [autoRenewal, setAutoRenewal] = useState(true);
 
   const active = mockContests.filter(c => c.status === 'active');
   const completed = mockContests.filter(c => c.status === 'completed');
 
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: <House size={16} weight={activeNav === 'dashboard' ? 'fill' : 'regular'} /> },
     { id: 'contests', label: 'My Contests', icon: <ListBullets size={16} /> },
-    { id: 'analytics', label: 'Analytics', icon: <ChartBar size={16} /> },
-    { id: 'settings', label: 'Settings', icon: <GearSix size={16} /> },
   ];
-
-  const handlePurchase = (pack) => {
-    setCredits(prev => prev + pack.count);
-    setCreditPurchased(pack.label);
-    setTimeout(() => {
-      setCreditPurchased(false);
-      setShowCreditModal(false);
-    }, 2000);
-  };
 
   const totalContests = mockContests.length;
   const totalParticipants = mockContests.reduce((sum, c) => sum + c.participantCount, 0);
@@ -65,9 +51,9 @@ export default function Dashboard() {
         {/* Logo */}
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', marginBottom: 32, padding: '0 8px' }}>
           <div style={{ width: 28, height: 28, background: '#eaef09', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Trophy size={14} weight="bold" color="#000" />
+            <img src={namicoIcon} alt="Namico" style={{ width: 18, height: 18, display: 'block' }} />
           </div>
-          <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>NamingContest</span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Namico</span>
         </Link>
 
         {/* New Contest */}
@@ -78,7 +64,7 @@ export default function Dashboard() {
         {/* Nav */}
         <div style={{ flex: 1 }}>
           {navItems.map(item => (
-            <button key={item.id} onClick={() => setActiveNav(item.id)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, height: 36, padding: '0 10px', borderRadius: 8, border: 'none', background: activeNav === item.id ? 'rgba(234,239,9,0.1)' : 'transparent', color: activeNav === item.id ? '#eaef09' : '#7a7a7a', fontSize: 13, cursor: 'pointer', textAlign: 'left', marginBottom: 2 }}>
+            <button key={item.id} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, height: 36, padding: '0 10px', borderRadius: 8, border: 'none', background: 'rgba(234,239,9,0.1)', color: '#eaef09', fontSize: 13, cursor: 'default', textAlign: 'left', marginBottom: 2 }}>
               {item.icon} {item.label}
             </button>
           ))}
@@ -135,7 +121,7 @@ export default function Dashboard() {
                       </div>
                     </div>
 
-                    <div style={{ fontSize: 12, color: '#ef4444', fontWeight: 600, marginBottom: 8 }}>
+                    <div style={{ fontSize: 12, color: '#a1a1a1', fontWeight: 600, marginBottom: 8 }}>
                       Closes in {contest.daysLeft} day{contest.daysLeft !== 1 ? 's' : ''}
                     </div>
 
@@ -178,7 +164,7 @@ export default function Dashboard() {
                     </div>
 
                     <div style={{ display: 'flex', gap: 8 }}>
-                      <button onClick={() => navigate(`/contest-detail/${contest.id}`)} style={{ flex: 1, height: 32, border: `1px solid rgba(${tc.rgb},0.3)`, borderRadius: 7, background: `rgba(${tc.rgb},0.06)`, color: tc.color, fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+                      <button style={{ flex: 1, height: 32, border: `1px solid rgba(${tc.rgb},0.3)`, borderRadius: 7, background: `rgba(${tc.rgb},0.06)`, color: tc.color, fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
                         <Eye size={12} /> View
                       </button>
                       <button style={{ height: 32, padding: '0 10px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, background: 'transparent', color: '#a1a1a1', fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -265,59 +251,27 @@ export default function Dashboard() {
 
             {/* Subscription Card */}
             <div style={{ background: '#1a1a1a', border: '0.5px solid rgba(234,239,9,0.15)', borderRadius: 12, padding: 16 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#eaef09', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Business Credit Pack</div>
-              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 24, color: '#fff', marginBottom: 4 }}>{credits} contests remaining</div>
-              <div style={{ fontSize: 12, color: '#7a7a7a', marginBottom: 14 }}>Credits never expire</div>
-              <button onClick={() => setShowCreditModal(true)} style={{ width: '100%', height: 36, border: '1.5px solid #eaef09', borderRadius: 8, background: 'rgba(234,239,9,0.08)', color: '#eaef09', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
-                Buy More Credits
-              </button>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#eaef09', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Your Subscription</div>
+                <span style={{ fontSize: 10, fontWeight: 700, color: '#10B981', padding: '2px 8px', background: 'rgba(16,185,129,0.1)', border: '0.5px solid rgba(16,185,129,0.3)', borderRadius: 4 }}>ACTIVE</span>
+              </div>
+              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, fontWeight: 800, color: '#fff', marginBottom: 2 }}>Business Plan</div>
+              <div style={{ fontSize: 13, color: '#a1a1a1', marginBottom: 12 }}>$89 per contest</div>
+              <div style={{ fontSize: 12, color: '#7a7a7a', marginBottom: 12 }}>Renews Apr 15, 2026</div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderTop: '0.5px solid rgba(255,255,255,0.06)' }}>
+                <span style={{ fontSize: 13, color: '#a1a1a1' }}>Auto-renewal</span>
+                <div onClick={() => setAutoRenewal(!autoRenewal)} style={{ width: 40, height: 22, borderRadius: 11, background: autoRenewal ? '#10B981' : '#333', cursor: 'pointer', position: 'relative', transition: 'background 0.2s' }}>
+                  <div style={{ position: 'absolute', top: 3, left: autoRenewal ? 21 : 3, width: 16, height: 16, borderRadius: '50%', background: '#fff', transition: 'left 0.2s' }} />
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Floating Action Button */}
-      <button onClick={() => navigate('/select')} title="New Contest" style={{ position: 'fixed', bottom: 28, right: 28, width: 56, height: 56, borderRadius: '50%', border: '2px solid #eaef09', background: 'rgba(234,239,9,0.15)', color: '#eaef09', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 20px rgba(234,239,9,0.2)' }}>
-        <Plus size={22} weight="bold" />
-      </button>
+      {/* Floating action button removed */}
 
-      {/* Credit Pack Modal */}
-      {showCreditModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-          <div style={{ background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 16, padding: 32, maxWidth: 480, width: '100%' }}>
-            <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 24, color: '#fff', marginBottom: 8 }}>Buy Contest Credits</h2>
-            <p style={{ fontSize: 13, color: '#a1a1a1', marginBottom: 24 }}>Credits never expire. Use them for any contest type.</p>
-
-            {creditPurchased ? (
-              <div style={{ textAlign: 'center', padding: '24px' }}>
-                <div style={{ fontSize: 32, marginBottom: 12 }}>✓</div>
-                <div style={{ color: '#10B981', fontSize: 16, fontWeight: 700 }}>Credits added to your account!</div>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {[
-                  { count: 3, price: 79, perContest: 26.33, label: '3 Contests' },
-                  { count: 5, price: 125, perContest: 25, label: '5 Contests', popular: true },
-                  { count: 10, price: 225, perContest: 22.50, label: '10 Contests' },
-                ].map(pack => (
-                  <div key={pack.count} onClick={() => handlePurchase(pack)} style={{ position: 'relative', padding: '16px 18px', background: '#141414', border: `1px solid ${pack.popular ? '#eaef09' : 'rgba(255,255,255,0.1)'}`, borderRadius: 10, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    {pack.popular && <div style={{ position: 'absolute', top: -10, right: 12, padding: '2px 8px', background: '#eaef09', borderRadius: 4, fontSize: 10, fontWeight: 700, color: '#000' }}>Most Popular</div>}
-                    <div>
-                      <div style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>{pack.label}</div>
-                      <div style={{ fontSize: 12, color: '#7a7a7a' }}>${pack.perContest.toFixed(2)} per contest</div>
-                    </div>
-                    <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 24, fontWeight: 700, color: pack.popular ? '#eaef09' : '#fff' }}>${pack.price}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <button onClick={() => setShowCreditModal(false)} style={{ marginTop: 20, width: '100%', height: 36, border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, background: 'transparent', color: '#7a7a7a', fontSize: 13, cursor: 'pointer' }}>
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
+      {/* No modal needed */}
     </div>
   );
 }

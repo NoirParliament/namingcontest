@@ -11,7 +11,7 @@ export const AFFILIATE_MOMENTS = {
       partner: 'Namecheap',
       partnerTag: 'Domain Registrar',
       cta: 'Check domain →',
-      emoji: '🌐',
+      emoji: '*',
     },
     {
       id: 'trademark',
@@ -24,7 +24,7 @@ export const AFFILIATE_MOMENTS = {
       partner: 'LegalZoom',
       partnerTag: 'Trademark Search',
       cta: 'Full search via LegalZoom →',
-      emoji: '™️',
+      emoji: '*',
     },
     {
       id: 'logo',
@@ -37,20 +37,20 @@ export const AFFILIATE_MOMENTS = {
       partner: 'Looka / 99designs',
       partnerTag: 'Brand Design',
       cta: 'Create on Looka →',
-      emoji: '🎨',
+      emoji: '*',
     },
     {
       id: 'incorporation',
       title: 'Business Registration',
-      where: 'Brief Builder',
-      trigger: 'Contest type: Company Name or Rebrand',
+      where: 'Results Page',
+      trigger: 'Winner announced for Company Name or Rebrand',
       type: 'registration',
-      headline: 'Ready to make it official?',
-      subtext: 'Once you have your name, register your LLC or corporation in minutes. LegalZoom handles the paperwork.',
+      headline: 'Now make it official',
+      subtext: 'You have a winning name — register your LLC or corporation before someone else does. LegalZoom handles the paperwork.',
       partner: 'LegalZoom',
       partnerTag: 'Business Formation',
       cta: 'Register your business →',
-      emoji: '🏛️',
+      emoji: '*',
     },
   ],
 
@@ -66,7 +66,7 @@ export const AFFILIATE_MOMENTS = {
       partner: 'Printful',
       partnerTag: 'Custom Merchandise',
       cta: 'Design team merch →',
-      emoji: '👕',
+      emoji: '*',
     },
     {
       id: 'logo-team',
@@ -79,7 +79,7 @@ export const AFFILIATE_MOMENTS = {
       partner: '99designs',
       partnerTag: 'Brand Design',
       cta: 'Get a team logo →',
-      emoji: '🎨',
+      emoji: '*',
     },
     {
       id: 'website',
@@ -92,7 +92,7 @@ export const AFFILIATE_MOMENTS = {
       partner: 'Squarespace',
       partnerTag: 'Website Builder',
       cta: 'Build your team site →',
-      emoji: '🌐',
+      emoji: '*',
     },
     {
       id: 'domain-team',
@@ -105,7 +105,7 @@ export const AFFILIATE_MOMENTS = {
       partner: 'Namecheap',
       partnerTag: 'Domain Registrar',
       cta: 'Check domain →',
-      emoji: '🌐',
+      emoji: '*',
     },
   ],
 
@@ -121,7 +121,7 @@ export const AFFILIATE_MOMENTS = {
       partner: 'Artifact Uprising',
       partnerTag: 'Custom Cards & Prints',
       cta: 'Design announcements →',
-      emoji: '🎉',
+      emoji: '*',
     },
     {
       id: 'gift',
@@ -134,7 +134,7 @@ export const AFFILIATE_MOMENTS = {
       partner: 'Etsy',
       partnerTag: 'Personalised Gifts',
       cta: 'Shop personalised gifts →',
-      emoji: '🎁',
+      emoji: '*',
     },
     {
       id: 'name-book',
@@ -147,7 +147,7 @@ export const AFFILIATE_MOMENTS = {
       partner: 'Amazon',
       partnerTag: 'Book',
       cta: 'Browse baby name books →',
-      emoji: '📚',
+      emoji: '*',
     },
     {
       id: 'pet-id',
@@ -160,7 +160,7 @@ export const AFFILIATE_MOMENTS = {
       partner: 'Chewy',
       partnerTag: 'Pet Accessories',
       cta: 'Get a custom ID tag →',
-      emoji: '🐾',
+      emoji: '*',
     },
   ],
 };

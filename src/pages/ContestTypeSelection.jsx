@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Trophy, Users, CheckCircle, Lock, ArrowRight, ArrowLeft } from '@phosphor-icons/react';
+import namicoIcon from '../assets/namico-icon.svg';
+import { Users, CheckCircle, Lock, ArrowRight, ArrowLeft } from '@phosphor-icons/react';
 
 const TIER = {
   business: { color: '#eaef09', rgb: '234,239,9', textColor: '#000', label: 'Business' },
@@ -146,19 +147,19 @@ export default function ContestTypeSelection() {
       <div style={{ padding: '18px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '0.5px solid rgba(255,255,255,0.06)' }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
           <div style={{ width: 28, height: 28, background: '#eaef09', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Trophy size={15} weight="bold" color="#000" />
+            <img src={namicoIcon} alt="Namico" style={{ width: 20, height: 20, display: 'block' }} />
           </div>
-          <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>NamingContest</span>
+          <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>Namico</span>
         </Link>
         {/* Steps */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           {['Choose Type', 'Account', 'Sub-type', 'Contest Type', 'Brief'].map((step, i) => (
             <div key={step} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                <div style={{ width: 20, height: 20, borderRadius: '50%', background: i <= 2 ? '#10B981' : i === 3 ? tc.color : 'rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: i <= 3 ? '#000' : '#7a7a7a' }}>
+                <div style={{ width: 20, height: 20, borderRadius: '50%', background: i <= 2 ? tc.color : i === 3 ? tc.color : 'rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: i <= 3 ? (tc.color === '#eaef09' ? '#000' : '#fff') : '#7a7a7a' }}>
                   {i < 3 ? '✓' : i + 1}
                 </div>
-                <span style={{ fontSize: 11, color: i === 3 ? '#fff' : i < 3 ? '#10B981' : '#7a7a7a', fontWeight: i === 3 ? 600 : 400 }}>{step}</span>
+                <span style={{ fontSize: 11, color: i === 3 ? '#fff' : i < 3 ? tc.color : '#7a7a7a', fontWeight: i === 3 ? 600 : 400 }}>{step}</span>
               </div>
               {i < 4 && <div style={{ width: 16, height: 1, background: 'rgba(255,255,255,0.08)' }} />}
             </div>

@@ -8,23 +8,23 @@ const GT = { business: '#000', team: '#fff', personal: '#fff' };
 // All affiliate cards that appear in the Results Page per segment
 const RESULTS_PAGE_AFFILIATES = {
   business: [
-    { emoji: '🌐', partner: 'Namecheap', tag: 'Domain Registrar', headline: 'Claim your .com', body: 'Check availability now. .io, .co, .ai, and .net also checked automatically.', cta: 'Check on Namecheap →', accent: '#eaef09', accentText: '#000' },
-    { emoji: '™️', partner: 'USPTO (Free)', tag: 'Trademark Search', headline: 'Free trademark search', body: 'Search the USPTO database before you invest further. Free, takes 10 minutes.', cta: 'Search TESS (Free) →', accent: '#3b82f6', accentText: '#fff' },
-    { emoji: '⚖️', partner: 'LegalZoom', tag: 'Trademark Search', headline: 'Full clearance search', body: 'Professional search catches phonetic matches and design marks the free search misses.', cta: 'Full Search via LegalZoom →', accent: '#8B5CF6', accentText: '#fff' },
-    { emoji: '🏛️', partner: 'LegalZoom', tag: 'LLC Formation', headline: 'Make it a legal entity', body: 'File your LLC before someone else registers it. Handles paperwork in all 50 states.', cta: 'Form Your LLC →', accent: '#f97316', accentText: '#fff' },
-    { emoji: '🎨', partner: 'Looka / 99designs', tag: 'Logo Design', headline: 'Get a logo to match', body: 'AI-fast (Looka), custom/premium (99designs), or budget (Fiverr). Coverage at every price point.', cta: 'Create on Looka →', accent: '#ec4899', accentText: '#fff' },
+    { emoji: '*', partner: 'Namecheap', tag: 'Domain Registrar', headline: 'Claim your .com', body: 'Check availability now. .io, .co, .ai, and .net also checked automatically.', cta: 'Check on Namecheap →', accent: '#eaef09', accentText: '#000' },
+    { emoji: '*', partner: 'USPTO (Free)', tag: 'Trademark Search', headline: 'Free trademark search', body: 'Search the USPTO database before you invest further. Free, takes 10 minutes.', cta: 'Search TESS (Free) →', accent: '#3b82f6', accentText: '#fff' },
+    { emoji: '*', partner: 'LegalZoom', tag: 'Trademark Search', headline: 'Full clearance search', body: 'Professional search catches phonetic matches and design marks the free search misses.', cta: 'Full Search via LegalZoom →', accent: '#8B5CF6', accentText: '#fff' },
+    { emoji: '*', partner: 'LegalZoom', tag: 'LLC Formation', headline: 'Make it a legal entity', body: 'File your LLC before someone else registers it. Handles paperwork in all 50 states.', cta: 'Form Your LLC →', accent: '#f97316', accentText: '#fff' },
+    { emoji: '*', partner: 'Looka / 99designs', tag: 'Logo Design', headline: 'Get a logo to match', body: 'AI-fast (Looka), custom/premium (99designs), or budget (Fiverr). Coverage at every price point.', cta: 'Create on Looka →', accent: '#ec4899', accentText: '#fff' },
   ],
   team: [
-    { emoji: '👕', partner: 'Printful', tag: 'Custom Merchandise', headline: 'Make it official with merch.', body: 'Custom jerseys, hats, hoodies. No minimums. Ships in 3–5 days.', cta: 'Design team merch →', accent: '#8B5CF6', accentText: '#fff' },
-    { emoji: '🎨', partner: '99designs', tag: 'Brand Design', headline: 'Every great team name needs a great logo.', body: 'Multiple concepts, unlimited revisions. Work with a dedicated designer.', cta: 'Get a team logo →', accent: '#ec4899', accentText: '#fff' },
-    { emoji: '🌐', partner: 'Squarespace', tag: 'Website Builder', headline: "Claim your team's home online.", body: 'Schedules, roster, news. No coding required. Looks great on every device.', cta: 'Build your team site →', accent: '#3b82f6', accentText: '#fff' },
-    { emoji: '🌐', partner: 'Namecheap', tag: 'Domain Registrar', headline: 'Secure your domain.', body: 'Lock in the domain for your new team name before someone else does.', cta: 'Check domain →', accent: '#8B5CF6', accentText: '#fff' },
+    { emoji: '*', partner: 'Printful', tag: 'Custom Merchandise', headline: 'Make it official with merch.', body: 'Custom jerseys, hats, hoodies. No minimums. Ships in 3–5 days.', cta: 'Design team merch →', accent: '#8B5CF6', accentText: '#fff' },
+    { emoji: '*', partner: '99designs', tag: 'Brand Design', headline: 'Every great team name needs a great logo.', body: 'Multiple concepts, unlimited revisions. Work with a dedicated designer.', cta: 'Get a team logo →', accent: '#ec4899', accentText: '#fff' },
+    { emoji: '*', partner: 'Squarespace', tag: 'Website Builder', headline: "Claim your team's home online.", body: 'Schedules, roster, news. No coding required. Looks great on every device.', cta: 'Build your team site →', accent: '#3b82f6', accentText: '#fff' },
+    { emoji: '*', partner: 'Namecheap', tag: 'Domain Registrar', headline: 'Secure your domain.', body: 'Lock in the domain for your new team name before someone else does.', cta: 'Check domain →', accent: '#8B5CF6', accentText: '#fff' },
   ],
   personal: [
-    { emoji: '🎉', partner: 'Artifact Uprising', tag: 'Custom Cards & Prints', headline: 'Share the name with the world.', body: 'Premium birth announcement cards, printed and shipped. The name you chose together, beautifully presented.', cta: 'Design announcements →', accent: '#10B981', accentText: '#fff' },
-    { emoji: '🎁', partner: 'Etsy', tag: 'Personalised Gifts', headline: 'Celebrate the name.', body: 'Personalised gifts featuring the chosen name — perfect for new babies, pets, or homes.', cta: 'Shop personalised gifts →', accent: '#f59e0b', accentText: '#fff' },
-    { emoji: '🐾', partner: 'Chewy', tag: 'Pet Accessories', headline: 'Make it official for your pet.', body: 'Custom ID tags and personalised accessories engraved with your pet\'s new name. Fast shipping.', cta: 'Get a custom ID tag →', accent: '#10B981', accentText: '#fff' },
-    { emoji: '🌐', partner: 'Namecheap', tag: 'Domain Registrar', headline: 'Claim the name online.', body: 'If you plan to create any presence around this name, grab the domain while it\'s available.', cta: 'Check on Namecheap →', accent: '#10B981', accentText: '#fff' },
+    { emoji: '*', partner: 'Artifact Uprising', tag: 'Custom Cards & Prints', headline: 'Share the name with the world.', body: 'Premium birth announcement cards, printed and shipped. The name you chose together, beautifully presented.', cta: 'Design announcements →', accent: '#10B981', accentText: '#fff' },
+    { emoji: '*', partner: 'Etsy', tag: 'Personalised Gifts', headline: 'Celebrate the name.', body: 'Personalised gifts featuring the chosen name — perfect for new babies, pets, or homes.', cta: 'Shop personalised gifts →', accent: '#f59e0b', accentText: '#fff' },
+    { emoji: '*', partner: 'Chewy', tag: 'Pet Accessories', headline: 'Make it official for your pet.', body: 'Custom ID tags and personalised accessories engraved with your pet\'s new name. Fast shipping.', cta: 'Get a custom ID tag →', accent: '#10B981', accentText: '#fff' },
+    { emoji: '*', partner: 'Namecheap', tag: 'Domain Registrar', headline: 'Claim the name online.', body: 'If you plan to create any presence around this name, grab the domain while it\'s available.', cta: 'Check on Namecheap →', accent: '#10B981', accentText: '#fff' },
   ],
 };
 
@@ -68,7 +68,7 @@ function TrademarkMockup({ moment, group }) {
       <div style={breadcrumb}>{moment.where} — Trademark Search Banner</div>
       <div style={{ background: '#1a1a1a', border: `0.5px solid rgba(${rgb},0.2)`, borderRadius: 12, padding: '16px 18px', marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ fontSize: 28, flexShrink: 0 }}>™️</div>
+          <div style={{ fontSize: 20, flexShrink: 0, fontWeight: 700, color: '#3b82f6' }}>TM</div>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: '#fff', marginBottom: 4 }}>Before you invest in branding…</div>
             <div style={{ fontSize: 11, color: '#7a7a7a', lineHeight: 1.5 }}>Search 50M+ trademarks instantly. Know if your name is safe to use.</div>
@@ -135,7 +135,7 @@ function GenericAffiliateMockup({ moment, group }) {
         <div style={{ marginTop: 12, padding: '7px 14px', background: `rgba(${rgb},0.08)`, border: `0.5px solid rgba(${rgb},0.2)`, borderRadius: 7, fontSize: 11, fontWeight: 700, color, width: 'fit-content' }}>
           {moment.cta}
         </div>
-        <div style={{ fontSize: 9, color: '#2a2a2a', marginTop: 8 }}>Sponsored · NamingContest partner</div>
+        <div style={{ fontSize: 9, color: '#2a2a2a', marginTop: 8 }}>Sponsored · Namico partner</div>
       </div>
     </div>
   );

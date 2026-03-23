@@ -209,15 +209,37 @@ export const MOCK_CANDIDATES = {
  * Always returns correct journey context.
  * Priority: localStorage → URL hint (contestId) → defaults.
  */
+// Default sub-segment per group (used when none is selected yet)
+const GROUP_DEFAULT_SUB = {
+  business: 'company-name',
+  team: 'sports-team',
+  personal: 'baby-name',
+};
+
+// Which subs belong to which group
+const GROUP_SUBS = {
+  business: ['company-name', 'product-name', 'project-name', 'rebrand', 'other-business'],
+  team: ['sports-team', 'band-music', 'podcast-channel', 'civic-school-nonprofit', 'gaming-group', 'other-team'],
+  personal: ['baby-name', 'pet-name', 'home-property-fun', 'other-personal'],
+};
+
 export function getJourneyMeta(contestIdHint = null) {
   const storedGroup = localStorage.getItem('selectedGroup');
   const group         = storedGroup
     || (contestIdHint ? DEMO_GROUP[contestIdHint] : null)
     || 'business';
-  const sub           = localStorage.getItem('selectedSubSegment') || 'company-name';
+  const storedSub     = localStorage.getItem('selectedSubSegment');
+  // Validate sub belongs to current group — ignore stale mismatches
+  const validSub      = storedSub && GROUP_SUBS[group]?.includes(storedSub) ? storedSub : null;
+  const sub           = validSub || GROUP_DEFAULT_SUB[group] || 'company-name';
   const contestType   = localStorage.getItem('contestType')        || 'submission_voting';
   const transitionMode = localStorage.getItem('transitionMode')    || 'manual';
   const tier          = TIER[group] || TIER.business;
+
+  // Show group only until sub-segment is explicitly selected and valid
+  const journeyLabel = validSub
+    ? `${tier.label} · ${SUB_LABELS[validSub] || validSub}`
+    : tier.label;
 
   return {
     group,
@@ -225,12 +247,13 @@ export function getJourneyMeta(contestIdHint = null) {
     contestType,
     transitionMode,
     hasGroup:     !!storedGroup,
+    hasSub:       !!validSub,
     ...tier,
     subLabel:     SUB_LABELS[sub]                  || sub,
     typeLabel:    CONTEST_TYPE_LABELS[contestType] || 'Open Contest',
     contestTitle: MOCK_CONTEST_TITLES[sub]         || 'Naming Contest',
     candidates:   MOCK_CANDIDATES[sub] || MOCK_CANDIDATES[group] || MOCK_CANDIDATES.business,
-    journeyLabel: `${tier.label} · ${SUB_LABELS[sub] || sub}`,
+    journeyLabel,
   };
 }
 

@@ -317,13 +317,13 @@ export default function ContestDetail() {
 
                 {/* Day 4 reminder prompt */}
                 {contest?.daysLeft <= 6 && contest?.daysLeft >= 3 && (
-                  <div style={{ padding: '14px 16px', background: 'rgba(234,239,9,0.06)', border: '1px solid rgba(234,239,9,0.2)', borderRadius: 10, display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <Bell size={16} color="#eaef09" />
+                  <div style={{ padding: '14px 16px', background: `rgba(${tc.rgb},0.06)`, border: `1px solid rgba(${tc.rgb},0.2)`, borderRadius: 10, display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <Bell size={16} color={tc.color} />
                     <div style={{ flex: 1, fontSize: 13, color: '#a1a1a1' }}>
                       <strong style={{ color: '#fff' }}>Reminder time!</strong> Send a Day 4 reminder to boost participation.
                     </div>
-                    <button onClick={() => setReminderSent(true)} style={{ height: 32, padding: '0 14px', border: '1px solid #eaef09', borderRadius: 7, background: 'rgba(234,239,9,0.08)', color: '#eaef09', fontSize: 12, cursor: 'pointer' }}>
-                      {reminderSent ? 'Sent ✓' : 'Send Now'}
+                    <button onClick={() => setReminderSent(true)} style={{ height: 32, padding: '0 14px', border: `1px solid ${tc.color}`, borderRadius: 7, background: `rgba(${tc.rgb},0.08)`, color: tc.color, fontSize: 12, cursor: 'pointer' }}>
+                      {reminderSent ? 'Sent' : 'Send Now'}
                     </button>
                   </div>
                 )}
@@ -335,7 +335,7 @@ export default function ContestDetail() {
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#fff', marginBottom: 14 }}>Quick Actions</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                     <button onClick={() => setReminderSent(true)} style={{ height: 38, border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, background: 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, padding: '0 14px' }}>
-                      <Bell size={14} /> {reminderSent ? 'Reminder Sent ✓' : 'Send Reminder ✉'}
+                      <Bell size={14} /> {reminderSent ? 'Reminder Sent' : 'Send Reminder'}
                     </button>
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                       <input type="date" defaultValue={deadline} style={{ flex: 1, background: '#141414', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 7, height: 36, padding: '0 10px', color: '#fff', fontSize: 12 }} onChange={e => setDeadline(e.target.value)} />
@@ -356,27 +356,27 @@ export default function ContestDetail() {
             {(() => {
               const emailFlows = [
                 {
-                  id: 'day4',
-                  subject: 'Don\'t forget — contest closes soon!',
-                  preview: 'You\'re invited to submit a name for [Contest]. Only 3 days left...',
-                  trigger: 'Day 4 of submission phase',
+                  id: 'welcome',
+                  subject: 'You\'re in — here\'s what we\'re naming',
+                  preview: 'You\'ve been invited to help name something. Read the brief and start exploring ideas...',
+                  trigger: 'Sent when participants join',
+                  badge: 'Sent',
+                  badgeColor: '#10B981',
+                  sent: true,
+                },
+                {
+                  id: 'reminder',
+                  subject: 'Last call — submissions close soon',
+                  preview: 'The deadline is approaching. Make sure your name ideas are in before time runs out...',
+                  trigger: '48 hours before submission deadline',
                   badge: 'Scheduled',
                   badgeColor: '#8B5CF6',
                   sent: false,
                 },
                 {
-                  id: 'voting',
-                  subject: 'Voting is now open — have your say!',
-                  preview: 'The submissions are in. Now it\'s time to vote for your favourite...',
-                  trigger: 'When voting phase opens',
-                  badge: 'Auto',
-                  badgeColor: '#3b82f6',
-                  sent: false,
-                },
-                {
                   id: 'results',
-                  subject: 'The winner has been chosen!',
-                  preview: 'Results are in for [Contest Name]. Click to see which name won...',
+                  subject: 'The results are in — see the winning name',
+                  preview: 'Voting is complete and a winner has been chosen. See the full results and how your picks compared...',
                   trigger: 'When results are published',
                   badge: 'Auto',
                   badgeColor: '#3b82f6',
@@ -421,7 +421,7 @@ export default function ContestDetail() {
                             border: `0.5px solid ${tc.color}60`, background: `rgba(${tc.rgb},0.08)`,
                             color: tc.color, fontSize: 11, fontWeight: 600, cursor: 'pointer',
                           }}>
-                            Send Now
+                            {ef.sent ? 'Resend' : 'Send Now'}
                           </button>
                         </div>
                       </div>

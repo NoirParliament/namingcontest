@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import namicoIcon from '../assets/namico-icon.svg';
 import {
-  Trophy, BookOpen, PencilSimple, Check, Plus, Trash, ArrowRight, Clock,
+  BookOpen, PencilSimple, Check, Plus, Trash, ArrowRight, Clock,
   Star, Lightbulb, NotePencil, CheckCircle, WarningCircle, ChartBar, Users,
-  Shuffle,
+  Shuffle, Confetti, GameController, Fire, Heart, Sparkle, ChartPie, Leaf, Trophy,
 } from '@phosphor-icons/react';
 import { mockContests } from '../data/mockData';
 import { getJourneyMeta } from '../utils/journey';
+import MindMap from '../components/MindMap';
 import { loadCreatorQuality, computeParticipantScore, saveParticipantQuality } from '../utils/quality';
 
 const TIER = {
@@ -32,7 +34,7 @@ function Quiz({ questions, onComplete, points, tc, qualityPct }) {
 
   if (submitted) return (
     <div style={{ textAlign: 'center', padding: '24px', background: `rgba(${tc.rgb},0.06)`, border: `1px solid rgba(${tc.rgb},0.2)`, borderRadius: 10 }}>
-      <div style={{ fontSize: 28 }}>🎉</div>
+      <Confetti size={28} color={tc.color} weight="duotone" />
       <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, color: '#fff', marginTop: 8 }}>+{Math.round((score / points) * qualityPct)}% quality</div>
       <div style={{ fontSize: 13, color: '#a1a1a1', marginTop: 4 }}>Article & quiz complete</div>
     </div>
@@ -77,7 +79,7 @@ function Article({ article, tc, onComplete, quizPoints, articleN, totalMaxPoints
   return (
     <div style={{ marginBottom: 32 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-        <span style={{ fontSize: 12, color: '#7a7a7a' }}>📖 {article.readTime} read</span>
+        <span style={{ fontSize: 12, color: '#7a7a7a', display: 'flex', alignItems: 'center', gap: 4 }}><BookOpen size={12} /> {article.readTime} read</span>
         <span style={{ fontSize: 12, color: `rgba(${tc.rgb},0.8)` }}>+{totalArticlePct}% quality</span>
       </div>
       <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, color: '#fff', marginBottom: 16 }}>{article.title}</h3>
@@ -380,31 +382,31 @@ const OTHER_TEAM_ARTICLE = {
 };
 
 const GAMING_TIPS = [
-  { emoji: '🎮', title: 'Test #1: The Clutch Call', text: 'Can you yell your team name when you clutch a 1v5? If it sounds weak, think harder. "FaZe Clan" → "LET\'S GO FAZE!" works.' },
-  { emoji: '🔥', title: 'Two Camps That Win', text: 'Intimidating (FaZe Clan, Team Liquid, 100 Thieves) or Meme-worthy (Panda Global, Golden Guardians). Pick a lane — middleground names get forgotten.' },
-  { emoji: '🌐', title: 'Searchability Matters', text: 'Your tag will appear in tournament brackets, streaming titles, and social handles. Can people find you? Is it unique enough to own?' },
+  { icon: <GameController size={24} weight="duotone" />, title: 'Test #1: The Clutch Call', text: 'Can you yell your team name when you clutch a 1v5? If it sounds weak, think harder. "FaZe Clan" → "LET\'S GO FAZE!" works.' },
+  { icon: <Fire size={24} weight="duotone" />, title: 'Two Camps That Win', text: 'Intimidating (FaZe Clan, Team Liquid, 100 Thieves) or Meme-worthy (Panda Global, Golden Guardians). Pick a lane — middleground names get forgotten.' },
+  { icon: <ChartBar size={24} weight="duotone" />, title: 'Searchability Matters', text: 'Your tag will appear in tournament brackets, streaming titles, and social handles. Can people find you? Is it unique enough to own?' },
 ];
 
 const PERSONAL_TIPS_BY_SEGMENT = {
   'baby-name': [
-    { emoji: '💛', title: 'Did You Know?', text: 'Names with 2-3 syllables are easiest for babies to learn to respond to. Mo-na. Eli-as. Lu-cy. Science backs the sweet spot.' },
-    { emoji: '📊', title: 'Family Input Matters', text: '23% of parents say they wished they\'d gotten more input on their baby\'s name. That\'s why you\'re here — your voice genuinely matters.' },
-    { emoji: '🌱', title: 'Grow-Up Test', text: 'The best baby names work at every life stage: on a birth announcement, a kindergarten cubby, a college application, and a professional bio. Think long-term.' },
+    { icon: <Heart size={24} weight="duotone" />, title: 'Did You Know?', text: 'Names with 2-3 syllables are easiest for babies to learn to respond to. Mo-na. Eli-as. Lu-cy. Science backs the sweet spot.' },
+    { icon: <ChartPie size={24} weight="duotone" />, title: 'Family Input Matters', text: '23% of parents say they wished they\'d gotten more input on their baby\'s name. That\'s why you\'re here — your voice genuinely matters.' },
+    { icon: <Leaf size={24} weight="duotone" />, title: 'Grow-Up Test', text: 'The best baby names work at every life stage: on a birth announcement, a kindergarten cubby, a college application, and a professional bio. Think long-term.' },
   ],
   'pet-name': [
-    { emoji: '🐾', title: 'The Shout Test', text: 'You\'ll say this name hundreds of times — often loudly, in public. "Luna!" "Max!" "Sir Biscuit!" Try shouting it. If it feels natural, it\'s a good name.' },
-    { emoji: '🧠', title: 'Short Names Work Best', text: 'Pets respond better to 1-2 syllable names with sharp consonants. "Rex," "Pip," "Zara." They distinguish these sounds more easily than multi-syllable names.' },
-    { emoji: '💛', title: 'Make It Yours', text: 'The best pet names have a story. "Pretzel" (found at a bakery). "Bandit" (escaped the shelter twice). What story will this pet\'s name tell?' },
+    { icon: <Star size={24} weight="duotone" />, title: 'The Shout Test', text: 'You\'ll say this name hundreds of times — often loudly, in public. "Luna!" "Max!" "Sir Biscuit!" Try shouting it. If it feels natural, it\'s a good name.' },
+    { icon: <Lightbulb size={24} weight="duotone" />, title: 'Short Names Work Best', text: 'Pets respond better to 1-2 syllable names with sharp consonants. "Rex," "Pip," "Zara." They distinguish these sounds more easily than multi-syllable names.' },
+    { icon: <Heart size={24} weight="duotone" />, title: 'Make It Yours', text: 'The best pet names have a story. "Pretzel" (found at a bakery). "Bandit" (escaped the shelter twice). What story will this pet\'s name tell?' },
   ],
   'home-property-fun': [
-    { emoji: '🏡', title: 'Great Home Names Are Personal', text: 'The best house names reflect who lives there or the home\'s character. "The Weeping Willow House." "La Casita." "The Nook." Think about what makes this place yours.' },
-    { emoji: '🌿', title: 'Lean Into History or Geography', text: 'Does the property have a history? Previous owners? A notable tree? A view? The best property names anchor to something real and specific.' },
-    { emoji: '✉️', title: 'It Should Look Good on an Envelope', text: 'Property names appear on holiday cards, real estate listings, and mail. Test your suggestion: write it on an imaginary envelope. Does it feel right?' },
+    { icon: <Star size={24} weight="duotone" />, title: 'Great Home Names Are Personal', text: 'The best house names reflect who lives there or the home\'s character. "The Weeping Willow House." "La Casita." "The Nook." Think about what makes this place yours.' },
+    { icon: <Leaf size={24} weight="duotone" />, title: 'Lean Into History or Geography', text: 'Does the property have a history? Previous owners? A notable tree? A view? The best property names anchor to something real and specific.' },
+    { icon: <NotePencil size={24} weight="duotone" />, title: 'It Should Look Good on an Envelope', text: 'Property names appear on holiday cards, real estate listings, and mail. Test your suggestion: write it on an imaginary envelope. Does it feel right?' },
   ],
   default: [
-    { emoji: '🎉', title: 'Have Fun With It', text: 'This is a low-stakes naming exercise. Creativity and personality beat safe and predictable. What name would make people smile?' },
-    { emoji: '💡', title: 'Think Story-First', text: 'The best names come with a story attached. "How did you come up with that?" should have a great answer.' },
-    { emoji: '✨', title: 'Surprise the Organizer', text: 'The name they pick might not be yours — but a surprising, unexpected option often sparks the creative thinking that leads to the winner.' },
+    { icon: <Confetti size={24} weight="duotone" />, title: 'Have Fun With It', text: 'This is a low-stakes naming exercise. Creativity and personality beat safe and predictable. What name would make people smile?' },
+    { icon: <Lightbulb size={24} weight="duotone" />, title: 'Think Story-First', text: 'The best names come with a story attached. "How did you come up with that?" should have a great answer.' },
+    { icon: <Sparkle size={24} weight="duotone" />, title: 'Surprise the Organizer', text: 'The name they pick might not be yours — but a surprising, unexpected option often sparks the creative thinking that leads to the winner.' },
   ],
 };
 
@@ -434,6 +436,114 @@ function getArticlesForContest(contest) {
 
 function isPersonal(contest) { return contest?.group === 'personal'; }
 function isGaming(contest) { return contest?.group === 'team' && contest?.subSegment === 'gaming-group'; }
+
+/* ─── Simulated brief data per segment ─── */
+const SIMULATED_BRIEF = {
+  'company-name': {
+    'What we do': 'B2B payments platform helping small businesses manage invoicing and cash flow',
+    'Naming direction': 'Suggestive — should hint at speed, simplicity, or financial confidence',
+    'Target audience': 'SMB owners, 30–55, non-technical, US-based',
+    'Geographic scope': 'National (US) with plans to expand globally',
+    'Key competitors': 'Stripe, Square, FreshBooks — we want to sound different from all of them',
+  },
+  'rebrand': {
+    'Current name': 'DataBridge Solutions (feels outdated and generic)',
+    'Reason for rebrand': 'Pivoting from consulting to SaaS — old name doesn\'t reflect who we are now',
+    'What to keep': 'Sense of connection and reliability',
+    'New direction': 'Modern, tech-forward, approachable',
+    'Target audience': 'Mid-market tech companies, 50–500 employees',
+  },
+  'product-name': {
+    'Product description': 'A wearable sleep tracker that uses AI to personalize bedtime routines',
+    'Parent brand': 'NovaCare (health & wellness brand)',
+    'Key benefit': 'Better sleep through personalized routines, not just tracking',
+    'Target user': 'Health-conscious adults 25–45 who struggle with sleep',
+    'Shelf competitors': 'Oura Ring, Whoop, Fitbit Sense',
+  },
+  'project-name': {
+    'Project scope': 'Internal company-wide migration to cloud infrastructure',
+    'Timeline': '18 months, 3 phases',
+    'Team size': '45 people across 4 departments',
+    'Desired vibe': 'Energizing, forward-looking — should rally the team',
+    'Used internally': 'Yes — needs to work in Slack channels, presentations, and swag',
+  },
+  'sports-team': {
+    'Sport & league': 'Co-ed recreational soccer, city adult league',
+    'Age group': 'Adults (25–40)',
+    'Team personality': 'Competitive but fun — we take the game seriously, not ourselves',
+    'Local connection': 'Based in Austin, TX — love local pride references',
+    'Must be chantable': 'Yes — needs to work when shouted from the sideline',
+  },
+  'band-music': {
+    'Genre': 'Indie rock / dream pop',
+    'Origin story': 'Met at a record store in Portland, bonded over obscure 90s bands',
+    'Name style': 'Evocative imagery — something visual, moody, slightly mysterious',
+    'Searchability': 'Important — must be easy to Google and not already taken',
+    'Members': '4 — guitar, bass, drums, keys/vocals',
+  },
+  'podcast-channel': {
+    'Topic': 'True crime meets psychology — why people do what they do',
+    'Tone': 'Conversational and curious, not sensationalist',
+    'Format': 'Two hosts, 45-minute episodes, weekly release',
+    'Platform': 'Spotify & Apple Podcasts primarily',
+    'Comparable shows': 'Criminal, Invisibilia, You\'re Wrong About',
+  },
+  'gaming-group': {
+    'Main games': 'Valorant, Apex Legends, some Minecraft',
+    'Competitive level': 'Semi-competitive — we enter tournaments but mostly play for fun',
+    'Crew vibe': 'Tight-knit friend group, lots of inside jokes, chaotic energy',
+    'Tag style': 'Short prefix like [TAG] that fits in-game name limits',
+    'Crew history': 'Been playing together since high school, about 4 years',
+  },
+  'civic-school-nonprofit': {
+    'Organization type': 'Community nonprofit — neighborhood revitalization',
+    'Mission': 'Turning vacant lots into community gardens and gathering spaces',
+    'Community': 'Diverse urban neighborhood, 15,000 residents, all ages',
+    'Acronym preference': 'Nice to have but not required',
+    'Longevity': 'This name should last 20+ years',
+  },
+  'baby-name': {
+    'Due date': 'June 2026',
+    'Gender': 'Girl',
+    'Heritage': 'Irish-American — open to Gaelic names but nothing unpronounceable',
+    'Sibling names': 'Liam (5) and Fiona (3) — want something that fits the set',
+    'Style': 'Classic but not overused — no top-10 names, 2–3 syllables preferred',
+  },
+  'pet-name': {
+    'Animal': 'Golden Retriever puppy',
+    'Personality': 'Goofy, clumsy, obsessed with socks — absolute chaos gremlin',
+    'Appearance': 'Light golden, one ear that flops more than the other',
+    'Tone preference': 'Funny or charming — something you\'d enjoy yelling at the dog park',
+    'Names to avoid': 'Buddy, Max, Cooper — too common',
+  },
+  'home-property-fun': {
+    'What you\'re naming': 'Lake cabin — weekend retreat property',
+    'Location': 'Northern Minnesota, on a small private lake surrounded by birch trees',
+    'Vibe': 'Cozy, rustic, family-oriented — a place to unplug',
+    'Will it appear on signage?': 'Yes — carved wooden sign at the driveway entrance',
+    'Language preference': 'English, but open to Scandinavian-inspired words',
+  },
+};
+
+function formatBriefLabel(key) {
+  return key;
+}
+
+/* ─── Simulated prizes per segment ─── */
+const SIMULATED_PRIZES = {
+  'company-name':         { submitter: { name: '$500 Amazon Gift Card', desc: 'For the person who submits the winning name' }, voter: { name: 'Free Company Swag Box', desc: 'One random voter receives a branded merch package' } },
+  'rebrand':              { submitter: { name: 'Brand Strategy Session', desc: '1-hour consultation with a Catchword naming expert' }, voter: { name: '$25 Coffee Gift Card', desc: 'Thanks for helping shape our new identity' } },
+  'product-name':         { submitter: { name: 'Free Product (Pre-launch)', desc: 'Be the first to receive the product you helped name' }, voter: { name: '$15 Store Credit', desc: 'Redeemable at launch' } },
+  'project-name':         { submitter: { name: 'Team Lunch on Us', desc: 'The winning namer picks the restaurant' }, voter: null },
+  'sports-team':          { submitter: { name: 'Free Team Jersey', desc: 'Custom jersey with the winning team name' }, voter: { name: 'Team Cap', desc: 'One random voter gets team merch' } },
+  'band-music':           { submitter: { name: 'Co-writing Credit', desc: 'Named in the liner notes of our first release' }, voter: { name: 'Free Gig Tickets', desc: '2 tickets to our first show under the new name' } },
+  'podcast-channel':      { submitter: { name: 'Guest Spot on First Episode', desc: "You named us — come tell our listeners why" }, voter: null },
+  'gaming-group':         { submitter: { name: 'In-Game Skin Bundle', desc: '$40 worth of skins for your main game' }, voter: { name: 'Steam Gift Card ($10)', desc: 'Random voter reward' } },
+  'civic-school-nonprofit': { submitter: { name: 'Founder Recognition', desc: 'Your name on our website as a founding contributor' }, voter: null },
+  'baby-name':            { submitter: { name: 'Personalized Baby Blanket', desc: 'Embroidered with the winning name' }, voter: null },
+  'pet-name':             { submitter: { name: 'Pet Treat Basket', desc: 'A curated box of premium pet treats' }, voter: null },
+  'home-property-fun':    { submitter: { name: 'Custom Engraved Sign', desc: 'Handmade wooden sign with the property name' }, voter: null },
+};
 
 /* ─── Brief Immersion Card ─── */
 function BriefImmersionCard({ contest, tc, onPoints, qualityPct }) {
@@ -477,9 +587,21 @@ function BriefImmersionCard({ contest, tc, onPoints, qualityPct }) {
           <div style={{ marginBottom: 10 }}><strong style={{ color: '#fff' }}>Organized by:</strong> {contest?.organizer}</div>
           <div style={{ marginBottom: 10 }}><strong style={{ color: '#fff' }}>Category:</strong> {tc.label}</div>
           <div style={{ marginBottom: 10 }}><strong style={{ color: '#fff' }}>Deadline:</strong> {contest?.daysLeft || 5} days left to submit</div>
-          <div style={{ padding: '12px 14px', background: '#141414', borderRadius: 8, fontSize: 13, color: '#a1a1a1', fontStyle: 'italic', marginTop: 12 }}>
-            "We're looking for a name that's distinctive, memorable, and positions us for growth. Read the articles below to understand what makes a great name in this context."
-          </div>
+          {SIMULATED_BRIEF[contest?.subSegment] ? (
+            <div style={{ marginTop: 12, padding: '14px 16px', background: '#141414', borderRadius: 8 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: tc.color, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 10 }}>Creator's Brief</div>
+              {Object.entries(SIMULATED_BRIEF[contest?.subSegment]).map(([label, val]) => (
+                <div key={label} style={{ marginBottom: 8, fontSize: 13, lineHeight: 1.6 }}>
+                  <strong style={{ color: '#fff' }}>{label}:</strong>{' '}
+                  <span style={{ color: '#a1a1a1' }}>{val}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ padding: '12px 14px', background: '#141414', borderRadius: 8, fontSize: 13, color: '#a1a1a1', fontStyle: 'italic', marginTop: 12 }}>
+              "We're looking for a name that's distinctive, memorable, and positions us for growth. Read the articles below to understand what makes a great name in this context."
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -604,13 +726,30 @@ function SelfScreeningChecklist({ tc, group }) {
 }
 
 /* ─── Context Stats (post-submission) ─── */
-function ContextStats({ submittedNames, totalPoints, maxPoints, tc, group, participantQuality }) {
+function getQualityTier(score, max) {
+  const pct = max > 0 ? (score / max) * 100 : 0;
+  if (pct >= 82) return { label: 'Excellent', color: '#eaef09', desc: 'You went above and beyond' };
+  if (pct >= 52) return { label: 'Strong', color: '#8B5CF6', desc: 'You completed most activities' };
+  if (pct >= 26) return { label: 'Good', color: '#10B981', desc: 'You engaged with the brief and explored ideas' };
+  return { label: 'Standard', color: '#555', desc: 'You participated' };
+}
+
+function getOverallTier(total) {
+  if (total >= 85) return { label: 'Excellent', color: '#eaef09' };
+  if (total >= 65) return { label: 'Strong', color: '#8B5CF6' };
+  if (total >= 45) return { label: 'Good', color: '#10B981' };
+  if (total >= 25) return { label: 'Fair', color: '#f97316' };
+  return { label: 'Low', color: '#555' };
+}
+
+function ContextStats({ submittedNames, totalPoints, maxPoints, tc, group, participantQuality, creatorQuality }) {
   const totalSubs = 47 + submittedNames.length;
   const totalParticipants = 18;
-  const yourRank = Math.floor(Math.random() * 15) + 1;
-  const avgPoints = group === 'business' ? 112 : group === 'team' ? 28 : 10;
-  const avgQuality = Math.round(avgPoints / maxPoints * 25);
-  const qualityBadges = { notable: 3, quality: 12, standard: totalSubs - 15 };
+  const totalQuality = (creatorQuality || 0) + participantQuality;
+  const yourTier = getQualityTier(participantQuality, 50);
+  const creatorTier = getQualityTier(creatorQuality || 0, 50);
+  const overallTier = getOverallTier(totalQuality);
+
   const timeline = [
     { label: 'Day 1', subs: 8 }, { label: 'Day 2', subs: 11 }, { label: 'Day 3', subs: 19 },
     { label: 'Day 4', subs: 31 }, { label: 'Day 5 (now)', subs: totalSubs },
@@ -620,7 +759,52 @@ function ContextStats({ submittedNames, totalPoints, maxPoints, tc, group, parti
   return (
     <div style={{ marginTop: 32 }}>
       <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
-        <ChartBar size={18} color={tc.color} /> Contest Stats
+        <ChartBar size={18} color={tc.color} /> Contest Quality
+      </div>
+
+      {/* Your Quality */}
+      <div style={{ padding: '16px', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 10, marginBottom: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: '#fff' }}>Your contribution</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: yourTier.color }}>{participantQuality}/50</div>
+        </div>
+        <div style={{ height: 8, background: '#222', borderRadius: 4, overflow: 'hidden', marginBottom: 8 }}>
+          <div style={{ height: '100%', width: `${Math.round((participantQuality / 50) * 100)}%`, background: yourTier.color, borderRadius: 4, transition: 'width 0.4s' }} />
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 11, fontWeight: 700, color: yourTier.color, padding: '2px 8px', background: `${yourTier.color}15`, border: `0.5px solid ${yourTier.color}40`, borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{yourTier.label}</span>
+          <span style={{ fontSize: 11, color: '#7a7a7a' }}>{yourTier.desc}</span>
+        </div>
+      </div>
+
+      {/* Creator Quality */}
+      <div style={{ padding: '16px', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 10, marginBottom: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: '#fff' }}>Creator's brief quality</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: creatorTier.color }}>{creatorQuality || 0}/50</div>
+        </div>
+        <div style={{ height: 8, background: '#222', borderRadius: 4, overflow: 'hidden', marginBottom: 8 }}>
+          <div style={{ height: '100%', width: `${Math.round(((creatorQuality || 0) / 50) * 100)}%`, background: creatorTier.color, borderRadius: 4, transition: 'width 0.4s' }} />
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 11, fontWeight: 700, color: creatorTier.color, padding: '2px 8px', background: `${creatorTier.color}15`, border: `0.5px solid ${creatorTier.color}40`, borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{creatorTier.label}</span>
+          <span style={{ fontSize: 11, color: '#7a7a7a' }}>The creator's brief quality affects the overall contest score</span>
+        </div>
+      </div>
+
+      {/* Total Contest Quality */}
+      <div style={{ padding: '16px', background: '#1a1a1a', border: `0.5px solid rgba(${tc.rgb},0.2)`, borderRadius: 10, marginBottom: 20 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>Contest Quality Score</div>
+          <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 20, fontWeight: 800, color: overallTier.color }}>{totalQuality}/100</div>
+        </div>
+        <div style={{ height: 10, background: '#222', borderRadius: 5, overflow: 'hidden', marginBottom: 8 }}>
+          <div style={{ height: '100%', width: `${totalQuality}%`, background: overallTier.color, borderRadius: 5, transition: 'width 0.4s' }} />
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 700, color: overallTier.color, padding: '2px 8px', background: `${overallTier.color}15`, border: `0.5px solid ${overallTier.color}40`, borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{overallTier.label}</span>
+          <span style={{ fontSize: 11, color: '#7a7a7a' }}>Creator {creatorQuality || 0}/50 + You {participantQuality}/50</span>
+        </div>
       </div>
 
       {/* Key stats */}
@@ -628,47 +812,11 @@ function ContextStats({ submittedNames, totalPoints, maxPoints, tc, group, parti
         {[
           { label: 'Total Submissions', value: totalSubs, sub: 'so far' },
           { label: 'Participants', value: totalParticipants, sub: 'joined' },
-          { label: 'Your Rank', value: `~#${yourRank}`, sub: 'quality estimate' },
-          { label: 'Quality Score', value: `${participantQuality}/50`, sub: 'your contribution' },
         ].map((stat, i) => (
           <div key={i} style={{ padding: '16px', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 10, textAlign: 'center' }}>
-            <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 24, fontWeight: 800, color: i < 2 ? '#fff' : tc.color, marginBottom: 4 }}>{stat.value}</div>
+            <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 24, fontWeight: 800, color: '#fff', marginBottom: 4 }}>{stat.value}</div>
             <div style={{ fontSize: 12, fontWeight: 600, color: '#a1a1a1' }}>{stat.label}</div>
             <div style={{ fontSize: 11, color: '#555' }}>{stat.sub}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Avg quality */}
-      <div style={{ padding: '14px 16px', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 10, marginBottom: 16 }}>
-        <div style={{ fontSize: 12, color: '#7a7a7a', marginBottom: 8 }}>Average participant quality score</div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ flex: 1, height: 6, background: '#222', borderRadius: 3, overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${Math.round((avgQuality / 50) * 100)}%`, background: '#555', borderRadius: 3 }} />
-          </div>
-          <span style={{ fontSize: 13, color: '#a1a1a1', minWidth: 40 }}>{avgQuality}/50</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8 }}>
-          <div style={{ flex: 1, height: 6, background: '#222', borderRadius: 3, overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${Math.round((participantQuality / 50) * 100)}%`, background: tc.color, borderRadius: 3 }} />
-          </div>
-          <span style={{ fontSize: 13, color: tc.color, minWidth: 40 }}>You: {participantQuality}/50</span>
-        </div>
-      </div>
-
-      {/* Quality breakdown */}
-      <div style={{ padding: '14px 16px', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 10, marginBottom: 16 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: '#fff', marginBottom: 12 }}>Submission Quality Breakdown</div>
-        {[
-          { label: '⭐ Notable', count: qualityBadges.notable, color: '#eaef09', desc: 'High points + originality score' },
-          { label: '✓ Quality', count: qualityBadges.quality, color: '#10B981', desc: 'Meets brief + naming criteria' },
-          { label: '○ Standard', count: qualityBadges.standard, color: '#555', desc: 'Entered, no quality signals' },
-        ].map((badge, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: badge.color, flexShrink: 0 }} />
-            <span style={{ fontSize: 13, color: badge.color, fontWeight: 600, minWidth: 80 }}>{badge.label}</span>
-            <span style={{ fontSize: 13, color: '#fff', minWidth: 24 }}>{badge.count}</span>
-            <span style={{ fontSize: 12, color: '#555' }}>{badge.desc}</span>
           </div>
         ))}
       </div>
@@ -684,9 +832,6 @@ function ContextStats({ submittedNames, totalPoints, maxPoints, tc, group, parti
             </div>
           ))}
         </div>
-        <div style={{ fontSize: 12, color: '#7a7a7a', marginTop: 8 }}>
-          Tip: Most submissions come in the last 48 hours. You're ahead of the curve.
-        </div>
       </div>
     </div>
   );
@@ -700,7 +845,7 @@ export default function ContestLive() {
   const meta = getJourneyMeta(contestId);
   const tc = meta;
   // Override contest group and title with journey context so articles/content match
-  const contest = { ..._contest, group: meta.group, title: meta.contestTitle };
+  const contest = { ..._contest, group: meta.group, title: meta.contestTitle, subSegment: meta.sub };
 
   const [tab, setTab] = useState('education');
   const [completedArticles, setCompletedArticles] = useState({});
@@ -766,9 +911,9 @@ export default function ContestLive() {
       <div style={{ height: 52, background: '#141414', borderBottom: '0.5px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', padding: '0 24px', gap: 12, flexShrink: 0 }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 7, textDecoration: 'none' }}>
           <div style={{ width: 24, height: 24, background: '#eaef09', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Trophy size={12} weight="bold" color="#000" />
+            <img src={namicoIcon} alt="Namico" style={{ width: 16, height: 16, display: 'block' }} />
           </div>
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>NamingContest</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>Namico</span>
         </Link>
         <span style={{ color: '#444', fontSize: 13 }}>·</span>
         <span style={{ fontSize: 13, color: '#a1a1a1' }}>{contest?.title}</span>
@@ -876,8 +1021,8 @@ export default function ContestLive() {
               {/* Brief Immersion Card */}
               <BriefImmersionCard contest={contest} tc={tc} onPoints={addPoints} qualityPct={smallQualityPct} />
 
-              {/* Scratch Pad */}
-              <ScratchPad tc={tc} onPoints={addPoints} qualityPct={smallQualityPct} />
+              {/* Mind Map */}
+              <MindMap tc={tc} onPoints={addPoints} qualityPct={smallQualityPct} subSegment={contest?.subSegment || meta.sub} />
 
               {/* Tip Cards (personal / gaming) */}
               {(isPersonalContest || isGamingContest) && (
@@ -898,7 +1043,7 @@ export default function ContestLive() {
                       >
                         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
                           <div>
-                            <div style={{ fontSize: 24, marginBottom: 10 }}>{tip.emoji}</div>
+                            <div style={{ fontSize: 24, marginBottom: 10 }}>{tip.icon}</div>
                             <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 8 }}>{tip.title}</div>
                             <div style={{ fontSize: 14, color: '#a1a1a1', lineHeight: 1.65 }}>{tip.text}</div>
                           </div>
@@ -950,6 +1095,42 @@ export default function ContestLive() {
                 You can submit up to {limit} names · {participantQuality}/50 quality score earned
               </div>
 
+              {/* Prize Card — reads ONLY from localStorage (set by BriefBuilder) */}
+              {(() => {
+                let prizes = null;
+                try {
+                  const stored = JSON.parse(localStorage.getItem('contestPrizes') || '{}');
+                  if (stored.submitterPrizeEnabled || stored.voterPrizeEnabled) {
+                    prizes = {
+                      submitter: stored.submitterPrizeEnabled && stored.submitterPrizeName ? { name: stored.submitterPrizeName, desc: stored.submitterPrizeDesc } : null,
+                      voter: stored.voterPrizeEnabled && stored.voterPrizeName ? { name: stored.voterPrizeName, desc: stored.voterPrizeDesc } : null,
+                    };
+                  }
+                } catch {}
+                if (!prizes || (!prizes.submitter && !prizes.voter)) return null;
+                return (
+                  <div style={{ marginBottom: 20, padding: '16px 18px', background: 'linear-gradient(135deg, rgba(234,239,9,0.04), rgba(139,92,246,0.04))', border: '1px solid rgba(234,239,9,0.15)', borderRadius: 12, position: 'relative', overflow: 'hidden' }}>
+                    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg, #eaef09, #8B5CF6, #10B981)' }} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                      <Trophy size={16} color="#eaef09" weight="fill" />
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#eaef09', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Prizes</span>
+                    </div>
+                    {prizes.submitter && (
+                      <div style={{ marginBottom: prizes.voter ? 10 : 0 }}>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Best name wins: {prizes.submitter.name}</div>
+                        {prizes.submitter.desc && <div style={{ fontSize: 12, color: '#7a7a7a', marginTop: 2 }}>{prizes.submitter.desc}</div>}
+                      </div>
+                    )}
+                    {prizes.voter && (
+                      <div style={{ fontSize: 12, color: '#a1a1a1', paddingTop: prizes.submitter ? 8 : 0, borderTop: prizes.submitter ? '0.5px solid rgba(255,255,255,0.06)' : 'none' }}>
+                        {prizes.submitter ? 'A random voter also wins: ' : 'One lucky voter wins: '}<strong style={{ color: '#fff' }}>{prizes.voter.name}</strong>
+                        {prizes.voter.desc && <div style={{ fontSize: 12, color: '#555', marginTop: 2 }}>{prizes.voter.desc}</div>}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+
               {/* Self-screening checklist */}
               <SelfScreeningChecklist tc={tc} group={contest?.group} />
 
@@ -991,7 +1172,7 @@ export default function ContestLive() {
                   )}
 
                   {/* Context stats */}
-                  <ContextStats submittedNames={submittedNames} totalPoints={totalPoints} maxPoints={maxPoints} tc={tc} group={contest?.group} participantQuality={participantQuality} />
+                  <ContextStats submittedNames={submittedNames} totalPoints={totalPoints} maxPoints={maxPoints} tc={tc} group={contest?.group} participantQuality={participantQuality} creatorQuality={creatorQuality} />
 
                   {meta.transitionMode === 'manual' ? (
                     <div style={{ marginTop: 24, padding: '24px 20px', background: '#111', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 12, textAlign: 'center' }}>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom';
-import { Trophy, Check, ArrowRight, Share } from '@phosphor-icons/react';
+import namicoIcon from '../assets/namico-icon.svg';
+import { Check, ArrowRight, Share, Trophy } from '@phosphor-icons/react';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -342,9 +343,9 @@ export default function VotingInterface() {
       <div style={{ background: '#141414', borderBottom: '0.5px solid rgba(255,255,255,0.06)', padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', gap: 16 }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
           <div style={{ width: 26, height: 26, background: '#eaef09', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Trophy size={13} weight="bold" color="#000" />
+            <img src={namicoIcon} alt="Namico" style={{ width: 17, height: 17, display: 'block' }} />
           </div>
-          <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>NamingContest</span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Namico</span>
         </Link>
         <span style={{ color: '#444' }}>·</span>
         <span style={{ fontSize: 13, color: '#a1a1a1' }}>{meta.contestTitle}</span>
@@ -352,6 +353,20 @@ export default function VotingInterface() {
           {methodLabels[method]}
         </div>
       </div>
+
+      {/* Voter Prize Banner — reads from localStorage */}
+      {(() => {
+        try {
+          const stored = JSON.parse(localStorage.getItem('contestPrizes') || '{}');
+          if (!stored.voterPrizeEnabled || !stored.voterPrizeName) return null;
+          return (
+            <div style={{ padding: '8px 24px', background: 'linear-gradient(90deg, rgba(139,92,246,0.08), rgba(234,239,9,0.06))', borderBottom: '0.5px solid rgba(139,92,246,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+              <Trophy size={14} color="#8B5CF6" weight="fill" />
+              <span style={{ fontSize: 12, color: '#a1a1a1' }}>One random voter wins: <strong style={{ color: '#fff' }}>{stored.voterPrizeName}</strong></span>
+            </div>
+          );
+        } catch { return null; }
+      })()}
 
       <div style={{ display: 'flex', minHeight: 'calc(100vh - 56px)' }}>
         {/* Sidebar */}

@@ -1,43 +1,77 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Buildings, Users, Sparkle, ArrowRight, Trophy } from '@phosphor-icons/react';
+import namicoIcon from '../assets/namico-icon.svg';
+import { Buildings, Users, Baby, ArrowRight, CheckCircle, X } from '@phosphor-icons/react';
 
 const SEGMENT_CONFIG = [
   {
-    group: 'business',
-    icon: <Buildings size={28} weight="duotone" color="#eaef09" />,
-    color: '#eaef09',
-    colorRgb: '234,239,9',
-    title: 'Name something that means business',
-    subtitle: 'Your team has ideas. Structure the conversation.',
-    tags: ['Company', 'Product', 'Project', 'Rebrand'],
-    cta: 'Start Business Contest',
-    creatorCta: "I'm organizing a naming contest",
-    participantCta: 'I was invited to participate',
+    group: 'personal',
+    label: 'Personal',
+    icon: <Baby size={28} weight="duotone" color="#10B981" />,
+    color: '#10B981',
+    colorRgb: '16,185,129',
+    title: 'No opinions are too many',
+    subtitle: 'Invite the people whose opinion matters',
+    tags: ['Baby Name', 'Pet Name', 'Home', 'Something Fun'],
+    cta: 'Start Personal Contest',
+    price: '$9',
+    priceSub: 'per contest',
+    features: [
+      { label: 'Up to 30 participants', included: true },
+      { label: 'Open submissions', included: true },
+      { label: 'All voting methods', included: true },
+      { label: 'Naming methodology', included: true },
+      { label: 'Automated reminders', included: true },
+      { label: 'Contest quality score', included: true },
+      { label: 'White-label output', included: false },
+      { label: 'Full PDF report', included: false },
+    ],
   },
   {
     group: 'team',
+    label: 'Group',
     icon: <Users size={28} weight="duotone" color="#8B5CF6" />,
     color: '#8B5CF6',
     colorRgb: '139,92,246',
-    title: 'Give your whole group a voice',
-    subtitle: "Give everyone a voice. Pick a name you'll all own.",
+    title: 'Let the squad decide',
+    subtitle: 'From group chat chaos to a name everyone reps',
     tags: ['Sports Team', 'Band', 'Podcast', 'Gaming Group'],
     cta: 'Start Team Contest',
-    creatorCta: "I'm organizing a naming contest",
-    participantCta: 'I was invited to participate',
+    price: '$29',
+    priceSub: 'per contest',
+    features: [
+      { label: 'Up to 60 participants', included: true },
+      { label: 'Open submissions', included: true },
+      { label: 'All voting methods', included: true },
+      { label: 'Naming methodology', included: true },
+      { label: 'Automated reminders', included: true },
+      { label: 'Contest quality score', included: true },
+      { label: 'White-label output', included: true },
+      { label: 'Full PDF report', included: false },
+    ],
   },
   {
-    group: 'personal',
-    icon: <Sparkle size={28} weight="duotone" color="#10B981" />,
-    color: '#10B981',
-    colorRgb: '16,185,129',
-    title: 'Let everyone weigh in. Make it official.',
-    subtitle: "Let everyone vote. Pick the name you'll love.",
-    tags: ['Baby Name', 'Pet Name', 'Home', 'Something Fun'],
-    cta: 'Start Personal Contest',
-    creatorCta: "I'm organizing this contest",
-    participantCta: 'I was invited to vote / suggest',
+    group: 'business',
+    label: 'Business',
+    icon: <Buildings size={28} weight="duotone" color="#eaef09" />,
+    color: '#eaef09',
+    colorRgb: '234,239,9',
+    title: 'Naming is a business decision',
+    subtitle: 'Structured naming with real methodology',
+    tags: ['Company', 'Product', 'Project', 'Rebrand'],
+    cta: 'Start Business Contest',
+    price: '$89',
+    priceSub: 'per contest',
+    features: [
+      { label: 'Up to 300 participants', included: true },
+      { label: 'Open submissions', included: true },
+      { label: 'All voting methods', included: true },
+      { label: 'Naming methodology', included: true },
+      { label: 'Automated reminders', included: true },
+      { label: 'Contest quality score', included: true },
+      { label: 'White-label output', included: true },
+      { label: 'Full PDF report', included: true },
+    ],
   },
 ];
 
@@ -68,9 +102,9 @@ export default function SelectSegment() {
             borderRadius: 6,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <Trophy size={15} weight="bold" color="#000" />
+            <img src={namicoIcon} alt="Namico" style={{ width: 20, height: 20, display: 'block' }} />
           </div>
-          <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>NamingContest</span>
+          <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>Namico</span>
         </Link>
 
         {/* Steps */}
@@ -80,7 +114,7 @@ export default function SelectSegment() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                 <div style={{
                   width: 20, height: 20, borderRadius: '50%',
-                  background: i === 0 ? '#eaef09' : 'rgba(255,255,255,0.06)',
+                  background: i === 0 ? '#fff' : 'rgba(255,255,255,0.06)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 9, fontWeight: 700,
                   color: i === 0 ? '#000' : '#7a7a7a',
@@ -134,8 +168,10 @@ export default function SelectSegment() {
         {/* Cards */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(3, minmax(280px, 340px))',
-          gap: 24,
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: 28,
+          maxWidth: 1200,
+          width: '100%',
         }}>
           {SEGMENT_CONFIG.map(seg => (
             <SegmentCard
@@ -146,6 +182,7 @@ export default function SelectSegment() {
               onLeave={() => setHovered(null)}
               onClick={() => {
                 localStorage.setItem('selectedGroup', seg.group);
+                localStorage.removeItem('selectedSubSegment');
                 navigate('/auth');
               }}
             />
@@ -178,58 +215,69 @@ function SegmentCard({ seg, isHovered, onHover, onLeave, onClick }) {
         gap: 12,
       }}
     >
-      {/* Icon */}
-      <div style={{
-        width: 48, height: 48,
-        background: `rgba(${seg.colorRgb},0.12)`,
-        border: `0.5px solid rgba(${seg.colorRgb},0.2)`,
-        borderRadius: 10,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        {seg.icon}
+      {/* Icon + Label */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{
+          width: 48, height: 48,
+          background: `rgba(${seg.colorRgb},0.12)`,
+          border: `0.5px solid rgba(${seg.colorRgb},0.2)`,
+          borderRadius: 10,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          {seg.icon}
+        </div>
+        <span style={{ fontSize: 10, fontWeight: 700, color: seg.color, textTransform: 'uppercase', letterSpacing: '0.06em', padding: '3px 10px', background: `rgba(${seg.colorRgb},0.1)`, border: `0.5px solid rgba(${seg.colorRgb},0.25)`, borderRadius: 20 }}>
+          {seg.label}
+        </span>
       </div>
 
       {/* Title */}
-      <h2 style={{
-        fontFamily: 'Inter, sans-serif',
-        fontSize: 20, fontWeight: 700, color: '#fff',
-        lineHeight: 1.2, margin: 0,
-      }}>
+      <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: 20, fontWeight: 700, color: '#fff', lineHeight: 1.2, margin: 0 }}>
         {seg.title}
-      </h2>
+      </h3>
 
       {/* Subtitle */}
-      <p style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.5, margin: 0 }}>
-        {seg.subtitle}
-      </p>
+      <p style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.5, margin: 0 }}>{seg.subtitle}</p>
 
       {/* Tags */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, maxWidth: '75%' }}>
         {seg.tags.map(tag => (
-          <span key={tag} style={{
-            fontSize: 11, fontWeight: 500,
-            background: `rgba(${seg.colorRgb},0.08)`,
-            color: seg.color,
-            border: `0.5px solid rgba(${seg.colorRgb},0.2)`,
-            borderRadius: 9999,
-            padding: '2px 8px',
-          }}>
+          <span key={tag} style={{ fontSize: 11, fontWeight: 500, background: `rgba(${seg.colorRgb},0.08)`, color: seg.color, border: `0.5px solid rgba(${seg.colorRgb},0.2)`, borderRadius: 9999, padding: '2px 8px' }}>
             {tag}
           </span>
         ))}
       </div>
 
+      {/* Divider */}
+      <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '4px 0' }} />
+
+      {/* Price */}
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
+        <span style={{ fontSize: 28, fontWeight: 800, color: '#fff', lineHeight: 1 }}>{seg.price}</span>
+        <span style={{ fontSize: 11, color: '#7a7a7a' }}>{seg.priceSub}</span>
+      </div>
+
+      {/* Features */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {seg.features.map(f => (
+          <div key={f.label} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: f.included ? '#a1a1a1' : '#3a3a3a' }}>
+            {f.included
+              ? <CheckCircle size={14} weight="fill" color={seg.color} />
+              : <X size={14} color="#3a3a3a" />
+            }
+            <span style={{ textDecoration: f.included ? 'none' : 'line-through' }}>{f.label}</span>
+          </div>
+        ))}
+      </div>
+
       {/* CTA */}
-      <button className={`btn-primary btn-${seg.group}`} style={{
-        marginTop: 4,
-        width: '100%',
-        justifyContent: 'center',
-        height: 40,
-        color: seg.color,
-        fontSize: 13, fontWeight: 600,
+      <button style={{
+        marginTop: 4, width: '100%', height: 42, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+        border: `1.5px solid ${seg.color}`, borderRadius: 10,
+        background: `rgba(${seg.colorRgb},0.08)`, color: seg.color,
+        fontSize: 13, fontWeight: 700, cursor: 'pointer',
       }}>
-        <span>{seg.cta}</span>
-        <ArrowRight size={14} weight="bold" style={{ position: 'relative', zIndex: 1 }} />
+        {seg.cta} <ArrowRight size={14} weight="bold" />
       </button>
     </div>
   );

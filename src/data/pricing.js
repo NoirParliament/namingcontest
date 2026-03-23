@@ -27,7 +27,7 @@ export const pricing = {
         anonymity: true,
         liveSession: false,
         multiRound: false,
-        branding: 'platform', // "Powered by NamingContest.com"
+        branding: 'platform', // "Powered by Namico.com"
       },
     },
     paid: {

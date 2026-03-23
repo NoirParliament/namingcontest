@@ -37,7 +37,7 @@ export default function Footer() {
       </div>
 
       <div className="footer-bottom">
-        <p>&copy; {new Date().getFullYear()} NamingContest.com. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} Namico.com. All rights reserved.</p>
         <p className="footer-catchword">
           Powered by <a href="https://catchword.com" target="_blank" rel="noopener noreferrer">Catchword</a>, the world's leading naming firm
         </p>

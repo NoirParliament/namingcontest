@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import '@styles/globals.css';
 import { getJourneyMeta, buildJourneySteps, detectStep, PHASE_COLORS } from './utils/journey';
+import { CurrencyDollar, Handshake } from '@phosphor-icons/react';
 import PaywallSimulator from './components/PaywallSimulator';
 import AffiliateSimulator from './components/AffiliateSimulator';
 
@@ -323,7 +324,7 @@ function FloatingNav() {
                   transition: 'all 0.2s',
                 }}
               >
-                ⚡ {simOpen ? 'Exit' : 'Enter'} Paywall Simulation
+                <CurrencyDollar size={11} weight="bold" style={{ marginRight: 3 }} /> {simOpen ? 'Exit' : 'Enter'} Paywall Simulation
               </button>
               <button
                 onClick={() => { setAffOpen(v => !v); setSimOpen(false); }}
@@ -334,9 +335,10 @@ function FloatingNav() {
                   color: tierColor, fontSize: 10, fontWeight: 700,
                   cursor: 'pointer', letterSpacing: '0.02em',
                   transition: 'all 0.2s',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}
               >
-                🔗 {affOpen ? 'Exit' : 'Enter'} Affiliate Simulation
+                <Handshake size={11} weight="bold" style={{ marginRight: 3 }} /> {affOpen ? 'Exit' : 'Enter'} Affiliate Simulation
               </button>
             </div>
           </>

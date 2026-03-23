@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Trophy, CheckCircle } from '@phosphor-icons/react';
+import namicoIcon from '../assets/namico-icon.svg';
+import { ArrowLeft, ArrowRight, CheckCircle } from '@phosphor-icons/react';
 import { segments } from '../data/segments';
 
 export default function SelectSubSegment() {
@@ -69,9 +70,9 @@ export default function SelectSubSegment() {
             borderRadius: 6,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <Trophy size={15} weight="bold" color="#000" />
+            <img src={namicoIcon} alt="Namico" style={{ width: 20, height: 20, display: 'block' }} />
           </div>
-          <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>NamingContest</span>
+          <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>Namico</span>
         </Link>
 
         {/* Steps */}

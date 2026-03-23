@@ -115,7 +115,7 @@ function MethodGateMockup({ group }) {
     { label: 'Simple Majority', desc: 'Most votes wins', free: true, icon: '◉' },
     { label: 'Ranked Choice', desc: 'Rank names 1 to 5', free: false, icon: '⑤' },
     { label: 'Pairwise', desc: 'Head-to-head battles', free: false, icon: '⚔' },
-    { label: 'Multi-Criteria', desc: 'Score across dimensions', free: false, icon: '📊' },
+    { label: 'Multi-Criteria', desc: 'Score across dimensions', free: false, icon: '◈' },
   ];
   return (
     <div>
@@ -232,7 +232,7 @@ function BrandingGateMockup({ group }) {
         <div style={{ padding: '11px 22px', background: '#fafafa', borderTop: '1px solid #e8e8e8', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ fontSize: 10, color: '#bbb', fontStyle: 'italic' }}>Contest Report · {new Date().toLocaleDateString()}</div>
           <div style={{ fontSize: 10, color: '#888', padding: '2px 8px', background: `rgba(${rgb},0.12)`, border: `1px solid rgba(${rgb},0.35)`, borderRadius: 4 }}>
-            Powered by NamingContest.com
+            Powered by Namico.com
           </div>
         </div>
       </div>
@@ -333,7 +333,7 @@ export default function PaywallSimulator({ group, onClose }) {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 18px', background: '#1c1c1c', borderBottom: `0.5px solid rgba(${rgb},0.18)`, flexShrink: 0 }}>
           <div style={{ padding: '3px 8px', borderRadius: 5, background: `rgba(${rgb},0.14)`, color, fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            ⚡ Paywall Simulation
+            * Paywall Simulation
           </div>
           <div style={{ fontSize: 12, color: '#555' }}>
             {label} · {moments.length} upgrade moments

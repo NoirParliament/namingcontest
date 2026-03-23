@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Trophy, Copy, Check, DownloadSimple, Share, ArrowRight, TwitterLogo, LinkedinLogo } from '@phosphor-icons/react';
+import namicoIcon from '../assets/namico-icon.svg';
+import { Trophy, Copy, Check, DownloadSimple, Share, ArrowRight, TwitterLogo, LinkedinLogo, Brain, Scales, Target, Envelope } from '@phosphor-icons/react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import confetti from 'canvas-confetti';
 import { getJourneyMeta } from '../utils/journey';
@@ -11,7 +12,7 @@ const TIER = {
   personal: { color: '#10B981', rgb: '16,185,129', label: 'Personal', textColor: '#fff' },
 };
 
-const MEDALS = ['🥇', '🥈', '🥉'];
+const MEDALS = ['#1', '#2', '#3'];
 
 function CopyBtn({ text, label }) {
   const [copied, setCopied] = useState(false);
@@ -102,6 +103,19 @@ export default function ResultsPage() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Read prizes from localStorage (set by BriefBuilder)
+  const prizeData = (() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('contestPrizes') || '{}');
+      return {
+        submitter: stored.submitterPrizeEnabled ? { name: stored.submitterPrizeName, desc: stored.submitterPrizeDesc } : null,
+        voter: stored.voterPrizeEnabled ? { name: stored.voterPrizeName, desc: stored.voterPrizeDesc } : null,
+        winnerContact: stored.submitterPrizeEnabled ? { name: 'David Kim', email: 'david.k@example.com' } : null,
+        voterWinner: stored.voterPrizeEnabled ? { name: 'Maria Santos', email: 'maria.s@example.com' } : null,
+      };
+    } catch { return { submitter: null, voter: null, winnerContact: null, voterWinner: null }; }
+  })();
+
   const chartData = submissions.slice(0, 7).map(s => ({
     name: s.name.length > 12 ? s.name.slice(0, 10) + '…' : s.name,
     fullName: s.name,
@@ -116,9 +130,9 @@ export default function ResultsPage() {
       <div style={{ background: '#141414', borderBottom: '0.5px solid rgba(255,255,255,0.06)', padding: '0 32px', height: 52, display: 'flex', alignItems: 'center', gap: 12 }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 7, textDecoration: 'none' }}>
           <div style={{ width: 24, height: 24, background: '#eaef09', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Trophy size={12} weight="bold" color="#000" />
+            <img src={namicoIcon} alt="Namico" style={{ width: 16, height: 16, display: 'block' }} />
           </div>
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>NamingContest</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>Namico</span>
         </Link>
         <span style={{ color: '#444' }}>·</span>
         <span style={{ fontSize: 13, color: '#a1a1a1' }}>{meta.contestTitle} — Results</span>
@@ -132,7 +146,7 @@ export default function ResultsPage() {
         {/* Zone 1: Winner Announcement */}
         <div style={{ textAlign: 'center', marginBottom: 48, padding: '48px 24px', background: '#1a1a1a', borderRadius: 20, border: `0.5px solid rgba(${tc.rgb},0.2)` }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', background: `rgba(${tc.rgb},0.12)`, border: `1px solid rgba(${tc.rgb},0.3)`, borderRadius: 20, fontSize: 12, fontWeight: 700, color: tc.color, textTransform: 'uppercase', marginBottom: 20 }}>
-            🏆 Winner
+            <Trophy size={14} weight="bold" /> Winner
           </div>
           <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 64, fontWeight: 800, color: '#fff', lineHeight: 1.1, marginBottom: 12 }}>
             {winner?.name || 'Hollow Signal'}
@@ -145,10 +159,38 @@ export default function ResultsPage() {
           <div style={{ fontSize: 16, color: '#a1a1a1', marginBottom: 24 }}>
             <span style={{ color: tc.color, fontWeight: 700, fontSize: 20 }}>{winnerPct}%</span> of votes
           </div>
+          {/* Prize Fulfillment */}
+          {(prizeData.submitter || prizeData.voter) && (
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 16 }}>
+              {prizeData.submitter && (
+                <div style={{ padding: '14px 18px', background: 'linear-gradient(135deg, rgba(234,239,9,0.06), rgba(139,92,246,0.04))', border: '1px solid rgba(234,239,9,0.2)', borderRadius: 10, maxWidth: 320, textAlign: 'left' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                    <Trophy size={14} color="#eaef09" weight="fill" />
+                    <span style={{ fontSize: 11, fontWeight: 700, color: '#eaef09', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Submitter Prize</span>
+                  </div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{prizeData.submitter.name}</div>
+                  {prizeData.submitter.desc && <div style={{ fontSize: 12, color: '#7a7a7a', marginBottom: 8 }}>{prizeData.submitter.desc}</div>}
+                  {prizeData.winnerContact && <div style={{ fontSize: 12, color: '#a1a1a1' }}>Submitted by: <strong style={{ color: '#fff' }}>{prizeData.winnerContact.name}</strong> · {prizeData.winnerContact.email}</div>}
+                </div>
+              )}
+              {prizeData.voter && (
+                <div style={{ padding: '14px 18px', background: 'rgba(139,92,246,0.04)', border: '1px solid rgba(139,92,246,0.15)', borderRadius: 10, maxWidth: 320, textAlign: 'left' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                    <Trophy size={14} color="#8B5CF6" weight="fill" />
+                    <span style={{ fontSize: 11, fontWeight: 700, color: '#8B5CF6', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Voter Prize</span>
+                  </div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{prizeData.voter.name}</div>
+                  {prizeData.voter.desc && <div style={{ fontSize: 12, color: '#7a7a7a', marginBottom: 8 }}>{prizeData.voter.desc}</div>}
+                  {prizeData.voterWinner && <div style={{ fontSize: 12, color: '#a1a1a1' }}>Random voter: <strong style={{ color: '#fff' }}>{prizeData.voterWinner.name}</strong> · {prizeData.voterWinner.email}</div>}
+                </div>
+              )}
+            </div>
+          )}
+
           {isBusiness && (
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '12px 20px', background: '#141414', border: `0.5px solid rgba(${tc.rgb},0.2)`, borderRadius: 10, fontSize: 13, color: '#a1a1a1' }}>
-              Love the name? Protect it.
-              <span style={{ color: tc.color, fontWeight: 600, cursor: 'pointer' }}>Book a Catchword consultation →</span>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '12px 20px', background: '#141414', border: '0.5px solid rgba(249,115,22,0.25)', borderRadius: 10, fontSize: 13, color: '#a1a1a1' }}>
+              You have a winning name — register your LLC before someone else does.
+              <a href="#" style={{ color: '#f97316', fontWeight: 600, textDecoration: 'none' }}>Register your business →</a>
             </div>
           )}
         </div>
@@ -160,7 +202,7 @@ export default function ResultsPage() {
             {[
               { label: 'Total Votes Cast', value: totalVotes || 47 },
               { label: 'Participation Rate', value: '78%' },
-              { label: 'Avg Naming Points', value: '142/165' },
+              { label: 'Contest Quality', value: '78%' },
               { label: 'Contest Duration', value: '9 days' },
             ].map((stat, i) => (
               <div key={i} style={{ background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '16px 14px', textAlign: 'center' }}>
@@ -212,10 +254,10 @@ export default function ResultsPage() {
           <div style={{ background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 20 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
               {[
-                { label: 'Education completion', value: '87%', color: '#10B981' },
-                { label: 'Quality submission rate', value: '68%', color: tc.color },
-                { label: 'Total Naming Points', value: '142 avg', color: '#8B5CF6' },
-                { label: 'Names with 3+ criteria', value: '68%', color: '#a1a1a1' },
+                { label: 'Creator completion', value: '38/50', color: '#10B981' },
+                { label: 'Participant avg completion', value: '40/50', color: tc.color },
+                { label: 'Overall contest quality', value: '78/100', color: '#8B5CF6' },
+                { label: 'Quality tier', value: 'Strong', color: '#a1a1a1' },
               ].map((m, i) => (
                 <div key={i} style={{ padding: '12px 14px', background: '#141414', borderRadius: 8 }}>
                   <div style={{ fontSize: 18, fontWeight: 700, color: m.color, marginBottom: 2 }}>{m.value}</div>
@@ -225,7 +267,7 @@ export default function ResultsPage() {
             </div>
             {submissions.length >= 2 && Math.abs(submissions[0].voteCount - submissions[1].voteCount) / totalVotes < 0.05 && (
               <div style={{ padding: '10px 14px', background: 'rgba(234,239,9,0.06)', border: '1px solid rgba(234,239,9,0.2)', borderRadius: 8, fontSize: 13, color: '#eaef09' }}>
-                🤔 Close call — {Math.round(Math.abs(submissions[0].voteCount - submissions[1].voteCount) / totalVotes * 100)}% separated winner and runner-up
+                Close call — {Math.round(Math.abs(submissions[0].voteCount - submissions[1].voteCount) / totalVotes * 100)}% separated winner and runner-up
               </div>
             )}
           </div>
@@ -549,7 +591,7 @@ export default function ResultsPage() {
             {winner?.rationale && <div style={{ fontSize: 12, color: '#7a7a7a', lineHeight: 1.5, marginBottom: 10 }}>{winner.rationale}</div>}
             <div style={{ fontSize: 13, color: '#7a7a7a', marginBottom: 16 }}>Chosen by {6} people · {'2026-03-05'}</div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 11, color: '#5a5a5a' }}>NamingContest.com</span>
+              <span style={{ fontSize: 11, color: '#5a5a5a' }}>Namico.com</span>
               <span style={{ fontSize: 11, color: '#5a5a5a' }}>Powered by Catchword, the world's leading naming firm</span>
             </div>
           </div>
@@ -643,31 +685,31 @@ function PostResultsReflection({ winnerName, contestTitle, tc, isBusiness }) {
         { icon: '🎨', label: 'Commission a wordmark', sub: 'A wordmark before a logo. Typography first. Marks come later.' },
         { icon: '📣', label: 'Draft the announcement', sub: 'Tell the story of how the name was chosen — people love the process.' },
       ],
-      cta: isBusiness ? 'Book a Free Catchword Consultation →' : null,
-      ctaNote: isBusiness ? 'A 15-min call to review next steps, trademark strategy, and brand rollout.' : null,
+      cta: isBusiness ? 'Register with LegalZoom →' : null,
+      ctaNote: isBusiness ? 'File your LLC or corporation before someone else registers the name.' : null,
     },
     secondthoughts: {
       headline: "Second thoughts are normal. Here's how to tell if it's cold feet or a real problem.",
       body: "Most organizers feel doubt after choosing a name. Here's a diagnostic to separate real issues from nerves.",
       items: [
-        { icon: '🧠', label: "Is it the name — or the change?", sub: 'Often what feels wrong is the change itself, not the name. Give it 72 hours before making any decisions.' },
-        { icon: '🔊', label: 'Say it out loud 20 times', sub: "Strange names become familiar fast. Most 'bad' names just need time to feel natural." },
-        { icon: '👥', label: 'Ask 3 people who weren\'t in the contest', sub: "Fresh ears catch things participants can't. Do they understand it? Does it feel right to them?" },
-        { icon: '⚖️', label: 'Compare to the runner-up', sub: 'Is the runner-up name actually better, or just different? Write down specifically why the winner beat it.' },
+        { icon: <Brain size={14} weight="duotone" />, label: "Is it the name — or the change?", sub: 'Often what feels wrong is the change itself, not the name. Give it 72 hours before making any decisions.' },
+        { icon: <ArrowRight size={14} weight="bold" />, label: 'Say it out loud 20 times', sub: "Strange names become familiar fast. Most 'bad' names just need time to feel natural." },
+        { icon: <Share size={14} weight="duotone" />, label: 'Ask 3 people who weren\'t in the contest', sub: "Fresh ears catch things participants can't. Do they understand it? Does it feel right to them?" },
+        { icon: <Scales size={14} weight="duotone" />, label: 'Compare to the runner-up', sub: 'Is the runner-up name actually better, or just different? Write down specifically why the winner beat it.' },
       ],
-      cta: isBusiness ? 'Book a Free Catchword Decision Review →' : 'Run Another Round →',
-      ctaNote: isBusiness ? "15-min consultation to help you distinguish cold feet from a real naming problem." : "Not confident? Open a new round with fresh candidates.",
+      cta: isBusiness ? 'Register with LegalZoom →' : 'Run Another Round →',
+      ctaNote: isBusiness ? "LegalZoom handles the paperwork in all 50 states." : "Not confident? Open a new round with fresh candidates.",
     },
     unsure: {
       headline: "Still not sure? That's okay. Use this framework.",
       body: "Uncertainty after choosing a name is common. Here's a structured way to evaluate it.",
       items: [
-        { icon: '📝', label: 'Write down what bothers you specifically', sub: 'Vague discomfort is not a reason to rechose. Specific concerns are. Write the actual words down.' },
-        { icon: '🎯', label: 'Test it on strangers', sub: 'Tell 5 people outside the contest the name only — no context. What do they assume about you?' },
-        { icon: '⏳', label: 'Give it 7 days before acting', sub: 'The first week always feels uncomfortable. Check in after 7 days — the feeling usually shifts.' },
+        { icon: <Copy size={14} weight="duotone" />, label: 'Write down what bothers you specifically', sub: 'Vague discomfort is not a reason to rechose. Specific concerns are. Write the actual words down.' },
+        { icon: <Target size={14} weight="duotone" />, label: 'Test it on strangers', sub: 'Tell 5 people outside the contest the name only — no context. What do they assume about you?' },
+        { icon: <Check size={14} weight="bold" />, label: 'Give it 7 days before acting', sub: 'The first week always feels uncomfortable. Check in after 7 days — the feeling usually shifts.' },
       ],
-      cta: isBusiness ? 'Book a Free Catchword Consultation →' : 'Run Another Round →',
-      ctaNote: isBusiness ? "We've helped hundreds of organizers through post-decision doubt. Most keep their name." : "Sometimes a second round with a fresh brief brings total clarity.",
+      cta: isBusiness ? 'Register with LegalZoom →' : 'Run Another Round →',
+      ctaNote: isBusiness ? "Make it official — register before someone else does." : "Sometimes a second round with a fresh brief brings total clarity.",
     },
   };
 
@@ -679,7 +721,7 @@ function PostResultsReflection({ winnerName, contestTitle, tc, isBusiness }) {
       <div style={{ background: '#141414', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 12, overflow: 'hidden' }}>
         {/* Email meta bar */}
         <div style={{ background: '#0f0f0f', borderBottom: '0.5px solid rgba(255,255,255,0.06)', padding: '12px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ width: 32, height: 32, borderRadius: '50%', background: `rgba(${tc.rgb},0.15)`, border: `1px solid rgba(${tc.rgb},0.3)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0 }}>✉</div>
+          <div style={{ width: 32, height: 32, borderRadius: '50%', background: `rgba(${tc.rgb},0.15)`, border: `1px solid rgba(${tc.rgb},0.3)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Envelope size={14} color={tc.color} /></div>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 12, color: '#fff', fontWeight: 600 }}>team@namingcontest.com → You</div>
             <div style={{ fontSize: 11, color: '#7a7a7a' }}>Subject: How did <em style={{ color: '#a1a1a1' }}>{winnerName || 'your winning name'}</em> turn out? · Touchpoint 7</div>
@@ -711,7 +753,7 @@ function PostResultsReflection({ winnerName, contestTitle, tc, isBusiness }) {
 
               <p style={{ fontSize: 12, color: '#4a4a4a', lineHeight: 1.6 }}>
                 Regardless of your answer, we'll follow up with guidance.<br />
-                — The NamingContest.com Team · Powered by Catchword, the world's leading naming firm
+                — The Namico.com Team · Powered by Catchword, the world's leading naming firm
               </p>
             </>
           ) : (

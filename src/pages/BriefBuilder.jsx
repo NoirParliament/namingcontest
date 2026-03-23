@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Trophy, ArrowRight, Copy, Check, CalendarBlank, Users, BookOpen } from '@phosphor-icons/react';
+import namicoIcon from '../assets/namico-icon.svg';
+import { ArrowLeft, ArrowRight, Copy, Check, CalendarBlank, Users, BookOpen, X, UserCircle } from '@phosphor-icons/react';
 import { computeCreatorScore, saveCreatorQuality, getFieldDefs } from '../utils/quality';
 
 const TIER = {
@@ -188,13 +189,7 @@ function B1Fields({ data, setData, tc, subSegment }) {
     { id: 'abstract', label: 'Abstract', example: 'Verizon' },
     { id: 'any', label: 'Not sure (any)', example: 'Show me all' },
   ];
-  const votingMethods = [
-    { id: 'simple', label: 'Simple Poll', desc: 'Fast, use for <8 finalists' },
-    { id: 'ranked', label: 'Ranked Choice', desc: 'Shows consensus, prevents polarization' },
-    { id: 'multicriteria', label: 'Multi-Criteria', desc: 'Evaluates 5 dimensions', recommended: true },
-    { id: 'pairwise', label: 'Pairwise', desc: '6-12 names, head-to-head' },
-    { id: 'weighted', label: 'Weighted', desc: 'Some voters count more (Business only)' },
-  ];
+  // Voting methods moved to shared VotingMethodField component
   const subLimits = [1, 2, 3, 5, 10, 'Unlimited'];
 
   return (
@@ -275,22 +270,7 @@ function B1Fields({ data, setData, tc, subSegment }) {
         </div>
       </div>
 
-      <div style={fieldWrap}>
-        <label style={labelStyle}>Voting Method</label>
-        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Simple Poll: Fast and familiar. Best for small groups. Ranked Choice: Shows true consensus, prevents spoiler effect. Multi-Criteria: Most rigorous — participants score each name on 5 dimensions. Pairwise: Head-to-head matchups, great for 6-12 names. Weighted: Some voters count more (ideal for boards or panels)." />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
-          {votingMethods.map(m => (
-            <label key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: data.votingMethod === m.id ? `rgba(${tc.rgb},0.08)` : '#141414', border: `0.5px solid ${data.votingMethod === m.id ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, cursor: 'pointer', position: 'relative' }}>
-              <input type="radio" name="votingMethod" value={m.id} checked={data.votingMethod === m.id} onChange={() => setData({ ...data, votingMethod: m.id })} style={{ accentColor: tc.color }} />
-              <div>
-                <div style={{ color: '#fff', fontSize: 14 }}>{m.label}</div>
-                <div style={{ color: '#7a7a7a', fontSize: 12 }}>{m.desc}</div>
-              </div>
-              {m.recommended && <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 700, color: tc.color, border: `1px solid ${tc.color}`, borderRadius: 4, padding: '2px 6px' }}>★ RECOMMENDED</span>}
-            </label>
-          ))}
-        </div>
-      </div>
+      {/* Voting method moved to shared VotingMethodField */}
 
       <div style={fieldWrap}>
         <label style={labelStyle}>Contest Deadline</label>
@@ -1083,6 +1063,250 @@ function GenericFields({ data, setData, tc }) {
   );
 }
 
+// ── Voting Method (shared across all segments) ──
+const VOTING_METHODS = [
+  { id: 'simple', label: 'Simple Poll', desc: 'Fast, use for <8 finalists' },
+  { id: 'ranked', label: 'Ranked Choice', desc: 'Shows consensus, prevents polarization' },
+  { id: 'multicriteria', label: 'Multi-Criteria', desc: 'Evaluates 5 dimensions', recommended: true },
+  { id: 'pairwise', label: 'Pairwise', desc: '6-12 names, head-to-head' },
+  { id: 'weighted', label: 'Weighted Voting', desc: 'Some voters count more — ideal for boards or panels' },
+];
+
+function VotingMethodField({ data, setData, tc }) {
+  const [weightedVoters, setWeightedVoters] = useState(data.weightedVoters || [{ email: '', weight: 2 }]);
+
+  const handleAddVoter = () => {
+    const updated = [...weightedVoters, { email: '', weight: 2 }];
+    setWeightedVoters(updated);
+    setData({ ...data, weightedVoters: updated });
+  };
+
+  const handleVoterChange = (i, field, val) => {
+    const updated = weightedVoters.map((v, idx) => idx === i ? { ...v, [field]: val } : v);
+    setWeightedVoters(updated);
+    setData({ ...data, weightedVoters: updated });
+  };
+
+  const handleRemoveVoter = (i) => {
+    const updated = weightedVoters.filter((_, idx) => idx !== i);
+    setWeightedVoters(updated);
+    setData({ ...data, weightedVoters: updated });
+  };
+
+  return (
+    <div style={{ marginTop: 32, paddingTop: 24, borderTop: '0.5px solid rgba(255,255,255,0.07)' }}>
+      <label style={{ ...labelStyle, marginBottom: 6 }}>Voting Method</label>
+      <TipRow color={tc.color} rgb={tc.rgb} tipContent="Simple Poll: Fast and familiar. Ranked Choice: Shows true consensus. Multi-Criteria: Most rigorous — score on 5 dimensions. Pairwise: Head-to-head matchups. Weighted: Assign different vote weights to key stakeholders (e.g. founder's vote counts 3x).">
+        Which method is best for me?
+      </TipRow>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
+        {VOTING_METHODS.map(m => (
+          <label key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: data.votingMethod === m.id ? `rgba(${tc.rgb},0.08)` : '#141414', border: `0.5px solid ${data.votingMethod === m.id ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, cursor: 'pointer', position: 'relative' }}>
+            <input type="radio" name="votingMethodShared" value={m.id} checked={data.votingMethod === m.id} onChange={() => setData({ ...data, votingMethod: m.id })} style={{ accentColor: tc.color }} />
+            <div>
+              <div style={{ color: '#fff', fontSize: 14 }}>{m.label}</div>
+              <div style={{ color: '#7a7a7a', fontSize: 12 }}>{m.desc}</div>
+            </div>
+            {m.recommended && <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 700, color: tc.color, border: `1px solid ${tc.color}`, borderRadius: 4, padding: '2px 6px' }}>RECOMMENDED</span>}
+          </label>
+        ))}
+      </div>
+
+      {data.votingMethod === 'weighted' && (
+        <div style={{ marginTop: 16, padding: '16px', background: '#141414', border: `0.5px solid rgba(${tc.rgb},0.2)`, borderRadius: 10 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 4 }}>Weighted Voters</div>
+          <div style={{ fontSize: 12, color: '#7a7a7a', marginBottom: 14 }}>Add people whose votes should count more. Default weight is 1x for everyone else.</div>
+          {weightedVoters.map((v, i) => (
+            <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'center' }}>
+              <input style={{ ...inputStyle, flex: 1 }} placeholder="Email address" value={v.email} onChange={e => handleVoterChange(i, 'email', e.target.value)} />
+              <select value={v.weight} onChange={e => handleVoterChange(i, 'weight', Number(e.target.value))} style={{ ...inputStyle, width: 80, cursor: 'pointer' }}>
+                {[2, 3, 4, 5].map(w => <option key={w} value={w}>{w}x weight</option>)}
+              </select>
+              {weightedVoters.length > 1 && (
+                <button onClick={() => handleRemoveVoter(i)} style={{ width: 36, height: 36, border: '0.5px solid rgba(239,68,68,0.3)', borderRadius: 6, background: 'transparent', color: '#ef4444', fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+          ))}
+          <button onClick={handleAddVoter} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', border: `0.5px solid rgba(${tc.rgb},0.3)`, borderRadius: 6, background: 'transparent', color: tc.color, fontSize: 12, cursor: 'pointer', marginTop: 4 }}>
+            + Add voter
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Custom Requirements (shared across all segments) ──
+function CustomRequirementsField({ data, setData, tc }) {
+  return (
+    <div style={{ marginTop: 32, paddingTop: 24, borderTop: '0.5px solid rgba(255,255,255,0.07)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: data.customFieldEnabled ? 14 : 0 }}>
+        <div>
+          <label style={{ ...labelStyle, marginBottom: 2 }}>Custom Requirements</label>
+          <div style={{ fontSize: 12, color: '#7a7a7a' }}>Add your own criteria not covered above</div>
+        </div>
+        <Toggle value={!!data.customFieldEnabled} onChange={v => setData({ ...data, customFieldEnabled: v })} color={tc.color} />
+      </div>
+      {data.customFieldEnabled && (
+        <div style={{ marginTop: 14 }}>
+          <textarea
+            style={{ ...textareaStyle }}
+            rows={4}
+            placeholder="e.g. Must work as a .com domain, should not start with 'X', needs to sound good in Spanish..."
+            value={data.customRequirements || ''}
+            onChange={e => setData({ ...data, customRequirements: e.target.value })}
+          />
+          <TipRow color={tc.color} rgb={tc.rgb} tipContent="Use this to capture requirements unique to your situation — domain preferences, phonetic constraints, cultural considerations, or anything else participants should know.">
+            Why add custom requirements?
+          </TipRow>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Branding / Photo Upload ──
+function BrandingField({ data, setData, tc, group, subSegment }) {
+  const isBizOrTeam = group === 'business' || group === 'team';
+  const isPersonal = group === 'personal';
+  if (!isBizOrTeam && !isPersonal) return null;
+
+  const photoLabels = {
+    'baby-name': 'Upload a baby photo or ultrasound',
+    'pet-name': 'Upload a photo of your pet',
+    'home-property-fun': 'Upload a photo of the property',
+  };
+
+  const handleFileChange = (e, key) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    setData({ ...data, [key]: url });
+  };
+
+  return (
+    <div style={{ marginTop: 32, paddingTop: 24, borderTop: '0.5px solid rgba(255,255,255,0.07)' }}>
+      {isBizOrTeam && (
+        <>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: data.brandingEnabled ? 14 : 0 }}>
+            <div>
+              <label style={{ ...labelStyle, marginBottom: 2 }}>Custom Branding</label>
+              <div style={{ fontSize: 12, color: '#7a7a7a' }}>Add your logo and brand colors for PDF export</div>
+            </div>
+            <Toggle value={!!data.brandingEnabled} onChange={v => setData({ ...data, brandingEnabled: v })} color={tc.color} />
+          </div>
+          {data.brandingEnabled && (
+            <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <label style={{ ...labelStyle, fontSize: 12 }}>Logo</label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  {data.brandingLogo ? (
+                    <img src={data.brandingLogo} alt="Logo" style={{ width: 48, height: 48, objectFit: 'contain', borderRadius: 6, background: '#111', border: '0.5px solid rgba(255,255,255,0.1)' }} />
+                  ) : (
+                    <div style={{ width: 48, height: 48, borderRadius: 6, background: '#111', border: '1px dashed rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, color: '#555' }}>+</div>
+                  )}
+                  <label style={{ padding: '6px 14px', borderRadius: 6, border: `1px solid rgba(${tc.rgb},0.3)`, background: 'transparent', color: tc.color, fontSize: 12, cursor: 'pointer' }}>
+                    {data.brandingLogo ? 'Change' : 'Upload'}
+                    <input type="file" accept="image/*" onChange={e => handleFileChange(e, 'brandingLogo')} style={{ display: 'none' }} />
+                  </label>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: 16 }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ ...labelStyle, fontSize: 12 }}>Primary color</label>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <input type="color" value={data.brandingPrimaryColor || '#eaef09'} onChange={e => setData({ ...data, brandingPrimaryColor: e.target.value })} style={{ width: 36, height: 36, border: 'none', borderRadius: 6, cursor: 'pointer', background: 'transparent' }} />
+                    <input style={{ ...inputStyle, flex: 1 }} value={data.brandingPrimaryColor || '#eaef09'} onChange={e => setData({ ...data, brandingPrimaryColor: e.target.value })} placeholder="#eaef09" />
+                  </div>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ ...labelStyle, fontSize: 12 }}>Secondary color</label>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <input type="color" value={data.brandingSecondaryColor || '#141414'} onChange={e => setData({ ...data, brandingSecondaryColor: e.target.value })} style={{ width: 36, height: 36, border: 'none', borderRadius: 6, cursor: 'pointer', background: 'transparent' }} />
+                    <input style={{ ...inputStyle, flex: 1 }} value={data.brandingSecondaryColor || '#141414'} onChange={e => setData({ ...data, brandingSecondaryColor: e.target.value })} placeholder="#141414" />
+                  </div>
+                </div>
+              </div>
+              <TipRow color={tc.color} rgb={tc.rgb} tipContent="Your logo and colors will appear on PDF reports and white-label output. For best results, upload a transparent PNG logo under 1MB.">
+                How is branding used?
+              </TipRow>
+            </div>
+          )}
+        </>
+      )}
+      {isPersonal && (
+        <>
+          <label style={{ ...labelStyle, marginBottom: 2 }}>Add a photo</label>
+          <div style={{ fontSize: 12, color: '#7a7a7a', marginBottom: 12 }}>{photoLabels[subSegment] || 'Upload a photo for your contest'}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {data.photoUrl ? (
+              <img src={data.photoUrl} alt="Contest photo" style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8, border: '0.5px solid rgba(255,255,255,0.1)' }} />
+            ) : (
+              <div style={{ width: 64, height: 64, borderRadius: 8, background: '#111', border: '1px dashed rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, color: '#555' }}>+</div>
+            )}
+            <label style={{ padding: '6px 14px', borderRadius: 6, border: `1px solid rgba(${tc.rgb},0.3)`, background: 'transparent', color: tc.color, fontSize: 12, cursor: 'pointer' }}>
+              {data.photoUrl ? 'Change photo' : 'Upload photo'}
+              <input type="file" accept="image/*" onChange={e => handleFileChange(e, 'photoUrl')} style={{ display: 'none' }} />
+            </label>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ── Prize Configuration ──
+function PrizeField({ data, setData, tc }) {
+  const contestType = data.contestType || localStorage.getItem('contestType') || 'submission_voting';
+  const isVotingOnly = contestType === 'voting_only';
+
+  return (
+    <div style={{ marginTop: 32, paddingTop: 24, borderTop: '0.5px solid rgba(255,255,255,0.07)' }}>
+      <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 16 }}>Prizes</div>
+
+      {!isVotingOnly && (
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: data.submitterPrizeEnabled ? 14 : 0 }}>
+            <div>
+              <label style={{ ...labelStyle, marginBottom: 2 }}>Submitter Prize</label>
+              <div style={{ fontSize: 12, color: '#7a7a7a' }}>Reward the person who submitted the winning name</div>
+            </div>
+            <Toggle value={!!data.submitterPrizeEnabled} onChange={v => setData({ ...data, submitterPrizeEnabled: v })} color={tc.color} />
+          </div>
+          {data.submitterPrizeEnabled && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <input style={inputStyle} placeholder="Prize name (e.g. $50 Gift Card)" value={data.submitterPrizeName || ''} onChange={e => setData({ ...data, submitterPrizeName: e.target.value })} />
+              <textarea style={textareaStyle} rows={2} placeholder="Prize description (optional)" value={data.submitterPrizeDesc || ''} onChange={e => setData({ ...data, submitterPrizeDesc: e.target.value })} />
+            </div>
+          )}
+        </div>
+      )}
+
+      <div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: data.voterPrizeEnabled ? 14 : 0 }}>
+          <div>
+            <label style={{ ...labelStyle, marginBottom: 2 }}>Voter Prize</label>
+            <div style={{ fontSize: 12, color: '#7a7a7a' }}>Award a random voter to encourage participation</div>
+          </div>
+          <Toggle value={!!data.voterPrizeEnabled} onChange={v => setData({ ...data, voterPrizeEnabled: v })} color={tc.color} />
+        </div>
+        {data.voterPrizeEnabled && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <input style={inputStyle} placeholder="Prize name (e.g. Free Coffee Voucher)" value={data.voterPrizeName || ''} onChange={e => setData({ ...data, voterPrizeName: e.target.value })} />
+            <textarea style={textareaStyle} rows={2} placeholder="Prize description (optional)" value={data.voterPrizeDesc || ''} onChange={e => setData({ ...data, voterPrizeDesc: e.target.value })} />
+          </div>
+        )}
+      </div>
+
+      <TipRow color={tc.color} rgb={tc.rgb} tipContent="Prizes increase participation by up to 40%. Even small rewards like gift cards or recognition boost engagement significantly. Voter prizes encourage everyone to vote, not just submit.">
+        Why offer prizes?
+      </TipRow>
+    </div>
+  );
+}
+
 // ── Invite config per subsegment ──
 const INVITE_CONFIG = {
   'company-name': {
@@ -1706,7 +1930,7 @@ function LaunchedScreen({ group, tc, navigate }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 32 }}>
         {/* Card 1 */}
         <div style={{ background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 20 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 16 }}>📅 What Happens Next</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}><CalendarBlank size={18} color={tc.color} weight="duotone" /> What Happens Next</div>
           {[
             { range: 'Day 1-2', color: '#3B82F6', label: 'Trickle of submissions (normal)' },
             { range: 'Day 3-5', color: '#eaef09', label: 'Spike in submissions (deadline effect)' },
@@ -1726,7 +1950,7 @@ function LaunchedScreen({ group, tc, navigate }) {
 
         {/* Card 2 */}
         <div style={{ background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 20 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 16 }}>👤 Your Role While It Runs</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}><UserCircle size={18} color={tc.color} weight="duotone" /> Your Role While It Runs</div>
           <div style={{ marginBottom: 10 }}>
             {['Send a reminder email at Day 4', 'Answer questions participants post'].map(item => (
               <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, fontSize: 13, color: '#10B981' }}>
@@ -1737,7 +1961,7 @@ function LaunchedScreen({ group, tc, navigate }) {
           </div>
           {['Tell people your favorite name before voting (anchoring bias)', 'Extend the deadline unless truly necessary'].map(item => (
             <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, fontSize: 13, color: '#ef4444' }}>
-              <span style={{ fontWeight: 700 }}>✗</span>
+              <X size={14} weight="bold" />
               <span style={{ color: '#a1a1a1' }}>{item}</span>
             </div>
           ))}
@@ -1745,7 +1969,7 @@ function LaunchedScreen({ group, tc, navigate }) {
 
         {/* Card 3 */}
         <div style={{ background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 20 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 16 }}>📊 Typical Participation Rates</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 16 }}>Typical Participation Rates</div>
           {[
             { label: 'Good', range: '60-70%', color: '#a1a1a1' },
             { label: 'Great', range: '70-85%', color: '#eaef09' },
@@ -1757,7 +1981,7 @@ function LaunchedScreen({ group, tc, navigate }) {
             </div>
           ))}
           <div style={{ marginTop: 12, fontSize: 13, color: '#a1a1a1', lineHeight: 1.6 }}>
-            What drives it: 1) Clear brief ✓ · 2) Day 4 reminder · 3) Organizer engagement<br />
+            What drives it: 1) Clear brief · 2) Day 4 reminder · 3) Organizer engagement<br />
             <span style={{ color: '#7a7a7a' }}>If participation is &lt;60%, send another reminder and extend deadline by 2 days.</span>
           </div>
         </div>
@@ -1791,11 +2015,24 @@ export default function BriefBuilder() {
 
   const [step, setStep] = useState('primer');
   const [briefData, setBriefData] = useState({});
-  
+
   const [transitionMode, setTransitionMode] = useState('manual');
   const [randomizeBallot, setRandomizeBallot] = useState(true);
   const [votingDays, setVotingDays] = useState(5);
   const [primerRead, setPrimerRead] = useState(false);
+
+  // Persist prize data to localStorage so ContestLive and ResultsPage can read it
+  useEffect(() => {
+    const prizeInfo = {
+      submitterPrizeEnabled: !!briefData.submitterPrizeEnabled,
+      submitterPrizeName: briefData.submitterPrizeName || '',
+      submitterPrizeDesc: briefData.submitterPrizeDesc || '',
+      voterPrizeEnabled: !!briefData.voterPrizeEnabled,
+      voterPrizeName: briefData.voterPrizeName || '',
+      voterPrizeDesc: briefData.voterPrizeDesc || '',
+    };
+    localStorage.setItem('contestPrizes', JSON.stringify(prizeInfo));
+  }, [briefData.submitterPrizeEnabled, briefData.submitterPrizeName, briefData.submitterPrizeDesc, briefData.voterPrizeEnabled, briefData.voterPrizeName, briefData.voterPrizeDesc]);
 
   // Compute and persist creator quality score whenever brief data or primer changes
   const fieldDefs = getFieldDefs(group, subSegment);
@@ -1835,9 +2072,9 @@ export default function BriefBuilder() {
       <div style={{ height: 56, background: '#141414', borderBottom: '0.5px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', padding: '0 24px', gap: 16 }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
           <div style={{ width: 26, height: 26, background: '#eaef09', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Trophy size={13} weight="bold" color="#000" />
+            <img src={namicoIcon} alt="Namico" style={{ width: 17, height: 17, display: 'block' }} />
           </div>
-          <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>NamingContest</span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Namico</span>
         </Link>
         {step === 'brief' && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 16 }}>
@@ -1948,20 +2185,24 @@ export default function BriefBuilder() {
           <p style={{ color: '#a1a1a1', fontSize: 14, marginBottom: 32 }}>This context helps participants submit better names. Be specific — the more detail you share, the better the results.</p>
 
           {renderFormFields()}
+          <VotingMethodField data={briefData} setData={setBriefData} tc={tc} />
+          <CustomRequirementsField data={briefData} setData={setBriefData} tc={tc} />
+          <BrandingField data={briefData} setData={setBriefData} tc={tc} group={group} subSegment={subSegment} />
+          <PrizeField data={briefData} setData={setBriefData} tc={tc} />
 
           {/* ── Affiliate Nudge — contextual to sub-segment ── */}
           {(subSegment === 'company-name' || subSegment === 'rebrand') && (
-            <div style={{ marginTop: 24, padding: '18px 20px', background: '#1a1a1a', border: '0.5px solid rgba(249,115,22,0.25)', borderRadius: 12, position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: '#f97316' }} />
-              <div style={{ fontSize: 9, fontWeight: 800, color: '#f97316', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>
-                Business Formation · LegalZoom · Sponsored
+            <div style={{ marginTop: 24, padding: '18px 20px', background: '#1a1a1a', border: '0.5px solid rgba(59,130,246,0.25)', borderRadius: 12, position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: '#3b82f6' }} />
+              <div style={{ fontSize: 9, fontWeight: 800, color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>
+                Domain Check · Namecheap · Sponsored
               </div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 6 }}>Ready to make it official?</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 6 }}>Check domain availability early</div>
               <div style={{ fontSize: 13, color: '#7a7a7a', marginBottom: 14, lineHeight: 1.5 }}>
-                Once you have your name, register your LLC or corporation in minutes. LegalZoom handles the paperwork so you can focus on the launch.
+                Before your contest starts, it helps to know which .com domains are taken. Save time by checking availability now so participants can focus on names that work.
               </div>
-              <a href="#" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 18px', borderRadius: 8, background: '#f97316', color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
-                Register your business →
+              <a href="#" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 18px', borderRadius: 8, background: '#3b82f6', color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
+                Check domains on Namecheap →
               </a>
             </div>
           )}
@@ -2048,7 +2289,7 @@ export default function BriefBuilder() {
               </div>
               {contestType === 'voting_only'
                 ? <span style={{ fontSize: 12, color: '#7a7a7a', fontStyle: 'italic' }}>You'll invite voters in the next stage</span>
-                : <button onClick={() => navigate(-3)} style={{ fontSize: 12, color: tc.color, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>Edit voter list</button>
+                : <button onClick={() => navigate(`/contest-type/${group}/${subSegment}`)} style={{ fontSize: 12, color: tc.color, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>Edit voter list</button>
               }
             </div>
           </div>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Trophy, Link as LinkIcon, Envelope, QrCode, Copy, Check, ArrowRight, Users, Star, Info } from '@phosphor-icons/react';
+import namicoIcon from '../assets/namico-icon.svg';
+import { Link as LinkIcon, Envelope, QrCode, Copy, Check, ArrowRight, Users, Star, Info } from '@phosphor-icons/react';
 import { getJourneyMeta } from '../utils/journey';
 
 const INVITE_CONFIG = {
@@ -144,7 +145,7 @@ Submissions close [Date]. Thanks so much!`,
     subject: 'You\'re invited to a naming contest',
     body: `Hi there,
 
-You're invited to participate in a collaborative naming contest on NamingContest.com.
+You're invited to participate in a collaborative naming contest on Namico.com.
 
 Click the link below to submit your name ideas — no account required. The more perspectives we get, the better our final decision will be.
 
@@ -202,9 +203,9 @@ export default function InvitationGuidance() {
       }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
           <div style={{ width: 28, height: 28, background: '#eaef09', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Trophy size={15} weight="bold" color="#000" />
+            <img src={namicoIcon} alt="Namico" style={{ width: 20, height: 20, display: 'block' }} />
           </div>
-          <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>NamingContest</span>
+          <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>Namico</span>
         </Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{

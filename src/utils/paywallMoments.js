@@ -113,7 +113,7 @@ function buildMoments(group) {
       id: 'white-label',
       title: 'White-label Branding',
       where: 'PDF Report / Participant View',
-      trigger: 'Previewing output with "Powered by NamingContest.com" footer',
+      trigger: 'Previewing output with "Powered by Namico.com" footer',
       headline: 'Remove platform branding with any paid plan.',
       subtext: 'All paid plans include white-label output — no platform footer on your PDFs or participant-facing pages. Clean, professional deliverables from your first paid contest.',
       price,

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Trophy, ArrowRight, ArrowLeft, Plus, Trash, CheckCircle, WarningCircle } from '@phosphor-icons/react';
+import namicoIcon from '../assets/namico-icon.svg';
+import { ArrowRight, ArrowLeft, Plus, Trash, CheckCircle, WarningCircle } from '@phosphor-icons/react';
 
 const TIER = {
   business: { color: '#eaef09', rgb: '234,239,9', textColor: '#000', label: 'Business' },
@@ -79,9 +80,9 @@ export default function UploadNames() {
       <div style={{ padding: '18px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '0.5px solid rgba(255,255,255,0.06)' }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
           <div style={{ width: 28, height: 28, background: '#eaef09', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Trophy size={15} weight="bold" color="#000" />
+            <img src={namicoIcon} alt="Namico" style={{ width: 20, height: 20, display: 'block' }} />
           </div>
-          <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>NamingContest</span>
+          <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>Namico</span>
         </Link>
         <div style={{ padding: '3px 12px', background: `rgba(${tc.rgb},0.1)`, border: `0.5px solid rgba(${tc.rgb},0.3)`, borderRadius: 20, fontSize: 11, fontWeight: 600, color: tc.color, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
           Voting Only Flow
@@ -241,7 +242,7 @@ export default function UploadNames() {
                   {voterCount > 0 ? `${voterCount} specific voter${voterCount !== 1 ? 's' : ''} will receive invites` : 'No voters added — go back to add voter emails'}
                 </div>
               </div>
-              <button onClick={() => navigate(-1)} style={{ fontSize: 12, color: tc.color, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
+              <button onClick={() => navigate(`/contest-type/${group}/${subSegment}`)} style={{ fontSize: 12, color: tc.color, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
                 Edit voter list
               </button>
             </div>

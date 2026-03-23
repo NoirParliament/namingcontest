@@ -62,7 +62,7 @@ function Navbar() {
           <button onClick={() => navigate('/wireframe')} style={{ display: 'none' }}>
             Wireframe Flow Testing
           </button>
-          <button onClick={() => navigate('/auth')} style={{
+          <button onClick={() => navigate('/dashboard')} style={{
             background: 'none', border: 'none', color: '#a1a1a1',
             fontSize: 14, fontWeight: 500, cursor: 'pointer', padding: '0 8px',
           }}>
@@ -112,9 +112,9 @@ function StatsSection() {
   const success = useCountUp(89, 1500, visible);
 
   const stats = [
-    { value: contests.toLocaleString(), label: 'Contests Run', color: '#eaef09' },
-    { value: participants.toLocaleString(), label: 'Participants Reached', color: '#8B5CF6' },
-    { value: `${success}%`, label: 'Success Rate', color: '#10B981' },
+    { value: contests.toLocaleString(), label: 'Contests Run', color: '#ffffff' },
+    { value: participants.toLocaleString(), label: 'Participants Reached', color: '#ffffff' },
+    { value: `${success}%`, label: 'Success Rate', color: '#ffffff' },
     { value: '4.8/5.0', label: 'Average Rating', color: '#ffffff' },
   ];
 
@@ -136,7 +136,7 @@ function StatsSection() {
               }}>
                 {stat.value}
               </div>
-              <div style={{ fontSize: 14, color: '#7a7a7a', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <div style={{ fontSize: 14, color: '#eaef09', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                 {stat.label}
               </div>
             </div>
@@ -218,11 +218,11 @@ function FlipCard({ item }) {
           </div>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
-            background: 'rgba(16,185,129,0.1)',
-            border: '0.5px solid rgba(16,185,129,0.3)',
+            background: 'rgba(234,239,9,0.1)',
+            border: '0.5px solid rgba(234,239,9,0.3)',
             borderRadius: 9999,
             padding: '2px 10px',
-            fontSize: 11, color: '#10B981',
+            fontSize: 11, color: '#78716C',
           }}>
             <CheckCircle size={10} weight="fill" /> Winner
           </div>
@@ -285,6 +285,7 @@ function PricingFeatureTable() {
       rows: [
         { feature: 'Naming methodology articles', free: '—', personal: '✓', team: '✓', business: '✓' },
         { feature: 'Article quizzes', free: '—', personal: '✓', team: '✓', business: '✓' },
+        { feature: 'Interactive exploration mind map', free: '—', personal: '✓', team: '✓', business: '✓' },
         { feature: 'Contest quality score (0–100)', free: '—', personal: '✓', team: '✓', business: '✓' },
         { feature: 'Submission quality breakdown', free: '—', personal: '✓', team: '✓', business: '✓' },
       ],
@@ -320,6 +321,7 @@ function PricingFeatureTable() {
         { feature: 'Ranked-choice voting', free: '—', personal: '✓', team: '✓', business: '✓' },
         { feature: 'Pairwise comparison', free: '—', personal: '✓', team: '✓', business: '✓' },
         { feature: 'Multi-criteria scoring', free: '—', personal: '✓', team: '✓', business: '✓' },
+        { feature: 'Weighted voting', free: '—', personal: '✓', team: '✓', business: '✓' },
         { feature: 'Manual or auto voting transition', free: '✓', personal: '✓', team: '✓', business: '✓' },
       ],
     },
@@ -372,7 +374,7 @@ export default function LandingPage() {
       label: 'Personal',
       icon: <Baby size={28} weight="duotone" color="#10B981" />,
       title: 'No opinions are too many',
-      subtitle: "Invite the people whose opinion matters.",
+      subtitle: "Invite the people whose opinion matters",
       color: '#10B981',
       colorRgb: '16,185,129',
       tags: ['Baby Name', 'Pet Name', 'Home', 'Something Fun'],
@@ -395,7 +397,7 @@ export default function LandingPage() {
       label: 'Group',
       icon: <Users size={28} weight="duotone" color="#8B5CF6" />,
       title: 'Let the squad decide',
-      subtitle: "From group chat chaos to a name everyone reps.",
+      subtitle: "From group chat chaos to a name everyone reps",
       color: '#8B5CF6',
       colorRgb: '139,92,246',
       tags: ['Sports Team', 'Band', 'Podcast', 'Gaming Group'],
@@ -418,7 +420,7 @@ export default function LandingPage() {
       label: 'Business',
       icon: <Buildings size={28} weight="duotone" color="#eaef09" />,
       title: 'Naming is a business decision',
-      subtitle: 'Structured naming with real methodology.',
+      subtitle: 'Structured naming with real methodology',
       color: '#eaef09',
       colorRgb: '234,239,9',
       tags: ['Company', 'Product', 'Project', 'Rebrand'],
@@ -439,17 +441,17 @@ export default function LandingPage() {
   ];
 
   const stepIcons = [
-    <Target size={28} weight="duotone" color="#57534E" />,
-    <ClipboardText size={28} weight="duotone" color="#57534E" />,
-    <Envelope size={28} weight="duotone" color="#57534E" />,
-    <Lightbulb size={28} weight="duotone" color="#57534E" />,
-    <CheckCircle size={28} weight="duotone" color="#57534E" />,
+    <Target size={28} weight="light" color="#57534E" />,
+    <ClipboardText size={28} weight="light" color="#57534E" />,
+    <Envelope size={28} weight="light" color="#57534E" />,
+    <Lightbulb size={28} weight="light" color="#57534E" />,
+    <CheckCircle size={28} weight="light" color="#57534E" />,
   ];
 
   const methodIcons = [
-    <SpeakerSlash size={28} weight="duotone" color="#fff" />,
-    <Ruler size={28} weight="duotone" color="#fff" />,
-    <Scales size={28} weight="duotone" color="#fff" />,
+    <SpeakerSlash size={28} weight="duotone" color="#eaef09" />,
+    <Ruler size={28} weight="duotone" color="#eaef09" />,
+    <Scales size={28} weight="duotone" color="#eaef09" />,
   ];
 
   return (
@@ -524,7 +526,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Segment Entry Cards ── */}
-      <section style={{ background: '#f5f2ee', padding: '80px 0' }}>
+      <section id="pricing" style={{ background: '#f5f2ee', padding: '80px 0' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <div style={{
@@ -541,7 +543,7 @@ export default function LandingPage() {
               marginBottom: 16,
               lineHeight: 1.15,
             }}>
-              Pick what you're naming.<br />We'll handle the rest.
+              Pick what you're naming<br />We'll handle the rest
             </h2>
             <p style={{ fontSize: 16, color: '#444', maxWidth: 520, margin: '0 auto', lineHeight: 1.65 }}>
               Business brands, team identities, or personal milestones — every great name deserves a structured process and a fair vote.
@@ -584,10 +586,10 @@ export default function LandingPage() {
               color: '#1C1917',
               marginBottom: 12,
             }}>
-              Names chosen together. Owned by everyone.
+              Names chosen together, owned by everyone
             </h2>
             <p style={{ fontSize: 16, color: '#78716C', maxWidth: 480, margin: '0 auto' }}>
-              From startups to family milestones, NamingContest delivers clear results.
+              From startups to family milestones, Namico delivers clear results.
             </p>
           </div>
 
@@ -656,7 +658,7 @@ export default function LandingPage() {
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <div style={{
               fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em',
-              color: '#8B5CF6', marginBottom: 12,
+              color: '#eaef09', marginBottom: 12,
             }}>
               Shared Accountability
             </div>
@@ -668,9 +670,9 @@ export default function LandingPage() {
               marginBottom: 16,
               lineHeight: 1.15,
             }}>
-              Great names take two sides.
+              Great names take two sides
               <br />
-              <span style={{ color: '#eaef09' }}>Track your half of the work.</span>
+              <span style={{ color: '#eaef09' }}>Track your half of the work</span>
             </h2>
             <p style={{ fontSize: 16, color: '#a1a1a1', maxWidth: 520, margin: '0 auto', lineHeight: 1.7 }}>
               Every contest has a 100-point quality score split evenly between the creator and participants. The better both sides prepare, the better the names you'll get.
@@ -692,17 +694,17 @@ export default function LandingPage() {
               </div>
               <div style={{
                 fontSize: 12, fontWeight: 600,
-                background: 'rgba(139,92,246,0.15)',
-                border: '0.5px solid rgba(139,92,246,0.3)',
+                background: 'rgba(234,239,9,0.15)',
+                border: '0.5px solid rgba(234,239,9,0.3)',
                 borderRadius: 99, padding: '3px 12px',
-                color: '#8B5CF6',
+                color: '#eaef09',
               }}>
                 Strong · 78/100
               </div>
             </div>
 
             {/* The split bar */}
-            <div style={{ position: 'relative', height: 12, borderRadius: 6, background: '#1e1e1e', marginBottom: 10 }}>
+            <div style={{ position: 'relative', height: 12, borderRadius: 6, background: '#333333', marginBottom: 10 }}>
               {/* Creator fill - 38/50 */}
               <div style={{
                 position: 'absolute', left: 0, top: 0, bottom: 0,
@@ -714,7 +716,7 @@ export default function LandingPage() {
               <div style={{
                 position: 'absolute', left: '50%', top: 0, bottom: 0,
                 width: '40%',
-                background: 'linear-gradient(90deg, #8B5CF6aa, #8B5CF6)',
+                background: 'linear-gradient(90deg, #ffffffaa, #ffffff)',
                 borderRadius: '0 6px 6px 0',
               }} />
               {/* Midpoint divider */}
@@ -728,8 +730,7 @@ export default function LandingPage() {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#7a7a7a', marginBottom: 28 }}>
               <span style={{ color: '#eaef09cc' }}>◀ Creator's half · 38/50</span>
-              <span style={{ color: '#7a7a7a' }}>|</span>
-              <span style={{ color: '#8B5CF6cc' }}>Participants' half · 40/50 ▶</span>
+              <span style={{ color: '#ffffffcc' }}>Participants' half · 40/50 ▶</span>
             </div>
 
             {/* Two-column explanation */}
@@ -742,7 +743,7 @@ export default function LandingPage() {
                   note: 'Done before anyone else joins.',
                 },
                 {
-                  color: '#8B5CF6',
+                  color: '#ffffff',
                   label: 'Participants (0–50)',
                   items: ['Read naming methodology articles', 'Submit quality name ideas', 'Earn naming points through feedback'],
                   note: 'Crowd effort, tracked live.',
@@ -793,12 +794,12 @@ export default function LandingPage() {
                 desc: 'Every contest shows its split score — creator prep on the left, participant effort on the right. Know instantly which side needs work.',
               },
               {
-                icon: <Users size={26} weight="duotone" color="#8B5CF6" />,
+                icon: <Users size={26} weight="duotone" color="#eaef09" />,
                 title: 'Participants see your half',
                 desc: 'When someone joins your contest they can see how much you prepared as creator. A high creator score signals a serious, well-run contest.',
               },
               {
-                icon: <Certificate size={26} weight="duotone" color="#10B981" />,
+                icon: <Certificate size={26} weight="duotone" color="#eaef09" />,
                 title: 'Quality predicts results',
                 desc: 'Contests scoring 80+ consistently produce stronger shortlists. Both sides matter — don\'t leave points on the table.',
               },
@@ -833,7 +834,7 @@ export default function LandingPage() {
               color: '#0a0a0a',
               marginBottom: 12,
             }}>
-              Every great name almost wasn't.
+              Every great name almost wasn't
             </h2>
             <p style={{ fontSize: 16, color: '#555', maxWidth: 540, margin: '0 auto' }}>
               Here are the names that almost became the world's most iconic brands.
@@ -854,14 +855,14 @@ export default function LandingPage() {
           </div>
 
           <div style={{ textAlign: 'center' }}>
-            <button
-              onClick={() => navigate('/select')}
+            <a
+              href="#pricing"
               className="btn-primary btn-lg btn-neutral"
-              style={{ background: '#0a0a0a' }}
+              style={{ background: '#0a0a0a', textDecoration: 'none' }}
             >
               <span>Don't let that happen to you</span>
               <ArrowRight size={16} weight="bold" />
-            </button>
+            </a>
           </div>
         </div>
       </section>
@@ -870,6 +871,12 @@ export default function LandingPage() {
       <section style={{ background: '#141414', padding: '80px 0' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
+            <div style={{
+              fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em',
+              color: '#eaef09', marginBottom: 12,
+            }}>
+              Naming Methodology
+            </div>
             <h2 style={{
               fontFamily: 'Inter, sans-serif',
               fontSize: 'clamp(26px, 4vw, 40px)',
@@ -877,7 +884,7 @@ export default function LandingPage() {
               color: '#fff',
               marginBottom: 12,
             }}>
-              Why Naming Contests Usually Fail<br />(And How We Fix It)
+              Why Naming Contests Usually Fail<br /><span style={{ color: '#eaef09' }}>And How We Fix It</span>
             </h2>
           </div>
 
@@ -893,7 +900,7 @@ export default function LandingPage() {
                 <div style={{ marginBottom: 16 }}>{methodIcons[i]}</div>
                 <div style={{
                   fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
-                  letterSpacing: '0.08em', color: '#EF4444',
+                  letterSpacing: '0.08em', color: '#7a7a7a',
                   marginBottom: 6,
                 }}>
                   The Problem
@@ -909,7 +916,7 @@ export default function LandingPage() {
                 }} />
                 <div style={{
                   fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
-                  letterSpacing: '0.08em', color: '#10B981',
+                  letterSpacing: '0.08em', color: '#eaef09',
                   marginBottom: 6,
                 }}>
                   Our Fix
@@ -964,9 +971,9 @@ export default function LandingPage() {
                 width: 24, height: 24, background: '#eaef09', borderRadius: 4,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <Trophy size={13} weight="bold" color="#000" />
+                <img src={namicoIcon} alt="Namico" style={{ width: 17, height: 17, display: 'block' }} />
               </div>
-              <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>NamingContest</span>
+              <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Namico</span>
             </div>
             <div style={{ fontSize: 12, color: '#7a7a7a' }}>Powered by Catchword, the world's leading naming firm</div>
           </div>
@@ -977,7 +984,6 @@ export default function LandingPage() {
               { label: 'How It Works', href: '#how-it-works' },
               { label: 'Pricing', href: '#pricing' },
               { label: 'Examples', href: '#examples' },
-              { label: 'Dashboard', to: '/dashboard' },
             ].map(link => (
               link.to
                 ? <Link key={link.label} to={link.to} style={{ fontSize: 13, color: '#7a7a7a', textDecoration: 'none' }}
@@ -997,7 +1003,7 @@ export default function LandingPage() {
 
           {/* Copyright */}
           <div style={{ fontSize: 12, color: '#7a7a7a' }}>
-            © 2026 NamingContest.com
+            © 2026 Namico.com
           </div>
         </div>
       </footer>
@@ -1048,7 +1054,7 @@ function NewsletterSection() {
           marginBottom: 12, lineHeight: 1.15,
           whiteSpace: 'nowrap',
         }}>
-          Naming tips straight to your inbox.
+          Naming tips straight to your inbox
         </h2>
 
         <p style={{ fontSize: 15, color: '#7a7a7a', marginBottom: 8, lineHeight: 1.6 }}>
@@ -1154,9 +1160,9 @@ function FeatureBreakdown() {
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
             background: 'none',
-            border: '0.5px solid rgba(0,0,0,0.15)',
-            borderRadius: 9999,
-            padding: '10px 22px',
+            border: '1px solid rgba(0,0,0,0.12)',
+            borderRadius: 10,
+            padding: '12px 24px',
             fontSize: 13, fontWeight: 600, color: '#4a4a4a',
             cursor: 'pointer',
             fontFamily: 'Inter, sans-serif',
@@ -1199,6 +1205,7 @@ function SegmentCard({ card, navigate, delay }) {
       onMouseLeave={() => setHovered(false)}
       onClick={() => {
         localStorage.setItem('selectedGroup', card.group);
+        localStorage.removeItem('selectedSubSegment');
         navigate('/auth');
       }}
       style={{
@@ -1256,7 +1263,7 @@ function SegmentCard({ card, navigate, delay }) {
       </p>
 
       {/* Tags */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, maxWidth: '85%' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, maxWidth: '75%' }}>
         {card.tags.map(tag => (
           <span key={tag} style={{
             fontSize: 11, fontWeight: 500,
@@ -1286,7 +1293,7 @@ function SegmentCard({ card, navigate, delay }) {
 
       {/* Free preview note */}
       <div style={{ fontSize: 11, color: '#4a4a4a', lineHeight: 1.4 }}>
-        Free preview available · 5 participants · voting only
+        Free preview available · 5 participants
       </div>
 
       {/* Feature list */}
@@ -1329,7 +1336,7 @@ function SegmentCard({ card, navigate, delay }) {
 
       {/* Ghost try free CTA */}
       <button
-        onClick={e => { e.stopPropagation(); localStorage.setItem('selectedGroup', card.group); navigate('/auth'); }}
+        onClick={e => { e.stopPropagation(); localStorage.setItem('selectedGroup', card.group); localStorage.removeItem('selectedSubSegment'); navigate('/auth'); }}
         style={{
           background: 'none', border: 'none', cursor: 'pointer',
           fontSize: 12, color: '#4a4a4a',
@@ -1379,7 +1386,7 @@ function TestimonialCard({ testimonial }) {
         border: `0.5px solid rgba(${tc.rgb},0.3)`,
         borderRadius: 9999,
         padding: '3px 10px',
-        fontSize: 11, fontWeight: 600, color: tc.color,
+        fontSize: 11, fontWeight: 600, color: '#1C1917',
         marginBottom: 16,
       }}>
         {tc.label}
@@ -1394,7 +1401,7 @@ function TestimonialCard({ testimonial }) {
 
       {/* Quote */}
       <p style={{
-        fontSize: 15, color: '#292524', lineHeight: 1.65,
+        fontSize: 15, color: '#1C1917', lineHeight: 1.65,
         marginBottom: 20, fontStyle: 'italic',
       }}>
         "{testimonial.quote}"
@@ -1406,7 +1413,7 @@ function TestimonialCard({ testimonial }) {
         border: `0.5px solid rgba(${tc.rgb},0.15)`,
         borderRadius: 8,
         padding: '8px 12px',
-        fontSize: 12, color: tc.color, fontWeight: 600,
+        fontSize: 12, color: '#1C1917', fontWeight: 600,
         marginBottom: 16,
       }}>
         {testimonial.result}
@@ -1419,7 +1426,7 @@ function TestimonialCard({ testimonial }) {
           background: `rgba(${tc.rgb},0.15)`,
           borderRadius: '50%',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 12, fontWeight: 700, color: tc.color,
+          fontSize: 12, fontWeight: 700, color: '#1C1917',
         }}>
           {testimonial.avatar}
         </div>

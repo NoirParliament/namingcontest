@@ -1,5 +1,5 @@
 /**
- * Mock Data — NamingContest.com
+ * Mock Data — Namico.com
  * Sample data for all screens and flows
  */
 
@@ -344,7 +344,7 @@ export const testimonials = [
     tier: 'business',
     color: '#eaef09',
     avatar: 'SC',
-    quote: 'We had 47 name ideas from across the company and absolutely zero consensus. Three days after launching a NamingContest, we had a clear winner with 89% approval. The structured voting made all the difference — no more loudest-voice-wins dynamics.',
+    quote: 'We had 47 name ideas from across the company and absolutely zero consensus. Three days after launching a Namico, we had a clear winner with 89% approval. The structured voting made all the difference — no more loudest-voice-wins dynamics.',
     context: 'Used for: Company Name',
     result: '"Vanta Pay" — chosen in 3 days',
     participants: 24,
@@ -357,7 +357,7 @@ export const testimonials = [
     tier: 'team',
     color: '#8B5CF6',
     avatar: 'MR',
-    quote: 'Six band members, six very strong opinions, and zero agreement for 6 months. NamingContest gave everyone a voice without anyone feeling steamrolled. We voted, the data was clear, and now we\'re all proud of the name we own together.',
+    quote: 'Six band members, six very strong opinions, and zero agreement for 6 months. Namico gave everyone a voice without anyone feeling steamrolled. We voted, the data was clear, and now we\'re all proud of the name we own together.',
     context: 'Used for: Band Name',
     result: '"Hollow Signal" — unanimous after voting',
     participants: 6,
@@ -370,7 +370,7 @@ export const testimonials = [
     tier: 'personal',
     color: '#10B981',
     avatar: 'JM',
-    quote: 'Twenty-three family members across three countries all voted on our daughter\'s name. Grandma in Dublin, cousins in California — everyone participated. Clara was chosen by everyone who matters. She\'ll know her name brought the whole family together.',
+    quote: 'Twenty-three family members across three countries all voted on our daughter\'s name. Grandma in Dublin, cousins in California — everyone participated. Clara was chosen by the people who matter most.',
     context: 'Used for: Baby Name',
     result: '"Clara" — chosen by 23 family members',
     participants: 23,
@@ -393,12 +393,12 @@ export const faqData = [
   {
     id: 'faq-3',
     question: 'Can I run a free contest?',
-    answer: 'Yes. The free tier supports one active contest with up to 10 participants and basic voting. Paid tiers unlock more participants, multiple voting methods, multi-round contests, and PDF exports.',
+    answer: 'Yes. The free tier supports one active contest with up to 5 participants and voting only. Paid plans — Personal ($9), Team ($29), and Business ($89) — unlock more participants, all 5 voting methods, open submissions, naming methodology, and more.',
   },
   {
     id: 'faq-4',
     question: 'What\'s the Catchword Branding connection?',
-    answer: 'NamingContest.com is powered by Catchword Branding, a leading naming consultancy with 25+ years of experience. The platform uses Catchword\'s methodology — including their 10-criteria evaluation framework — built into every contest.',
+    answer: 'Namico.com is powered by Catchword Branding, a leading naming consultancy with 25+ years of experience. The platform uses Catchword\'s methodology — including their 10-criteria evaluation framework — built into every contest.',
   },
   {
     id: 'faq-5',
@@ -408,12 +408,12 @@ export const faqData = [
   {
     id: 'faq-6',
     question: 'What does it cost?',
-    answer: 'Free tier: 1 contest, up to 10 participants, basic voting. Standard ($29/contest): unlimited participants, 5 voting methods, CSV export. Professional ($79/contest): multi-round contests, Catchword consultation, PDF certificate.',
+    answer: 'Three paid tiers: Personal ($9/contest) for up to 30 participants — great for baby names, pets, and personal decisions. Team ($29/contest) for up to 60 participants with white-label output — ideal for bands, sports teams, and groups. Business ($89/contest) for up to 300 participants with full PDF reports — built for companies, products, and rebrands. All paid plans include every voting method, naming methodology, and automated reminders.',
   },
   {
     id: 'faq-7',
     question: 'Can I run multiple rounds?',
-    answer: 'Yes, on Standard and Professional tiers. You can run an open submission round followed by a shortlist voting round. The system automatically carries forward top submissions.',
+    answer: 'Yes, on all paid plans. You can run an open submission round, curate a shortlist, then open voting. The system supports manual review between phases so you control what goes to ballot.',
   },
   {
     id: 'faq-8',
@@ -423,12 +423,12 @@ export const faqData = [
   {
     id: 'faq-9',
     question: 'Can I export the results?',
-    answer: 'Yes. All tiers can export results as CSV (scores, rankings, vote counts). Professional tier includes a branded PDF certificate naming the winner, suitable for framing or records.',
+    answer: 'Yes. Team and Business plans include white-label output. The Business plan ($89) includes a full PDF results report with analytics, vote breakdowns, and a winner certificate. All paid plans include contest quality scores and submission breakdowns.',
   },
   {
     id: 'faq-10',
     question: 'What support is available?',
-    answer: 'Email support for all users. Professional tier includes a 30-minute consultation with a Catchword naming expert who can review your shortlist and offer professional guidance.',
+    answer: 'Email support for all users. The platform is powered by Catchword\'s 25-year naming methodology, which is built into every contest through articles, scoring criteria, and quality frameworks. Business plan users get access to professional naming consultation as an add-on.',
   },
 ];
 
@@ -471,7 +471,7 @@ export const methodologyItems = [
   {
     problem: 'Loudest Voice Wins',
     problemDetail: 'The most senior or most vocal person dominates the conversation.',
-    solution: 'Anonymous submissions. Democratic voting.',
+    solution: 'Anonymous submissions and democratic voting',
     solutionDetail: 'Names are submitted and voted on anonymously. No one knows who proposed what until after the results.',
     icon: '🔇',
   },
@@ -485,7 +485,7 @@ export const methodologyItems = [
   {
     problem: 'Anchoring Bias',
     problemDetail: 'The first name suggested tends to anchor all subsequent discussion.',
-    solution: 'Randomized order. Shortlist diversity guidance.',
+    solution: 'Randomized order and shortlist diversity guidance',
     solutionDetail: 'Names appear in randomized order during voting. Our shortlist tool flags when options are too similar.',
     icon: '⚖️',
   },

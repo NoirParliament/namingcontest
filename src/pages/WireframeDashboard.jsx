@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Trophy, ArrowRight, Briefcase, Users, Heart, Eye, ChartBar, Gear, Play, Path } from '@phosphor-icons/react';
+import namicoIcon from '../assets/namico-icon.svg';
+import { Trophy, ArrowRight, Briefcase, Users, Heart, Eye, ChartBar, Gear, Play, Path, Lightbulb } from '@phosphor-icons/react';
 
 // ─── Journey definitions ──────────────────────────────────────────────────────
 
@@ -435,10 +436,10 @@ export default function WireframeDashboard() {
         <div style={{ textAlign: 'center', marginBottom: 44 }}>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 11, marginBottom: 14 }}>
             <div style={{ width: 38, height: 38, background: '#eaef09', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Trophy size={20} weight="bold" color="#000" />
+              <img src={namicoIcon} alt="Namico" style={{ width: 26, height: 26, display: 'block' }} />
             </div>
             <h1 style={{ fontSize: 26, fontWeight: 800, color: '#fff' }}>
-              NamingContest.com — Wireframe Testing Hub
+              Namico.com — Wireframe Testing Hub
             </h1>
           </div>
           <p style={{ fontSize: 14, color: '#6a6a6a', marginBottom: 28 }}>
@@ -494,7 +495,7 @@ export default function WireframeDashboard() {
               borderRadius: 10, padding: '12px 18px', marginBottom: 22,
               display: 'flex', gap: 10, alignItems: 'flex-start',
             }}>
-              <span style={{ fontSize: 16, flexShrink: 0 }}>💡</span>
+              <Lightbulb size={16} color="#eaef09" weight="duotone" style={{ flexShrink: 0 }} />
               <div style={{ fontSize: 12, color: '#7a7a7a', lineHeight: 1.6 }}>
                 Switch <strong style={{ color: '#a1a1a1' }}>Contest Type</strong> to see how the flow changes.
                 Switch <strong style={{ color: '#a1a1a1' }}>Sub-type</strong> to update brief builder links.
