@@ -274,9 +274,34 @@ function PricingFeatureTable() {
     {
       label: 'Participants',
       rows: [
-        { feature: 'Participant cap', free: '3–5', personal: 'Up to 30', team: 'Up to 60', business: 'Up to 300' },
+        { feature: 'Participant cap', free: '5', personal: 'Up to 30', team: 'Up to 60', business: 'Up to 300' },
         { feature: 'Participant invite flow', free: '✓', personal: '✓', team: '✓', business: '✓' },
         { feature: 'Anonymous submissions', free: '✓', personal: '✓', team: '✓', business: '✓' },
+      ],
+    },
+    {
+      label: 'Methodology & Quality',
+      rows: [
+        { feature: 'Naming methodology articles', free: '—', personal: '✓', team: '✓', business: '✓' },
+        { feature: 'Article quizzes', free: '—', personal: '✓', team: '✓', business: '✓' },
+        { feature: 'Contest quality score (0–100)', free: '—', personal: '✓', team: '✓', business: '✓' },
+        { feature: 'Submission quality breakdown', free: '—', personal: '✓', team: '✓', business: '✓' },
+      ],
+    },
+    {
+      label: 'Automation & Branding',
+      rows: [
+        { feature: 'Automated deadline reminders', free: '—', personal: '✓', team: '✓', business: '✓' },
+        { feature: 'Voting open notification', free: '—', personal: '✓', team: '✓', business: '✓' },
+        { feature: 'White-label output (no platform branding)', free: '—', personal: '—', team: '✓', business: '✓' },
+      ],
+    },
+    {
+      label: 'Results & Reports',
+      rows: [
+        { feature: 'Live results dashboard', free: '✓', personal: '✓', team: '✓', business: '✓' },
+        { feature: 'Retroactive PDF unlock (post-contest)', free: '—', personal: '—', team: '✓', business: '✓' },
+        { feature: 'Full PDF results report', free: '—', personal: '—', team: '—', business: '✓' },
       ],
     },
     {
@@ -295,31 +320,6 @@ function PricingFeatureTable() {
         { feature: 'Pairwise comparison', free: '—', personal: '✓', team: '✓', business: '✓' },
         { feature: 'Multi-criteria scoring', free: '—', personal: '✓', team: '✓', business: '✓' },
         { feature: 'Manual or auto voting transition', free: '✓', personal: '✓', team: '✓', business: '✓' },
-      ],
-    },
-    {
-      label: 'Methodology & Quality',
-      rows: [
-        { feature: 'Naming methodology articles', free: '—', personal: '✓', team: '✓', business: '✓' },
-        { feature: 'Article quizzes', free: '—', personal: '✓', team: '✓', business: '✓' },
-        { feature: 'Contest quality score (0–100)', free: '—', personal: '—', team: '✓', business: '✓' },
-      ],
-    },
-    {
-      label: 'Results & Reports',
-      rows: [
-        { feature: 'Live results dashboard', free: '✓', personal: '✓', team: '✓', business: '✓' },
-        { feature: 'Full PDF results report', free: '—', personal: '—', team: '—', business: '✓' },
-        { feature: 'Retroactive PDF unlock (post-contest)', free: '—', personal: '—', team: '✓', business: '✓' },
-        { feature: 'Submission quality breakdown', free: '—', personal: '✓', team: '✓', business: '✓' },
-      ],
-    },
-    {
-      label: 'Automation & Branding',
-      rows: [
-        { feature: 'Automated deadline reminders', free: '—', personal: '✓', team: '✓', business: '✓' },
-        { feature: 'Voting open notification', free: '—', personal: '✓', team: '✓', business: '✓' },
-        { feature: 'White-label output (no platform branding)', free: '—', personal: '—', team: '✓', business: '✓' },
       ],
     },
   ];
@@ -384,7 +384,7 @@ export default function LandingPage() {
         { label: 'All voting methods', included: true },
         { label: 'Naming methodology', included: true },
         { label: 'Automated reminders', included: true },
-        { label: 'Contest quality score', included: false },
+        { label: 'Contest quality score', included: true },
         { label: 'White-label output', included: false },
         { label: 'Full PDF report', included: false },
       ],
