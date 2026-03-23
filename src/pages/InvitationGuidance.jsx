@@ -98,7 +98,7 @@ const INVITE_CONFIG = {
     recommended: ["Close friends in the baby's life — godparents, best friends"],
     recommendedNote: "People who'll be in this child's life should feel included. It also means more people invested in the name from day one.",
     optional: ['Distant relatives, coworkers — anyone you want to feel involved'],
-    sweetSpot: '15–30',
+    sweetSpot: '8–15',
     sweetSpotNote: "Great way to make distant relatives feel connected. The certificate on the nursery wall tells the whole story.",
   },
   'pet-name': {
@@ -122,7 +122,7 @@ const INVITE_CONFIG = {
     recommended: ['A few friends or family for fresh perspective'],
     recommendedNote: "Outside voices catch what feels obvious to you but surprising to the world.",
     optional: ["Anyone with a connection to the thing you're naming"],
-    sweetSpot: '5–20',
+    sweetSpot: '5–15',
     sweetSpotNote: 'Scale to the occasion.',
   },
 };

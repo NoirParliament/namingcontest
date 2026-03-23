@@ -22,7 +22,7 @@ function getPrimerContent(group, subSegment, tc) {
     color: '#a1a1a1',
     lineHeight: 1.6,
   };
-  const quoteStyle = { fontFamily: 'Inter, sans-serif', fontSize: 17, color: '#fff', fontWeight: 600, display: 'block', marginBottom: 8 };
+  const quoteStyle = { fontFamily: 'Inter, sans-serif', fontSize: 17, color: '#fff', fontWeight: 400, display: 'block', marginBottom: 8 };
 
   if (subSegment === 'company-name') return (
     <div>
@@ -1402,7 +1402,7 @@ const INVITE_CONFIG = {
     recommended: ['Close friends in the baby\'s life — godparents, best friends'],
     recommendedNote: "People who'll be in this child's life should feel included. It also means more people invested in the name from day one.",
     optional: ['Distant relatives, coworkers — anyone you want to feel involved'],
-    sweetSpot: '15–30',
+    sweetSpot: '8–15',
     sweetSpotNote: "Great way to make distant relatives feel connected. The certificate on the nursery wall tells the whole story.",
   },
   'pet-name': {
@@ -1426,7 +1426,7 @@ const INVITE_CONFIG = {
     recommended: ['A few friends or family for fresh perspective'],
     recommendedNote: "Outside voices catch what feels obvious to you but surprising to the world.",
     optional: ['Anyone with a connection to the thing you\'re naming'],
-    sweetSpot: '5–20',
+    sweetSpot: '5–15',
     sweetSpotNote: 'Scale to the occasion.',
   },
 };
@@ -2190,22 +2190,6 @@ export default function BriefBuilder() {
           <BrandingField data={briefData} setData={setBriefData} tc={tc} group={group} subSegment={subSegment} />
           <PrizeField data={briefData} setData={setBriefData} tc={tc} />
 
-          {/* ── Affiliate Nudge — contextual to sub-segment ── */}
-          {(subSegment === 'company-name' || subSegment === 'rebrand') && (
-            <div style={{ marginTop: 24, padding: '18px 20px', background: '#1a1a1a', border: '0.5px solid rgba(59,130,246,0.25)', borderRadius: 12, position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: '#3b82f6' }} />
-              <div style={{ fontSize: 9, fontWeight: 800, color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>
-                Domain Check · Namecheap · Sponsored
-              </div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 6 }}>Check domain availability early</div>
-              <div style={{ fontSize: 13, color: '#7a7a7a', marginBottom: 14, lineHeight: 1.5 }}>
-                Before your contest starts, it helps to know which .com domains are taken. Save time by checking availability now so participants can focus on names that work.
-              </div>
-              <a href="#" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 18px', borderRadius: 8, background: '#3b82f6', color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
-                Check domains on Namecheap →
-              </a>
-            </div>
-          )}
 
           {subSegment === 'baby-name' && (
             <div style={{ marginTop: 24, padding: '18px 20px', background: '#1a1a1a', border: '0.5px solid rgba(16,185,129,0.25)', borderRadius: 12, position: 'relative', overflow: 'hidden' }}>
