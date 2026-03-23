@@ -371,8 +371,8 @@ export default function LandingPage() {
       group: 'personal',
       label: 'Personal',
       icon: <Baby size={28} weight="duotone" color="#10B981" />,
-      title: 'Let everyone weigh in. Make it official.',
-      subtitle: "Let everyone vote. Pick the name you'll love.",
+      title: 'Too many opinions? Perfect.',
+      subtitle: "Invite the people who care. Pick the name you'll love.",
       color: '#10B981',
       colorRgb: '16,185,129',
       tags: ['Baby Name', 'Pet Name', 'Home', 'Something Fun'],
@@ -394,8 +394,8 @@ export default function LandingPage() {
       group: 'team',
       label: 'Group',
       icon: <Users size={28} weight="duotone" color="#8B5CF6" />,
-      title: 'Give your whole group a voice',
-      subtitle: "Give everyone a voice. Pick a name you'll all own.",
+      title: 'Let the squad decide.',
+      subtitle: "From group chat chaos to a name everyone reps.",
       color: '#8B5CF6',
       colorRgb: '139,92,246',
       tags: ['Sports Team', 'Band', 'Podcast', 'Gaming Group'],
@@ -417,8 +417,8 @@ export default function LandingPage() {
       group: 'business',
       label: 'Business',
       icon: <Buildings size={28} weight="duotone" color="#eaef09" />,
-      title: 'Name something that means business',
-      subtitle: 'Your team has ideas. Structure the conversation.',
+      title: 'Run naming like a business decision.',
+      subtitle: 'Structured naming with stakeholder input and real methodology.',
       color: '#eaef09',
       colorRgb: '234,239,9',
       tags: ['Company', 'Product', 'Project', 'Rebrand'],
@@ -1256,7 +1256,7 @@ function SegmentCard({ card, navigate, delay }) {
       </p>
 
       {/* Tags */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, maxWidth: '85%' }}>
         {card.tags.map(tag => (
           <span key={tag} style={{
             fontSize: 11, fontWeight: 500,
