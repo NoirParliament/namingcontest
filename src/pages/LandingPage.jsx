@@ -36,7 +36,7 @@ function Navbar() {
             borderRadius: 6,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <img src={namicoIcon} alt="Namico" style={{ width: 18, height: 18, display: 'block' }} />
+            <img src={namicoIcon} alt="Namico" style={{ width: 24, height: 24, display: 'block' }} />
           </div>
           <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: 16, color: '#fff' }}>
             NamingContest
