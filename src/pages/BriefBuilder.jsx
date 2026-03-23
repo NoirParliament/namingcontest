@@ -233,6 +233,22 @@ function B1Fields({ data, setData, tc, subSegment }) {
       </div>
 
       <div style={fieldWrap}>
+        <label style={labelStyle}>Target audience</label>
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Names communicate differently to different audiences. 'Catalyst' reads as credible to VCs but vague to main street consumers. 'QuickBite' works for a food delivery app but would embarrass an enterprise software buyer. Tell participants who the name needs to resonate with — and who it shouldn't alienate." />
+        <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={2} placeholder="Who needs to love this name? e.g. 'SMB owners aged 35-55, non-technical, price-sensitive'" value={data.targetAudience || ''} onChange={e => setData({ ...data, targetAudience: e.target.value })} />
+      </div>
+
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Geographic scope</label>
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Geographic scope affects naming strategy significantly. Local names can use place references and community language. National names need to be culturally neutral across regions. Global names must work across languages — avoid sounds that mean something rude in major languages (like Chevy Nova, which means 'doesn't go' in Spanish)." />
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+          {['Local / Regional', 'National', 'Global / International', 'Not sure yet'].map(scope => (
+            <button key={scope} onClick={() => setData({ ...data, geoScope: scope })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.geoScope === scope ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.geoScope === scope ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{scope}</button>
+          ))}
+        </div>
+      </div>
+
+      <div style={fieldWrap}>
         <label style={labelStyle}>Competitor Names (list 3-5)</label>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="This is the most important field. If all your competitors sound the same, you need to sound different. List 3-5 direct competitors. Participants will see these and know what NOT to sound like. Example: If you list Asana, Monday, ClickUp — all suggestive, all 2-syllable compounds — the smart move is to go abstract (like Notion did)." />
         <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={3} placeholder="e.g. Slack, Notion, Asana, Monday" value={data.competitors || ''} onChange={e => setData({ ...data, competitors: e.target.value })} />
@@ -327,8 +343,18 @@ function B2Fields({ data, setData, tc }) {
         </div>
       </div>
       <div style={fieldWrap}>
+        <label style={labelStyle}>Who is the primary user?</label>
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Product names land differently with different users. A product name for developers can be technical or playful (Zapier, Twilio). A product name for executives needs to sound credible and substantial (Salesforce Revenue Cloud). A consumer product name needs to feel simple and emotional. Tell participants who will actually use this." />
+        <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={2} placeholder="e.g. HR managers at mid-market companies, developers building APIs, first-time homebuyers..." value={data.primaryUser || ''} onChange={e => setData({ ...data, primaryUser: e.target.value })} />
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Key differentiator — what makes it different?</label>
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="The best product names reflect a core differentiator without describing it literally. 'Superhuman' (email client) communicates speed without saying 'fast email'. 'Calm' (meditation app) is the exact emotion the product creates. What's the one thing your product does that others don't — and what feeling does that create?" />
+        <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={2} placeholder="e.g. 10x faster than alternatives, the only tool that does X without Y, designed specifically for Z" value={data.differentiator || ''} onChange={e => setData({ ...data, differentiator: e.target.value })} />
+      </div>
+      <div style={fieldWrap}>
         <label style={labelStyle}>Competitor product names (list 3-5)</label>
-        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Product naming needs market differentiation just as much as company naming. If all your competitors have technical/descriptive names, a evocative name will stand out — and vice versa." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Product naming needs market differentiation just as much as company naming. If all your competitors have technical/descriptive names, an evocative name will stand out — and vice versa." />
         <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={3} placeholder="e.g. Stripe Billing, Chargebee, Paddle..." value={data.competitors || ''} onChange={e => setData({ ...data, competitors: e.target.value })} />
       </div>
       <div style={fieldWrap}>
@@ -410,16 +436,34 @@ function B3Fields({ data, setData, tc }) {
 
 // ── Team T1 fields ──
 function T1Fields({ data, setData, tc }) {
-  const personalities = ['Intimidating', 'Pride-Based', 'Fun', 'Not sure'];
-  const limits = [3, 5, 'Unlimited'];
+  const personalities = ['Intimidating', 'Pride-Based', 'Fun / Playful', 'Underdog / Gritty', 'Not sure'];
+  const ageGroups = ['Youth (under 14)', 'High School (14-18)', 'College / University', 'Adult Amateur', 'Semi-Pro / Pro'];
+  const namingDirections = [
+    { id: 'animal-mascot', label: 'Animal / Mascot', example: '"Lions", "Hawks", "Wolves"' },
+    { id: 'force-of-nature', label: 'Force of Nature', example: '"Thunder", "Blaze", "Surge"' },
+    { id: 'place-geographic', label: 'Place / Geographic', example: '"Lakeview", "Riverside", "Northern"' },
+    { id: 'abstract-fierce', label: 'Abstract / Fierce', example: '"Renegades", "Vanguard", "Apex"' },
+    { id: 'any', label: 'No preference — show me everything', example: '' },
+  ];
+  const suggestDate = new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
   return (
     <div>
       <div style={fieldWrap}>
-        <label style={labelStyle}>Describe your team</label>
-        <textarea style={{ ...textareaStyle }} rows={3} placeholder="Sport, league, age group, competitive level..." value={data.teamDesc || ''} onChange={e => setData({ ...data, teamDesc: e.target.value })} />
+        <label style={labelStyle}>Sport and league / competition</label>
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="The sport shapes the naming territory. Soccer teams trend geographic or fierce animal. Hockey teams trend weather/nature. Esports teams trend aggressive or meme-worthy. Share your sport so participants know the naming conventions to break or follow." />
+        <input style={{ ...inputStyle, marginTop: 8 }} placeholder="e.g. Competitive soccer, U14 travel league, AYSO Region 12..." value={data.sportLeague || ''} onChange={e => setData({ ...data, sportLeague: e.target.value })} />
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Age group / competitive level</label>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
+          {ageGroups.map(g => (
+            <button key={g} onClick={() => setData({ ...data, ageGroup: g })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.ageGroup === g ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.ageGroup === g ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{g}</button>
+          ))}
+        </div>
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Team Personality</label>
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Personality drives tone. An intimidating name (Predators, Raptors) sets a different expectation than a pride-based name (Golden State, Pride FC). A fun name works for youth teams but may feel weak at adult competitive level. Be honest about your team's culture." />
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
           {personalities.map(p => (
             <button key={p} onClick={() => setData({ ...data, personality: p })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.personality === p ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.personality === p ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{p}</button>
@@ -427,15 +471,51 @@ function T1Fields({ data, setData, tc }) {
         </div>
       </div>
       <div style={fieldWrap}>
+        <label style={labelStyle}>Naming direction</label>
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="The Oklahoma City Thunder was chosen from 64,000 public submissions — it won because it's both geographic and a force of nature. The Seattle Kraken broke convention with a creature name. Tell participants which direction to explore — or let them surprise you." />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
+          {namingDirections.map(d => (
+            <label key={d.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: data.namingDirection === d.id ? `rgba(${tc.rgb},0.08)` : '#141414', border: `0.5px solid ${data.namingDirection === d.id ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, cursor: 'pointer' }}>
+              <input type="radio" name="namingDirection" value={d.id} checked={data.namingDirection === d.id} onChange={() => setData({ ...data, namingDirection: d.id })} style={{ accentColor: tc.color }} />
+              <div>
+                <div style={{ color: '#fff', fontSize: 14 }}>{d.label}</div>
+                {d.example && <div style={{ color: '#7a7a7a', fontSize: 12 }}>{d.example}</div>}
+              </div>
+            </label>
+          ))}
+        </div>
+      </div>
+      <div style={fieldWrap}>
         <label style={labelStyle}>Local connection / geography <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
-        <textarea style={{ ...textareaStyle }} rows={2} placeholder="City, region, or local landmarks that could inspire the name..." value={data.geography || ''} onChange={e => setData({ ...data, geography: e.target.value })} />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Place names ground a team in community. If your team is from a specific city, neighborhood, or region — share it. Local landmarks, rivers, weather patterns, and regional history can all inspire names that feel native to where you play." />
+        <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={2} placeholder="City, region, or local landmarks that could inspire the name..." value={data.geography || ''} onChange={e => setData({ ...data, geography: e.target.value })} />
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Chantability — will fans chant it?</label>
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="A chantable name changes the game-day experience. 'Let's go Thunder!' works because 'Thunder' is punchy and single-syllable. 'Let's go Riverside Athletic United!' doesn't chant. If this name will be chanted, it needs to be 1-2 syllables and end with energy." />
+        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+          {['Yes — fans will chant it', 'Not important for us', 'Not sure'].map(opt => (
+            <button key={opt} onClick={() => setData({ ...data, chantable: opt })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.chantable === opt ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.chantable === opt ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 12, cursor: 'pointer' }}>{opt}</button>
+          ))}
+        </div>
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Team colors <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
+        <input style={{ ...inputStyle, marginTop: 4 }} placeholder="e.g. Navy and gold, all black, red and white" value={data.teamColors || ''} onChange={e => setData({ ...data, teamColors: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Submission Limit per Person</label>
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-          {limits.map(l => (
+          {[3, 5, 'Unlimited'].map(l => (
             <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
           ))}
+        </div>
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Contest Deadline</label>
+        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+          <input type="date" style={{ ...inputStyle, flex: 1 }} value={data.deadline || ''} min={new Date().toISOString().split('T')[0]} onChange={e => setData({ ...data, deadline: e.target.value })} />
+          <button onClick={() => setData({ ...data, deadline: suggestDate })} style={{ padding: '0 12px', height: 36, border: `1px solid rgba(${tc.rgb},0.4)`, borderRadius: 8, background: 'transparent', color: tc.color, fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap' }}>+7 days</button>
         </div>
       </div>
     </div>
@@ -667,18 +747,28 @@ function T6Fields({ data, setData, tc }) {
 
 // ── Team T5 fields ──
 function T5Fields({ data, setData, tc }) {
-  const vibes = ['Intimidating', 'Fun', 'Meme-worthy'];
+  const vibes = ['Intimidating / Feared', 'Meme-worthy / Ironic', 'Clean / Professional', 'Fun / Casual'];
+  const platforms = ['PC / Desktop', 'Console (PS/Xbox)', 'Mobile', 'Multi-platform'];
+  const tagStyles = [
+    { id: 'prefix', label: 'Prefix style', example: '"Team X", "FaZe X", "Cloud9 X"' },
+    { id: 'single-word', label: 'Single word / No tag', example: '"Liquid", "Sentinels", "NaVi"' },
+    { id: 'clan-suffix', label: 'Clan suffix', example: '"X Gaming", "X Esports", "X GG"' },
+    { id: 'any', label: 'No preference', example: '' },
+  ];
+  const suggestDate = new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
   return (
     <div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Games you play</label>
-        <input style={inputStyle} placeholder="e.g. Valorant, League of Legends, Minecraft..." value={data.games || ''} onChange={e => setData({ ...data, games: e.target.value })} />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Different games have different naming cultures. Valorant and CS:GO teams trend aggressive/short. Minecraft communities trend playful/creative. League of Legends teams often use mythological or nature references. Share your games so participants can name within that culture." />
+        <input style={{ ...inputStyle, marginTop: 8 }} placeholder="e.g. Valorant, League of Legends, Minecraft, Fortnite..." value={data.games || ''} onChange={e => setData({ ...data, games: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Competitive or casual?</label>
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Competitive teams need names that convey threat. Casual groups can lean into personality and in-jokes. A name like 'Ctrl+Alt+Delete' works for a casual squad but wouldn't intimidate at a tournament." />
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-          {['Competitive', 'Casual'].map(c => (
-            <button key={c} onClick={() => setData({ ...data, competitiveLevel: c })} style={{ padding: '8px 20px', borderRadius: 8, border: `1px solid ${data.competitiveLevel === c ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.competitiveLevel === c ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{c}</button>
+          {['Tournament / Competitive', 'Casual / Social', 'Both — we do both'].map(c => (
+            <button key={c} onClick={() => setData({ ...data, competitiveLevel: c })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.competitiveLevel === c ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.competitiveLevel === c ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{c}</button>
           ))}
         </div>
       </div>
@@ -690,6 +780,48 @@ function T5Fields({ data, setData, tc }) {
           ))}
         </div>
       </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Primary platform</label>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+          {platforms.map(p => (
+            <button key={p} onClick={() => setData({ ...data, platform: p })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.platform === p ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.platform === p ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{p}</button>
+          ))}
+        </div>
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Clan tag / team name structure</label>
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Esports teams are often known by tag (FaZe) or full name (FaZe Clan). Some teams use 'Gaming' or 'Esports' as a suffix when entering tournaments. Tell participants what structure you want — especially if the tag (3-5 letters shown in-game) matters." />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
+          {tagStyles.map(s => (
+            <label key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: data.tagStyle === s.id ? `rgba(${tc.rgb},0.08)` : '#141414', border: `0.5px solid ${data.tagStyle === s.id ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, cursor: 'pointer' }}>
+              <input type="radio" name="tagStyle" value={s.id} checked={data.tagStyle === s.id} onChange={() => setData({ ...data, tagStyle: s.id })} style={{ accentColor: tc.color }} />
+              <div>
+                <div style={{ color: '#fff', fontSize: 14 }}>{s.label}</div>
+                {s.example && <div style={{ color: '#7a7a7a', fontSize: 12 }}>{s.example}</div>}
+              </div>
+            </label>
+          ))}
+        </div>
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Any inside references or crew history? <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
+        <input style={inputStyle} placeholder="e.g. We all went to the same school, our squad name started as a joke..." value={data.crewHistory || ''} onChange={e => setData({ ...data, crewHistory: e.target.value })} />
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Submission Limit per Person</label>
+        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+          {[3, 5, 'Unlimited'].map(l => (
+            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
+          ))}
+        </div>
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Contest Deadline</label>
+        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+          <input type="date" style={{ ...inputStyle, flex: 1 }} value={data.deadline || ''} min={new Date().toISOString().split('T')[0]} onChange={e => setData({ ...data, deadline: e.target.value })} />
+          <button onClick={() => setData({ ...data, deadline: suggestDate })} style={{ padding: '0 12px', height: 36, border: `1px solid rgba(${tc.rgb},0.4)`, borderRadius: 8, background: 'transparent', color: tc.color, fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap' }}>+5 days</button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -697,6 +829,8 @@ function T5Fields({ data, setData, tc }) {
 // ── Personal P1 fields ──
 function P1Fields({ data, setData, tc }) {
   const genders = ['Boy', 'Girl', 'Surprise', 'Prefer not to say'];
+  const lengthPrefs = ['Short (1-2 syllables)', 'Medium (2-3 syllables)', 'Long / Formal (3+ syllables)', 'No preference'];
+  const suggestDate = new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
   return (
     <div>
       <div style={fieldWrap}>
@@ -714,9 +848,61 @@ function P1Fields({ data, setData, tc }) {
         </div>
       </div>
       <div style={fieldWrap}>
+        <label style={labelStyle}>Last name <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional — helps test name flow)</span></label>
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Testing 'Emma Chen' vs 'Emma Rodriguez' vs 'Emma O'Brien' changes what works. A long last name pairs better with a short first name. A short last name can support something longer. Sharing this helps participants think about the full name." />
+        <input style={{ ...inputStyle, marginTop: 8 }} placeholder="e.g. Johnson, Park, Martinez (your last name)" value={data.lastName || ''} onChange={e => setData({ ...data, lastName: e.target.value })} />
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Cultural or heritage context <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Names carry cultural weight. Sharing heritage helps participants suggest names that honor your roots — or names that work across cultures if that's important to you. It also helps avoid names that mean something unfortunate in languages you're connected to." />
+        <input style={{ ...inputStyle, marginTop: 8 }} placeholder="e.g. Irish and Japanese heritage, prefer names that work in both cultures" value={data.heritage || ''} onChange={e => setData({ ...data, heritage: e.target.value })} />
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Name length preference</label>
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Short names (Ava, Max, Zoe) are easy to say and remember — great call names. Longer formal names (Alexander, Genevieve) have more nicknames built in. Think about what they'll be called at school, at work, and at 70." />
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
+          {lengthPrefs.map(l => (
+            <button key={l} onClick={() => setData({ ...data, lengthPref: l })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.lengthPref === l ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.lengthPref === l ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
+          ))}
+        </div>
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Nickname-friendly?</label>
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Some parents want only the full name used (no 'Rob' for Robert, no 'Liz' for Elizabeth). Others want a formal name with a built-in nickname. A few want something that can't be shortened. This shapes which names participants should suggest." />
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+          {['Yes — should have a natural nickname', 'No — use the full name only', 'Flexible either way'].map(opt => (
+            <button key={opt} onClick={() => setData({ ...data, nicknamePreference: opt })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.nicknamePreference === opt ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.nicknamePreference === opt ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 12, cursor: 'pointer' }}>{opt}</button>
+          ))}
+        </div>
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Initials to avoid <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="The initials test. 'ASS', 'DIE', 'FAT' — people have been caught off guard. Participants who know the last name can avoid unfortunate combinations. Share if there are initial sequences to avoid." />
+        <input style={{ ...inputStyle, marginTop: 8 }} placeholder="e.g. Avoid initials 'E.D.' or anything that spells something unfortunate" value={data.avoidInitials || ''} onChange={e => setData({ ...data, avoidInitials: e.target.value })} />
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Family naming traditions <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
+        <input style={{ ...inputStyle, marginTop: 4 }} placeholder="e.g. First child always has the father's name as middle name, names starting with 'M' for tradition..." value={data.traditions || ''} onChange={e => setData({ ...data, traditions: e.target.value })} />
+      </div>
+      <div style={fieldWrap}>
         <label style={labelStyle}>Any names to avoid? <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Family names that didn't work out? Names of exes? We won't show these to voters — they stay private between you and the platform." />
-        <input style={{ ...inputStyle, marginTop: 8 }} placeholder="Ex: No names starting with K (too many cousins already)" value={data.avoidNames || ''} onChange={e => setData({ ...data, avoidNames: e.target.value })} />
+        <input style={{ ...inputStyle, marginTop: 8 }} placeholder="Ex: No names starting with K (too many cousins already), no 'Jennifer'" value={data.avoidNames || ''} onChange={e => setData({ ...data, avoidNames: e.target.value })} />
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Submission Limit per Person</label>
+        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+          {[3, 5, 'Unlimited'].map(l => (
+            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
+          ))}
+        </div>
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Contest Deadline</label>
+        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+          <input type="date" style={{ ...inputStyle, flex: 1 }} value={data.deadline || ''} min={new Date().toISOString().split('T')[0]} onChange={e => setData({ ...data, deadline: e.target.value })} />
+          <button onClick={() => setData({ ...data, deadline: suggestDate })} style={{ padding: '0 12px', height: 36, border: `1px solid rgba(${tc.rgb},0.4)`, borderRadius: 8, background: 'transparent', color: tc.color, fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap' }}>+7 days</button>
+        </div>
       </div>
     </div>
   );
@@ -724,7 +910,10 @@ function P1Fields({ data, setData, tc }) {
 
 // ── Personal P2 fields ──
 function P2Fields({ data, setData, tc }) {
-  const pets = ['Dog', 'Cat', 'Bird', 'Reptile', 'Other'];
+  const pets = ['Dog', 'Cat', 'Bird', 'Reptile', 'Rabbit / Small Animal', 'Fish / Aquatic', 'Other'];
+  const lengthPrefs = ['Short call name (1-2 syllables)', 'Medium (2-3 syllables)', 'Longer / regal name', 'No preference'];
+  const tonePrefs = ['Dignified / Regal', 'Playful / Funny', 'Cute / Sweet', 'Tough / Strong', 'No preference'];
+  const suggestDate = new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
   return (
     <div>
       <div style={fieldWrap}>
@@ -736,12 +925,50 @@ function P2Fields({ data, setData, tc }) {
         </div>
       </div>
       <div style={fieldWrap}>
+        <label style={labelStyle}>Breed or description <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Breed shapes the name archetype. A Chihuahua named 'Bruno' is funny. A Great Dane named 'Peanut' is funnier. A Siamese cat named 'Miso' fits perfectly. Participants who know the breed or look can suggest names that match the vibe." />
+        <input style={{ ...inputStyle, marginTop: 8 }} placeholder="e.g. Golden Retriever, orange tabby, blue-eyed Husky, tiny black guinea pig..." value={data.breed || ''} onChange={e => setData({ ...data, breed: e.target.value })} />
+      </div>
+      <div style={fieldWrap}>
         <label style={labelStyle}>Describe their personality <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
-        <input style={inputStyle} placeholder="'Chaotic gremlin energy' or 'Regal and aloof'" value={data.petPersonality || ''} onChange={e => setData({ ...data, petPersonality: e.target.value })} />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="The name should fit the animal. 'Chaos' works for a hyperactive dog. 'Professor' works for a dignified cat. Share what you've noticed — their quirks, habits, or early personality signals — and let participants match the name to the animal." />
+        <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={2} placeholder="'Chaotic gremlin energy' or 'Regal and aloof' or 'Timid but playful once comfortable'" value={data.petPersonality || ''} onChange={e => setData({ ...data, petPersonality: e.target.value })} />
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Call name preference</label>
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="The call name principle: dogs especially respond best to names ending in a vowel sound (Bella, Benny, Luna) because they're acoustically distinct. Short names are easier to shout across a park. Longer names work when you mostly use them at home." />
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
+          {lengthPrefs.map(l => (
+            <button key={l} onClick={() => setData({ ...data, callNamePref: l })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.callNamePref === l ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.callNamePref === l ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
+          ))}
+        </div>
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Tone / naming style</label>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
+          {tonePrefs.map(t => (
+            <button key={t} onClick={() => setData({ ...data, nameTone: t })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.nameTone === t ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.nameTone === t ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{t}</button>
+          ))}
+        </div>
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Any names to avoid? <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
-        <input style={inputStyle} placeholder="Names already taken by other pets, etc." value={data.avoidNames || ''} onChange={e => setData({ ...data, avoidNames: e.target.value })} />
+        <input style={{ ...inputStyle, marginTop: 4 }} placeholder="Names already taken by other pets, names that sound like 'no', etc." value={data.avoidNames || ''} onChange={e => setData({ ...data, avoidNames: e.target.value })} />
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Submission Limit per Person</label>
+        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+          {[3, 5, 'Unlimited'].map(l => (
+            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
+          ))}
+        </div>
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Contest Deadline</label>
+        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+          <input type="date" style={{ ...inputStyle, flex: 1 }} value={data.deadline || ''} min={new Date().toISOString().split('T')[0]} onChange={e => setData({ ...data, deadline: e.target.value })} />
+          <button onClick={() => setData({ ...data, deadline: suggestDate })} style={{ padding: '0 12px', height: 36, border: `1px solid rgba(${tc.rgb},0.4)`, borderRadius: 8, background: 'transparent', color: tc.color, fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap' }}>+5 days</button>
+        </div>
       </div>
     </div>
   );
@@ -749,8 +976,10 @@ function P2Fields({ data, setData, tc }) {
 
 // ── Personal P3 fields (Home / Property / Fun) ──
 function P3Fields({ data, setData, tc }) {
-  const namingTargets = ['House / Home', 'Vacation Home / Cabin', 'Boat / Watercraft', 'Car / Vehicle', 'Room / Space', 'Other'];
-  const vibes = ['Cozy / Warm', 'Adventurous / Outdoorsy', 'Elegant / Sophisticated', 'Funny / Playful', 'Not sure'];
+  const namingTargets = ['House / Home', 'Vacation Home / Cabin', 'Boat / Watercraft', 'Car / Vehicle', 'Camper / RV', 'Room / Space', 'Other'];
+  const vibes = ['Cozy / Warm', 'Adventurous / Outdoorsy', 'Elegant / Sophisticated', 'Funny / Playful', 'Nautical / Sea-themed', 'Not sure'];
+  const languages = ['English only', 'Open to other languages', 'Specific language (describe below)'];
+  const suggestDate = new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
   return (
     <div>
       <div style={fieldWrap}>
@@ -762,9 +991,14 @@ function P3Fields({ data, setData, tc }) {
         </div>
       </div>
       <div style={fieldWrap}>
-        <label style={labelStyle}>Tell people about it <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
-        <TipRow color={tc.color} rgb={tc.rgb} tipContent="A little context sparks better names. Is there something unique about this place or thing? A quirk, a story, a feeling? Share what makes it special and participants will suggest names that actually fit." />
+        <label style={labelStyle}>Tell people about it</label>
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="A little context sparks better names. Is there something unique about this place or thing? A quirk, a story, a feeling? Research shows named spaces are used more, cared for more, and remembered more fondly — the name you pick will become part of the story you tell about this place." />
         <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={3} placeholder="e.g. A 1920s craftsman bungalow with a big porch, always full of people on summer evenings..." value={data.propDesc || ''} onChange={e => setData({ ...data, propDesc: e.target.value })} />
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Location / environment <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Local geography, nature, or architectural style can inspire names that feel native to the place. A cabin in the Adirondacks has different naming territory than a beach house in the Florida Keys. Share where it is — or what's around it." />
+        <input style={{ ...inputStyle, marginTop: 8 }} placeholder="e.g. Pacific Northwest lakefront, New England colonial, urban brownstone in Brooklyn..." value={data.location || ''} onChange={e => setData({ ...data, location: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Vibe / personality</label>
@@ -772,6 +1006,42 @@ function P3Fields({ data, setData, tc }) {
           {vibes.map(v => (
             <button key={v} onClick={() => setData({ ...data, vibe: v })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.vibe === v ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.vibe === v ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{v}</button>
           ))}
+        </div>
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Will the name appear on a sign or plaque?</label>
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Names that will be engraved or displayed need to look good in print — not just sound good spoken. Short, elegant names work best on plaques. Boats in particular display their name on the hull, which means it needs to look right at a distance and read well in a serif or display font." />
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+          {['Yes — will be on a sign/plaque', 'Just for us, informal use', 'Not decided yet'].map(opt => (
+            <button key={opt} onClick={() => setData({ ...data, signDisplay: opt })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.signDisplay === opt ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.signDisplay === opt ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{opt}</button>
+          ))}
+        </div>
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Language preference</label>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
+          {languages.map(l => (
+            <button key={l} onClick={() => setData({ ...data, languagePref: l })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.languagePref === l ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.languagePref === l ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
+          ))}
+        </div>
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Names or words to avoid <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
+        <input style={{ ...inputStyle, marginTop: 4 }} placeholder="e.g. Nothing too generic, avoid 'haven' or 'hideaway' — too overused" value={data.avoidNames || ''} onChange={e => setData({ ...data, avoidNames: e.target.value })} />
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Submission Limit per Person</label>
+        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+          {[3, 5, 'Unlimited'].map(l => (
+            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
+          ))}
+        </div>
+      </div>
+      <div style={fieldWrap}>
+        <label style={labelStyle}>Contest Deadline</label>
+        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+          <input type="date" style={{ ...inputStyle, flex: 1 }} value={data.deadline || ''} min={new Date().toISOString().split('T')[0]} onChange={e => setData({ ...data, deadline: e.target.value })} />
+          <button onClick={() => setData({ ...data, deadline: suggestDate })} style={{ padding: '0 12px', height: 36, border: `1px solid rgba(${tc.rgb},0.4)`, borderRadius: 8, background: 'transparent', color: tc.color, fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap' }}>+7 days</button>
         </div>
       </div>
     </div>

@@ -14,7 +14,7 @@ const TIER = {
 };
 
 // ── SortableItem for Ranked Choice ──
-function SortableItem({ id, name, index }) {
+function SortableItem({ id, name, rationale, index }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -22,10 +22,13 @@ function SortableItem({ id, name, index }) {
     opacity: isDragging ? 0.5 : 1,
   };
   return (
-    <div ref={setNodeRef} style={{ ...style, display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 10, marginBottom: 8, cursor: 'grab' }} {...attributes} {...listeners}>
-      <span style={{ fontSize: 18, fontWeight: 700, color: '#eaef09', minWidth: 28 }}>#{index + 1}</span>
-      <span style={{ fontSize: 18, fontFamily: 'Inter, sans-serif', color: '#fff' }}>{name}</span>
-      <span style={{ marginLeft: 'auto', color: '#7a7a7a', fontSize: 18 }}>⠿</span>
+    <div ref={setNodeRef} style={{ ...style, display: 'flex', alignItems: 'flex-start', gap: 12, padding: '14px 16px', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 10, marginBottom: 8, cursor: 'grab' }} {...attributes} {...listeners}>
+      <span style={{ fontSize: 18, fontWeight: 700, color: '#eaef09', minWidth: 28, paddingTop: 2 }}>#{index + 1}</span>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 18, fontFamily: 'Inter, sans-serif', color: '#fff' }}>{name}</div>
+        {rationale && <div style={{ fontSize: 12, color: '#7a7a7a', marginTop: 4, lineHeight: 1.5 }}>{rationale}</div>}
+      </div>
+      <span style={{ color: '#7a7a7a', fontSize: 18, flexShrink: 0, paddingTop: 2 }}>⠿</span>
     </div>
   );
 }
@@ -55,16 +58,16 @@ function SuccessScreen({ tc, contestId }) {
   );
 }
 
+// ── Candidate Description ──
+function CandidateDesc({ rationale }) {
+  if (!rationale) return null;
+  return <div style={{ fontSize: 12, color: '#7a7a7a', marginTop: 4, lineHeight: 1.5 }}>{rationale}</div>;
+}
+
 // ── Simple Poll ──
-function SimplePoll({ names, tc, onVote }) {
+function SimplePoll({ candidates, tc, onVote }) {
   const [selected, setSelected] = useState(null);
   const [voted, setVoted] = useState(false);
-
-  const handleSubmit = () => {
-    if (selected === null) return;
-    setVoted(true);
-    onVote();
-  };
 
   if (voted) return null;
 
@@ -72,16 +75,19 @@ function SimplePoll({ names, tc, onVote }) {
     <div>
       <div style={{ marginBottom: 24, fontSize: 13, color: '#a1a1a1' }}>Select the name you think best fits the brief.</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
-        {names.map((name, i) => (
-          <label key={i} onClick={() => setSelected(i)} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '18px 20px', background: selected === i ? `rgba(${tc.rgb},0.08)` : '#1a1a1a', border: `0.5px solid ${selected === i ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 12, cursor: 'pointer', transition: 'all 0.15s' }}>
-            <div style={{ width: 20, height: 20, borderRadius: '50%', border: `2px solid ${selected === i ? tc.color : '#444'}`, background: selected === i ? tc.color : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        {candidates.map((c, i) => (
+          <label key={i} onClick={() => setSelected(i)} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, padding: '16px 20px', background: selected === i ? `rgba(${tc.rgb},0.08)` : '#1a1a1a', border: `0.5px solid ${selected === i ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 12, cursor: 'pointer', transition: 'all 0.15s' }}>
+            <div style={{ width: 20, height: 20, borderRadius: '50%', border: `2px solid ${selected === i ? tc.color : '#444'}`, background: selected === i ? tc.color : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 3 }}>
               {selected === i && <div style={{ width: 8, height: 8, borderRadius: '50%', background: tc.textColor }} />}
             </div>
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, color: '#fff' }}>{name}</span>
+            <div>
+              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, color: '#fff' }}>{c.name}</div>
+              <CandidateDesc rationale={c.rationale} />
+            </div>
           </label>
         ))}
       </div>
-      <button onClick={handleSubmit} disabled={selected === null} style={{ height: 48, padding: '0 28px', border: `1.5px solid ${tc.color}`, borderRadius: 10, background: `rgba(${tc.rgb},0.12)`, color: tc.color, fontSize: 15, fontWeight: 700, cursor: selected !== null ? 'pointer' : 'not-allowed', opacity: selected !== null ? 1 : 0.5 }}>
+      <button onClick={() => { if (selected !== null) { setVoted(true); onVote(); } }} disabled={selected === null} style={{ height: 48, padding: '0 28px', border: `1.5px solid ${tc.color}`, borderRadius: 10, background: `rgba(${tc.rgb},0.12)`, color: tc.color, fontSize: 15, fontWeight: 700, cursor: selected !== null ? 'pointer' : 'not-allowed', opacity: selected !== null ? 1 : 0.5 }}>
         Submit Vote
       </button>
     </div>
@@ -89,8 +95,8 @@ function SimplePoll({ names, tc, onVote }) {
 }
 
 // ── Ranked Choice ──
-function RankedChoice({ names, tc, onVote }) {
-  const [items, setItems] = useState(names.map((n, i) => ({ id: String(i), name: n })));
+function RankedChoice({ candidates, tc, onVote }) {
+  const [items, setItems] = useState(candidates.map((c, i) => ({ id: String(i), name: c.name, rationale: c.rationale })));
   const [voted, setVoted] = useState(false);
 
   function handleDragEnd(event) {
@@ -115,7 +121,7 @@ function RankedChoice({ names, tc, onVote }) {
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
           {items.map((item, index) => (
-            <SortableItem key={item.id} id={item.id} name={item.name} index={index} />
+            <SortableItem key={item.id} id={item.id} name={item.name} rationale={item.rationale} index={index} />
           ))}
         </SortableContext>
       </DndContext>
@@ -129,12 +135,13 @@ function RankedChoice({ names, tc, onVote }) {
 // ── Multi-Criteria ──
 const CRITERIA = ['Magnetism', 'Distinctiveness', 'Brand Fit', 'Accessibility', 'Longevity'];
 
-function MultiCriteria({ names, tc, onVote }) {
+function MultiCriteria({ candidates, tc, onVote }) {
   const initScores = {};
-  names.forEach(name => {
-    initScores[name] = {};
-    CRITERIA.forEach(c => { initScores[name][c] = 5; });
+  candidates.forEach(c => {
+    initScores[c.name] = {};
+    CRITERIA.forEach(cr => { initScores[c.name][cr] = 5; });
   });
+  const names = candidates.map(c => c.name);
   const [scores, setScores] = useState(initScores);
   const [showRadar, setShowRadar] = useState(false);
   const [voted, setVoted] = useState(false);
@@ -144,9 +151,9 @@ function MultiCriteria({ names, tc, onVote }) {
     return (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1);
   };
 
-  const radarData = CRITERIA.map(c => ({
-    criterion: c,
-    ...Object.fromEntries(names.map(name => [name, scores[name][c]])),
+  const radarData = CRITERIA.map(cr => ({
+    criterion: cr,
+    ...Object.fromEntries(names.map(name => [name, scores[name][cr]])),
   }));
 
   const radarColors = ['#eaef09', '#8B5CF6', '#10B981', '#3B82F6', '#f97316'];
@@ -156,21 +163,26 @@ function MultiCriteria({ names, tc, onVote }) {
   return (
     <div>
       <div style={{ marginBottom: 16, fontSize: 13, color: '#a1a1a1' }}>Rate each name 1-10 on all 5 criteria.</div>
-      {names.map((name, ni) => (
-        <div key={name} style={{ marginBottom: 20, padding: '16px', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 12 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 20, color: '#fff' }}>{name}</span>
-            <span style={{ fontSize: 13, color: tc.color, fontWeight: 700 }}>Avg: {getAvg(name)}/10</span>
-          </div>
-          {CRITERIA.map(criterion => (
-            <div key={criterion} style={{ marginBottom: 12 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                <span style={{ fontSize: 12, color: '#a1a1a1' }}>{criterion}</span>
-                <span style={{ fontSize: 12, color: '#fff', fontWeight: 600 }}>{scores[name][criterion]}</span>
-              </div>
-              <input type="range" min={1} max={10} value={scores[name][criterion]} onChange={e => setScores({ ...scores, [name]: { ...scores[name], [criterion]: Number(e.target.value) } })} style={{ width: '100%', accentColor: tc.color, height: 4 }} />
+      {candidates.map((c, ni) => (
+        <div key={c.name} style={{ marginBottom: 20, padding: '16px', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 12 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+            <div>
+              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 20, color: '#fff' }}>{c.name}</div>
+              <CandidateDesc rationale={c.rationale} />
             </div>
-          ))}
+            <span style={{ fontSize: 13, color: tc.color, fontWeight: 700, flexShrink: 0, marginLeft: 12 }}>Avg: {getAvg(c.name)}/10</span>
+          </div>
+          <div style={{ marginTop: 14 }}>
+            {CRITERIA.map(criterion => (
+              <div key={criterion} style={{ marginBottom: 12 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                  <span style={{ fontSize: 12, color: '#a1a1a1' }}>{criterion}</span>
+                  <span style={{ fontSize: 12, color: '#fff', fontWeight: 600 }}>{scores[c.name][criterion]}</span>
+                </div>
+                <input type="range" min={1} max={10} value={scores[c.name][criterion]} onChange={e => setScores({ ...scores, [c.name]: { ...scores[c.name], [criterion]: Number(e.target.value) } })} style={{ width: '100%', accentColor: tc.color, height: 4 }} />
+              </div>
+            ))}
+          </div>
         </div>
       ))}
       <button onClick={() => setShowRadar(!showRadar)} style={{ marginBottom: 16, height: 36, padding: '0 16px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, background: 'transparent', color: '#a1a1a1', fontSize: 13, cursor: 'pointer' }}>
@@ -205,11 +217,11 @@ function MultiCriteria({ names, tc, onVote }) {
 }
 
 // ── Pairwise ──
-function Pairwise({ names, tc, onVote }) {
+function Pairwise({ candidates, tc, onVote }) {
   const pairs = [];
-  for (let i = 0; i < names.length; i++) {
-    for (let j = i + 1; j < names.length; j++) {
-      pairs.push([names[i], names[j]]);
+  for (let i = 0; i < candidates.length; i++) {
+    for (let j = i + 1; j < candidates.length; j++) {
+      pairs.push([candidates[i], candidates[j]]);
     }
   }
   const [pairIndex, setPairIndex] = useState(0);
@@ -249,10 +261,11 @@ function Pairwise({ names, tc, onVote }) {
       </div>
       <div style={{ textAlign: 'center', fontSize: 13, color: '#a1a1a1', marginBottom: 20 }}>Which name better fits the brief?</div>
       <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
-        {currentPair.map((name, i) => (
-          <div key={i} onClick={() => setSelected(name)} style={{ flex: 1, padding: '32px 20px', background: selected === name ? `rgba(${tc.rgb},0.1)` : '#1a1a1a', border: `2px solid ${selected === name ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 14, textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s', boxShadow: selected === name ? `0 0 20px rgba(${tc.rgb},0.2)` : 'none' }}>
-            <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 28, color: '#fff', marginBottom: 8 }}>{name}</div>
-            {selected === name && <Check size={20} color={tc.color} weight="bold" style={{ margin: '0 auto' }} />}
+        {currentPair.map((c, i) => (
+          <div key={i} onClick={() => setSelected(c.name)} style={{ flex: 1, padding: '28px 20px', background: selected === c.name ? `rgba(${tc.rgb},0.1)` : '#1a1a1a', border: `2px solid ${selected === c.name ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 14, textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s', boxShadow: selected === c.name ? `0 0 20px rgba(${tc.rgb},0.2)` : 'none' }}>
+            <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 28, color: '#fff', marginBottom: 8 }}>{c.name}</div>
+            {c.rationale && <div style={{ fontSize: 12, color: '#7a7a7a', lineHeight: 1.5, marginBottom: 8 }}>{c.rationale}</div>}
+            {selected === c.name && <Check size={20} color={tc.color} weight="bold" style={{ margin: '0 auto' }} />}
           </div>
         ))}
       </div>
@@ -264,7 +277,7 @@ function Pairwise({ names, tc, onVote }) {
 }
 
 // ── Weighted Voting ──
-function WeightedVoting({ names, tc, onVote }) {
+function WeightedVoting({ candidates, tc, onVote }) {
   const [selected, setSelected] = useState(null);
   const [voted, setVoted] = useState(false);
   const voterWeight = 3;
@@ -279,13 +292,16 @@ function WeightedVoting({ names, tc, onVote }) {
       </div>
       <div style={{ marginBottom: 24, fontSize: 13, color: '#a1a1a1' }}>Select the name you think best fits the brief. Your vote carries extra weight.</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
-        {names.map((name, i) => (
-          <label key={i} onClick={() => setSelected(i)} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '18px 20px', background: selected === i ? `rgba(${tc.rgb},0.08)` : '#1a1a1a', border: `0.5px solid ${selected === i ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 12, cursor: 'pointer', transition: 'all 0.15s' }}>
-            <div style={{ width: 20, height: 20, borderRadius: '50%', border: `2px solid ${selected === i ? tc.color : '#444'}`, background: selected === i ? tc.color : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        {candidates.map((c, i) => (
+          <label key={i} onClick={() => setSelected(i)} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, padding: '16px 20px', background: selected === i ? `rgba(${tc.rgb},0.08)` : '#1a1a1a', border: `0.5px solid ${selected === i ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 12, cursor: 'pointer', transition: 'all 0.15s' }}>
+            <div style={{ width: 20, height: 20, borderRadius: '50%', border: `2px solid ${selected === i ? tc.color : '#444'}`, background: selected === i ? tc.color : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 3 }}>
               {selected === i && <div style={{ width: 8, height: 8, borderRadius: '50%', background: tc.textColor }} />}
             </div>
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, color: '#fff', flex: 1 }}>{name}</span>
-            <span style={{ fontSize: 11, color: '#7a7a7a' }}>×{voterWeight} weight</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, color: '#fff' }}>{c.name}</div>
+              <CandidateDesc rationale={c.rationale} />
+            </div>
+            <span style={{ fontSize: 11, color: '#7a7a7a', flexShrink: 0, marginTop: 4 }}>×{voterWeight} weight</span>
           </label>
         ))}
       </div>
@@ -304,7 +320,7 @@ export default function VotingInterface() {
 
   const meta = getJourneyMeta(contestId);
   const tc = meta;
-  const names = meta.candidates.map(c => c.name);
+  const candidates = meta.candidates;
 
   const methodParam = searchParams.get('method');
   const methodMap = { 'demo-1': 'simple', 'demo-2': 'ranked', 'demo-3': 'multicriteria', 'demo-4': 'pairwise', 'demo-5': 'weighted' };
@@ -341,9 +357,9 @@ export default function VotingInterface() {
         {/* Sidebar */}
         <div style={{ width: 220, background: '#0f0f0f', borderRight: '0.5px solid rgba(255,255,255,0.06)', padding: '24px 16px', flexShrink: 0 }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: '#7a7a7a', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>Shortlisted Names</div>
-          {names.map((name, i) => (
+          {candidates.map((c, i) => (
             <div key={i} style={{ padding: '8px 10px', borderRadius: 7, marginBottom: 4, fontSize: 14, fontFamily: 'Inter, sans-serif', color: '#a1a1a1' }}>
-              {name}
+              {c.name}
             </div>
           ))}
         </div>
@@ -355,13 +371,13 @@ export default function VotingInterface() {
           ) : (
             <>
               <h1 style={{ fontFamily: 'Inter, sans-serif', fontSize: 28, color: '#fff', marginBottom: 6 }}>Cast Your Vote</h1>
-              <div style={{ fontSize: 13, color: '#7a7a7a', marginBottom: 32 }}>Method: {methodLabels[method]} · {names.length} names in the shortlist</div>
+              <div style={{ fontSize: 13, color: '#7a7a7a', marginBottom: 32 }}>Method: {methodLabels[method]} · {candidates.length} names in the shortlist</div>
 
-              {method === 'simple' && <SimplePoll names={names} tc={tc} onVote={() => setVoted(true)} />}
-              {method === 'ranked' && <RankedChoice names={names} tc={tc} onVote={() => setVoted(true)} />}
-              {method === 'multicriteria' && <MultiCriteria names={names} tc={tc} onVote={() => setVoted(true)} />}
-              {method === 'pairwise' && <Pairwise names={names} tc={tc} onVote={() => setVoted(true)} />}
-              {method === 'weighted' && <WeightedVoting names={names} tc={tc} onVote={() => setVoted(true)} />}
+              {method === 'simple' && <SimplePoll candidates={candidates} tc={tc} onVote={() => setVoted(true)} />}
+              {method === 'ranked' && <RankedChoice candidates={candidates} tc={tc} onVote={() => setVoted(true)} />}
+              {method === 'multicriteria' && <MultiCriteria candidates={candidates} tc={tc} onVote={() => setVoted(true)} />}
+              {method === 'pairwise' && <Pairwise candidates={candidates} tc={tc} onVote={() => setVoted(true)} />}
+              {method === 'weighted' && <WeightedVoting candidates={candidates} tc={tc} onVote={() => setVoted(true)} />}
 
               {voted && <SuccessScreen tc={tc} contestId={contestId || 'demo-1'} />}
             </>

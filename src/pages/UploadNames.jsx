@@ -24,7 +24,9 @@ export default function UploadNames() {
   const tc = TIER[group] || TIER.business;
 
   const [nameInput, setNameInput] = useState('');
-  const [names, setNames] = useState([]);
+  const [descInput, setDescInput] = useState('');
+  // candidates: { name: string, description: string }[]
+  const [candidates, setCandidates] = useState([]);
   const [votingMethod, setVotingMethod] = useState('simple_poll');
   const [votingDays, setVotingDays] = useState(3);
   const [tab, setTab] = useState('paste'); // 'paste' | 'type'
@@ -37,18 +39,34 @@ export default function UploadNames() {
     .filter(n => n.length > 0);
 
   const handleAddFromInput = () => {
-    const newNames = [...new Set([...names, ...parsedNames])];
-    setNames(newNames);
+    const existing = new Set(candidates.map(c => c.name));
+    const newCandidates = parsedNames
+      .filter(n => !existing.has(n))
+      .map(n => ({ name: n, description: '' }));
+    setCandidates(prev => [...prev, ...newCandidates]);
     setNameInput('');
   };
 
-  const handleRemoveName = (idx) => setNames(names.filter((_, i) => i !== idx));
+  const handleAddOne = () => {
+    const name = nameInput.trim();
+    if (!name) return;
+    if (candidates.some(c => c.name === name)) { setNameInput(''); setDescInput(''); return; }
+    setCandidates(prev => [...prev, { name, description: descInput.trim() }]);
+    setNameInput('');
+    setDescInput('');
+  };
 
-  const isReady = names.length >= 2;
-  const isIdeal = names.length >= 5 && names.length <= 20;
+  const handleRemove = (idx) => setCandidates(candidates.filter((_, i) => i !== idx));
+
+  const handleDescChange = (idx, val) => {
+    setCandidates(prev => prev.map((c, i) => i === idx ? { ...c, description: val } : c));
+  };
+
+  const isReady = candidates.length >= 2;
+  const isIdeal = candidates.length >= 5 && candidates.length <= 20;
 
   const handleLaunch = () => {
-    localStorage.setItem('uploadedNames', JSON.stringify(names));
+    localStorage.setItem('uploadedNames', JSON.stringify(candidates));
     localStorage.setItem('votingMethod', votingMethod);
     localStorage.setItem('votingDays', String(votingDays));
     navigate('/invite/demo-1');
@@ -82,7 +100,7 @@ export default function UploadNames() {
           <div style={{ fontSize: 11, fontWeight: 700, color: tc.color, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>Voting Only · Upload Name Candidates</div>
           <h1 style={{ fontSize: 'clamp(24px,3vw,38px)', fontWeight: 800, color: '#fff', marginBottom: 10 }}>What names are you voting on?</h1>
           <p style={{ fontSize: 14, color: '#a1a1a1', lineHeight: 1.6 }}>
-            Add 5-20 name candidates. Your voters will see exactly these options. Recommended: 5-10 names for best participation.
+            Add 5–20 name candidates. Optionally include a short description or rationale for each name — voters will see it when casting their vote.
           </p>
         </div>
 
@@ -106,7 +124,7 @@ export default function UploadNames() {
             />
             {parsedNames.length > 0 && (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 }}>
-                <span style={{ fontSize: 12, color: '#7a7a7a' }}>{parsedNames.length} name{parsedNames.length !== 1 ? 's' : ''} detected</span>
+                <span style={{ fontSize: 12, color: '#7a7a7a' }}>{parsedNames.length} name{parsedNames.length !== 1 ? 's' : ''} detected · add descriptions in the ballot below</span>
                 <button onClick={handleAddFromInput} style={{ height: 34, padding: '0 16px', background: `rgba(${tc.rgb},0.1)`, border: `1px solid rgba(${tc.rgb},0.4)`, borderRadius: 8, color: tc.color, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
                   Add to ballot →
                 </button>
@@ -115,33 +133,40 @@ export default function UploadNames() {
           </div>
         ) : (
           <div style={{ marginBottom: 16 }}>
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
               <input
                 value={nameInput}
                 onChange={e => setNameInput(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter' && nameInput.trim()) { setNames(prev => [...new Set([...prev, nameInput.trim()])]); setNameInput(''); } }}
-                placeholder="Type a name and press Enter"
+                onKeyDown={e => { if (e.key === 'Enter') handleAddOne(); }}
+                placeholder="Name (e.g. Apex)"
                 style={{ flex: 1, background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 8, height: 40, padding: '0 14px', color: '#fff', fontSize: 14, fontFamily: 'Inter, sans-serif' }}
               />
-              <button onClick={() => { if (nameInput.trim()) { setNames(prev => [...new Set([...prev, nameInput.trim()])]); setNameInput(''); } }} style={{ height: 40, width: 40, background: `rgba(${tc.rgb},0.1)`, border: `1px solid rgba(${tc.rgb},0.4)`, borderRadius: 8, color: tc.color, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <button onClick={handleAddOne} style={{ height: 40, width: 40, background: `rgba(${tc.rgb},0.1)`, border: `1px solid rgba(${tc.rgb},0.4)`, borderRadius: 8, color: tc.color, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <Plus size={16} />
               </button>
             </div>
-            <div style={{ fontSize: 12, color: '#4a4a4a', marginTop: 6 }}>Press Enter after each name</div>
+            <input
+              value={descInput}
+              onChange={e => setDescInput(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') handleAddOne(); }}
+              placeholder="Optional: short rationale or description for voters"
+              style={{ width: '100%', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.07)', borderRadius: 8, height: 36, padding: '0 14px', color: '#a1a1a1', fontSize: 13, fontFamily: 'Inter, sans-serif', boxSizing: 'border-box' }}
+            />
+            <div style={{ fontSize: 12, color: '#4a4a4a', marginTop: 6 }}>Press Enter after each name · description is optional</div>
           </div>
         )}
 
         {/* Ballot preview */}
-        {names.length > 0 && (
+        {candidates.length > 0 && (
           <div style={{ background: '#141414', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: '16px 20px', marginBottom: 20 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: '#7a7a7a', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                Ballot — {names.length} name{names.length !== 1 ? 's' : ''}
+                Ballot — {candidates.length} name{candidates.length !== 1 ? 's' : ''}
               </div>
-              {!isIdeal && names.length > 0 && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: names.length < 5 ? '#eaef09' : '#ef4444' }}>
+              {!isIdeal && candidates.length > 0 && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: candidates.length < 5 ? '#eaef09' : '#ef4444' }}>
                   <WarningCircle size={13} />
-                  {names.length < 5 ? 'Add at least 5 names for best results' : 'Over 20 names may reduce participation quality'}
+                  {candidates.length < 5 ? 'Add at least 5 names for best results' : 'Over 20 names may reduce participation quality'}
                 </div>
               )}
               {isIdeal && (
@@ -150,14 +175,22 @@ export default function UploadNames() {
                 </div>
               )}
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {names.map((name, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: 8 }}>
-                  <span style={{ fontSize: 11, color: '#4a4a4a', width: 20, textAlign: 'right', flexShrink: 0 }}>{i + 1}</span>
-                  <span style={{ flex: 1, fontSize: 15, color: '#fff', fontWeight: 600 }}>{name}</span>
-                  <button onClick={() => handleRemoveName(i)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#4a4a4a', display: 'flex', alignItems: 'center', padding: 4 }}>
-                    <Trash size={13} />
-                  </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {candidates.map((c, i) => (
+                <div key={i} style={{ padding: '10px 12px', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: c.description !== undefined ? 6 : 0 }}>
+                    <span style={{ fontSize: 11, color: '#4a4a4a', width: 20, textAlign: 'right', flexShrink: 0 }}>{i + 1}</span>
+                    <span style={{ flex: 1, fontSize: 15, color: '#fff', fontWeight: 600 }}>{c.name}</span>
+                    <button onClick={() => handleRemove(i)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#4a4a4a', display: 'flex', alignItems: 'center', padding: 4, flexShrink: 0 }}>
+                      <Trash size={13} />
+                    </button>
+                  </div>
+                  <input
+                    value={c.description}
+                    onChange={e => handleDescChange(i, e.target.value)}
+                    placeholder="Add a short description for voters (optional)"
+                    style={{ width: '100%', background: 'transparent', border: 'none', borderTop: '0.5px solid rgba(255,255,255,0.05)', padding: '6px 0 2px 30px', color: '#7a7a7a', fontSize: 12, fontFamily: 'Inter, sans-serif', outline: 'none', boxSizing: 'border-box' }}
+                  />
                 </div>
               ))}
             </div>
@@ -218,13 +251,13 @@ export default function UploadNames() {
               onClick={handleLaunch}
               style={{ width: '100%', height: 52, background: tc.color, border: 'none', borderRadius: 12, color: tc.textColor, fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
             >
-              Launch Voting Contest — {names.length} names, {votingDays} days
+              Launch Voting Contest — {candidates.length} names, {votingDays} days
               <ArrowRight size={16} weight="bold" />
             </button>
           </>
         )}
 
-        {!isReady && names.length === 0 && (
+        {!isReady && candidates.length === 0 && (
           <div style={{ padding: '24px', border: '1px dashed rgba(255,255,255,0.1)', borderRadius: 12, textAlign: 'center', color: '#4a4a4a', fontSize: 14 }}>
             Add at least 2 names to continue
           </div>

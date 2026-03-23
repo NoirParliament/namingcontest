@@ -137,6 +137,11 @@ export default function ResultsPage() {
           <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 64, fontWeight: 800, color: '#fff', lineHeight: 1.1, marginBottom: 12 }}>
             {winner?.name || 'Hollow Signal'}
           </div>
+          {winner?.rationale && (
+            <div style={{ maxWidth: 520, margin: '0 auto 16px', fontSize: 15, color: '#a1a1a1', lineHeight: 1.65 }}>
+              {winner.rationale}
+            </div>
+          )}
           <div style={{ fontSize: 16, color: '#a1a1a1', marginBottom: 24 }}>
             <span style={{ color: tc.color, fontWeight: 700, fontSize: 20 }}>{winnerPct}%</span> of votes
           </div>
@@ -541,6 +546,7 @@ export default function ResultsPage() {
           <div style={{ background: `linear-gradient(135deg, #1a1a1a, #0f0f0f)`, border: `1px solid ${tc.color}`, borderRadius: 16, padding: '28px', maxWidth: 420, marginBottom: 16 }}>
             <div style={{ fontSize: 11, color: tc.color, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>{meta.contestTitle}</div>
             <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 40, fontWeight: 800, color: '#fff', marginBottom: 8 }}>{winner?.name || 'Hollow Signal'}</div>
+            {winner?.rationale && <div style={{ fontSize: 12, color: '#7a7a7a', lineHeight: 1.5, marginBottom: 10 }}>{winner.rationale}</div>}
             <div style={{ fontSize: 13, color: '#7a7a7a', marginBottom: 16 }}>Chosen by {6} people · {'2026-03-05'}</div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: 11, color: '#5a5a5a' }}>NamingContest.com</span>
