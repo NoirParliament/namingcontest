@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import namicoLogo from '../assets/namico-logo.svg';
 import {
   Trophy, Users, Lightbulb, CheckCircle, ArrowRight,
   Target, Envelope, Star, Plus, Minus, Buildings,
@@ -28,18 +29,8 @@ function Navbar() {
         justifyContent: 'space-between',
       }}>
         {/* Logo */}
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-          <div style={{
-            width: 32, height: 32,
-            background: '#eaef09',
-            borderRadius: 6,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <Trophy size={18} weight="bold" color="#000" />
-          </div>
-          <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: 16, color: '#fff' }}>
-            NamingContest
-          </span>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          <img src={namicoLogo} alt="Namico" style={{ height: 32, display: 'block' }} />
         </Link>
 
         {/* Nav Links */}
