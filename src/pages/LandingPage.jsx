@@ -39,7 +39,7 @@ function Navbar() {
             <img src={namicoIcon} alt="Namico" style={{ width: 24, height: 24, display: 'block' }} />
           </div>
           <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: 16, color: '#fff' }}>
-            NamingContest
+            Namico
           </span>
         </Link>
 
