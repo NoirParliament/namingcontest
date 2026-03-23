@@ -705,7 +705,7 @@ export default function ContestLive() {
   const [tab, setTab] = useState('education');
   const [completedArticles, setCompletedArticles] = useState({});
   const [totalPoints, setTotalPoints] = useState(0);
-  const [names, setNames] = useState(['']);
+  const [names, setNames] = useState([{ name: '', description: '' }]);
   const [submitted, setSubmitted] = useState(false);
   const [submittedNames, setSubmittedNames] = useState([]);
   const [tipsCollected, setTipsCollected] = useState({});
@@ -745,12 +745,13 @@ export default function ContestLive() {
     }
   };
 
-  const handleAddName = () => { if (names.length < limit) setNames([...names, '']); };
-  const handleNameChange = (i, val) => { const u = [...names]; u[i] = val; setNames(u); };
+  const handleAddName = () => { if (names.length < limit) setNames([...names, { name: '', description: '' }]); };
+  const handleNameChange = (i, val) => { const u = [...names]; u[i] = { ...u[i], name: val }; setNames(u); };
+  const handleDescChange = (i, val) => { const u = [...names]; u[i] = { ...u[i], description: val }; setNames(u); };
   const handleRemoveName = (i) => { if (names.length > 1) setNames(names.filter((_, idx) => idx !== i)); };
 
   const handleSubmit = () => {
-    const valid = names.filter(n => n.trim());
+    const valid = names.filter(n => n.name.trim());
     if (valid.length === 0) return;
     setSubmittedNames(valid);
     setSubmitted(true);
@@ -963,17 +964,22 @@ export default function ContestLive() {
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
-                    {submittedNames.map((name, i) => (
-                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', background: '#1a1a1a', border: `0.5px solid rgba(${tc.rgb},0.2)`, borderRadius: 10 }}>
-                        <Check size={16} color="#10B981" weight="bold" />
-                        <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 18, color: '#fff', flex: 1 }}>{name}</span>
-                        <button onClick={() => {
-                          const updated = submittedNames.filter((_, idx) => idx !== i);
-                          setSubmittedNames(updated);
-                          if (updated.length === 0) setSubmitted(false);
-                        }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#7a7a7a' }}>
-                          <Trash size={14} />
-                        </button>
+                    {submittedNames.map((entry, i) => (
+                      <div key={i} style={{ padding: '12px 16px', background: '#1a1a1a', border: `0.5px solid rgba(${tc.rgb},0.2)`, borderRadius: 10 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <Check size={16} color="#10B981" weight="bold" />
+                          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 18, color: '#fff', flex: 1 }}>{entry.name || entry}</span>
+                          <button onClick={() => {
+                            const updated = submittedNames.filter((_, idx) => idx !== i);
+                            setSubmittedNames(updated);
+                            if (updated.length === 0) setSubmitted(false);
+                          }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#7a7a7a', flexShrink: 0 }}>
+                            <Trash size={14} />
+                          </button>
+                        </div>
+                        {(entry.description || typeof entry === 'object') && entry.description && (
+                          <div style={{ fontSize: 12, color: '#7a7a7a', marginTop: 4, paddingLeft: 26, lineHeight: 1.5 }}>{entry.description}</div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -1013,15 +1019,18 @@ export default function ContestLive() {
                 </div>
               ) : (
                 <div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
-                    {names.map((name, i) => (
-                      <div key={i} style={{ display: 'flex', gap: 8 }}>
-                        <input value={name} onChange={e => handleNameChange(i, e.target.value)} placeholder="Enter a name..." style={{ flex: 1, background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.15)', borderRadius: 8, height: 44, padding: '0 14px', color: '#fff', fontSize: 16, fontFamily: 'Inter, sans-serif' }} />
-                        {names.length > 1 && (
-                          <button onClick={() => handleRemoveName(i)} style={{ height: 44, width: 44, border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 8, background: 'transparent', color: '#7a7a7a', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Trash size={14} />
-                          </button>
-                        )}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
+                    {names.map((entry, i) => (
+                      <div key={i} style={{ background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 10, overflow: 'hidden' }}>
+                        <div style={{ display: 'flex', gap: 0 }}>
+                          <input value={entry.name} onChange={e => handleNameChange(i, e.target.value)} placeholder="Enter a name..." style={{ flex: 1, background: 'transparent', border: 'none', borderBottom: '0.5px solid rgba(255,255,255,0.08)', height: 44, padding: '0 14px', color: '#fff', fontSize: 16, fontFamily: 'Inter, sans-serif', outline: 'none' }} />
+                          {names.length > 1 && (
+                            <button onClick={() => handleRemoveName(i)} style={{ height: 44, width: 44, border: 'none', borderBottom: '0.5px solid rgba(255,255,255,0.08)', background: 'transparent', color: '#7a7a7a', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <Trash size={14} />
+                            </button>
+                          )}
+                        </div>
+                        <input value={entry.description} onChange={e => handleDescChange(i, e.target.value)} placeholder="Why this name? Short rationale (optional)" style={{ width: '100%', boxSizing: 'border-box', background: 'transparent', border: 'none', height: 34, padding: '0 14px', color: '#7a7a7a', fontSize: 12, fontFamily: 'Inter, sans-serif', outline: 'none' }} />
                       </div>
                     ))}
                   </div>
@@ -1032,12 +1041,7 @@ export default function ContestLive() {
                     </button>
                   )}
 
-                  <div style={{ marginBottom: 20 }}>
-                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#a1a1a1', marginBottom: 8 }}>Why these names? <span style={{ fontWeight: 400, color: '#7a7a7a' }}>(optional — earns a Quality badge)</span></label>
-                    <textarea placeholder="Share the thinking behind your submissions..." style={{ width: '100%', boxSizing: 'border-box', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.15)', borderRadius: 8, padding: '10px 14px', color: '#fff', fontSize: 13, fontFamily: 'Inter, sans-serif', resize: 'vertical', minHeight: 80 }} />
-                  </div>
-
-                  <button onClick={handleSubmit} disabled={!names.some(n => n.trim())} style={{ height: 48, padding: '0 28px', border: `1.5px solid ${tc.color}`, borderRadius: 10, background: `rgba(${tc.rgb},0.12)`, color: tc.color, fontSize: 15, fontWeight: 700, cursor: names.some(n => n.trim()) ? 'pointer' : 'not-allowed', opacity: names.some(n => n.trim()) ? 1 : 0.5 }}>
+                  <button onClick={handleSubmit} disabled={!names.some(n => n.name.trim())} style={{ height: 48, padding: '0 28px', border: `1.5px solid ${tc.color}`, borderRadius: 10, background: `rgba(${tc.rgb},0.12)`, color: tc.color, fontSize: 15, fontWeight: 700, cursor: names.some(n => n.name.trim()) ? 'pointer' : 'not-allowed', opacity: names.some(n => n.name.trim()) ? 1 : 0.5 }}>
                     Submit Names
                   </button>
                 </div>
