@@ -549,8 +549,8 @@ export default function LandingPage() {
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 20,
-            maxWidth: 960,
+            gap: 28,
+            maxWidth: 1200,
             margin: '0 auto',
           }}>
             {segmentCards.map((card, i) => (
@@ -678,7 +678,7 @@ export default function LandingPage() {
 
           {/* Visual quality bar demo */}
           <div style={{
-            maxWidth: 720,
+            maxWidth: 1200,
             margin: '0 auto 64px',
             background: 'rgba(255,255,255,0.03)',
             border: '0.5px solid rgba(255,255,255,0.08)',

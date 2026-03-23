@@ -137,21 +137,21 @@ function getPrimerTitle(subSegment) {
 }
 
 // ── Tip expandable component ──
-function TipRow({ tipContent }) {
+function TipRow({ tipContent, color = '#7a7a7a', rgb = '122,122,122' }) {
   const [open, setOpen] = useState(true);
   return (
     <div style={{ marginBottom: 4 }}>
       <button
         onClick={() => setOpen(v => !v)}
-        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: 12, color: '#7a7a7a', display: 'flex', alignItems: 'center', gap: 4 }}
+        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: 12, color: color, display: 'flex', alignItems: 'center', gap: 4 }}
       >
         <span style={{ fontSize: 10 }}>{open ? '▼' : '▶'}</span>
         Why does this matter?
       </button>
       {open && (
-        <div style={{ marginTop: 8, padding: '12px 14px', background: '#141414', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 8, fontSize: 13, color: '#a1a1a1', lineHeight: 1.65 }}>
+        <div style={{ marginTop: 8, padding: '12px 14px', background: `rgba(${rgb},0.06)`, border: `0.5px solid rgba(${rgb},0.25)`, borderRadius: 8, fontSize: 13, color: '#a1a1a1', lineHeight: 1.65 }}>
           {tipContent}
-          <div style={{ marginTop: 8, paddingTop: 6, borderTop: '0.5px solid rgba(255,255,255,0.06)', fontSize: 10, color: '#3a3a3a' }}>
+          <div style={{ marginTop: 8, paddingTop: 6, borderTop: `0.5px solid rgba(${rgb},0.15)`, fontSize: 10, color: color, opacity: 0.6 }}>
             Source: Catchword Branding — naming strategy
           </div>
         </div>
@@ -214,13 +214,13 @@ function B1Fields({ data, setData, tc, subSegment }) {
 
       <div style={fieldWrap}>
         <label style={labelStyle}>What does your company do?</label>
-        <TipRow tipContent="Don't overthink this. You're not writing a mission statement. You're giving participants context. Example: 'We make project management software for remote teams' is perfect. Keep it to 2-3 sentences." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Don't overthink this. You're not writing a mission statement. You're giving participants context. Example: 'We make project management software for remote teams' is perfect. Keep it to 2-3 sentences." />
         <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={4} placeholder="Describe your company in 2-3 sentences..." value={data.companyDesc || ''} onChange={e => setData({ ...data, companyDesc: e.target.value })} />
       </div>
 
       <div style={fieldWrap}>
         <label style={labelStyle}>Naming Style Preference</label>
-        <TipRow tipContent="Descriptive names tell you what it is (QuickBooks). Suggestive names hint at benefits (Salesforce). Abstract names mean nothing until you make them mean something (Verizon). Most successful tech companies choose Suggestive — trademarkable + memorable + flexible as you scale. Real examples: Asana (suggestive), Notion (abstract), Basecamp (descriptive)." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Descriptive names tell you what it is (QuickBooks). Suggestive names hint at benefits (Salesforce). Abstract names mean nothing until you make them mean something (Verizon). Most successful tech companies choose Suggestive — trademarkable + memorable + flexible as you scale. Real examples: Asana (suggestive), Notion (abstract), Basecamp (descriptive)." />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
           {namingStyles.map(s => (
             <label key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: data.namingStyle === s.id ? `rgba(${tc.rgb},0.08)` : '#141414', border: `0.5px solid ${data.namingStyle === s.id ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, cursor: 'pointer' }}>
@@ -234,7 +234,7 @@ function B1Fields({ data, setData, tc, subSegment }) {
 
       <div style={fieldWrap}>
         <label style={labelStyle}>Competitor Names (list 3-5)</label>
-        <TipRow tipContent="This is the most important field. If all your competitors sound the same, you need to sound different. List 3-5 direct competitors. Participants will see these and know what NOT to sound like. Example: If you list Asana, Monday, ClickUp — all suggestive, all 2-syllable compounds — the smart move is to go abstract (like Notion did)." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="This is the most important field. If all your competitors sound the same, you need to sound different. List 3-5 direct competitors. Participants will see these and know what NOT to sound like. Example: If you list Asana, Monday, ClickUp — all suggestive, all 2-syllable compounds — the smart move is to go abstract (like Notion did)." />
         <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={3} placeholder="e.g. Slack, Notion, Asana, Monday" value={data.competitors || ''} onChange={e => setData({ ...data, competitors: e.target.value })} />
       </div>
 
@@ -243,13 +243,13 @@ function B1Fields({ data, setData, tc, subSegment }) {
           <label style={{ ...labelStyle, marginBottom: 0 }}>Anonymous Submissions</label>
           <Toggle value={data.anonymous !== false} onChange={v => setData({ ...data, anonymous: v })} color={tc.color} />
         </div>
-        <TipRow tipContent="We recommend anonymous for one simple reason: it removes bias. When people don't know who suggested what, they judge ideas on merit, not relationships. In our data, anonymous contests have 23% higher satisfaction with final results. The exception? If your team is small (<5 people) and wants attribution for morale, turn this off. Stat: 78% of contests use anonymous mode." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="We recommend anonymous for one simple reason: it removes bias. When people don't know who suggested what, they judge ideas on merit, not relationships. In our data, anonymous contests have 23% higher satisfaction with final results. The exception? If your team is small (<5 people) and wants attribution for morale, turn this off. Stat: 78% of contests use anonymous mode." />
         <div style={{ marginTop: 6, fontSize: 12, color: '#7a7a7a' }}>Stat: 78% of contests use anonymous mode</div>
       </div>
 
       <div style={fieldWrap}>
         <label style={labelStyle}>Submission Limit per Person</label>
-        <TipRow tipContent="Sweet spot: 3-5 names per person. Here's why: 1 name = overthinking. Unlimited = quality drops after the first few. 3-5 = people submit their best ideas without overthinking or spamming. Data: Contests with 3-5 limit have 31% more 'quality badge' submissions. Recommended: 3 for small teams (<10), 5 for larger groups." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Sweet spot: 3-5 names per person. Here's why: 1 name = overthinking. Unlimited = quality drops after the first few. 3-5 = people submit their best ideas without overthinking or spamming. Data: Contests with 3-5 limit have 31% more 'quality badge' submissions. Recommended: 3 for small teams (<10), 5 for larger groups." />
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
           {subLimits.map(l => (
             <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '6px 14px', borderRadius: 6, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>
@@ -261,7 +261,7 @@ function B1Fields({ data, setData, tc, subSegment }) {
 
       <div style={fieldWrap}>
         <label style={labelStyle}>Voting Method</label>
-        <TipRow tipContent="Simple Poll: Fast and familiar. Best for small groups. Ranked Choice: Shows true consensus, prevents spoiler effect. Multi-Criteria: Most rigorous — participants score each name on 5 dimensions. Pairwise: Head-to-head matchups, great for 6-12 names. Weighted: Some voters count more (ideal for boards or panels)." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Simple Poll: Fast and familiar. Best for small groups. Ranked Choice: Shows true consensus, prevents spoiler effect. Multi-Criteria: Most rigorous — participants score each name on 5 dimensions. Pairwise: Head-to-head matchups, great for 6-12 names. Weighted: Some voters count more (ideal for boards or panels)." />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
           {votingMethods.map(m => (
             <label key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: data.votingMethod === m.id ? `rgba(${tc.rgb},0.08)` : '#141414', border: `0.5px solid ${data.votingMethod === m.id ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, cursor: 'pointer', position: 'relative' }}>
@@ -278,7 +278,7 @@ function B1Fields({ data, setData, tc, subSegment }) {
 
       <div style={fieldWrap}>
         <label style={labelStyle}>Contest Deadline</label>
-        <TipRow tipContent="Recommended timeline: 5-7 days for submissions, then 3-4 days for voting. Total: 8-11 days. Launch on Monday. Close submissions Friday. Open voting Monday. Close voting Thursday. Publish results Friday. Stat: 8-11 day contests have 76% avg participation vs 54% for <5 days." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Recommended timeline: 5-7 days for submissions, then 3-4 days for voting. Total: 8-11 days. Launch on Monday. Close submissions Friday. Open voting Monday. Close voting Thursday. Publish results Friday. Stat: 8-11 day contests have 76% avg participation vs 54% for <5 days." />
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 8 }}>
           <input type="date" style={{ ...inputStyle, flex: 1 }} value={data.deadline || ''} min={new Date().toISOString().split('T')[0]} onChange={e => setData({ ...data, deadline: e.target.value })} />
           <button onClick={() => setData({ ...data, deadline: suggestDate })} style={{ padding: '0 12px', height: 36, border: `1px solid rgba(${tc.rgb},0.4)`, borderRadius: 8, background: 'transparent', color: tc.color, fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap' }}>
@@ -303,17 +303,17 @@ function B2Fields({ data, setData, tc }) {
     <div>
       <div style={fieldWrap}>
         <label style={labelStyle}>What does this product / service do?</label>
-        <TipRow tipContent="Be specific about the problem it solves and who it's for. Example: 'A B2B SaaS tool that automates payroll for remote teams under 50 employees.' Participants need this to name it intelligently." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Be specific about the problem it solves and who it's for. Example: 'A B2B SaaS tool that automates payroll for remote teams under 50 employees.' Participants need this to name it intelligently." />
         <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={4} placeholder="What does it do? Who is it for? What's the core benefit in one sentence?" value={data.prodDesc || ''} onChange={e => setData({ ...data, prodDesc: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Company / Brand name (the parent)</label>
-        <TipRow tipContent="The product name needs to work with your company name. Participants will design a name that fits — whether that's extending your brand (like Salesforce → Sales Cloud) or standing alone (like Apple → iPhone)." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="The product name needs to work with your company name. Participants will design a name that fits — whether that's extending your brand (like Salesforce → Sales Cloud) or standing alone (like Apple → iPhone)." />
         <input style={{ ...inputStyle, marginTop: 8 }} placeholder="e.g. Acme Corp, or leave blank if not yet named" value={data.parentBrand || ''} onChange={e => setData({ ...data, parentBrand: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Brand architecture preference</label>
-        <TipRow tipContent="Branded house (Google) = all products feel like extensions of the parent. House of brands (P&G) = each product is its own world. Endorsed brand = parent name lends credibility but product has its own identity. This affects whether the product name should reference your company at all." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Branded house (Google) = all products feel like extensions of the parent. House of brands (P&G) = each product is its own world. Endorsed brand = parent name lends credibility but product has its own identity. This affects whether the product name should reference your company at all." />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
           {architectures.map(a => (
             <label key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: data.architecture === a.id ? `rgba(${tc.rgb},0.08)` : '#141414', border: `0.5px solid ${data.architecture === a.id ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, cursor: 'pointer' }}>
@@ -328,7 +328,7 @@ function B2Fields({ data, setData, tc }) {
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Competitor product names (list 3-5)</label>
-        <TipRow tipContent="Product naming needs market differentiation just as much as company naming. If all your competitors have technical/descriptive names, a evocative name will stand out — and vice versa." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Product naming needs market differentiation just as much as company naming. If all your competitors have technical/descriptive names, a evocative name will stand out — and vice versa." />
         <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={3} placeholder="e.g. Stripe Billing, Chargebee, Paddle..." value={data.competitors || ''} onChange={e => setData({ ...data, competitors: e.target.value })} />
       </div>
       <div style={fieldWrap}>
@@ -363,7 +363,7 @@ function B3Fields({ data, setData, tc }) {
     <div>
       <div style={fieldWrap}>
         <label style={labelStyle}>What is this project / initiative?</label>
-        <TipRow tipContent="Describe the project's goal, scope, and who it affects. Great internal names capture the spirit of the work, not just the task. 'Project Heartbeat' for a customer retention initiative says something about the stakes." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Describe the project's goal, scope, and who it affects. Great internal names capture the spirit of the work, not just the task. 'Project Heartbeat' for a customer retention initiative says something about the stakes." />
         <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={4} placeholder="What is the project's goal? Who is involved? What changes when it succeeds?" value={data.projDesc || ''} onChange={e => setData({ ...data, projDesc: e.target.value })} />
       </div>
       <div style={fieldWrap}>
@@ -376,7 +376,7 @@ function B3Fields({ data, setData, tc }) {
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Name type preference</label>
-        <TipRow tipContent="Functional names are clear but forgettable. Inspirational names build morale but can feel forced. Codenames/abstract names (like Google's internal project names) feel cool but need internal adoption. The right choice depends on how much the name needs to communicate outside the core team." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Functional names are clear but forgettable. Inspirational names build morale but can feel forced. Codenames/abstract names (like Google's internal project names) feel cool but need internal adoption. The right choice depends on how much the name needs to communicate outside the core team." />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
           {nameTypes.map(t => (
             <label key={t.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: data.projNameType === t.id ? `rgba(${tc.rgb},0.08)` : '#141414', border: `0.5px solid ${data.projNameType === t.id ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, cursor: 'pointer' }}>
@@ -451,17 +451,17 @@ function T2Fields({ data, setData, tc }) {
     <div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Genre / Sound</label>
-        <TipRow tipContent="Genre shapes the name archetype. Metal names trend aggressive (Slayer, Pantera, Megadeth). Indie names trend literary/abstract (Fleet Foxes, Beach House, Bon Iver). Pop names trend catchy and pronounceable. Share the genre so participants know the naming territory." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Genre shapes the name archetype. Metal names trend aggressive (Slayer, Pantera, Megadeth). Indie names trend literary/abstract (Fleet Foxes, Beach House, Bon Iver). Pop names trend catchy and pronounceable. Share the genre so participants know the naming territory." />
         <input style={{ ...inputStyle, marginTop: 8 }} placeholder="e.g. Indie rock, hip-hop, classical, electronic..." value={data.genre || ''} onChange={e => setData({ ...data, genre: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Band origin story <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
-        <TipRow tipContent="Fans always ask 'How did you get your name?' A name with a great story is a permanent conversation starter. Lynyrd Skynyrd = named after a gym teacher. Radiohead = from a Talking Heads song. Foo Fighters = Dave Grohl's WWII UFO reference. Share the origin context so participants can suggest something with meaning." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Fans always ask 'How did you get your name?' A name with a great story is a permanent conversation starter. Lynyrd Skynyrd = named after a gym teacher. Radiohead = from a Talking Heads song. Foo Fighters = Dave Grohl's WWII UFO reference. Share the origin context so participants can suggest something with meaning." />
         <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={3} placeholder="How did the band form? Any meaningful context, inside references, or stories that could inspire a name?" value={data.originStory || ''} onChange={e => setData({ ...data, originStory: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Name archetype preference</label>
-        <TipRow tipContent="Three archetypes dominate great band names. Absurdist/Provocative (Arctic Monkeys, Vampire Weekend, Panic! at the Disco) — memorable for their strangeness. Evocative/Poetic (The National, Fleet Foxes, Portishead) — mood-first, feels like the music. Personal/Story-based (Dave Matthews Band, Lynyrd Skynyrd) — built around identity or lore. Pick one to guide submissions." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Three archetypes dominate great band names. Absurdist/Provocative (Arctic Monkeys, Vampire Weekend, Panic! at the Disco) — memorable for their strangeness. Evocative/Poetic (The National, Fleet Foxes, Portishead) — mood-first, feels like the music. Personal/Story-based (Dave Matthews Band, Lynyrd Skynyrd) — built around identity or lore. Pick one to guide submissions." />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
           {styles.map(s => (
             <label key={s} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: data.nameStyle === s ? `rgba(${tc.rgb},0.08)` : '#141414', border: `0.5px solid ${data.nameStyle === s ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, cursor: 'pointer' }}>
@@ -473,7 +473,7 @@ function T2Fields({ data, setData, tc }) {
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Stage name or legal name?</label>
-        <TipRow tipContent="If this is the legal band name for contracts, merch, and licensing — it needs to be distinctive enough to trademark and simple enough for legal docs. If it's a stage name only, you have more creative freedom. Some bands use a simplified version legally (The Artist Formerly Known As Prince → Prince legally)." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="If this is the legal band name for contracts, merch, and licensing — it needs to be distinctive enough to trademark and simple enough for legal docs. If it's a stage name only, you have more creative freedom. Some bands use a simplified version legally (The Artist Formerly Known As Prince → Prince legally)." />
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           {['Stage name (creative freedom)', 'Legal name (needs trademark-ability)', 'Both same name'].map(opt => (
             <button key={opt} onClick={() => setData({ ...data, nameType: opt })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.nameType === opt ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.nameType === opt ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 12, cursor: 'pointer' }}>{opt}</button>
@@ -482,7 +482,7 @@ function T2Fields({ data, setData, tc }) {
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Google / searchability test</label>
-        <TipRow tipContent="In the streaming era, a band name that's searchable without 10,000 false positives is a real competitive advantage. 'The The', 'Girls', and '!!!' are famously unsearchable. 'Foo Fighters' returns exactly what you want. Tell participants: do you want a highly distinctive, searchable name, or are you okay with something more common?" />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="In the streaming era, a band name that's searchable without 10,000 false positives is a real competitive advantage. 'The The', 'Girls', and '!!!' are famously unsearchable. 'Foo Fighters' returns exactly what you want. Tell participants: do you want a highly distinctive, searchable name, or are you okay with something more common?" />
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           {['Highly distinctive / searchable', 'Okay with some ambiguity', "Don't mind"].map(opt => (
             <button key={opt} onClick={() => setData({ ...data, searchability: opt })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.searchability === opt ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.searchability === opt ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{opt}</button>
@@ -517,7 +517,7 @@ function T3Fields({ data, setData, tc }) {
     <div>
       <div style={fieldWrap}>
         <label style={labelStyle}>What is your show about?</label>
-        <TipRow tipContent="Be specific. 'Tech' is too broad. 'How solo founders build profitable SaaS businesses in under 12 months' is clear. Participants need to understand your show's topic to name it well." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Be specific. 'Tech' is too broad. 'How solo founders build profitable SaaS businesses in under 12 months' is clear. Participants need to understand your show's topic to name it well." />
         <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={4} placeholder="Describe the show's topic, angle, and target audience in 2-3 sentences..." value={data.showDesc || ''} onChange={e => setData({ ...data, showDesc: e.target.value })} />
       </div>
       <div style={fieldWrap}>
@@ -530,7 +530,7 @@ function T3Fields({ data, setData, tc }) {
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Tone / Format</label>
-        <TipRow tipContent="Tone affects the name hugely. A comedy podcast can be absurdist. An educational show needs clarity. An interview show might lean on the host's personality. Share the tone so participants name appropriately." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Tone affects the name hugely. A comedy podcast can be absurdist. An educational show needs clarity. An interview show might lean on the host's personality. Share the tone so participants name appropriately." />
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
           {tones.map(t => (
             <button key={t} onClick={() => setData({ ...data, tone: t })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.tone === t ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.tone === t ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{t}</button>
@@ -539,7 +539,7 @@ function T3Fields({ data, setData, tc }) {
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Existing shows you admire <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(name style reference)</span></label>
-        <TipRow tipContent="Like competitor names for brands, comparable show names tell participants what naming territory is taken and what style resonates with you. e.g. 'I love how How I Built This is clear, but want something with more personality like Radiolab.'" />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Like competitor names for brands, comparable show names tell participants what naming territory is taken and what style resonates with you. e.g. 'I love how How I Built This is clear, but want something with more personality like Radiolab.'" />
         <input style={{ ...inputStyle, marginTop: 8 }} placeholder="e.g. How I Built This, Lex Fridman, Hidden Brain..." value={data.compShows || ''} onChange={e => setData({ ...data, compShows: e.target.value })} />
       </div>
       <div style={fieldWrap}>
@@ -577,17 +577,17 @@ function T4Fields({ data, setData, tc }) {
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Mission / Purpose</label>
-        <TipRow tipContent="Civic names need to communicate purpose instantly. Describe your mission in 1-2 sentences. The best civic names are either crystal-clear (Habitat for Humanity) or deeply aspirational (Doctors Without Borders). Tell participants which direction to go." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Civic names need to communicate purpose instantly. Describe your mission in 1-2 sentences. The best civic names are either crystal-clear (Habitat for Humanity) or deeply aspirational (Doctors Without Borders). Tell participants which direction to go." />
         <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={4} placeholder="What is this organization's mission? Who does it serve? What change does it create?" value={data.mission || ''} onChange={e => setData({ ...data, mission: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Community served</label>
-        <TipRow tipContent="Is this local (a specific neighborhood), regional, or aspiring to be national? Geographic scope affects whether a location should be in the name. 'Riverside Community Garden' works locally but limits future expansion." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Is this local (a specific neighborhood), regional, or aspiring to be national? Geographic scope affects whether a location should be in the name. 'Riverside Community Garden' works locally but limits future expansion." />
         <input style={{ ...inputStyle, marginTop: 8 }} placeholder="e.g. Families in the Oak Park district, youth ages 12-18, local small businesses..." value={data.community || ''} onChange={e => setData({ ...data, community: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Acronym test — will people use initials?</label>
-        <TipRow tipContent="Some civic names are universally known by acronym: ACLU, YMCA, NAACP. If your organization will likely be shortened to initials, participants should know — so they can suggest names where the acronym is also strong. Ask yourself: will people say the full name or the letters?" />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Some civic names are universally known by acronym: ACLU, YMCA, NAACP. If your organization will likely be shortened to initials, participants should know — so they can suggest names where the acronym is also strong. Ask yourself: will people say the full name or the letters?" />
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           {['Full name (no acronym expected)', 'Acronym likely (initials matter)', 'Not sure'].map(opt => (
             <button key={opt} onClick={() => setData({ ...data, acronymPref: opt })} style={{ padding: '8px 12px', borderRadius: 8, border: `1px solid ${data.acronymPref === opt ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.acronymPref === opt ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 12, cursor: 'pointer' }}>{opt}</button>
@@ -596,7 +596,7 @@ function T4Fields({ data, setData, tc }) {
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Longevity aspiration</label>
-        <TipRow tipContent="Community organizations often outlast their founders. A name should work for 50+ years. Avoid trend-driven language, technology references, or anything that feels 'of this moment.' Participants should know: is this meant to be timeless?" />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Community organizations often outlast their founders. A name should work for 50+ years. Avoid trend-driven language, technology references, or anything that feels 'of this moment.' Participants should know: is this meant to be timeless?" />
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           {['5-10 years', '10-25 years', '25+ years / permanent'].map(l => (
             <button key={l} onClick={() => setData({ ...data, longevity: l })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.longevity === l ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.longevity === l ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
@@ -630,7 +630,7 @@ function T6Fields({ data, setData, tc }) {
     <div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Describe your group</label>
-        <TipRow tipContent="The more context participants have, the better the names. What does your group do? Who's in it? What makes you unique?" />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="The more context participants have, the better the names. What does your group do? Who's in it? What makes you unique?" />
         <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={4} placeholder="What kind of group is this? What do you do together? What makes your group unique?" value={data.groupDesc || ''} onChange={e => setData({ ...data, groupDesc: e.target.value })} />
       </div>
       <div style={fieldWrap}>
@@ -643,7 +643,7 @@ function T6Fields({ data, setData, tc }) {
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Any shared history or inside references? <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
-        <TipRow tipContent="Group names with personal meaning create stronger belonging. If there's a shared joke, a founding story, or a place that matters — share it. Participants who know the group well might suggest something that hits differently." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Group names with personal meaning create stronger belonging. If there's a shared joke, a founding story, or a place that matters — share it. Participants who know the group well might suggest something that hits differently." />
         <input style={{ ...inputStyle, marginTop: 8 }} placeholder="e.g. We all met at a conference in Berlin, our group chat is named after an inside joke..." value={data.history || ''} onChange={e => setData({ ...data, history: e.target.value })} />
       </div>
       <div style={fieldWrap}>
@@ -701,12 +701,12 @@ function P1Fields({ data, setData, tc }) {
     <div>
       <div style={fieldWrap}>
         <label style={labelStyle}>When is your baby due? <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
-        <TipRow tipContent="If already born, enter birth date — we'll generate a 'Welcome to the world' certificate with the actual birth date." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="If already born, enter birth date — we'll generate a 'Welcome to the world' certificate with the actual birth date." />
         <input type="date" style={{ ...inputStyle, marginTop: 8 }} value={data.dueDate || ''} onChange={e => setData({ ...data, dueDate: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Do you know the gender?</label>
-        <TipRow tipContent="If surprise, people can suggest both boy and girl names. You pick after baby arrives. We'll keep all submissions organized." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="If surprise, people can suggest both boy and girl names. You pick after baby arrives. We'll keep all submissions organized." />
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
           {genders.map(g => (
             <button key={g} onClick={() => setData({ ...data, gender: g })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.gender === g ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.gender === g ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{g}</button>
@@ -715,7 +715,7 @@ function P1Fields({ data, setData, tc }) {
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Any names to avoid? <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
-        <TipRow tipContent="Family names that didn't work out? Names of exes? We won't show these to voters — they stay private between you and the platform." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="Family names that didn't work out? Names of exes? We won't show these to voters — they stay private between you and the platform." />
         <input style={{ ...inputStyle, marginTop: 8 }} placeholder="Ex: No names starting with K (too many cousins already)" value={data.avoidNames || ''} onChange={e => setData({ ...data, avoidNames: e.target.value })} />
       </div>
     </div>
@@ -763,7 +763,7 @@ function P3Fields({ data, setData, tc }) {
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Tell people about it <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
-        <TipRow tipContent="A little context sparks better names. Is there something unique about this place or thing? A quirk, a story, a feeling? Share what makes it special and participants will suggest names that actually fit." />
+        <TipRow color={tc.color} rgb={tc.rgb} tipContent="A little context sparks better names. Is there something unique about this place or thing? A quirk, a story, a feeling? Share what makes it special and participants will suggest names that actually fit." />
         <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={3} placeholder="e.g. A 1920s craftsman bungalow with a big porch, always full of people on summer evenings..." value={data.propDesc || ''} onChange={e => setData({ ...data, propDesc: e.target.value })} />
       </div>
       <div style={fieldWrap}>
