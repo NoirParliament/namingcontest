@@ -275,7 +275,7 @@ function PricingFeatureTable() {
     {
       label: 'Participants',
       rows: [
-        { feature: 'Participant cap', free: '5', personal: 'Up to 30', team: 'Up to 60', business: 'Up to 300' },
+        { feature: 'Participant cap', free: '5', personal: 'Up to 15', team: 'Up to 60', business: 'Up to 240' },
         { feature: 'Participant invite flow', free: '✓', personal: '✓', team: '✓', business: '✓' },
         { feature: 'Anonymous submissions', free: '✓', personal: '✓', team: '✓', business: '✓' },
       ],
@@ -382,7 +382,7 @@ export default function LandingPage() {
       price: '$9',
       priceSub: 'per contest',
       features: [
-        { label: 'Up to 30 participants', included: true },
+        { label: 'Up to 15 participants', included: true },
         { label: 'Open submissions', included: true },
         { label: 'All voting methods', included: true },
         { label: 'Naming methodology', included: true },
@@ -428,7 +428,7 @@ export default function LandingPage() {
       price: '$89',
       priceSub: 'per contest',
       features: [
-        { label: 'Up to 300 participants', included: true },
+        { label: 'Up to 240 participants', included: true },
         { label: 'Open submissions', included: true },
         { label: 'All voting methods', included: true },
         { label: 'Naming methodology', included: true },
@@ -838,8 +838,6 @@ export default function LandingPage() {
             </h2>
             <p style={{ fontSize: 16, color: '#555', maxWidth: 540, margin: '0 auto' }}>
               Here are the names that almost became the world's most iconic brands.
-              <br />
-              <em style={{ color: '#888', fontSize: 14 }}>Hover each card to reveal the alternatives.</em>
             </p>
           </div>
 
@@ -847,12 +845,16 @@ export default function LandingPage() {
             display: 'grid',
             gridTemplateColumns: 'repeat(4, 1fr)',
             gap: 16,
-            marginBottom: 48,
+            marginBottom: 24,
           }}>
             {almostNames.map(item => (
               <FlipCard key={item.id} item={item} />
             ))}
           </div>
+
+          <p style={{ textAlign: 'center', marginBottom: 32 }}>
+            <em style={{ color: '#888', fontSize: 14 }}>Hover each card to reveal the alternatives.</em>
+          </p>
 
           <div style={{ textAlign: 'center' }}>
             <a

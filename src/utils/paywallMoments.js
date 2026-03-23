@@ -18,9 +18,9 @@ function buildMoments(group) {
   }[group];
 
   const capSubtext = {
-    business: `Free tier is a demo — up to 3 participants. Business contests support up to 300 participants, open submissions, and advanced voting.`,
+    business: `Free tier is a demo — up to 5 participants. Business contests support up to 240 participants, open submissions, and advanced voting.`,
     team:     `Free tier supports 5 participants. Team contests at $29 support up to 60 members — enough for your full group.`,
-    personal: `Free contests support 5 people. $9 lets you invite up to 30 family and friends to weigh in.`,
+    personal: `Free contests support 5 people. $9 lets you invite up to 15 family and friends to weigh in.`,
   }[group];
 
   return [
@@ -97,17 +97,6 @@ function buildMoments(group) {
         type: 'pdf-gate',
         retroactive: false,
       },
-      {
-        id: 'pdf-retroactive',
-        title: 'PDF Report (Retroactive)',
-        where: 'Results Page — Contest Closed',
-        trigger: '"Download PDF Report" clicked after contest closes',
-        headline: 'This contest is closed. Pay once to unlock this report.',
-        subtext: 'You don\'t need to upgrade your plan — just pay once for this contest\'s PDF. One-click payment, report available instantly. No subscription.',
-        price,
-        type: 'pdf-gate',
-        retroactive: true,
-      },
     ] : []),
     {
       id: 'white-label',
@@ -118,6 +107,16 @@ function buildMoments(group) {
       subtext: 'All paid plans include white-label output — no platform footer on your PDFs or participant-facing pages. Clean, professional deliverables from your first paid contest.',
       price,
       type: 'branding-gate',
+    },
+    {
+      id: 'second-round',
+      title: 'Second Round Discount',
+      where: 'Results Page — Post-Vote Reflection',
+      trigger: 'Selecting "We\'re still not sure" after results',
+      headline: `Get 50% off your second round — just ${group === 'personal' ? '$4.50' : group === 'team' ? '$14.50' : '$44.50'}.`,
+      subtext: 'Not confident in the winner? Run another round with a fresh brief, new candidates, or a different voting method. Half price because you already did the hard part.',
+      price: `${group === 'personal' ? '$4.50' : group === 'team' ? '$14.50' : '$44.50'}`,
+      type: 'discount-offer',
     },
   ];
 }

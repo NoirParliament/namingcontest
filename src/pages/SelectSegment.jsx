@@ -17,7 +17,7 @@ const SEGMENT_CONFIG = [
     price: '$9',
     priceSub: 'per contest',
     features: [
-      { label: 'Up to 30 participants', included: true },
+      { label: 'Up to 15 participants', included: true },
       { label: 'Open submissions', included: true },
       { label: 'All voting methods', included: true },
       { label: 'Naming methodology', included: true },
@@ -63,7 +63,7 @@ const SEGMENT_CONFIG = [
     price: '$89',
     priceSub: 'per contest',
     features: [
-      { label: 'Up to 300 participants', included: true },
+      { label: 'Up to 240 participants', included: true },
       { label: 'Open submissions', included: true },
       { label: 'All voting methods', included: true },
       { label: 'Naming methodology', included: true },

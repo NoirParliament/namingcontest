@@ -408,7 +408,7 @@ export const faqData = [
   {
     id: 'faq-6',
     question: 'What does it cost?',
-    answer: 'Three paid tiers: Personal ($9/contest) for up to 30 participants — great for baby names, pets, and personal decisions. Team ($29/contest) for up to 60 participants with white-label output — ideal for bands, sports teams, and groups. Business ($89/contest) for up to 300 participants with full PDF reports — built for companies, products, and rebrands. All paid plans include every voting method, naming methodology, and automated reminders.',
+    answer: 'Three paid tiers: Personal ($9/contest) for up to 15 participants — great for baby names, pets, and personal decisions. Team ($29/contest) for up to 60 participants with white-label output — ideal for bands, sports teams, and groups. Business ($89/contest) for up to 240 participants with full PDF reports — built for companies, products, and rebrands. All paid plans include every voting method, naming methodology, and automated reminders.',
   },
   {
     id: 'faq-7',

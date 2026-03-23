@@ -15,7 +15,7 @@ export const pricing = {
       price: 0,
       name: 'Free',
       description: 'Try the platform',
-      maxParticipants: 3,
+      maxParticipants: 5,
       features: {
         briefBuilder: true,
         education: true,
@@ -32,10 +32,10 @@ export const pricing = {
     },
     paid: {
       tier: 'paid',
-      price: 39,
+      price: 89,
       name: 'Business',
       description: 'Full platform access',
-      maxParticipants: 200,
+      maxParticipants: 240,
       features: {
         briefBuilder: true,
         education: true,
@@ -79,10 +79,10 @@ export const pricing = {
     },
     paid: {
       tier: 'paid',
-      price: 19,
+      price: 29,
       name: 'Team/Group',
       description: 'Full team features',
-      maxParticipants: 100,
+      maxParticipants: 60,
       features: {
         briefBuilder: true,
         education: true,
@@ -129,7 +129,7 @@ export const pricing = {
       price: 9,
       name: 'Personal',
       description: 'Extended family & friends',
-      maxParticipants: 100,
+      maxParticipants: 15,
       features: {
         briefBuilder: true,
         education: 'light',

@@ -582,41 +582,8 @@ export default function ResultsPage() {
           );
         })()}
 
-        {/* Zone 6: Winner Card */}
-        <div style={{ marginBottom: 40 }}>
-          <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, color: '#fff', marginBottom: 20 }}>Share the Win</h2>
-          <div style={{ background: `linear-gradient(135deg, #1a1a1a, #0f0f0f)`, border: `1px solid ${tc.color}`, borderRadius: 16, padding: '28px', maxWidth: 420, marginBottom: 16 }}>
-            <div style={{ fontSize: 11, color: tc.color, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>{meta.contestTitle}</div>
-            <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 40, fontWeight: 800, color: '#fff', marginBottom: 8 }}>{winner?.name || 'Hollow Signal'}</div>
-            {winner?.rationale && <div style={{ fontSize: 12, color: '#7a7a7a', lineHeight: 1.5, marginBottom: 10 }}>{winner.rationale}</div>}
-            <div style={{ fontSize: 13, color: '#7a7a7a', marginBottom: 16 }}>Chosen by {6} people · {'2026-03-05'}</div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 11, color: '#5a5a5a' }}>Namico.com</span>
-              <span style={{ fontSize: 11, color: '#5a5a5a' }}>Powered by Catchword, the world's leading naming firm</span>
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            <SimBtn label="Download Card" icon={<DownloadSimple size={14} />} />
-            <SimBtn label="Share to X/Twitter" icon={<TwitterLogo size={14} />} />
-          </div>
-        </div>
-
-        {/* Zone 7: Certificate */}
-        <div style={{ marginBottom: 40 }}>
-          <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, color: '#fff', marginBottom: 20 }}>Official Naming Certificate</h2>
-          <div style={{ background: '#f9f6ef', border: '2px solid #d4a853', borderRadius: 16, padding: '32px', maxWidth: 480, marginBottom: 16 }}>
-            <div style={{ textAlign: 'center', fontFamily: 'Inter, sans-serif' }}>
-              <div style={{ fontSize: 11, color: '#888', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>Official Certificate of Naming</div>
-              <div style={{ fontSize: 13, color: '#555', marginBottom: 12 }}>This certifies that the name</div>
-              <div style={{ fontSize: 36, fontWeight: 800, color: '#1a1a1a', marginBottom: 8 }}>{winner?.name || 'Hollow Signal'}</div>
-              <div style={{ fontSize: 13, color: '#555', marginBottom: 16 }}>was officially chosen for</div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: '#333', marginBottom: 12 }}>{meta.contestTitle}</div>
-              <div style={{ fontSize: 12, color: '#888' }}>with {6} participants · {'2026-03-05'}</div>
-              <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #ddd', fontSize: 10, color: '#aaa', letterSpacing: '0.1em' }}>POWERED BY CATCHWORD BRANDING</div>
-            </div>
-          </div>
-          <SimBtn label="Download Certificate (PDF)" icon={<DownloadSimple size={14} />} />
-        </div>
+        {/* Zone 6: Official Naming Certificate */}
+        <CertificateSection winner={winner} meta={meta} tc={tc} />
 
         {/* Zone 8: Export */}
         <div style={{ marginBottom: 40 }}>
@@ -671,6 +638,71 @@ export default function ResultsPage() {
   );
 }
 
+function CertificateSection({ winner, meta, tc }) {
+  const [whiteLabel, setWhiteLabel] = useState(false);
+  const brandingText = whiteLabel ? '' : 'POWERED BY CATCHWORD BRANDING';
+
+  return (
+    <div style={{ marginBottom: 40 }}>
+      <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, color: '#fff', marginBottom: 20 }}>Official Naming Certificate</h2>
+
+      {/* Branding toggle */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+        <button
+          onClick={() => setWhiteLabel(false)}
+          style={{
+            padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+            background: !whiteLabel ? `rgba(${tc.rgb},0.15)` : 'transparent',
+            border: `1px solid ${!whiteLabel ? tc.color : 'rgba(255,255,255,0.12)'}`,
+            color: !whiteLabel ? tc.color : '#7a7a7a',
+          }}
+        >
+          Powered by Catchword
+        </button>
+        <button
+          onClick={() => setWhiteLabel(true)}
+          style={{
+            padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+            background: whiteLabel ? `rgba(${tc.rgb},0.15)` : 'transparent',
+            border: `1px solid ${whiteLabel ? tc.color : 'rgba(255,255,255,0.12)'}`,
+            color: whiteLabel ? tc.color : '#7a7a7a',
+          }}
+        >
+          Your Branding (White-label)
+        </button>
+      </div>
+
+      {/* Certificate */}
+      <div style={{ background: '#f9f6ef', border: '2px solid #d4a853', borderRadius: 16, padding: '32px', maxWidth: 480, marginBottom: 16 }}>
+        <div style={{ textAlign: 'center', fontFamily: 'Inter, sans-serif' }}>
+          <div style={{ fontSize: 11, color: '#888', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>Official Certificate of Naming</div>
+          <div style={{ fontSize: 13, color: '#555', marginBottom: 12 }}>This certifies that the name</div>
+          <div style={{ fontSize: 36, fontWeight: 800, color: '#1a1a1a', marginBottom: 8 }}>{winner?.name || 'Hollow Signal'}</div>
+          <div style={{ fontSize: 13, color: '#555', marginBottom: 16 }}>was officially chosen for</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#333', marginBottom: 12 }}>{meta.contestTitle}</div>
+          <div style={{ fontSize: 12, color: '#888' }}>with {6} participants · {'2026-03-05'}</div>
+          {brandingText && (
+            <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #ddd', fontSize: 10, color: '#aaa', letterSpacing: '0.1em' }}>{brandingText}</div>
+          )}
+          {whiteLabel && (
+            <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #ddd' }}>
+              <div style={{ fontSize: 10, color: '#aaa', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Your Company Logo Here</div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <SimBtn label="Download Certificate (PDF)" icon={<DownloadSimple size={14} />} />
+        <SimBtn label="Share on X" icon={<TwitterLogo size={14} />} />
+        <SimBtn label="Share on LinkedIn" icon={<LinkedinLogo size={14} />} />
+        <SimBtn label="Share on Facebook" icon={<Share size={14} />} />
+      </div>
+    </div>
+  );
+}
+
 function PostResultsReflection({ winnerName, contestTitle, tc, isBusiness }) {
   const [response, setResponse] = useState(null);
 
@@ -697,8 +729,8 @@ function PostResultsReflection({ winnerName, contestTitle, tc, isBusiness }) {
         { icon: <Share size={14} weight="duotone" />, label: 'Ask 3 people who weren\'t in the contest', sub: "Fresh ears catch things participants can't. Do they understand it? Does it feel right to them?" },
         { icon: <Scales size={14} weight="duotone" />, label: 'Compare to the runner-up', sub: 'Is the runner-up name actually better, or just different? Write down specifically why the winner beat it.' },
       ],
-      cta: isBusiness ? 'Register with LegalZoom →' : 'Run Another Round →',
-      ctaNote: isBusiness ? "LegalZoom handles the paperwork in all 50 states." : "Not confident? Open a new round with fresh candidates.",
+      cta: 'Run Another Round — 50% Off →',
+      ctaNote: "Not confident? Open a new round with fresh candidates at half price.",
     },
     unsure: {
       headline: "Still not sure? That's okay. Use this framework.",
@@ -708,8 +740,8 @@ function PostResultsReflection({ winnerName, contestTitle, tc, isBusiness }) {
         { icon: <Target size={14} weight="duotone" />, label: 'Test it on strangers', sub: 'Tell 5 people outside the contest the name only — no context. What do they assume about you?' },
         { icon: <Check size={14} weight="bold" />, label: 'Give it 7 days before acting', sub: 'The first week always feels uncomfortable. Check in after 7 days — the feeling usually shifts.' },
       ],
-      cta: isBusiness ? 'Register with LegalZoom →' : 'Run Another Round →',
-      ctaNote: isBusiness ? "Make it official — register before someone else does." : "Sometimes a second round with a fresh brief brings total clarity.",
+      cta: 'Run Another Round — 50% Off →',
+      ctaNote: "Sometimes a second round with a fresh brief brings total clarity. Get 50% off your next contest.",
     },
   };
 
