@@ -501,8 +501,8 @@ export default function LandingPage() {
             margin: '0 auto 24px',
             animation: 'fadeUp 0.7s ease 0.1s both',
           }}>
-            Name things together.<br />
-            <em style={{ color: '#eaef09', fontStyle: 'italic' }}>Actually agree.</em>
+            Name things together<br />
+            <em style={{ color: '#eaef09', fontStyle: 'italic' }}>with Namico</em>
           </h1>
 
           {/* Subheadline */}
@@ -514,7 +514,7 @@ export default function LandingPage() {
             lineHeight: 1.6,
             animation: 'fadeUp 0.7s ease 0.2s both',
           }}>
-            The only naming platform built on 25 years of naming methodology
+            The only personal naming assistant built on 25 years of naming methodology
           </p>
         </div>
 
