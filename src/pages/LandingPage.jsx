@@ -588,7 +588,7 @@ export default function LandingPage() {
               marginBottom: 16,
               lineHeight: 1.15,
             }}>
-              Pick what you're naming<br />We'll handle the rest
+              Every name starts differently,<br />your contest already knows that
             </h2>
             <p style={{ fontSize: 16, color: '#444', maxWidth: 520, margin: '0 auto', lineHeight: 1.65 }}>
               Business brands, team identities, or personal milestones — every great name deserves a structured process and a fair vote.
@@ -715,7 +715,7 @@ export default function LandingPage() {
               marginBottom: 16,
               lineHeight: 1.15,
             }}>
-              Great names take two sides
+              Great names take two sides,
               <br />
               <span style={{ color: '#eaef09' }}>Track your half of the work</span>
             </h2>

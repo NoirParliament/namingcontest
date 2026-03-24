@@ -247,12 +247,14 @@ export default function DocumentationPage() {
         {/* Nav items */}
         {SECTIONS.map((s, si) => (
           <div key={s.id}>
-            {s.highlight && <div style={{ height: 1, background: 'rgba(234,239,9,0.15)', margin: '10px 10px 8px' }} />}
+            {s.highlight && <div style={{ height: 1, background: 'rgba(234,239,9,0.15)', margin: '12px 10px 10px' }} />}
             <a
               href={`#${s.id}`}
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
-                height: 34, padding: '0 10px', borderRadius: 8,
+                height: s.highlight ? 40 : 34,
+                padding: s.highlight ? '0 12px' : '0 10px',
+                borderRadius: 8,
                 textDecoration: 'none', fontSize: 12, marginBottom: 1,
                 background: s.highlight
                   ? (activeSection === s.id ? 'rgba(234,239,9,0.15)' : 'rgba(234,239,9,0.06)')
@@ -263,6 +265,7 @@ export default function DocumentationPage() {
                 fontWeight: s.highlight ? 700 : (activeSection === s.id ? 600 : 400),
                 transition: 'all 0.15s',
                 border: s.highlight ? '0.5px solid rgba(234,239,9,0.2)' : 'none',
+                animation: s.highlight ? 'sidebarPulse 3s ease-in-out infinite' : 'none',
               }}
             >
               {s.icon} {s.label}
@@ -878,6 +881,13 @@ export default function DocumentationPage() {
         {/* Footer spacer */}
         <div style={{ height: 80 }} />
       </div>
+
+      <style>{`
+        @keyframes sidebarPulse {
+          0%, 100% { background: rgba(234,239,9,0.04); border-color: rgba(234,239,9,0.15); }
+          50% { background: rgba(234,239,9,0.18); border-color: rgba(234,239,9,0.4); }
+        }
+      `}</style>
     </div>
   );
 }
