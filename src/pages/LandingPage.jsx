@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import namicoIcon from '../assets/namico-icon.svg';
+import Footer from '../components/layout/Footer';
 import {
   Trophy, Users, Lightbulb, CheckCircle, ArrowRight,
   Target, Envelope, Star, Plus, Minus, Buildings,
@@ -10,6 +11,54 @@ import {
 } from '@phosphor-icons/react';
 import { platformStats, testimonials, faqData, howItWorksSteps, almostNames, methodologyItems } from '../data/mockData';
 import HeroCardStream from '../components/HeroCardStream';
+
+/* ── Typewriter Word Animation ── */
+function RotatingWord({ words }) {
+  const [wordIdx, setWordIdx] = useState(0);
+  const [text, setText] = useState(words[0]);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const current = words[wordIdx];
+
+    if (!isDeleting && text === current) {
+      // Pause before deleting
+      const t = setTimeout(() => setIsDeleting(true), 1800);
+      return () => clearTimeout(t);
+    }
+    if (isDeleting && text === '') {
+      // Move to next word, start typing
+      setIsDeleting(false);
+      setWordIdx((wordIdx + 1) % words.length);
+      return;
+    }
+
+    const speed = isDeleting ? 60 : 100;
+    const t = setTimeout(() => {
+      setText(isDeleting
+        ? current.slice(0, text.length - 1)
+        : current.slice(0, text.length + 1)
+      );
+    }, speed);
+    return () => clearTimeout(t);
+  }, [text, isDeleting, wordIdx, words]);
+
+  return (
+    <span style={{ color: '#eaef09', fontWeight: 800 }}>
+      {text}
+      <span style={{
+        display: 'inline-block',
+        width: 2,
+        height: '0.85em',
+        background: '#eaef09',
+        marginLeft: 1,
+        marginRight: -2,
+        verticalAlign: 'baseline',
+        animation: 'blink 0.8s step-end infinite',
+      }} />
+    </span>
+  );
+}
 
 /* ── Glassmorphism Navbar ── */
 function Navbar() {
@@ -45,13 +94,13 @@ function Navbar() {
 
         {/* Nav Links */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
-          {['How It Works', 'Examples', 'Pricing'].map(link => (
-            <a key={link} href={`#${link.toLowerCase().replace(/\s+/g, '-')}`}
+          {[{ label: 'How It Works', href: '#shared-accountability' }, { label: 'Examples', href: '#examples' }, { label: 'Pricing', href: '#pricing' }].map(link => (
+            <a key={link.label} href={link.href}
               style={{ color: '#a1a1a1', fontSize: 14, fontWeight: 500, textDecoration: 'none', transition: 'color 0.2s' }}
               onMouseEnter={e => e.target.style.color = '#fff'}
               onMouseLeave={e => e.target.style.color = '#a1a1a1'}
             >
-              {link}
+              {link.label}
             </a>
           ))}
         </div>
@@ -649,7 +698,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Contest Quality System ── */}
-      <section style={{ background: '#141414', padding: '80px 0' }}>
+      <section id="shared-accountability" style={{ background: '#141414', padding: '80px 0' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <div style={{
@@ -952,64 +1001,16 @@ export default function LandingPage() {
       <NewsletterSection />
 
       {/* ── Footer ── */}
-      <footer style={{
-        background: '#141414',
-        borderTop: '0.5px solid rgba(255,255,255,0.08)',
-        padding: '40px 0',
-      }}>
-        <div style={{
-          maxWidth: 1200, margin: '0 auto', padding: '0 24px',
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          flexWrap: 'wrap', gap: 24,
-        }}>
-          {/* Logo + tagline */}
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-              <div style={{
-                width: 24, height: 24, background: '#eaef09', borderRadius: 4,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <img src={namicoIcon} alt="Namico" style={{ width: 17, height: 17, display: 'block' }} />
-              </div>
-              <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Namico</span>
-            </div>
-            <div style={{ fontSize: 12, color: '#7a7a7a' }}>Powered by Catchword, the world's leading naming firm</div>
-          </div>
-
-          {/* Links */}
-          <div style={{ display: 'flex', gap: 28 }}>
-            {[
-              { label: 'How It Works', href: '#how-it-works' },
-              { label: 'Pricing', href: '#pricing' },
-              { label: 'Examples', href: '#examples' },
-            ].map(link => (
-              link.to
-                ? <Link key={link.label} to={link.to} style={{ fontSize: 13, color: '#7a7a7a', textDecoration: 'none' }}
-                  onMouseEnter={e => e.target.style.color = '#a1a1a1'}
-                  onMouseLeave={e => e.target.style.color = '#7a7a7a'}
-                >
-                  {link.label}
-                </Link>
-                : <a key={link.label} href={link.href} style={{ fontSize: 13, color: '#7a7a7a', textDecoration: 'none' }}
-                  onMouseEnter={e => e.target.style.color = '#a1a1a1'}
-                  onMouseLeave={e => e.target.style.color = '#7a7a7a'}
-                >
-                  {link.label}
-                </a>
-            ))}
-          </div>
-
-          {/* Copyright */}
-          <div style={{ fontSize: 12, color: '#7a7a7a' }}>
-            © 2026 Namico.com
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
       <style>{`
         @keyframes fadeUp {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
         }
       `}</style>
     </div>
@@ -1052,7 +1053,7 @@ function NewsletterSection() {
           marginBottom: 12, lineHeight: 1.15,
           whiteSpace: 'nowrap',
         }}>
-          Naming tips straight to your inbox
+          Naming <RotatingWord words={['tips', 'hacks', 'guides', 'gems']} /> straight to your inbox
         </h2>
 
         <p style={{ fontSize: 15, color: '#7a7a7a', marginBottom: 8, lineHeight: 1.6 }}>
