@@ -103,8 +103,20 @@ export default function Dashboard() {
                 const tc = TIER[contest.group] || TIER.business;
                 const phase = PHASE_LABELS[contest.phase] || PHASE_LABELS.submissions;
                 const participationPct = Math.round((contest.submissionCount / (contest.participantCount * 2)) * 100);
-                const cq = loadCreatorQuality(contest.group);
-                const pq = loadParticipantQuality(contest.group);
+                // Per-contest demo scores for variety
+                const DEMO_SCORES = {
+                  'demo-1': { cq: 42, pq: 44 }, // 86 Excellent
+                  'demo-2': { cq: 28, pq: 18 }, // 46 Good
+                  'demo-3': { cq: 10, pq: 8 },  // 18 Low
+                  'demo-4': { cq: 35, pq: 32 }, // 67 Strong
+                  'demo-5': { cq: 15, pq: 12 }, // 27 Fair
+                  'demo-6': { cq: 40, pq: 38 }, // 78 Strong
+                  'demo-7': { cq: 22, pq: 26 }, // 48 Good
+                  'demo-8': { cq: 8, pq: 5 },   // 13 Low
+                };
+                const ds = DEMO_SCORES[contest.id] || { cq: 25, pq: 20 };
+                const cq = loadCreatorQuality(contest.group) || ds.cq;
+                const pq = loadParticipantQuality(contest.group) || ds.pq;
                 const totalQ = cq + pq;
 
                 return (
@@ -237,8 +249,25 @@ export default function Dashboard() {
           <div>
             <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 16 }}>Account Overview</div>
 
+            {/* Subscription Card */}
+            <div style={{ background: '#1a1a1a', border: '0.5px solid rgba(234,239,9,0.15)', borderRadius: 12, padding: 16, marginBottom: 16 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#eaef09', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Your Subscription</div>
+                <span style={{ fontSize: 10, fontWeight: 700, color: '#10B981', padding: '2px 8px', background: 'rgba(16,185,129,0.1)', border: '0.5px solid rgba(16,185,129,0.3)', borderRadius: 4 }}>ACTIVE</span>
+              </div>
+              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, fontWeight: 800, color: '#fff', marginBottom: 2 }}>Business Plan</div>
+              <div style={{ fontSize: 13, color: '#a1a1a1', marginBottom: 12 }}>$89 per contest</div>
+              <div style={{ fontSize: 12, color: '#7a7a7a', marginBottom: 12 }}>Renews Apr 15, 2026</div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderTop: '0.5px solid rgba(255,255,255,0.06)' }}>
+                <span style={{ fontSize: 13, color: '#a1a1a1' }}>Auto-renewal</span>
+                <div onClick={() => setAutoRenewal(!autoRenewal)} style={{ width: 40, height: 22, borderRadius: 11, background: autoRenewal ? '#10B981' : '#333', cursor: 'pointer', position: 'relative', transition: 'background 0.2s' }}>
+                  <div style={{ position: 'absolute', top: 3, left: autoRenewal ? 21 : 3, width: 16, height: 16, borderRadius: '50%', background: '#fff', transition: 'left 0.2s' }} />
+                </div>
+              </div>
+            </div>
+
             {/* Stats */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {[
                 { label: 'Total Contests', value: totalContests, icon: <Trophy size={16} color="#eaef09" />, color: '#eaef09' },
                 { label: 'Participants Reached', value: totalParticipants, icon: <Users size={16} color="#8B5CF6" />, color: '#8B5CF6' },
@@ -254,23 +283,6 @@ export default function Dashboard() {
                   </div>
                 </div>
               ))}
-            </div>
-
-            {/* Subscription Card */}
-            <div style={{ background: '#1a1a1a', border: '0.5px solid rgba(234,239,9,0.15)', borderRadius: 12, padding: 16 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: '#eaef09', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Your Subscription</div>
-                <span style={{ fontSize: 10, fontWeight: 700, color: '#10B981', padding: '2px 8px', background: 'rgba(16,185,129,0.1)', border: '0.5px solid rgba(16,185,129,0.3)', borderRadius: 4 }}>ACTIVE</span>
-              </div>
-              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, fontWeight: 800, color: '#fff', marginBottom: 2 }}>Business Plan</div>
-              <div style={{ fontSize: 13, color: '#a1a1a1', marginBottom: 12 }}>$89 per contest</div>
-              <div style={{ fontSize: 12, color: '#7a7a7a', marginBottom: 12 }}>Renews Apr 15, 2026</div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderTop: '0.5px solid rgba(255,255,255,0.06)' }}>
-                <span style={{ fontSize: 13, color: '#a1a1a1' }}>Auto-renewal</span>
-                <div onClick={() => setAutoRenewal(!autoRenewal)} style={{ width: 40, height: 22, borderRadius: 11, background: autoRenewal ? '#10B981' : '#333', cursor: 'pointer', position: 'relative', transition: 'background 0.2s' }}>
-                  <div style={{ position: 'absolute', top: 3, left: autoRenewal ? 21 : 3, width: 16, height: 16, borderRadius: '50%', background: '#fff', transition: 'left 0.2s' }} />
-                </div>
-              </div>
             </div>
           </div>
         </div>

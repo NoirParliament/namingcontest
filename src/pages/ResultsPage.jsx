@@ -818,6 +818,24 @@ export default function ResultsPage() {
                 Back to Dashboard
               </button>
             </div>
+
+            {isBusiness && (
+              <div style={{ marginTop: 20, padding: '20px 24px', background: 'rgba(234,239,9,0.04)', border: '1.5px solid rgba(234,239,9,0.25)', borderRadius: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#eaef09' }} />
+                  <span style={{ fontSize: 10, fontWeight: 700, color: '#eaef09', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Catchword Professional Services</span>
+                </div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 6 }}>
+                  Need a full brand identity? Catchword can help.
+                </div>
+                <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.6, marginBottom: 14 }}>
+                  From naming to brand strategy, verbal identity, and taglines — Catchword has built 3,000+ brands.
+                </div>
+                <a href="#" style={{ fontSize: 13, color: '#eaef09', fontWeight: 600, textDecoration: 'none' }}>
+                  Explore Catchword Services →
+                </a>
+              </div>
+            )}
           </div>
         </div>
 
@@ -960,7 +978,8 @@ function PostResultsReflection({ winnerName, contestTitle, tc, isBusiness }) {
               <p style={{ fontSize: 14, color: '#a1a1a1', lineHeight: 1.7, marginBottom: 16 }}>
                 It's been a week since you chose <strong style={{ color: '#fff' }}>{winnerName || 'your winning name'}</strong>{contestTitle ? ` for ${contestTitle}` : ''}. Now that you've lived with it for a few days:
               </p>
-              <p style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 20 }}>How do you feel about the name?</p>
+              <p style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 4 }}>How do you feel about the name?</p>
+              <p style={{ fontSize: 12, color: '#7a7a7a', marginBottom: 20 }}>Click one of the options below to see what happens next.</p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
                 {[

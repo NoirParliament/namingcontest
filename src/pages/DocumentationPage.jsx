@@ -5,7 +5,8 @@ import {
   ArrowLeft, BookOpen, CurrencyDollar, TreeStructure, Lightbulb,
   Warning, CaretRight, ArrowSquareOut, Users, Star, Trophy,
   ChartBar, ShieldCheck, Scales, Gift, Lightning, Crosshair,
-  CheckCircle, Clock, FileText, Palette, Globe, Tag
+  CheckCircle, Clock, FileText, Palette, Globe, Tag,
+  Wrench, User
 } from '@phosphor-icons/react';
 
 /* ── Section IDs ── */
@@ -21,6 +22,7 @@ const SECTIONS = [
   { id: 'pricing', label: 'Pricing Strategy', icon: <CurrencyDollar size={14} weight="light" /> },
   { id: 'revenue', label: 'Revenue Projections', icon: <ChartBar size={14} weight="light" /> },
   { id: 'scope', label: 'Wireframe Scope', icon: <Warning size={14} weight="light" /> },
+  { id: 'roadmap', label: 'Project Roadmap - Action Required', icon: <Lightning size={14} weight="bold" />, highlight: true },
 ];
 
 /* ── Reusable Components ── */
@@ -98,17 +100,18 @@ function Divider() {
   return <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '48px 0' }} />;
 }
 
-function Badge({ color, children }) {
+function Badge({ color, icon, children }) {
   const colors = {
     yellow: { bg: 'rgba(234,239,9,0.1)', border: 'rgba(234,239,9,0.3)', text: '#eaef09' },
     purple: { bg: 'rgba(139,92,246,0.1)', border: 'rgba(139,92,246,0.3)', text: '#8B5CF6' },
     green: { bg: 'rgba(16,185,129,0.1)', border: 'rgba(16,185,129,0.3)', text: '#10B981' },
+    blue: { bg: 'rgba(59,130,246,0.1)', border: 'rgba(59,130,246,0.3)', text: '#3b82f6' },
     grey: { bg: 'rgba(255,255,255,0.05)', border: 'rgba(255,255,255,0.15)', text: '#a1a1a1' },
   };
   const c = colors[color] || colors.grey;
   return (
-    <span style={{ display: 'inline-flex', padding: '2px 8px', borderRadius: 6, background: c.bg, border: `0.5px solid ${c.border}`, fontSize: 11, fontWeight: 700, color: c.text, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-      {children}
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 6, background: c.bg, border: `0.5px solid ${c.border}`, fontSize: 11, fontWeight: 700, color: c.text, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+      {icon}{children}
     </span>
   );
 }
@@ -242,22 +245,29 @@ export default function DocumentationPage() {
         <div style={{ fontSize: 10, fontWeight: 700, color: '#7a7a7a', textTransform: 'uppercase', letterSpacing: '0.08em', padding: '0 10px', marginBottom: 8 }}>Documentation</div>
 
         {/* Nav items */}
-        {SECTIONS.map(s => (
-          <a
-            key={s.id}
-            href={`#${s.id}`}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              height: 34, padding: '0 10px', borderRadius: 8,
-              textDecoration: 'none', fontSize: 12, marginBottom: 1,
-              background: activeSection === s.id ? 'rgba(234,239,9,0.1)' : 'transparent',
-              color: activeSection === s.id ? '#eaef09' : '#7a7a7a',
-              fontWeight: activeSection === s.id ? 600 : 400,
-              transition: 'all 0.15s',
-            }}
-          >
-            {s.icon} {s.label}
-          </a>
+        {SECTIONS.map((s, si) => (
+          <div key={s.id}>
+            {s.highlight && <div style={{ height: 1, background: 'rgba(234,239,9,0.15)', margin: '10px 10px 8px' }} />}
+            <a
+              href={`#${s.id}`}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                height: 34, padding: '0 10px', borderRadius: 8,
+                textDecoration: 'none', fontSize: 12, marginBottom: 1,
+                background: s.highlight
+                  ? (activeSection === s.id ? 'rgba(234,239,9,0.15)' : 'rgba(234,239,9,0.06)')
+                  : (activeSection === s.id ? 'rgba(234,239,9,0.1)' : 'transparent'),
+                color: s.highlight
+                  ? '#eaef09'
+                  : (activeSection === s.id ? '#eaef09' : '#7a7a7a'),
+                fontWeight: s.highlight ? 700 : (activeSection === s.id ? 600 : 400),
+                transition: 'all 0.15s',
+                border: s.highlight ? '0.5px solid rgba(234,239,9,0.2)' : 'none',
+              }}
+            >
+              {s.icon} {s.label}
+            </a>
+          </div>
         ))}
       </div>
 
@@ -273,6 +283,13 @@ export default function DocumentationPage() {
           <Paragraph>
             Complete feature specification, platform architecture, pricing strategy, and revenue model for the Namico naming contest platform. All data in this document reflects the current wireframe build.
           </Paragraph>
+
+          {/* Namico disclaimer */}
+          <div style={{ padding: '16px 20px', background: 'rgba(234,239,9,0.04)', border: '1px solid rgba(234,239,9,0.15)', borderRadius: 10 }}>
+            <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.7 }}>
+              <strong style={{ color: '#eaef09' }}>A note on the name:</strong> "Namico" is a working title — a feminine name derived from "Naming Contest" — created to personalize the platform during development. It is recommended to keep this personalization strategy for the final product: retain the current URL (namingcontest.com) for SEO and clarity, while using "Namico" as the brand personality throughout the interface. This makes the system feel like a friendly assistant guiding you through the naming process, rather than a complex, unnavigable system. Alternatively, the platform can simply use "Naming Contest" in all placements, or adopt a different naming agent name entirely.
+            </div>
+          </div>
         </div>
 
         {/* ═══════════════════════════════════════════════════════════════════
@@ -287,7 +304,7 @@ export default function DocumentationPage() {
         <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
           <Card style={{ flex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-              <Badge color="yellow">Creator</Badge>
+              <Badge color="yellow" icon={<Wrench size={10} weight="bold" />}>Creator</Badge>
             </div>
             <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.6 }}>
               The person who creates the naming contest, writes the brief, invites participants, curates the shortlist, and manages the process end-to-end.
@@ -295,7 +312,7 @@ export default function DocumentationPage() {
           </Card>
           <Card style={{ flex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-              <Badge color="green">Participant</Badge>
+              <Badge color="blue" icon={<User size={10} weight="bold" />}>Participant</Badge>
             </div>
             <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.6 }}>
               The person invited to participate — submitting name ideas, voting on candidates, or both. They see the education content and earn naming points.
@@ -366,7 +383,8 @@ export default function DocumentationPage() {
             ['Trademark Search', 'LegalZoom', 'Results Page', 'Professional trademark conflict search'],
             ['Logo Design', 'Looka / 99designs', 'Results Page', 'AI logos or full design contest'],
             ['Business Registration', 'LegalZoom', 'Results Page', 'LLC/corporation formation'],
-            ['Catchword Services *', 'Catchword Branding (own service)', 'Results Page — Post-Vote', 'Professional naming when contest didn\'t deliver'],
+            ['Catchword Services *', 'Catchword Branding (own service)', 'Results Page — All Paths', 'Confident: brand identity upsell; Unhappy: professional naming upsell'],
+            ['Naming & Branding Guide', 'Amazon', 'Brief Builder', 'Expert naming strategy books to improve brief quality'],
           ]}
         />
 
@@ -436,7 +454,7 @@ export default function DocumentationPage() {
           <Card key={i} style={{ marginBottom: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
               <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>{screen.name}</span>
-              <Badge color="grey">{screen.role}</Badge>
+              <Badge color={screen.role === 'Creator' ? 'yellow' : screen.role === 'Participant' ? 'blue' : 'grey'} icon={screen.role === 'Creator' ? <Wrench size={10} weight="bold" /> : screen.role === 'Participant' ? <User size={10} weight="bold" /> : null}>{screen.role}</Badge>
               <span style={{ fontSize: 11, color: '#7a7a7a', fontFamily: 'monospace' }}>{screen.path}</span>
             </div>
             <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.65 }}>{screen.desc}</div>
@@ -507,7 +525,7 @@ export default function DocumentationPage() {
         <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
           <Card style={{ flex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <Badge color="yellow">Creator Score</Badge>
+              <Badge color="yellow" icon={<Wrench size={10} weight="bold" />}>Creator Score</Badge>
               <span style={{ fontSize: 13, color: '#7a7a7a' }}>0-50 points</span>
             </div>
             <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.65 }}>
@@ -517,7 +535,7 @@ export default function DocumentationPage() {
           </Card>
           <Card style={{ flex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <Badge color="green">Participant Score</Badge>
+              <Badge color="blue" icon={<User size={10} weight="bold" />}>Participant Score</Badge>
               <span style={{ fontSize: 13, color: '#7a7a7a' }}>0-50 points</span>
             </div>
             <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.65 }}>
@@ -600,17 +618,6 @@ export default function DocumentationPage() {
           </div>
         </Card>
 
-        <SubHeading>Business Credit Packs</SubHeading>
-        <DataTable
-          compact
-          headers={['Pack', 'Credits', 'Total Price', 'Per Contest', 'Savings vs. Single']}
-          rows={[
-            ['Starter', '3', '$99', '$33', '$18 (18%)'],
-            ['Pro', '10', '$299', '$29.90', '$91 (23%)'],
-            ['Enterprise', '25', '$649', '$25.96', '$326 (33%)'],
-          ]}
-        />
-
         <SubHeading>Revenue Streams</SubHeading>
         <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
           <Card style={{ flex: 1 }}>
@@ -630,7 +637,7 @@ export default function DocumentationPage() {
           <Card style={{ borderColor: 'rgba(234,239,9,0.2)' }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#eaef09', marginBottom: 8 }}>Stream 3: Catchword Professional Services (Own Service)</div>
             <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.6 }}>
-              Business users who aren't satisfied with contest results are prompted to engage Catchword's professional naming team directly. This is not an affiliate — it's Catchword's own service. Contest data (brief, submissions, votes) transfers as a starting brief, reducing onboarding friction. Appears on the Results Page when a business user selects "second thoughts" or "still not sure" in the post-vote reflection, and as a persistent link on completed business contests in the Dashboard.
+              Business users are prompted to engage Catchword's professional services on all three post-vote paths. Confident users see a brand identity upsell ("Need a full brand identity? Catchword can help."), while users with second thoughts or uncertainty see a professional naming upsell ("Need expert help? Let Catchword name it for you."). This is not an affiliate — it's Catchword's own service. Contest data (brief, submissions, votes) transfers as a starting brief, reducing onboarding friction. Also appears as a persistent link on completed business contests in the Dashboard.
             </div>
           </Card>
         </div>
@@ -638,18 +645,23 @@ export default function DocumentationPage() {
         <SubHeading>Affiliate Commission Rates</SubHeading>
         <DataTable
           compact
-          headers={['Partner', 'Commission', 'Avg Order Value', 'Est. Revenue per Conversion']}
+          headers={['Partner', 'Commission', 'Cookie', 'Network', 'Est. per Conversion']}
           rows={[
-            ['Namecheap', '20% on domains', '$12 domain', '$2.40'],
-            ['LegalZoom', '15%', '$150 avg service', '$22.50'],
-            ['99designs', '$60-100 per sale (tiered)', '$299+ contest', '$60-100'],
-            ['Looka', '25-35% (tiered)', '$65 logo package', '$16-23'],
-            ['Printful', '10%', '$30 avg order', '$3'],
-            ['Squarespace', '$100+ per sale', '$144/yr plan', '$100'],
-            ['Artifact Uprising', '8-12%', '$40 avg order', '$4'],
-            ['Etsy', '4%', '$35 avg order', '$1.40'],
+            ['Namecheap', '20-35% (first purchase only)', '30 days', 'Impact / CJ', '$2-4 (domains)'],
+            ['LegalZoom', '15% per sale (tiered up to $125+)', '30 days', 'CJ', '$22-45 (LLC/trademark)'],
+            ['99designs', '$40-100 per sale (tiered)', '30 days', 'Impact', '$40-100 (design contests)'],
+            ['Looka', '25-35% (tiered by volume)', '90 days', 'PartnerStack', '$16-23 (logo packages)'],
+            ['Squarespace', '$100-200 flat per subscription', '45 days', 'Impact', '$100-200 (website plans)'],
+            ['Printful', '10% for 12 months per customer', '30 days', 'Direct', '$3-5 (merch orders)'],
+            ['Artifact Uprising', '10%', '180 days', 'ShareASale', '$3-6 (cards/prints)'],
+            ['Etsy', '4% on qualifying sales', '30 days', 'Awin', '$1-2 (gifts)'],
+            ['Chewy', '4% or $15 flat (new customers)', '15 days', 'Partnerize', '$3-15 (pet products)'],
+            ['Amazon', '4.5% (physical books)', '24 hrs', 'Amazon Associates', '$0.50-1 (naming books)'],
           ]}
         />
+        <div style={{ fontSize: 12, color: '#555', marginTop: 8, lineHeight: 1.5 }}>
+          * Commission rates verified March 2026. Rates may vary by tier, volume, and specific agreement. Highest-value affiliates: LegalZoom (business formation), 99designs (design contests), and Squarespace (website subscriptions).
+        </div>
 
         <Divider />
 
@@ -716,7 +728,7 @@ export default function DocumentationPage() {
 
         <Card style={{ borderColor: 'rgba(234,239,9,0.2)' }}>
           <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.75 }}>
-            <strong style={{ color: '#eaef09' }}>Notes:</strong> Traffic numbers assume organic SEO + content marketing + word-of-mouth. No paid acquisition budget factored into pessimistic/moderate scenarios. Affiliate revenue only counts Results Page placements. Credit pack upsells for repeat business users are not included. Per-contest model means no recurring churn — each sale is one-time. Repeat usage is upside, not a dependency.
+            <strong style={{ color: '#eaef09' }}>Notes:</strong> Traffic numbers assume organic SEO + content marketing + word-of-mouth. No paid acquisition budget factored into pessimistic/moderate scenarios. Affiliate revenue only counts Results Page placements. Per-contest model means no recurring churn — each sale is one-time. Repeat usage is upside, not a dependency.
           </div>
         </Card>
 
@@ -771,26 +783,97 @@ export default function DocumentationPage() {
 
         <SubHeading>What Comes Next</SubHeading>
         <Card style={{ borderColor: 'rgba(234,239,9,0.2)' }}>
-          <div style={{ fontSize: 14, color: '#a1a1a1', lineHeight: 1.75 }}>
-            The current wireframe is very close to becoming a functioning product. The remaining steps are:
+          <div style={{ fontSize: 14, color: '#a1a1a1', lineHeight: 1.75, marginBottom: 20 }}>
+            The current wireframe is very close to becoming a functioning product. Below are the specific implementation steps required to go from wireframe to production:
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             {[
-              'Adapting layouts for mobile and tablet responsiveness',
-              'Connecting the backend — authentication, database, payment processing',
-              'Writing production copy and educational content (Catchword methodology)',
-              'Visual design polish — brand identity finalization, typography, iconography',
-              'Turning it into a real, functioning product',
+              { title: 'Backend & Database', service: 'Supabase', tech: true, desc: 'PostgreSQL database for contests, users, submissions, and votes. Built-in auth (email + social login), row-level security, and real-time subscriptions for live vote updates during contests. Replaces all current localStorage persistence.' },
+              { title: 'Payment Processing', service: 'Stripe', tech: true, desc: 'Checkout for $9/$29/$89 contest tiers. Webhook-based feature unlocking (participant caps, advanced voting methods, PDF reports). Handles second-round 50% discount codes and subscription management.' },
+              { title: 'Transactional Email', service: 'Resend', tech: true, desc: 'Participant invitations, automated deadline reminders (day 3 + day 1 before close), winner announcements, and post-vote reflection emails. Currently all email flows are simulated in the wireframe.' },
+              { title: 'Analytics & Conversion Tracking', service: 'GA4 + Meta Pixel + PostHog', tech: true, desc: 'Google Analytics 4 for traffic and funnel analysis. Meta Pixel for retargeting and ad conversion tracking. PostHog (or Mixpanel) for product analytics — paywall conversion rates, affiliate click-through, feature adoption.' },
+              { title: 'Affiliate Link Management', service: 'Impact / CJ / PartnerStack', tech: true, desc: 'API integrations with affiliate networks for Namecheap, LegalZoom, Looka, 99designs, Squarespace, Printful, Etsy, Chewy, and Amazon. Track referral clicks, attribute conversions, manage commission payouts per partner.' },
+              { title: 'PDF Generation', service: 'React-PDF / @react-pdf/renderer', tech: true, desc: 'Server-side generation of contest result reports and official naming certificates (both Catchword-branded and white-label versions). Currently referenced in feature lists but not yet functional.' },
+              { title: 'Domain & Hosting', service: 'Vercel + DNS routing', tech: true, desc: 'Connect namingcontest.com domain to existing Vercel deployment. Configure DNS records, SSL certificate, and edge caching. Set up staging and production environments.' },
+              { title: 'Mobile Responsive Design', service: 'CSS / responsive layout', tech: true, desc: 'All 14 screens adapted for mobile and tablet. Touch-friendly voting interfaces (especially drag-and-drop ranked choice), collapsible brief builder, mobile-optimized dashboard. Currently desktop-only.' },
+              { title: 'Error Tracking & Monitoring', service: 'Sentry + BetterStack', tech: true, desc: 'Sentry for real-time error tracking — catches bugs and crashes before users report them. BetterStack (or UptimeRobot) for uptime monitoring with instant alerts when the site goes down. Essential for a production SaaS handling payments and live contests.' },
+              { title: 'Security Audit', service: 'Pre-launch review', tech: true, desc: 'One-time professional security review before public launch. Covers input sanitization (XSS/injection), Supabase row-level security policies, Stripe webhook verification, CORS configuration, GDPR/privacy compliance (cookie consent, data deletion rights), and rate limiting.' },
+              { title: 'Copywriting & Content', service: '', tech: false, desc: 'Production-quality educational content (naming methodology articles read by participants), UI microcopy, onboarding flows, email templates, and brief builder guidance text. Structure is defined in wireframe; actual writing is a separate effort.' },
+              { title: 'Visual Design & Brand Identity', service: '', tech: false, desc: 'Polish UI components, microinteractions, loading states, error states, and empty states. Colors, fonts, and visual details can absolutely be adjusted — but it is recommended to evolve the current design rather than commissioning a full brand identity from scratch, which would add significant cost and timeline. The wireframe already establishes a functional layout and component system. Budget should prioritize functionality over visual overhaul.' },
             ].map((step, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: '#a1a1a1' }}>
-                <span style={{ width: 24, height: 24, borderRadius: '50%', background: 'rgba(234,239,9,0.1)', border: '1px solid rgba(234,239,9,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#eaef09', flexShrink: 0 }}>
-                  {i + 1}
-                </span>
-                {step}
+              <div key={i} style={{ padding: '14px 16px', background: '#141414', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 10 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                  <span style={{ width: 24, height: 24, borderRadius: '50%', background: 'rgba(234,239,9,0.1)', border: '1px solid rgba(234,239,9,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#eaef09', flexShrink: 0 }}>
+                    {i + 1}
+                  </span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>{step.title}</span>
+                  <span style={{ fontSize: 11, color: step.tech ? '#eaef09' : '#7a7a7a', fontWeight: 600, marginLeft: 'auto', flexShrink: 0 }}>{step.service}</span>
+                </div>
+                <div style={{ fontSize: 13, color: '#7a7a7a', lineHeight: 1.6, paddingLeft: 34 }}>{step.desc}</div>
               </div>
             ))}
           </div>
         </Card>
+
+        <SectionLabel>Action Required</SectionLabel>
+        <SectionHeading id="roadmap">Project Roadmap</SectionHeading>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+          {[
+            {
+              phase: 'Phase 2 into Phase 3',
+              title: 'Payment, Feedback, Final Build',
+              color: '#eaef09',
+              rgb: '234,239,9',
+              status: 'You are here',
+              desc: 'Invoice payment for the completed Phase 2 wireframe. Following payment, any suggestions, questions, or small adjustments to the platform can be addressed. This is the window to refine details and request minor changes before moving into production.',
+              divider: true,
+              desc2: 'Then — full platform development: backend integration (Supabase, Stripe, Resend), mobile responsiveness, affiliate API connections, PDF generation, analytics setup, security audit, and testing. The wireframe becomes a functioning product.',
+              options: [
+                { label: 'Option A', text: 'I build the final version, hiring an expert at the final stage before launch for review and security audit.' },
+                { label: 'Option B', text: 'Your coder builds the final version using this wireframe as the blueprint, possibly hiring an additional set of hands at the final stage too.' },
+              ],
+            },
+            {
+              phase: 'Phase 4',
+              title: 'Go-to-Market',
+              color: '#eaef09',
+              rgb: '234,239,9',
+              status: 'Next step',
+              dimmed: true,
+              desc: 'Developing go-to-market strategy, creating marketing assets (ad creatives, landing page variants, social content), preparing ad campaigns across Google and Meta, SEO groundwork, and generating initial traffic to the platform.',
+            },
+          ].map((step, i, arr) => (
+            <div key={i}>
+              <div style={{ padding: '20px 20px', background: step.dimmed ? '#111' : '#141414', border: `1px solid ${step.dimmed ? 'rgba(255,255,255,0.06)' : `rgba(${step.rgb},0.2)`}`, borderRadius: 12, borderStyle: step.dimmed ? 'dashed' : 'solid' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                  <span style={{ padding: '3px 10px', borderRadius: 6, background: step.dimmed ? 'rgba(255,255,255,0.04)' : `rgba(${step.rgb},0.1)`, border: `0.5px solid ${step.dimmed ? 'rgba(255,255,255,0.1)' : `rgba(${step.rgb},0.3)`}`, fontSize: 10, fontWeight: 700, color: step.dimmed ? '#666' : step.color, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{step.phase}</span>
+                  {step.status && <span style={{ padding: '3px 8px', borderRadius: 5, background: step.status === 'You are here' ? 'rgba(234,239,9,0.15)' : 'rgba(255,255,255,0.04)', fontSize: 10, fontWeight: 700, color: step.status === 'You are here' ? '#eaef09' : '#555', letterSpacing: '0.03em' }}>{step.status}</span>}
+                  <span style={{ fontSize: 16, fontWeight: 700, color: step.dimmed ? '#888' : '#fff' }}>{step.title}</span>
+                </div>
+                {step.desc && <div style={{ fontSize: 13, color: step.dimmed ? '#555' : '#a1a1a1', lineHeight: 1.65 }}>{step.desc}</div>}
+                {step.divider && <div style={{ height: 1, background: 'rgba(234,239,9,0.15)', margin: '16px 0' }} />}
+                {step.desc2 && <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.65 }}>{step.desc2}</div>}
+                {step.options && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 16 }}>
+                    {step.options.map((opt, j) => (
+                      <div key={j} style={{ padding: '12px 14px', background: `rgba(${step.rgb},0.04)`, border: `0.5px solid rgba(${step.rgb},0.15)`, borderRadius: 8 }}>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: step.color, marginRight: 8 }}>{opt.label}:</span>
+                        <span style={{ fontSize: 13, color: '#a1a1a1' }}>{opt.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {i < arr.length - 1 && (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '6px 0', gap: 3 }}>
+                  <div style={{ width: 2, height: 12, background: 'rgba(234,239,9,0.3)' }} />
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', border: '2px solid rgba(234,239,9,0.3)', background: 'transparent' }} />
+                  <div style={{ width: 2, height: 12, background: 'rgba(255,255,255,0.08)' }} />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
 
         {/* Footer spacer */}
         <div style={{ height: 80 }} />

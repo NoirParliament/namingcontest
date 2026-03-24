@@ -189,26 +189,3 @@ export const getUpgradeMessage = (segmentGroup, currentParticipants) => {
   return messages[segmentGroup] || messages.personal;
 };
 
-/**
- * Credit pack options (for Business users running multiple contests)
- */
-export const creditPacks = {
-  starter: {
-    credits: 3,
-    price: 99,
-    pricePerContest: 33,
-    savings: 18, // vs single contest at $39
-  },
-  pro: {
-    credits: 10,
-    price: 299,
-    pricePerContest: 29.9,
-    savings: 91, // vs 10 x $39
-  },
-  enterprise: {
-    credits: 25,
-    price: 649,
-    pricePerContest: 25.96,
-    savings: 326, // vs 25 x $39
-  },
-};
