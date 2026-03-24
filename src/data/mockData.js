@@ -398,7 +398,7 @@ export const faqData = [
   {
     id: 'faq-4',
     question: 'What\'s the Catchword Branding connection?',
-    answer: 'Namico.com is powered by Catchword Branding, a leading naming consultancy with 25+ years of experience. The platform uses Catchword\'s methodology — including their 10-criteria evaluation framework — built into every contest.',
+    answer: 'Namico.com is powered by Catchword Branding, the #1 Ranked Naming Agency Worldwide with 25+ years of experience. The platform uses Catchword\'s methodology — including their 10-criteria evaluation framework — built into every contest.',
   },
   {
     id: 'faq-5',

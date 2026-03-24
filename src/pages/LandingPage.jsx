@@ -534,7 +534,7 @@ export default function LandingPage() {
             color: '#eaef09', marginBottom: 24,
             animation: 'fadeUp 0.6s ease both',
           }}>
-            Powered by Catchword, the world's leading naming firm
+            Powered by Catchword, the #1 Ranked Naming Agency Worldwide
           </div>
 
           {/* H1 */}

@@ -995,7 +995,7 @@ function PostResultsReflection({ winnerName, contestTitle, tc, isBusiness }) {
 
               <p style={{ fontSize: 12, color: '#4a4a4a', lineHeight: 1.6 }}>
                 Regardless of your answer, we'll follow up with guidance.<br />
-                — The Namico.com Team · Powered by Catchword, the world's leading naming firm
+                — The Namico.com Team · Powered by Catchword, the #1 Ranked Naming Agency Worldwide
               </p>
             </>
           ) : (

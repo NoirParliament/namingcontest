@@ -11,7 +11,7 @@ export default function TrustBar() {
           <span>Powered by Catchword</span>
         </div>
         <p className="trust-text">
-          The world's leading naming firm
+          The #1 Ranked Naming Agency Worldwide
         </p>
       </div>
     </div>

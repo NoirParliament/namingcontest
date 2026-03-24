@@ -18,7 +18,7 @@ export default function Hero({ onGetStarted }) {
         </p>
 
         <p className="hero-meta">
-          Powered by Catchword, the world's leading naming firm
+          Powered by Catchword, the #1 Ranked Naming Agency Worldwide
         </p>
 
         <div className="hero-pills">

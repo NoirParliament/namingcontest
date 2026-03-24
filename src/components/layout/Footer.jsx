@@ -25,7 +25,7 @@ export default function Footer() {
             <span style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>Namico</span>
           </div>
           <p style={{ fontSize: 13, color: '#7a7a7a', lineHeight: 1.6, marginBottom: 20 }}>
-            Collaborative naming made simple. Powered by Catchword, the world's leading naming firm.
+            Collaborative naming made simple. Powered by Catchword, the #1 Ranked Naming Agency Worldwide.
           </p>
           <div style={{ display: 'flex', gap: 12 }}>
             <a href="#" style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7a7a7a', transition: 'all 0.2s', textDecoration: 'none' }}
