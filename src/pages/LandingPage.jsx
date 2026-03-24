@@ -630,8 +630,9 @@ export default function LandingPage() {
               fontWeight: 800,
               color: '#1C1917',
               marginBottom: 12,
+              lineHeight: 1.15,
             }}>
-              Names chosen together, owned by everyone
+              Names chosen together,<br />owned by everyone
             </h2>
             <p style={{ fontSize: 16, color: '#78716C', maxWidth: 480, margin: '0 auto' }}>
               From startups to family milestones, Namico delivers clear results.
@@ -926,12 +927,13 @@ export default function LandingPage() {
             </div>
             <h2 style={{
               fontFamily: 'Inter, sans-serif',
-              fontSize: 'clamp(26px, 4vw, 40px)',
+              fontSize: 'clamp(28px, 4vw, 42px)',
               fontWeight: 800,
               color: '#fff',
               marginBottom: 12,
+              lineHeight: 1.15,
             }}>
-              Why Naming Contests Usually Fail<br /><span style={{ color: '#eaef09' }}>And How We Fix It</span>
+              Why naming contests usually fail,<br /><span style={{ color: '#eaef09' }}>and how we fix it</span>
             </h2>
           </div>
 
@@ -990,7 +992,7 @@ export default function LandingPage() {
               fontWeight: 800,
               color: '#1C1917',
             }}>
-              Frequently Asked Questions
+              Frequently asked questions
             </h2>
           </div>
           <Accordion items={faqData} />
