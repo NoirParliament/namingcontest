@@ -1008,6 +1008,25 @@ function PostResultsReflection({ winnerName, contestTitle, tc, isBusiness }) {
                 </div>
               )}
 
+              {/* Catchword Professional Services upsell — business only, unhappy responses */}
+              {isBusiness && (response === 'secondthoughts' || response === 'unsure') && (
+                <div style={{ padding: '20px 24px', background: 'rgba(234,239,9,0.04)', border: '1.5px solid rgba(234,239,9,0.25)', borderRadius: 12, marginBottom: 20 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#eaef09' }} />
+                    <span style={{ fontSize: 10, fontWeight: 700, color: '#eaef09', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Catchword Professional Services</span>
+                  </div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 6 }}>
+                    Need expert help? Let Catchword name it for you.
+                  </div>
+                  <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.65, marginBottom: 16 }}>
+                    Your contest data — brief, submissions, votes — becomes the starting point for Catchword's professional naming team. 25+ years of experience, 3,000+ brands named.
+                  </div>
+                  <button style={{ height: 40, padding: '0 20px', border: '1.5px solid #eaef09', borderRadius: 8, background: 'rgba(234,239,9,0.1)', color: '#eaef09', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    Explore Catchword Services <ArrowRight size={14} />
+                  </button>
+                </div>
+              )}
+
               <button onClick={() => setResponse(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#4a4a4a', fontSize: 12, padding: 0 }}>
                 ← Change my response
               </button>

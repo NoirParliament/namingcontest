@@ -333,7 +333,7 @@ export default function DocumentationPage() {
           headers={['#', 'Moment', 'Where', 'Trigger', 'Type']}
           rows={[
             ['1', 'Open Submissions', 'Brief Builder', 'Toggling "Let participants suggest names"', 'Toggle gate'],
-            ['2', 'Participant Cap', 'Invite Participants', 'Exceeding free limit (5 participants, 3 for business)', 'Cap gate'],
+            ['2', 'Participant Cap', 'Invite Participants', 'Exceeding free limit (5 participants)', 'Cap gate'],
             ['3', 'Advanced Voting', 'Contest Type Selection', 'Selecting ranked-choice, pairwise, or multi-criteria', 'Method gate'],
             ['4', 'Naming Methodology', 'Participant Education', 'Accessing Catchword naming articles', 'Articles gate'],
             ['5', 'Contest Quality Score', 'Brief Builder sidebar', 'Viewing the quality score bar (business/team only)', 'Quality gate'],
@@ -345,7 +345,7 @@ export default function DocumentationPage() {
         />
 
         <Paragraph>
-          Prices scale by segment: Personal ($9), Team ($29), Business ($89). The second-round discount is always 50% off the segment price. Free business contests cap at 3 participants; personal and team cap at 5.
+          Prices scale by segment: Personal ($9), Team ($29), Business ($89). The second-round discount is always 50% off the segment price. All free contests cap at 5 participants regardless of segment.
         </Paragraph>
 
         <Divider />
@@ -366,6 +366,7 @@ export default function DocumentationPage() {
             ['Trademark Search', 'LegalZoom', 'Results Page', 'Professional trademark conflict search'],
             ['Logo Design', 'Looka / 99designs', 'Results Page', 'AI logos or full design contest'],
             ['Business Registration', 'LegalZoom', 'Results Page', 'LLC/corporation formation'],
+            ['Catchword Services *', 'Catchword Branding (own service)', 'Results Page — Post-Vote', 'Professional naming when contest didn\'t deliver'],
           ]}
         />
 
@@ -581,7 +582,7 @@ export default function DocumentationPage() {
         />
 
         <Paragraph>
-          Price scales approximately 3x between tiers while participants scale 4x — meaning the price per participant decreases at higher tiers. This rewards larger contests and makes the business tier the best value per seat. All tiers include a free version with 5 participants (3 for business) and voting-only mode.
+          Price scales approximately 3x between tiers while participants scale 4x — meaning the price per participant decreases at higher tiers. This rewards larger contests and makes the business tier the best value per seat. All tiers include a free version with 5 participants and voting-only mode.
         </Paragraph>
 
         <SubHeading>Why These Prices</SubHeading>
@@ -622,6 +623,14 @@ export default function DocumentationPage() {
             <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 8 }}>Stream 2: Affiliate Revenue</div>
             <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.6 }}>
               Contextual partner placements on the Results Page. Commissions range from 4% (Etsy) to $100/sale (Squarespace). Business segment generates highest affiliate value (LegalZoom, 99designs).
+            </div>
+          </Card>
+        </div>
+        <div style={{ marginBottom: 24 }}>
+          <Card style={{ borderColor: 'rgba(234,239,9,0.2)' }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#eaef09', marginBottom: 8 }}>Stream 3: Catchword Professional Services (Own Service)</div>
+            <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.6 }}>
+              Business users who aren't satisfied with contest results are prompted to engage Catchword's professional naming team directly. This is not an affiliate — it's Catchword's own service. Contest data (brief, submissions, votes) transfers as a starting brief, reducing onboarding friction. Appears on the Results Page when a business user selects "second thoughts" or "still not sure" in the post-vote reflection, and as a persistent link on completed business contests in the Dashboard.
             </div>
           </Card>
         </div>

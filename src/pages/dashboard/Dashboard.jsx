@@ -219,6 +219,13 @@ export default function Dashboard() {
                           <Export size={11} /> Export
                         </button>
                       </div>
+                      {contest.group === 'business' && (
+                        <div style={{ marginTop: 8, paddingTop: 8, borderTop: '0.5px solid rgba(255,255,255,0.06)' }}>
+                          <a href="#" style={{ fontSize: 11, color: '#eaef09', textDecoration: 'none', fontWeight: 600, opacity: 0.8 }}>
+                            Want professional naming? Talk to Catchword →
+                          </a>
+                        </div>
+                      )}
                     </div>
                   );
                 })}

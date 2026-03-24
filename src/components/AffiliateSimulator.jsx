@@ -135,7 +135,9 @@ function GenericAffiliateMockup({ moment, group }) {
         <div style={{ marginTop: 12, padding: '7px 14px', background: `rgba(${rgb},0.08)`, border: `0.5px solid rgba(${rgb},0.2)`, borderRadius: 7, fontSize: 11, fontWeight: 700, color, width: 'fit-content' }}>
           {moment.cta}
         </div>
-        <div style={{ fontSize: 9, color: '#2a2a2a', marginTop: 8 }}>Sponsored · Namico partner</div>
+        <div style={{ fontSize: 9, color: moment.type === 'own-service' ? '#eaef09' : '#2a2a2a', marginTop: 8 }}>
+          {moment.type === 'own-service' ? 'Catchword own service — not a partner affiliate' : 'Sponsored · Namico partner'}
+        </div>
       </div>
     </div>
   );

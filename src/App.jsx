@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import '@styles/globals.css';
 import { getJourneyMeta, buildJourneySteps, detectStep, PHASE_COLORS } from './utils/journey';
-import { CurrencyDollar, Handshake, BookOpen } from '@phosphor-icons/react';
+import { CurrencyDollar, Handshake, BookOpen, User, Wrench } from '@phosphor-icons/react';
 import PaywallSimulator from './components/PaywallSimulator';
 import AffiliateSimulator from './components/AffiliateSimulator';
 
@@ -119,7 +119,8 @@ function FloatingNav() {
   const tierTextColor = path === '/' ? '#000'    : meta.textColor;
   const roleColor     = isParticipantStep ? '#3b82f6' : tierColor;
   const roleText      = isParticipantStep ? '#fff'    : tierTextColor;
-  const roleLabel     = isParticipantStep ? '👤 Participant' : '🏗 Creator';
+  const RoleIcon      = isParticipantStep ? User : Wrench;
+  const roleLabel     = isParticipantStep ? 'Participant' : 'Creator';
 
   function goToStep(idx) {
     if (idx < 0 || idx >= steps.length) return;
@@ -179,8 +180,9 @@ function FloatingNav() {
             background: roleColor, color: roleText,
             fontSize: 9, fontWeight: 800, letterSpacing: '0.04em',
             textTransform: 'uppercase', flexShrink: 0,
+            display: 'flex', alignItems: 'center', gap: 3,
           }}>
-            {roleLabel}
+            <RoleIcon size={10} weight="bold" /> {roleLabel}
           </div>
           <button onClick={() => setPanelOpen(v => !v)} style={{
             marginLeft: 6, width: 20, height: 20, borderRadius: 4, border: 'none',
@@ -262,7 +264,7 @@ function FloatingNav() {
                       textTransform: 'uppercase', letterSpacing: '0.04em', flexShrink: 0,
                       display: 'flex', alignItems: 'center', gap: 2,
                     }}>
-                      {stepIsParticipant ? '👤' : '🏗'} {stepIsParticipant ? 'Participant' : 'Creator'}
+                      {stepIsParticipant ? <User size={9} weight="bold" /> : <Wrench size={9} weight="bold" />} {stepIsParticipant ? 'Participant' : 'Creator'}
                     </span>
 
                     {isCurrent && (
@@ -323,6 +325,7 @@ function FloatingNav() {
                   color: tierColor, fontSize: 10, fontWeight: 700,
                   cursor: 'pointer', letterSpacing: '0.02em',
                   transition: 'all 0.2s',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}
               >
                 <CurrencyDollar size={11} weight="bold" style={{ marginRight: 3 }} /> {simOpen ? 'Exit' : 'Enter'} Paywall Simulation

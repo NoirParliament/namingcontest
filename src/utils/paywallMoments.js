@@ -4,7 +4,7 @@
 
 export const PLAN_PRICE = { personal: '$9', team: '$29', business: '$89' };
 export const PLAN_LABEL = { personal: 'Personal', team: 'Team', business: 'Business' };
-export const FREE_CAP   = { personal: 5, team: 5, business: 3 };
+export const FREE_CAP   = { personal: 5, team: 5, business: 5 };
 
 function buildMoments(group) {
   const price  = PLAN_PRICE[group];

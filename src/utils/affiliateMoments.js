@@ -52,6 +52,19 @@ export const AFFILIATE_MOMENTS = {
       cta: 'Register your business →',
       emoji: '*',
     },
+    {
+      id: 'catchword-services',
+      title: 'Catchword Professional Naming',
+      where: 'Results Page — Post-Vote Reflection',
+      trigger: 'Business user selects "second thoughts" or "still not sure"',
+      type: 'own-service',
+      headline: 'Need expert help? Let Catchword name it for you.',
+      subtext: 'Your contest data — brief, submissions, votes — becomes the starting point for Catchword\'s professional naming team. 25+ years of experience, 3,000+ brands named.',
+      partner: 'Catchword Branding',
+      partnerTag: 'Own Service',
+      cta: 'Explore Catchword Services →',
+      emoji: '*',
+    },
   ],
 
   team: [
