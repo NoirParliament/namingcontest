@@ -35,7 +35,7 @@ function FloatingNav() {
   const [transitionMode, setTransitionModeState] = useState(
     () => localStorage.getItem('transitionMode') || 'manual'
   );
-  const [panelOpen, setPanelOpen] = useState(true);
+  const [panelOpen, setPanelOpen] = useState(() => path !== '/');
   const [simOpen, setSimOpen] = useState(false);
   const [affOpen, setAffOpen] = useState(false);
 
@@ -104,7 +104,7 @@ function FloatingNav() {
   }, []);
 
   // ── Hide on hub pages ─────────────────────────────────────────────────────
-  if (path === '/' || path === '/wireframe') return null;
+  if (path === '/wireframe') return null;
 
   // ── Fresh meta (read after URL extraction effects have fired) ────────────
   const meta  = getJourneyMeta();
