@@ -114,8 +114,8 @@ function FloatingNav() {
   const currentStep = steps[safeStep];
   const isParticipantStep = currentStep?.role === 'participant';
 
-  const tierColor     = meta.color;
-  const tierTextColor = meta.textColor;
+  const tierColor     = path === '/' ? '#eaef09' : meta.color;
+  const tierTextColor = path === '/' ? '#000'    : meta.textColor;
   const roleColor     = isParticipantStep ? '#3b82f6' : tierColor;
   const roleText      = isParticipantStep ? '#fff'    : tierTextColor;
   const roleLabel     = isParticipantStep ? '👤 Participant' : '🏗 Creator';
@@ -167,9 +167,9 @@ function FloatingNav() {
               fontSize: 11, fontWeight: 600, color: '#fff',
               whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
             }}>
-              {meta.hasGroup
-                ? `${meta.journeyLabel} · ${meta.typeLabel}`
-                : 'Select a segment to begin'}
+              {(path === '/' || !meta.hasGroup)
+                ? 'Select a segment to begin'
+                : `${meta.journeyLabel} · ${meta.typeLabel}`}
             </div>
           </div>
           {/* Current step role indicator (non-clickable) */}
