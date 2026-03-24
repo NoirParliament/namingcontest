@@ -77,72 +77,68 @@ function Navbar() {
   );
 }
 
-/* ── Count-up Hook ── */
-function useCountUp(target, duration = 2000, shouldStart = false) {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    if (!shouldStart) return;
-    let start = 0;
-    const step = target / (duration / 16);
-    const timer = setInterval(() => {
-      start += step;
-      if (start >= target) { setCount(target); clearInterval(timer); }
-      else setCount(Math.floor(start));
-    }, 16);
-    return () => clearInterval(timer);
-  }, [target, duration, shouldStart]);
-  return count;
-}
+/* ── Social Proof Marquee ── */
+const CATCHWORD_CLIENTS = [
+  'The North Face', 'Adobe Photoshop', 'Volkswagen', 'TikTok',
+  'Starbucks', 'Asana', 'Upwork',
+];
 
-/* ── Stats Section ── */
-function StatsSection() {
-  const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) setVisible(true);
-    }, { threshold: 0.3 });
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
-
-  const contests = useCountUp(12847, 2000, visible);
-  const participants = useCountUp(47392, 2200, visible);
-  const success = useCountUp(89, 1500, visible);
-
-  const stats = [
-    { value: contests.toLocaleString(), label: 'Contests Run', color: '#ffffff' },
-    { value: participants.toLocaleString(), label: 'Participants Reached', color: '#ffffff' },
-    { value: `${success}%`, label: 'Success Rate', color: '#ffffff' },
-    { value: '4.8/5.0', label: 'Average Rating', color: '#ffffff' },
-  ];
-
+function SocialProofSection() {
   return (
-    <section ref={ref} style={{ background: '#141414', padding: '80px 0' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 32, textAlign: 'center' }}>
-          {stats.map((stat, i) => (
-            <div key={i} style={{
-              animation: visible ? `fadeUp 0.6s ease ${i * 0.15}s both` : 'none',
-            }}>
-              <div style={{
-                fontFamily: 'Inter, sans-serif',
-                fontSize: 48,
-                fontWeight: 800,
-                color: stat.color,
-                lineHeight: 1,
-                marginBottom: 8,
-              }}>
-                {stat.value}
-              </div>
-              <div style={{ fontSize: 14, color: '#eaef09', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                {stat.label}
-              </div>
+    <section style={{ background: '#141414', padding: '48px 0', overflow: 'hidden' }}>
+      <div style={{ textAlign: 'center', marginBottom: 28, padding: '0 24px' }}>
+        <div style={{ fontSize: 15, color: '#a1a1a1', lineHeight: 1.7 }}>
+          Namico is powered by{' '}
+          <span style={{ color: '#eaef09', fontWeight: 700 }}>Catchword Branding</span>
+          , #1 naming firm globally, trusted by:
+        </div>
+      </div>
+
+      {/* Marquee */}
+      <div style={{ position: 'relative' }}>
+        {/* Left fade */}
+        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 120, background: 'linear-gradient(90deg, #141414, transparent)', zIndex: 2, pointerEvents: 'none' }} />
+        {/* Right fade */}
+        <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 120, background: 'linear-gradient(270deg, #141414, transparent)', zIndex: 2, pointerEvents: 'none' }} />
+
+        <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
+          {[0, 1].map(copy => (
+            <div
+              key={copy}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 64,
+                paddingRight: 64,
+                animation: 'marqueeScroll 20s linear infinite',
+              }}
+            >
+              {CATCHWORD_CLIENTS.map((name, i) => (
+                <span
+                  key={i}
+                  style={{
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: 28,
+                    fontWeight: 700,
+                    color: '#ffffff',
+                    opacity: 0.7,
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  {name}
+                </span>
+              ))}
             </div>
           ))}
         </div>
       </div>
+
+      <style>{`
+        @keyframes marqueeScroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+      `}</style>
     </section>
   );
 }
@@ -567,7 +563,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Stats ── */}
-      <StatsSection />
+      <SocialProofSection />
 
       {/* ── Success Stories ── */}
       <section style={{ background: '#FBF8F3', padding: '80px 0' }} id="examples">

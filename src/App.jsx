@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import '@styles/globals.css';
 import { getJourneyMeta, buildJourneySteps, detectStep, PHASE_COLORS } from './utils/journey';
-import { CurrencyDollar, Handshake } from '@phosphor-icons/react';
+import { CurrencyDollar, Handshake, BookOpen } from '@phosphor-icons/react';
 import PaywallSimulator from './components/PaywallSimulator';
 import AffiliateSimulator from './components/AffiliateSimulator';
 
@@ -21,6 +21,7 @@ import VotingInterface      from '@pages/VotingInterface';
 import ResultsPage          from '@pages/ResultsPage';
 import Dashboard            from '@pages/dashboard/Dashboard';
 import ContestDetail        from '@pages/ContestDetail';
+import DocumentationPage    from '@pages/DocumentationPage';
 
 // ─── FloatingNav ─────────────────────────────────────────────────────────────
 
@@ -340,6 +341,20 @@ function FloatingNav() {
               >
                 <Handshake size={11} weight="bold" style={{ marginRight: 3 }} /> {affOpen ? 'Exit' : 'Enter'} Affiliate Simulation
               </button>
+              <button
+                onClick={() => navigate('/docs')}
+                style={{
+                  width: '100%', height: 28, borderRadius: 6,
+                  border: `0.5px solid ${tierColor}33`,
+                  background: `${tierColor}0f`,
+                  color: tierColor, fontSize: 10, fontWeight: 700,
+                  cursor: 'pointer', letterSpacing: '0.02em',
+                  transition: 'all 0.2s',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+              >
+                <BookOpen size={11} weight="bold" style={{ marginRight: 3 }} /> Documentation
+              </button>
             </div>
           </>
         )}
@@ -368,6 +383,7 @@ function AppInner() {
         <Route path="/results/:contestId"              element={<ResultsPage />} />
         <Route path="/dashboard"                       element={<Dashboard />} />
         <Route path="/contest-detail/:contestId"       element={<ContestDetail />} />
+        <Route path="/docs"                            element={<DocumentationPage />} />
       </Routes>
       <FloatingNav />
     </>
