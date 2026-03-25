@@ -21,6 +21,7 @@ const SECTIONS = [
   { id: 'contest-types', label: 'Contest Types', icon: <Scales size={14} weight="light" /> },
   { id: 'pricing', label: 'Pricing Strategy', icon: <CurrencyDollar size={14} weight="light" /> },
   { id: 'revenue', label: 'Revenue Projections', icon: <ChartBar size={14} weight="light" /> },
+  { id: 'infra-costs', label: 'Infrastructure Costs', icon: <Globe size={14} weight="light" /> },
   { id: 'scope', label: 'Wireframe Scope', icon: <Warning size={14} weight="light" /> },
   { id: 'roadmap', label: 'Project Roadmap - Action Required', icon: <Lightning size={14} weight="bold" />, highlight: true },
 ];
@@ -732,6 +733,68 @@ export default function DocumentationPage() {
         <Card style={{ borderColor: 'rgba(234,239,9,0.2)' }}>
           <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.75 }}>
             <strong style={{ color: '#eaef09' }}>Notes:</strong> Traffic numbers assume organic SEO + content marketing + word-of-mouth. No paid acquisition budget factored into pessimistic/moderate scenarios. Affiliate revenue only counts Results Page placements. Per-contest model means no recurring churn — each sale is one-time. Repeat usage is upside, not a dependency.
+          </div>
+        </Card>
+
+        <Divider />
+
+        {/* ── Infrastructure Costs ── */}
+        <SectionHeading id="infra-costs">Platform Running Costs</SectionHeading>
+        <Paragraph>
+          Estimated monthly infrastructure costs based on projected traffic and the tech stack defined in "What Comes Next." All services start on free tiers — costs only kick in as usage grows. Calculations use real 2025-2026 pricing.
+        </Paragraph>
+
+        <SubHeading>Service Stack & Pricing</SubHeading>
+        <DataTable
+          headers={['Service', 'Purpose', 'Free Tier', 'First Paid Tier']}
+          rows={[
+            ['Supabase', 'Database, auth, real-time', '500 MB DB, 50K auth users', '$25/mo (8 GB DB, 100K auth)'],
+            ['Stripe', 'Payments', 'No monthly fee', '2.9% + $0.30 per transaction'],
+            ['Resend', 'Transactional email', '3,000 emails/mo', '$20/mo (50K emails)'],
+            ['Vercel', 'Hosting & deployment', '100 GB bandwidth', '$20/mo (1 TB bandwidth)'],
+            ['PostHog', 'Product analytics', '1M events/mo', 'Pay-per-event after 1M'],
+            ['Sentry', 'Error tracking', '5K errors/mo', '$29/mo (Team)'],
+            ['UptimeRobot', 'Uptime monitoring', '50 monitors free', '$7/mo (1-min checks)'],
+            ['GA4', 'Website analytics', 'Fully free', 'Free (GA360 at $50K/yr unnecessary)'],
+            ['Meta Pixel', 'Ad conversion tracking', 'Fully free', 'Free (you pay for ads, not the pixel)'],
+          ]}
+        />
+
+        <SubHeading>Monthly Costs by Growth Stage</SubHeading>
+        <Paragraph>
+          Mapped to the traffic projections from the Revenue section above. Email volume estimated at ~8 emails per contest (invitations, reminders, results notifications). Stripe fees calculated on actual contest revenue.
+        </Paragraph>
+        <DataTable
+          compact
+          headers={['Stage', 'Visitors/mo', 'Contests/mo', 'Emails/mo', 'Infra Cost', 'Stripe Fees', 'Total Cost', 'Revenue', 'Net']}
+          rows={[
+            ['Launch (Mo 1-3)', '5,000', '630', '~5,000', '$0', '~$20', '~$20', '$810', '+$790'],
+            ['Growth (Mo 6)', '15,000', '1,890', '~15,000', '$45', '~$60', '~$105', '$2,570', '+$2,465'],
+            ['Traction (Mo 12)', '40,000', '5,040', '~40,000', '$65', '~$160', '~$225', '$7,320', '+$7,095'],
+            ['Scale (Mo 18)', '70,000', '8,820', '~70,000', '$115', '~$280', '~$395', '$13,160', '+$12,765'],
+            ['Mature (Mo 24)', '100,000', '12,600', '~100,000', '$155', '~$400', '~$555', '$19,300', '+$18,745'],
+          ]}
+        />
+
+        <SubHeading>Cost Breakdown at Scale (Month 24, ~100K visitors)</SubHeading>
+        <DataTable
+          headers={['Service', 'Monthly Cost', 'Why']}
+          rows={[
+            ['Supabase Pro', '$45', '~12K contests stored, 100K+ auth users, real-time voting'],
+            ['Vercel Pro', '$20', '1 TB bandwidth covers 100K visitors easily'],
+            ['Resend Pro', '$40', '~100K emails/mo (invites + reminders + results)'],
+            ['Sentry Team', '$29', 'Error tracking at scale'],
+            ['PostHog', '$15', '~2M events/mo (1M free + overflow)'],
+            ['UptimeRobot', '$7', '1-minute monitoring intervals'],
+            ['GA4 + Meta Pixel', '$0', 'Free regardless of traffic'],
+            ['Stripe fees', '~$400', '2.9% + $0.30 on ~$13,800 contest revenue'],
+            ['Total', '~$555', 'Infrastructure cost = ~2.9% of revenue'],
+          ]}
+        />
+
+        <Card style={{ borderColor: 'rgba(234,239,9,0.2)' }}>
+          <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.75 }}>
+            <strong style={{ color: '#eaef09' }}>Key takeaway:</strong> The entire platform can launch on <strong style={{ color: '#fff' }}>$0/month</strong> using free tiers. First meaningful infrastructure bill is <strong style={{ color: '#fff' }}>~$45/month</strong> when upgrading Supabase and Vercel to Pro plans. Even at 100K monthly visitors, infrastructure costs stay under <strong style={{ color: '#fff' }}>3% of revenue</strong> — well within the 75%+ gross margin benchmark for healthy SaaS businesses. No dedicated DevOps or server management needed — the entire stack is serverless and managed.
           </div>
         </Card>
 
