@@ -741,8 +741,11 @@ export default function DocumentationPage() {
         {/* ── Infrastructure Costs ── */}
         <SectionHeading id="infra-costs">Platform Running Costs</SectionHeading>
         <Paragraph>
-          Estimated monthly infrastructure costs based on projected traffic and the tech stack defined in "What Comes Next." A production launch requires paid tiers from day one — custom domain routing (Vercel Pro), reliable database uptime (Supabase Pro), and no daily email sending limits (Resend Pro). Free tiers are insufficient for a live product. Calculations use real 2025-2026 pricing. <strong style={{ color: '#eaef09' }}>Note: all cost and revenue calculations in this document are very preliminary and can drastically change upon real implementation.</strong>
+          Estimated monthly infrastructure costs based on projected traffic and the tech stack defined in "What Comes Next." A production launch requires paid tiers from day one — custom domain routing (Vercel Pro), reliable database uptime (Supabase Pro), and no daily email sending limits (Resend Pro). Free tiers are insufficient for a live product. Calculations use real 2025-2026 pricing.
         </Paragraph>
+        <div style={{ fontSize: 13, color: '#eaef09', fontWeight: 700, marginBottom: 20, padding: '10px 14px', background: 'rgba(234,239,9,0.06)', border: '1px solid rgba(234,239,9,0.2)', borderRadius: 8, maxWidth: 720 }}>
+          Note: all cost and revenue calculations in this document are very preliminary and can drastically change upon real implementation.
+        </div>
 
         <SubHeading>Service Stack & Pricing</SubHeading>
         <DataTable
