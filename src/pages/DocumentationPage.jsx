@@ -760,19 +760,33 @@ export default function DocumentationPage() {
           ]}
         />
 
+        <SubHeading>Email Volume Per Contest</SubHeading>
+        <Paragraph>
+          Each participant receives ~4 transactional emails (invitation, reminder, voting open, results). Creators receive ~3 (confirmation, submissions closed, results ready). Paid contests with higher participant caps generate significantly more email volume.
+        </Paragraph>
+        <DataTable
+          headers={['Tier', 'Max Participants', 'Emails/Contest']}
+          rows={[
+            ['Free (all segments)', '5', '~23'],
+            ['Personal ($9)', '15', '~63'],
+            ['Team ($29)', '60', '~243'],
+            ['Business ($89)', '240', '~963'],
+          ]}
+        />
+
         <SubHeading>Monthly Costs by Growth Stage</SubHeading>
         <Paragraph>
-          Mapped to the traffic projections from the Revenue section above. Email volume estimated at ~8 emails per contest (invitations, reminders, results notifications). Stripe fees calculated on actual contest revenue.
+          Mapped to the traffic projections from the Revenue section. Email volumes calculated using weighted averages: ~80% free contests (23 emails), ~20% paid contests (weighted ~200 emails avg across tiers). Resend charges $0.40 per 1,000 emails beyond the included tier.
         </Paragraph>
         <DataTable
           compact
           headers={['Stage', 'Visitors/mo', 'Contests/mo', 'Emails/mo', 'Infra Cost', 'Stripe Fees', 'Total Cost', 'Revenue', 'Net']}
           rows={[
-            ['Launch (Mo 1-3)', '5,000', '630', '~5,000', '$0', '~$20', '~$20', '$810', '+$790'],
-            ['Growth (Mo 6)', '15,000', '1,890', '~15,000', '$45', '~$60', '~$105', '$2,570', '+$2,465'],
-            ['Traction (Mo 12)', '40,000', '5,040', '~40,000', '$65', '~$160', '~$225', '$7,320', '+$7,095'],
-            ['Scale (Mo 18)', '70,000', '8,820', '~70,000', '$115', '~$280', '~$395', '$13,160', '+$12,765'],
-            ['Mature (Mo 24)', '100,000', '12,600', '~100,000', '$155', '~$400', '~$555', '$19,300', '+$18,745'],
+            ['Launch (Mo 1-3)', '5,000', '630', '~20,000', '$20', '~$20', '~$40', '$810', '+$770'],
+            ['Growth (Mo 6)', '15,000', '1,890', '~60,000', '$90', '~$60', '~$150', '$2,570', '+$2,420'],
+            ['Traction (Mo 12)', '40,000', '5,040', '~160,000', '$170', '~$160', '~$330', '$7,320', '+$6,990'],
+            ['Scale (Mo 18)', '70,000', '8,820', '~280,000', '$240', '~$280', '~$520', '$13,160', '+$12,640'],
+            ['Mature (Mo 24)', '100,000', '12,600', '~400,000', '$310', '~$400', '~$710', '$19,300', '+$18,590'],
           ]}
         />
 
@@ -781,20 +795,20 @@ export default function DocumentationPage() {
           headers={['Service', 'Monthly Cost', 'Why']}
           rows={[
             ['Supabase Pro', '$45', '~12K contests stored, 100K+ auth users, real-time voting'],
-            ['Vercel Pro', '$20', '1 TB bandwidth covers 100K visitors easily'],
-            ['Resend Pro', '$40', '~100K emails/mo (invites + reminders + results)'],
-            ['Sentry Team', '$29', 'Error tracking at scale'],
+            ['Vercel Pro', '$20', '1 TB bandwidth covers 100K visitors'],
+            ['Resend Scale + overflow', '$210', '~400K emails/mo (100K included + 300K × $0.40/1K)'],
+            ['Sentry Team', '$29', 'Error tracking across all flows'],
             ['PostHog', '$15', '~2M events/mo (1M free + overflow)'],
             ['UptimeRobot', '$7', '1-minute monitoring intervals'],
             ['GA4 + Meta Pixel', '$0', 'Free regardless of traffic'],
             ['Stripe fees', '~$400', '2.9% + $0.30 on ~$13,800 contest revenue'],
-            ['Total', '~$555', 'Infrastructure cost = ~2.9% of revenue'],
+            ['Total', '~$710', 'Infrastructure cost = ~3.7% of revenue'],
           ]}
         />
 
         <Card style={{ borderColor: 'rgba(234,239,9,0.2)' }}>
           <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.75 }}>
-            <strong style={{ color: '#eaef09' }}>Key takeaway:</strong> The entire platform can launch on <strong style={{ color: '#fff' }}>$0/month</strong> using free tiers. First meaningful infrastructure bill is <strong style={{ color: '#fff' }}>~$45/month</strong> when upgrading Supabase and Vercel to Pro plans. Even at 100K monthly visitors, infrastructure costs stay under <strong style={{ color: '#fff' }}>3% of revenue</strong> — well within the 75%+ gross margin benchmark for healthy SaaS businesses. No dedicated DevOps or server management needed — the entire stack is serverless and managed.
+            <strong style={{ color: '#eaef09' }}>Key takeaway:</strong> The platform launches on <strong style={{ color: '#fff' }}>$0/month</strong> using free tiers. First paid upgrade is <strong style={{ color: '#fff' }}>~$20/month</strong> (Resend Pro when email volume exceeds 3K/mo). The biggest cost driver is <strong style={{ color: '#fff' }}>transactional email</strong> — business contests with 240 participants generate ~963 emails each. Even at 100K monthly visitors, total infrastructure stays under <strong style={{ color: '#fff' }}>4% of revenue</strong> — healthy SaaS gross margins. No dedicated DevOps needed — the entire stack is serverless and managed.
           </div>
         </Card>
 
