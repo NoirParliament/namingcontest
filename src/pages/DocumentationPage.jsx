@@ -830,15 +830,15 @@ export default function DocumentationPage() {
         <DataTable
           headers={['Stage', 'Frequency', 'Estimated Cost', 'Covers']}
           rows={[
-            ['Launch (Mo 1-6)', 'More frequent early on', '$50-$150 per incident', 'Post-launch bug fixes, monitoring setup, early user issues'],
-            ['Stable (Mo 6-12)', 'Occasional', '$50-$150 per incident', 'Security patches, dependency updates, minor fixes'],
-            ['Growth (Mo 12-24)', 'As needed when scaling', '$50-$200 per incident', 'Scaling issues, new integrations, feature tweaks'],
+            ['Launch (Mo 1-6)', 'More frequent early on', '$100-$300 per incident', 'Post-launch bug fixes, monitoring setup, early user issues'],
+            ['Stable (Mo 6-12)', 'Occasional', '$100-$300 per incident', 'Security patches, dependency updates, minor fixes'],
+            ['Growth (Mo 12-24)', 'As needed when scaling', '$150-$400 per incident', 'Scaling issues, new integrations, feature tweaks'],
           ]}
         />
 
         <Card style={{ borderColor: 'rgba(234,239,9,0.2)' }}>
           <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.75 }}>
-            <strong style={{ color: '#eaef09' }}>Key takeaway:</strong> Production launch requires <strong style={{ color: '#fff' }}>~$95/month</strong> in infrastructure from day one. The biggest cost driver at scale is <strong style={{ color: '#fff' }}>transactional email</strong> — business contests with 240 participants generate ~963 emails each. Even at 100K monthly visitors, total infrastructure stays under <strong style={{ color: '#fff' }}>4% of revenue</strong> — healthy SaaS gross margins. Developer maintenance is as-needed (<strong style={{ color: '#fff' }}>$50-$200 per incident</strong>), not a recurring monthly cost — no full-time DevOps or server management needed. The entire stack is serverless and managed.
+            <strong style={{ color: '#eaef09' }}>Key takeaway:</strong> Production launch requires <strong style={{ color: '#fff' }}>~$95/month</strong> in infrastructure from day one. The biggest cost driver at scale is <strong style={{ color: '#fff' }}>transactional email</strong> — business contests with 240 participants generate ~963 emails each. Even at 100K monthly visitors, total infrastructure stays under <strong style={{ color: '#fff' }}>4% of revenue</strong> — healthy SaaS gross margins. Developer maintenance is as-needed (<strong style={{ color: '#fff' }}>$100-$400 per incident</strong>), not a recurring monthly cost — no full-time DevOps or server management needed. The entire stack is serverless and managed.
           </div>
         </Card>
 
