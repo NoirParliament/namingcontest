@@ -825,20 +825,20 @@ export default function DocumentationPage() {
 
         <SubHeading>Developer Maintenance</SubHeading>
         <Paragraph>
-          Even with a serverless, managed stack, a live product needs occasional developer attention — bug fixes, security patches, dependency updates, Stripe/Supabase API changes, and user-reported issues. This doesn't require a full-time hire, but budget for on-call support.
+          Even with a serverless, managed stack, a live product needs occasional developer attention — bug fixes, security patches, dependency updates, Stripe/Supabase API changes, and user-reported issues. This is not a recurring monthly expense — it's as-needed, billed per incident when something breaks or needs updating. No full-time hire required.
         </Paragraph>
         <DataTable
-          headers={['Stage', 'Estimated Hours/mo', 'Estimated Cost/mo', 'Covers']}
+          headers={['Stage', 'Frequency', 'Estimated Cost', 'Covers']}
           rows={[
-            ['Launch (Mo 1-6)', '8-15 hrs', '$400-$750', 'Post-launch bug fixes, monitoring setup, early user issues'],
-            ['Stable (Mo 6-12)', '4-8 hrs', '$200-$400', 'Security patches, dependency updates, minor fixes'],
-            ['Growth (Mo 12-24)', '8-12 hrs', '$400-$600', 'Scaling issues, new integrations, feature tweaks'],
+            ['Launch (Mo 1-6)', 'More frequent early on', '$50-$150 per incident', 'Post-launch bug fixes, monitoring setup, early user issues'],
+            ['Stable (Mo 6-12)', 'Occasional', '$50-$150 per incident', 'Security patches, dependency updates, minor fixes'],
+            ['Growth (Mo 12-24)', 'As needed when scaling', '$50-$200 per incident', 'Scaling issues, new integrations, feature tweaks'],
           ]}
         />
 
         <Card style={{ borderColor: 'rgba(234,239,9,0.2)' }}>
           <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.75 }}>
-            <strong style={{ color: '#eaef09' }}>Key takeaway:</strong> Production launch requires <strong style={{ color: '#fff' }}>~$95/month</strong> in infrastructure from day one. The biggest cost driver at scale is <strong style={{ color: '#fff' }}>transactional email</strong> — business contests with 240 participants generate ~963 emails each. Even at 100K monthly visitors, total infrastructure stays under <strong style={{ color: '#fff' }}>4% of revenue</strong> — healthy SaaS gross margins. Developer maintenance adds <strong style={{ color: '#fff' }}>$200-$750/month</strong> depending on growth stage, but no full-time DevOps or server management is needed — the entire stack is serverless and managed.
+            <strong style={{ color: '#eaef09' }}>Key takeaway:</strong> Production launch requires <strong style={{ color: '#fff' }}>~$95/month</strong> in infrastructure from day one. The biggest cost driver at scale is <strong style={{ color: '#fff' }}>transactional email</strong> — business contests with 240 participants generate ~963 emails each. Even at 100K monthly visitors, total infrastructure stays under <strong style={{ color: '#fff' }}>4% of revenue</strong> — healthy SaaS gross margins. Developer maintenance is as-needed (<strong style={{ color: '#fff' }}>$50-$200 per incident</strong>), not a recurring monthly cost — no full-time DevOps or server management needed. The entire stack is serverless and managed.
           </div>
         </Card>
 
