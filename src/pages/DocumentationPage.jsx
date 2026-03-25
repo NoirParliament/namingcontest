@@ -741,7 +741,7 @@ export default function DocumentationPage() {
         {/* ── Infrastructure Costs ── */}
         <SectionHeading id="infra-costs">Platform Running Costs</SectionHeading>
         <Paragraph>
-          Estimated monthly infrastructure costs based on projected traffic and the tech stack defined in "What Comes Next." All services start on free tiers — costs only kick in as usage grows. Calculations use real 2025-2026 pricing.
+          Estimated monthly infrastructure costs based on projected traffic and the tech stack defined in "What Comes Next." A production launch requires paid tiers from day one — custom domain routing (Vercel Pro), reliable database uptime (Supabase Pro), and no daily email sending limits (Resend Pro). Free tiers are insufficient for a live product. Calculations use real 2025-2026 pricing.
         </Paragraph>
 
         <SubHeading>Service Stack & Pricing</SubHeading>
@@ -782,11 +782,28 @@ export default function DocumentationPage() {
           compact
           headers={['Stage', 'Visitors/mo', 'Contests/mo', 'Emails/mo', 'Infra Cost', 'Stripe Fees', 'Total Cost', 'Revenue', 'Net']}
           rows={[
-            ['Launch (Mo 1-3)', '5,000', '630', '~20,000', '$20', '~$20', '~$40', '$810', '+$770'],
-            ['Growth (Mo 6)', '15,000', '1,890', '~60,000', '$90', '~$60', '~$150', '$2,570', '+$2,420'],
-            ['Traction (Mo 12)', '40,000', '5,040', '~160,000', '$170', '~$160', '~$330', '$7,320', '+$6,990'],
-            ['Scale (Mo 18)', '70,000', '8,820', '~280,000', '$240', '~$280', '~$520', '$13,160', '+$12,640'],
-            ['Mature (Mo 24)', '100,000', '12,600', '~400,000', '$310', '~$400', '~$710', '$19,300', '+$18,590'],
+            ['Launch (Mo 1-3)', '5,000', '630', '~20,000', '$95', '~$20', '~$115', '$810', '+$695'],
+            ['Growth (Mo 6)', '15,000', '1,890', '~60,000', '$140', '~$60', '~$200', '$2,570', '+$2,370'],
+            ['Traction (Mo 12)', '40,000', '5,040', '~160,000', '$220', '~$160', '~$380', '$7,320', '+$6,940'],
+            ['Scale (Mo 18)', '70,000', '8,820', '~280,000', '$290', '~$280', '~$570', '$13,160', '+$12,590'],
+            ['Mature (Mo 24)', '100,000', '12,600', '~400,000', '$360', '~$400', '~$760', '$19,300', '+$18,540'],
+          ]}
+        />
+
+        <SubHeading>Cost Breakdown at Launch (Month 1)</SubHeading>
+        <Paragraph>Production requires paid tiers from day one — custom domain, reliable uptime, no daily email limits.</Paragraph>
+        <DataTable
+          headers={['Service', 'Monthly Cost', 'Why paid from day one']}
+          rows={[
+            ['Supabase Pro', '$25', 'Free tier pauses projects after 1 week of inactivity — unusable for a live product'],
+            ['Vercel Pro', '$20', 'Custom domain (namingcontest.com) requires Pro plan'],
+            ['Resend Pro', '$20', 'Free tier has daily sending limits — breaks invitation flows'],
+            ['Sentry Team', '$29', 'Error tracking needed from launch to catch issues early'],
+            ['UptimeRobot', '$0', 'Free tier (50 monitors) sufficient at launch'],
+            ['PostHog', '$0', '1M free events/mo covers early traffic'],
+            ['GA4 + Meta Pixel', '$0', 'Free'],
+            ['Stripe', '$0', 'No monthly fee — only per-transaction'],
+            ['Total at launch', '~$95/mo', 'Before any revenue'],
           ]}
         />
 
@@ -796,19 +813,32 @@ export default function DocumentationPage() {
           rows={[
             ['Supabase Pro', '$45', '~12K contests stored, 100K+ auth users, real-time voting'],
             ['Vercel Pro', '$20', '1 TB bandwidth covers 100K visitors'],
-            ['Resend Scale + overflow', '$210', '~400K emails/mo (100K included + 300K × $0.40/1K)'],
+            ['Resend Scale + overflow', '$210', '~400K emails/mo (100K included + 300K at $0.40/1K)'],
             ['Sentry Team', '$29', 'Error tracking across all flows'],
             ['PostHog', '$15', '~2M events/mo (1M free + overflow)'],
             ['UptimeRobot', '$7', '1-minute monitoring intervals'],
             ['GA4 + Meta Pixel', '$0', 'Free regardless of traffic'],
             ['Stripe fees', '~$400', '2.9% + $0.30 on ~$13,800 contest revenue'],
-            ['Total', '~$710', 'Infrastructure cost = ~3.7% of revenue'],
+            ['Total', '~$760', 'Infrastructure cost = ~3.9% of revenue'],
+          ]}
+        />
+
+        <SubHeading>Developer Maintenance</SubHeading>
+        <Paragraph>
+          Even with a serverless, managed stack, a live product needs occasional developer attention — bug fixes, security patches, dependency updates, Stripe/Supabase API changes, and user-reported issues. This doesn't require a full-time hire, but budget for on-call support.
+        </Paragraph>
+        <DataTable
+          headers={['Stage', 'Estimated Hours/mo', 'Estimated Cost/mo', 'Covers']}
+          rows={[
+            ['Launch (Mo 1-6)', '8-15 hrs', '$400-$750', 'Post-launch bug fixes, monitoring setup, early user issues'],
+            ['Stable (Mo 6-12)', '4-8 hrs', '$200-$400', 'Security patches, dependency updates, minor fixes'],
+            ['Growth (Mo 12-24)', '8-12 hrs', '$400-$600', 'Scaling issues, new integrations, feature tweaks'],
           ]}
         />
 
         <Card style={{ borderColor: 'rgba(234,239,9,0.2)' }}>
           <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.75 }}>
-            <strong style={{ color: '#eaef09' }}>Key takeaway:</strong> The platform launches on <strong style={{ color: '#fff' }}>$0/month</strong> using free tiers. First paid upgrade is <strong style={{ color: '#fff' }}>~$20/month</strong> (Resend Pro when email volume exceeds 3K/mo). The biggest cost driver is <strong style={{ color: '#fff' }}>transactional email</strong> — business contests with 240 participants generate ~963 emails each. Even at 100K monthly visitors, total infrastructure stays under <strong style={{ color: '#fff' }}>4% of revenue</strong> — healthy SaaS gross margins. No dedicated DevOps needed — the entire stack is serverless and managed.
+            <strong style={{ color: '#eaef09' }}>Key takeaway:</strong> Production launch requires <strong style={{ color: '#fff' }}>~$95/month</strong> in infrastructure from day one. The biggest cost driver at scale is <strong style={{ color: '#fff' }}>transactional email</strong> — business contests with 240 participants generate ~963 emails each. Even at 100K monthly visitors, total infrastructure stays under <strong style={{ color: '#fff' }}>4% of revenue</strong> — healthy SaaS gross margins. Developer maintenance adds <strong style={{ color: '#fff' }}>$200-$750/month</strong> depending on growth stage, but no full-time DevOps or server management is needed — the entire stack is serverless and managed.
           </div>
         </Card>
 
