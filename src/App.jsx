@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import '@styles/tokens.css';
 import '@styles/globals.css';
 import { getJourneyMeta, buildJourneySteps, detectStep, PHASE_COLORS } from './utils/journey';
+import { getGroupTheme } from './data/themeConfig';
 import { CurrencyDollar, Handshake, BookOpen, User, Wrench } from '@phosphor-icons/react';
 import PaywallSimulator from './components/PaywallSimulator';
 import AffiliateSimulator from './components/AffiliateSimulator';
@@ -115,9 +117,10 @@ function FloatingNav() {
   const currentStep = steps[safeStep];
   const isParticipantStep = currentStep?.role === 'participant';
 
-  const tierColor     = path === '/' ? '#eaef09' : meta.color;
-  const tierTextColor = path === '/' ? '#000'    : meta.textColor;
-  const roleColor     = isParticipantStep ? '#3b82f6' : tierColor;
+  const _tc           = getGroupTheme(meta.group || 'business');
+  const tierColor     = _tc.primary;
+  const tierTextColor = _tc.btnText;
+  const roleColor     = isParticipantStep ? '#2538d4' : tierColor;
   const roleText      = isParticipantStep ? '#fff'    : tierTextColor;
   const RoleIcon      = isParticipantStep ? User : Wrench;
   const roleLabel     = isParticipantStep ? 'Participant' : 'Creator';
@@ -150,23 +153,23 @@ function FloatingNav() {
 
       {/* ── Journey tracker ─────────────────────────────────────────────── */}
       <div style={{
-        background: '#1a1a1a',
-        border: `0.5px solid ${tierColor}40`,
-        borderRadius: 12, overflow: 'hidden', width: 300,
-        boxShadow: `0 0 0 1px ${tierColor}18, 0 8px 24px rgba(0,0,0,0.5)`,
+        background: '#ffffff',
+        border: '1px solid #e8e8e0',
+        borderRadius: 24, overflow: 'hidden', width: 300,
+        boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
       }}>
         {/* Header */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '9px 13px', background: '#202020',
-          borderBottom: `0.5px solid ${tierColor}28`,
+          padding: '9px 13px', background: '#f5f5f0',
+          borderBottom: '1px solid #e8e8e0',
         }}>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 8, color: '#555', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 2 }}>
+            <div style={{ fontSize: 8, color: '#a8a8a0', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 2 }}>
               Journey Tracker
             </div>
             <div style={{
-              fontSize: 11, fontWeight: 600, color: '#fff',
+              fontSize: 11, fontWeight: 600, color: '#1a1a16',
               whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
             }}>
               {(path === '/' || !meta.hasGroup)
@@ -186,7 +189,7 @@ function FloatingNav() {
           </div>
           <button onClick={() => setPanelOpen(v => !v)} style={{
             marginLeft: 6, width: 20, height: 20, borderRadius: 4, border: 'none',
-            background: 'rgba(255,255,255,0.06)', color: '#666', fontSize: 9, cursor: 'pointer',
+            background: '#e8e8e0', color: '#58584f', fontSize: 9, cursor: 'pointer',
           }}>
             {panelOpen ? '▼' : '▲'}
           </button>
@@ -197,9 +200,9 @@ function FloatingNav() {
             {/* Progress bar */}
             <div style={{ padding: '10px 13px 0' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: '#fff' }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#1a1a16' }}>
                   Step {safeStep + 1}
-                  <span style={{ color: '#3a3a3a' }}> / {steps.length}</span>
+                  <span style={{ color: '#a8a8a0' }}> / {steps.length}</span>
                 </span>
                 <span style={{
                   fontSize: 10, fontWeight: 600, color: tierColor,
@@ -208,7 +211,7 @@ function FloatingNav() {
                   {currentStep?.label}
                 </span>
               </div>
-              <div style={{ height: 3, background: '#262626', borderRadius: 2, marginBottom: 10 }}>
+              <div style={{ height: 3, background: '#e8e8e0', borderRadius: 2, marginBottom: 10 }}>
                 <div style={{
                   height: 3, borderRadius: 2,
                   background: `linear-gradient(90deg, ${tierColor}, ${roleColor})`,
@@ -224,7 +227,7 @@ function FloatingNav() {
                 const isPast    = i < safeStep;
                 const isCurrent = i === safeStep;
                 const stepIsParticipant = s.role === 'participant';
-                const stepRoleColor = stepIsParticipant ? '#3b82f6' : tierColor;
+                const stepRoleColor = stepIsParticipant ? '#2538d4' : tierColor;
                 const stepRoleText  = stepIsParticipant ? '#fff'    : tierTextColor;
 
                 return (
@@ -237,10 +240,10 @@ function FloatingNav() {
                     <div style={{
                       width: 16, height: 16, borderRadius: '50%', flexShrink: 0,
                       background: (isPast || isCurrent) ? tierColor : 'transparent',
-                      border: `1.5px solid ${(isPast || isCurrent) ? tierColor : '#272727'}`,
+                      border: `1.5px solid ${(isPast || isCurrent) ? tierColor : '#d4d4cc'}`,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: 7, fontWeight: 800,
-                      color: (isPast || isCurrent) ? tierTextColor : '#333',
+                      color: (isPast || isCurrent) ? tierTextColor : '#a8a8a0',
                     }}>
                       {isPast ? '✓' : i + 1}
                     </div>
@@ -248,7 +251,7 @@ function FloatingNav() {
                     {/* Label */}
                     <span style={{
                       fontSize: 11, flex: 1,
-                      color: isCurrent ? '#fff' : isPast ? '#444' : '#2e2e2e',
+                      color: isCurrent ? '#1a1a16' : isPast ? '#a8a8a0' : '#58584f',
                       fontWeight: isCurrent ? 700 : 400,
                     }}>
                       {s.label}
@@ -258,8 +261,8 @@ function FloatingNav() {
                     <span style={{
                       fontSize: 7, fontWeight: 800,
                       background: (isCurrent || isPast) ? stepRoleColor : 'transparent',
-                      color: (isCurrent || isPast) ? stepRoleText : '#252525',
-                      border: `0.5px solid ${(isCurrent || isPast) ? 'transparent' : '#1e1e1e'}`,
+                      color: (isCurrent || isPast) ? stepRoleText : '#a8a8a0',
+                      border: `1px solid ${(isCurrent || isPast) ? 'transparent' : '#e8e8e0'}`,
                       borderRadius: 3, padding: '1px 4px',
                       textTransform: 'uppercase', letterSpacing: '0.04em', flexShrink: 0,
                       display: 'flex', alignItems: 'center', gap: 2,
@@ -270,7 +273,7 @@ function FloatingNav() {
                     {isCurrent && (
                       <span style={{
                         fontSize: 7, background: tierColor, color: tierTextColor,
-                        borderRadius: 3, padding: '1px 4px', fontWeight: 800,
+                        borderRadius: 999, padding: '1px 6px', fontWeight: 800,
                         textTransform: 'uppercase', flexShrink: 0,
                       }}>
                         HERE
@@ -284,15 +287,15 @@ function FloatingNav() {
             {/* Prev / Next */}
             <div style={{
               display: 'flex', gap: 6, padding: '10px 13px',
-              borderTop: '0.5px solid rgba(255,255,255,0.05)',
+              borderTop: '1px solid #e8e8e0',
             }}>
               <button
                 onClick={() => goToStep(safeStep - 1)}
                 disabled={safeStep === 0}
                 style={{
-                  padding: '7px 12px', borderRadius: 7,
-                  border: '0.5px solid rgba(255,255,255,0.08)', background: 'transparent',
-                  color: safeStep === 0 ? '#222' : '#7a7a7a',
+                  padding: '7px 12px', borderRadius: 999,
+                  border: '1px solid #e8e8e0', background: 'transparent',
+                  color: safeStep === 0 ? '#d4d4cc' : '#58584f',
                   fontSize: 12, fontWeight: 600,
                   cursor: safeStep === 0 ? 'default' : 'pointer',
                 }}
@@ -303,9 +306,9 @@ function FloatingNav() {
                 onClick={() => goToStep(safeStep + 1)}
                 disabled={safeStep >= steps.length - 1}
                 style={{
-                  flex: 1, padding: '7px 14px', borderRadius: 7, border: 'none',
-                  background: safeStep >= steps.length - 1 ? '#1e1e1e' : tierColor,
-                  color: safeStep >= steps.length - 1 ? '#333' : tierTextColor,
+                  flex: 1, padding: '7px 14px', borderRadius: 999, border: 'none',
+                  background: safeStep >= steps.length - 1 ? '#e8e8e0' : tierColor,
+                  color: safeStep >= steps.length - 1 ? '#a8a8a0' : tierTextColor,
                   fontSize: 12, fontWeight: 700,
                   cursor: safeStep >= steps.length - 1 ? 'default' : 'pointer',
                 }}
@@ -319,38 +322,40 @@ function FloatingNav() {
               <button
                 onClick={() => { setSimOpen(v => !v); setAffOpen(false); }}
                 style={{
-                  width: '100%', height: 28, borderRadius: 6,
-                  border: `0.5px solid ${tierColor}${simOpen ? '80' : '33'}`,
-                  background: simOpen ? `${tierColor}2e` : `${tierColor}0f`,
-                  color: tierColor, fontSize: 10, fontWeight: 700,
+                  width: '100%', height: 28, borderRadius: 999,
+                  border: `1px solid ${simOpen ? tierColor : '#e8e8e0'}`,
+                  background: simOpen ? '#f0f5c8' : '#fafaf7',
+                  color: simOpen ? '#254f1a' : '#58584f',
+                  fontSize: 10, fontWeight: 700,
                   cursor: 'pointer', letterSpacing: '0.02em',
                   transition: 'all 0.2s',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}
               >
-                <CurrencyDollar size={11} weight="bold" style={{ marginRight: 3 }} /> {simOpen ? 'Exit' : 'Enter'} Paywall Simulation
+                <CurrencyDollar size={11} weight="bold" style={{ marginRight: 3 }} /><span>{simOpen ? 'Exit' : 'Enter'} Paywall Simulation</span>
               </button>
               <button
                 onClick={() => { setAffOpen(v => !v); setSimOpen(false); }}
                 style={{
-                  width: '100%', height: 28, borderRadius: 6,
-                  border: `0.5px solid ${tierColor}${affOpen ? '80' : '33'}`,
-                  background: affOpen ? `${tierColor}2e` : `${tierColor}0f`,
-                  color: tierColor, fontSize: 10, fontWeight: 700,
+                  width: '100%', height: 28, borderRadius: 999,
+                  border: `1px solid ${affOpen ? tierColor : '#e8e8e0'}`,
+                  background: affOpen ? '#f0f5c8' : '#fafaf7',
+                  color: affOpen ? '#254f1a' : '#58584f',
+                  fontSize: 10, fontWeight: 700,
                   cursor: 'pointer', letterSpacing: '0.02em',
                   transition: 'all 0.2s',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}
               >
-                <Handshake size={11} weight="bold" style={{ marginRight: 3 }} /> {affOpen ? 'Exit' : 'Enter'} Affiliate Simulation
+                <Handshake size={11} weight="bold" style={{ marginRight: 3 }} /><span>{affOpen ? 'Exit' : 'Enter'} Affiliate Simulation</span>
               </button>
               <button
                 onClick={() => navigate('/docs')}
                 style={{
-                  width: '100%', height: 28, borderRadius: 6,
-                  border: `0.5px solid ${tierColor}33`,
-                  background: `${tierColor}0f`,
-                  color: tierColor, fontSize: 10, fontWeight: 700,
+                  width: '100%', height: 28, borderRadius: 999,
+                  border: '1px solid #e8e8e0',
+                  background: '#fafaf7',
+                  color: '#58584f', fontSize: 10, fontWeight: 700,
                   cursor: 'pointer', letterSpacing: '0.02em',
                   transition: 'all 0.2s',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',

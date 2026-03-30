@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { getNeutralTheme, LIGHT_THEME } from '../data/themeConfig';
 import namicoIcon from '../assets/namico-icon.svg';
 import {
   ArrowLeft, BookOpen, CurrencyDollar, TreeStructure, Lightbulb,
   Warning, CaretRight, ArrowSquareOut, Users, Star, Trophy,
   ChartBar, ShieldCheck, Scales, Gift, Lightning, Crosshair,
   CheckCircle, Clock, FileText, Palette, Globe, Tag,
-  Wrench, User
+  Wrench, User, Table
 } from '@phosphor-icons/react';
 
 /* ── Section IDs ── */
@@ -20,6 +21,7 @@ const SECTIONS = [
   { id: 'quality-score', label: 'Quality Score System', icon: <ChartBar size={14} weight="light" /> },
   { id: 'contest-types', label: 'Contest Types', icon: <Scales size={14} weight="light" /> },
   { id: 'pricing', label: 'Pricing Strategy', icon: <CurrencyDollar size={14} weight="light" /> },
+  { id: 'feature-comparison', label: 'Feature Comparison', icon: <Table size={14} weight="light" /> },
   { id: 'revenue', label: 'Revenue Projections', icon: <ChartBar size={14} weight="light" /> },
   { id: 'infra-costs', label: 'Infrastructure Costs', icon: <Globe size={14} weight="light" /> },
   { id: 'scope', label: 'Wireframe Scope', icon: <Warning size={14} weight="light" /> },
@@ -29,7 +31,7 @@ const SECTIONS = [
 /* ── Reusable Components ── */
 function SectionLabel({ children }) {
   return (
-    <div style={{ fontSize: 11, fontWeight: 700, color: '#eaef09', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>
+    <div style={{ fontSize: 11, fontWeight: 700, color: '#1e2330', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>
       {children}
     </div>
   );
@@ -37,7 +39,7 @@ function SectionLabel({ children }) {
 
 function SectionHeading({ id, children }) {
   return (
-    <h2 id={id} style={{ fontFamily: 'Inter, sans-serif', fontSize: 28, fontWeight: 800, color: '#fff', marginBottom: 8, scrollMarginTop: 80 }}>
+    <h2 id={id} style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 28, fontWeight: 800, color: '#1e2330', marginBottom: 8, scrollMarginTop: 80 }}>
       {children}
     </h2>
   );
@@ -45,7 +47,7 @@ function SectionHeading({ id, children }) {
 
 function SubHeading({ children }) {
   return (
-    <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 12, marginTop: 32 }}>
+    <h3 style={{ fontSize: 18, fontWeight: 700, color: '#1e2330', marginBottom: 12, marginTop: 32 }}>
       {children}
     </h3>
   );
@@ -53,7 +55,7 @@ function SubHeading({ children }) {
 
 function Paragraph({ children }) {
   return (
-    <p style={{ fontSize: 14, color: '#a1a1a1', lineHeight: 1.75, marginBottom: 16, maxWidth: 720 }}>
+    <p style={{ fontSize: 14, color: '#676b5f', lineHeight: 1.75, marginBottom: 16, maxWidth: 720 }}>
       {children}
     </p>
   );
@@ -61,7 +63,7 @@ function Paragraph({ children }) {
 
 function Card({ children, style = {} }) {
   return (
-    <div style={{ background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: '20px 24px', marginBottom: 16, ...style }}>
+    <div style={{ background: '#ffffff', border: '1px solid rgba(30,35,48,0.1)', borderRadius: 12, padding: '20px 24px', marginBottom: 16, boxShadow: '0 1px 3px rgba(0,0,0,0.04)', ...style }}>
       {children}
     </div>
   );
@@ -73,9 +75,9 @@ function DataTable({ headers, rows, compact = false }) {
     <div style={{ overflowX: 'auto', marginBottom: 24 }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: compact ? 12 : 13 }}>
         <thead>
-          <tr>
+          <tr style={{ background: 'rgba(30,35,48,0.05)' }}>
             {headers.map((h, i) => (
-              <th key={i} style={{ textAlign: 'left', padding: cellPad, borderBottom: '1px solid rgba(255,255,255,0.1)', color: '#eaef09', fontWeight: 700, fontSize: compact ? 11 : 12, textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
+              <th key={i} style={{ textAlign: 'left', padding: cellPad, borderBottom: '1px solid rgba(30,35,48,0.12)', color: '#1e2330', fontWeight: 700, fontSize: compact ? 11 : 12, textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
                 {h}
               </th>
             ))}
@@ -83,9 +85,9 @@ function DataTable({ headers, rows, compact = false }) {
         </thead>
         <tbody>
           {rows.map((row, ri) => (
-            <tr key={ri} style={{ background: ri % 2 === 0 ? 'transparent' : '#141414' }}>
+            <tr key={ri} style={{ background: ri % 2 === 0 ? 'transparent' : '#f8f8f5' }}>
               {row.map((cell, ci) => (
-                <td key={ci} style={{ padding: cellPad, borderBottom: '0.5px solid rgba(255,255,255,0.05)', color: ci === 0 ? '#fff' : '#a1a1a1', fontWeight: ci === 0 ? 600 : 400, whiteSpace: compact ? 'nowrap' : 'normal' }}>
+                <td key={ci} style={{ padding: cellPad, borderBottom: '0.5px solid rgba(30,35,48,0.06)', color: ci === 0 ? '#1e2330' : '#676b5f', fontWeight: ci === 0 ? 600 : 400, whiteSpace: compact ? 'nowrap' : 'normal' }}>
                   {cell}
                 </td>
               ))}
@@ -98,16 +100,16 @@ function DataTable({ headers, rows, compact = false }) {
 }
 
 function Divider() {
-  return <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '48px 0' }} />;
+  return <div style={{ height: 1, background: 'rgba(30,35,48,0.08)', margin: '48px 0' }} />;
 }
 
 function Badge({ color, icon, children }) {
   const colors = {
-    yellow: { bg: 'rgba(234,239,9,0.1)', border: 'rgba(234,239,9,0.3)', text: '#eaef09' },
-    purple: { bg: 'rgba(139,92,246,0.1)', border: 'rgba(139,92,246,0.3)', text: '#8B5CF6' },
-    green: { bg: 'rgba(16,185,129,0.1)', border: 'rgba(16,185,129,0.3)', text: '#10B981' },
-    blue: { bg: 'rgba(59,130,246,0.1)', border: 'rgba(59,130,246,0.3)', text: '#3b82f6' },
-    grey: { bg: 'rgba(255,255,255,0.05)', border: 'rgba(255,255,255,0.15)', text: '#a1a1a1' },
+    yellow: { bg: 'rgba(30,35,48,0.06)', border: 'rgba(30,35,48,0.2)', text: '#1e2330' },
+    purple: { bg: 'rgba(30,35,48,0.06)', border: 'rgba(30,35,48,0.2)', text: '#1e2330' },
+    green: { bg: 'rgba(30,35,48,0.06)', border: 'rgba(30,35,48,0.2)', text: '#1e2330' },
+    blue: { bg: 'rgba(30,35,48,0.06)', border: 'rgba(30,35,48,0.2)', text: '#1e2330' },
+    grey: { bg: 'rgba(30,35,48,0.04)', border: 'rgba(30,35,48,0.1)', text: '#676b5f' },
   };
   const c = colors[color] || colors.grey;
   return (
@@ -122,12 +124,12 @@ function FlowDiagram() {
   const nodeStyle = (color) => ({
     display: 'inline-flex', alignItems: 'center', gap: 6,
     padding: '6px 14px', borderRadius: 8,
-    background: `rgba(${color},0.06)`, border: `1px solid rgba(${color},0.25)`,
-    fontSize: 12, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap',
+    background: `rgba(${color},0.08)`, border: `1px solid rgba(${color},0.25)`,
+    fontSize: 12, fontWeight: 600, color: '#1e2330', whiteSpace: 'nowrap',
   });
-  const arrow = { color: '#444', fontSize: 11, margin: '0 4px' };
-  const branchLine = { borderLeft: '2px solid rgba(255,255,255,0.08)', marginLeft: 20, paddingLeft: 16, paddingTop: 8, paddingBottom: 8 };
-  const c = { y: '234,239,9', p: '139,92,246', g: '16,185,129', w: '255,255,255' };
+  const arrow = { color: '#8a8a82', fontSize: 11, margin: '0 4px' };
+  const branchLine = { borderLeft: '2px solid rgba(30,35,48,0.1)', marginLeft: 20, paddingLeft: 16, paddingTop: 8, paddingBottom: 8 };
+  const c = { y: '37,79,26', p: '120,0,22', g: '38,101,214', w: '30,35,48' };
 
   return (
     <Card style={{ overflowX: 'auto' }}>
@@ -148,14 +150,14 @@ function FlowDiagram() {
           <div>
             <Badge color="yellow">Open Contest</Badge>
             <div style={branchLine}>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center', fontSize: 12, color: '#a1a1a1' }}>
-                <span style={{ color: '#eaef09' }}>Brief Builder</span> <CaretRight size={9} />
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center', fontSize: 12, color: '#676b5f' }}>
+                <span style={{ color: '#1e2330' }}>Brief Builder</span> <CaretRight size={9} />
                 <span>Invite Participants</span> <CaretRight size={9} />
                 <span>Contest Overview</span> <CaretRight size={9} />
-                <span style={{ color: '#10B981' }}>Submission Phase</span> <CaretRight size={9} />
-                <span style={{ color: '#f97316' }}>[Curate Shortlist]</span> <CaretRight size={9} />
-                <span style={{ color: '#3b82f6' }}>Voting Phase</span> <CaretRight size={9} />
-                <span style={{ color: '#ec4899' }}>Results</span>
+                <span style={{ color: '#1e2330' }}>Submission Phase</span> <CaretRight size={9} />
+                <span style={{ color: '#1e2330' }}>[Curate Shortlist]</span> <CaretRight size={9} />
+                <span style={{ color: '#676b5f' }}>Voting Phase</span> <CaretRight size={9} />
+                <span style={{ color: '#676b5f' }}>Results</span>
               </div>
             </div>
           </div>
@@ -163,12 +165,12 @@ function FlowDiagram() {
           <div>
             <Badge color="purple">Voting Only</Badge>
             <div style={branchLine}>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center', fontSize: 12, color: '#a1a1a1' }}>
-                <span style={{ color: '#eaef09' }}>Upload Names</span> <CaretRight size={9} />
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center', fontSize: 12, color: '#676b5f' }}>
+                <span style={{ color: '#1e2330' }}>Upload Names</span> <CaretRight size={9} />
                 <span>Invite Participants</span> <CaretRight size={9} />
                 <span>Contest Overview</span> <CaretRight size={9} />
-                <span style={{ color: '#3b82f6' }}>Voting Phase</span> <CaretRight size={9} />
-                <span style={{ color: '#ec4899' }}>Results</span>
+                <span style={{ color: '#676b5f' }}>Voting Phase</span> <CaretRight size={9} />
+                <span style={{ color: '#676b5f' }}>Results</span>
               </div>
             </div>
           </div>
@@ -176,15 +178,15 @@ function FlowDiagram() {
           <div>
             <Badge color="green">Internal Brainstorm</Badge>
             <div style={branchLine}>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center', fontSize: 12, color: '#a1a1a1' }}>
-                <span style={{ color: '#eaef09' }}>Brief Builder</span> <CaretRight size={9} />
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center', fontSize: 12, color: '#676b5f' }}>
+                <span style={{ color: '#1e2330' }}>Brief Builder</span> <CaretRight size={9} />
                 <span>Invite Submitters</span> <CaretRight size={9} />
                 <span>Contest Overview</span> <CaretRight size={9} />
-                <span style={{ color: '#10B981' }}>Submission Phase</span> <CaretRight size={9} />
-                <span style={{ color: '#f97316' }}>[Curate Shortlist]</span> <CaretRight size={9} />
+                <span style={{ color: '#1e2330' }}>Submission Phase</span> <CaretRight size={9} />
+                <span style={{ color: '#1e2330' }}>[Curate Shortlist]</span> <CaretRight size={9} />
                 <span>Invite Voters</span> <CaretRight size={9} />
-                <span style={{ color: '#3b82f6' }}>Voting Phase</span> <CaretRight size={9} />
-                <span style={{ color: '#ec4899' }}>Results</span>
+                <span style={{ color: '#676b5f' }}>Voting Phase</span> <CaretRight size={9} />
+                <span style={{ color: '#676b5f' }}>Results</span>
               </div>
             </div>
           </div>
@@ -204,6 +206,7 @@ function FlowDiagram() {
    ══════════════════════════════════════════════════════════════════════════════ */
 export default function DocumentationPage() {
   const navigate = useNavigate();
+  const tc = getNeutralTheme();
   const [activeSection, setActiveSection] = useState(SECTIONS[0].id);
   const mainRef = useRef(null);
 
@@ -226,29 +229,29 @@ export default function DocumentationPage() {
   }, []);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', fontFamily: 'Inter, sans-serif', display: 'flex' }}>
+    <div style={{ minHeight: '100vh', background: '#fafaf5', fontFamily: 'Inter, sans-serif', display: 'flex' }}>
 
       {/* ── Sidebar ── */}
-      <div style={{ width: 240, background: '#0f0f0f', borderRight: '0.5px solid rgba(255,255,255,0.06)', position: 'fixed', top: 0, bottom: 0, left: 0, display: 'flex', flexDirection: 'column', padding: '20px 12px', zIndex: 10, overflowY: 'auto' }}>
+      <div style={{ width: 240, background: '#f8f8f5', borderRight: '1px solid rgba(30,35,48,0.08)', position: 'fixed', top: 0, bottom: 0, left: 0, display: 'flex', flexDirection: 'column', padding: '20px 12px', zIndex: 10, overflowY: 'auto' }}>
         {/* Logo */}
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', marginBottom: 24, padding: '0 8px' }}>
-          <div style={{ width: 28, height: 28, background: '#eaef09', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img src={namicoIcon} alt="Namico" style={{ width: 18, height: 18, display: 'block' }} />
+          <div style={{ width: 28, height: 28, background: '#1e2330', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img src={namicoIcon} alt="NamingContest" style={{ width: 18, height: 18, display: 'block', filter: 'brightness(0) invert(1)' }} />
           </div>
-          <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Namico</span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: '#1e2330' }}>NamingContest</span>
         </Link>
 
         {/* Back */}
-        <button onClick={() => navigate(-1)} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 36, padding: '0 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#a1a1a1', fontSize: 13, cursor: 'pointer', marginBottom: 24 }}>
+        <button onClick={() => navigate(-1)} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 36, padding: '0 10px', borderRadius: 8, border: '1px solid rgba(30,35,48,0.1)', background: 'transparent', color: '#676b5f', fontSize: 13, cursor: 'pointer', marginBottom: 24 }}>
           <ArrowLeft size={14} /> Back
         </button>
 
-        <div style={{ fontSize: 10, fontWeight: 700, color: '#7a7a7a', textTransform: 'uppercase', letterSpacing: '0.08em', padding: '0 10px', marginBottom: 8 }}>Documentation</div>
+        <div style={{ fontSize: 10, fontWeight: 700, color: '#8a8a82', textTransform: 'uppercase', letterSpacing: '0.08em', padding: '0 10px', marginBottom: 8 }}>Documentation</div>
 
         {/* Nav items */}
         {SECTIONS.map((s, si) => (
           <div key={s.id}>
-            {s.highlight && <div style={{ height: 1, background: 'rgba(234,239,9,0.15)', margin: '12px 10px 10px' }} />}
+            {s.highlight && <div style={{ height: 1, background: 'rgba(30,35,48,0.1)', margin: '12px 10px 10px' }} />}
             <a
               href={`#${s.id}`}
               style={{
@@ -258,14 +261,16 @@ export default function DocumentationPage() {
                 borderRadius: 8,
                 textDecoration: 'none', fontSize: 12, marginBottom: 1,
                 background: s.highlight
-                  ? (activeSection === s.id ? 'rgba(234,239,9,0.15)' : 'rgba(234,239,9,0.06)')
-                  : (activeSection === s.id ? 'rgba(234,239,9,0.1)' : 'transparent'),
+                  ? (activeSection === s.id ? 'rgba(30,35,48,0.12)' : 'rgba(30,35,48,0.04)')
+                  : (activeSection === s.id ? 'rgba(30,35,48,0.07)' : 'transparent'),
                 color: s.highlight
-                  ? '#eaef09'
-                  : (activeSection === s.id ? '#eaef09' : '#7a7a7a'),
+                  ? '#1e2330'
+                  : (activeSection === s.id ? '#1e2330' : '#8a8a82'),
                 fontWeight: s.highlight ? 700 : (activeSection === s.id ? 600 : 400),
                 transition: 'all 0.15s',
-                border: s.highlight ? '0.5px solid rgba(234,239,9,0.2)' : 'none',
+                border: s.highlight ? '1px solid rgba(30,35,48,0.15)' : 'none',
+                borderLeft: !s.highlight && activeSection === s.id ? '3px solid #1e2330' : (s.highlight ? undefined : 'none'),
+                paddingLeft: !s.highlight && activeSection === s.id ? 7 : (s.highlight ? 12 : 10),
                 animation: s.highlight ? 'sidebarPulse 3s ease-in-out infinite' : 'none',
               }}
             >
@@ -281,19 +286,13 @@ export default function DocumentationPage() {
         {/* Page title */}
         <div style={{ marginBottom: 48 }}>
           <SectionLabel>Phase 2 Wireframe</SectionLabel>
-          <h1 style={{ fontFamily: 'Inter, sans-serif', fontSize: 36, fontWeight: 800, color: '#fff', marginBottom: 8 }}>
-            Namico Documentation
+          <h1 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 36, fontWeight: 800, color: '#1e2330', marginBottom: 8 }}>
+            Naming Contest Documentation
           </h1>
           <Paragraph>
-            Complete feature specification, platform architecture, pricing strategy, and revenue model for the Namico naming contest platform. All data in this document reflects the current wireframe build.
+            Complete feature specification, platform architecture, pricing strategy, and revenue model for the Naming Contest naming contest platform. All data in this document reflects the current wireframe build.
           </Paragraph>
 
-          {/* Namico disclaimer */}
-          <div style={{ padding: '16px 20px', background: 'rgba(234,239,9,0.04)', border: '1px solid rgba(234,239,9,0.15)', borderRadius: 10 }}>
-            <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.7 }}>
-              <strong style={{ color: '#eaef09' }}>A note on the name:</strong> "Namico" is a working title — a feminine name derived from "Naming Contest" — created to personalize the platform during development. It is recommended to keep this personalization strategy for the final product: retain the current URL (namingcontest.com) for SEO and clarity, while using "Namico" as the brand personality throughout the interface. This makes the system feel like a friendly assistant guiding you through the naming process, rather than a complex, unnavigable system. Alternatively, the platform can simply use "Naming Contest" in all placements, or adopt a different naming agent name entirely.
-            </div>
-          </div>
         </div>
 
         {/* ═══════════════════════════════════════════════════════════════════
@@ -302,7 +301,7 @@ export default function DocumentationPage() {
         <SectionLabel>Development Tool</SectionLabel>
         <SectionHeading id="journey-tracker">How to Use the Journey Tracker</SectionHeading>
         <Paragraph>
-          The floating widget in the bottom-right corner is a development-only tool for navigating the wireframe prototype. It will not appear in the production build. It shows your current position in the Namico flow and distinguishes between two roles:
+          The floating widget in the bottom-right corner is a development-only tool for navigating the wireframe prototype. It will not appear in the production build. It shows your current position in the Naming Contest flow and distinguishes between two roles:
         </Paragraph>
 
         <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
@@ -310,7 +309,7 @@ export default function DocumentationPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <Badge color="yellow" icon={<Wrench size={10} weight="bold" />}>Creator</Badge>
             </div>
-            <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.6 }}>
+            <div style={{ fontSize: 13, color: '#676b5f', lineHeight: 1.6 }}>
               The person who creates the naming contest, writes the brief, invites participants, curates the shortlist, and manages the process end-to-end.
             </div>
           </Card>
@@ -318,7 +317,7 @@ export default function DocumentationPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <Badge color="blue" icon={<User size={10} weight="bold" />}>Participant</Badge>
             </div>
-            <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.6 }}>
+            <div style={{ fontSize: 13, color: '#676b5f', lineHeight: 1.6 }}>
               The person invited to participate — submitting name ideas, voting on candidates, or both. They see the education content and earn naming points.
             </div>
           </Card>
@@ -342,8 +341,8 @@ export default function DocumentationPage() {
         <Card>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {['Voting-only mode', 'Up to 5 participants', 'Simple poll voting', 'Basic analytics', 'Shareable URL', 'Brief builder', 'Anonymous voting'].map(f => (
-              <span key={f} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 6, background: 'rgba(16,185,129,0.08)', border: '0.5px solid rgba(16,185,129,0.2)', fontSize: 12, color: '#10B981' }}>
-                <CheckCircle size={12} weight="fill" /> {f}
+              <span key={f} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 6, background: 'rgba(30,35,48,0.08)', border: '1px solid rgba(30,35,48,0.15)', fontSize: 12, color: '#1e2330', fontWeight: 500 }}>
+                <CheckCircle size={12} color="#1e2330" weight="fill" /> {f}
               </span>
             ))}
           </div>
@@ -360,7 +359,7 @@ export default function DocumentationPage() {
             ['5', 'Contest Quality Score', 'Brief Builder sidebar', 'Viewing the quality score bar (business/team only)', 'Quality gate'],
             ['6', 'Automated Reminders', 'Brief Builder — Deadlines', 'Setting up participant email reminders', 'Reminders gate'],
             ['7', 'PDF Report', 'Results Page', 'Clicking "Download PDF Report" (business/team only)', 'PDF gate'],
-            ['8', 'White-label Branding', 'PDF / Participant View', 'Previewing output with "Powered by Namico" footer', 'Branding gate'],
+            ['8', 'White-label Branding', 'PDF / Participant View', 'Previewing output with "Powered by Naming Contest" footer', 'Branding gate'],
             ['9', 'Second Round Discount', 'Results Page', 'Selecting "We\'re still not sure" after results', 'Discount offer'],
           ]}
         />
@@ -424,7 +423,7 @@ export default function DocumentationPage() {
         <SectionLabel>Architecture</SectionLabel>
         <SectionHeading id="platform-flow">Platform Architecture & Flow</SectionHeading>
         <Paragraph>
-          Namico supports three contest types across three segments, with 15 sub-types total. Every flow starts at the Landing Page and ends at the Results Page. The flow diagram below shows all possible paths.
+          Naming Contest supports three contest types across three segments, with 15 sub-types total. Every flow starts at the Landing Page and ends at the Results Page. The flow diagram below shows all possible paths.
         </Paragraph>
 
         <FlowDiagram />
@@ -457,11 +456,11 @@ export default function DocumentationPage() {
         ].map((screen, i) => (
           <Card key={i} style={{ marginBottom: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-              <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>{screen.name}</span>
+              <span style={{ fontSize: 15, fontWeight: 700, color: '#1e2330' }}>{screen.name}</span>
               <Badge color={screen.role === 'Creator' ? 'yellow' : screen.role === 'Participant' ? 'blue' : 'grey'} icon={screen.role === 'Creator' ? <Wrench size={10} weight="bold" /> : screen.role === 'Participant' ? <User size={10} weight="bold" /> : null}>{screen.role}</Badge>
-              <span style={{ fontSize: 11, color: '#7a7a7a', fontFamily: 'monospace' }}>{screen.path}</span>
+              <span style={{ fontSize: 11, color: '#1e2330', fontFamily: 'monospace', fontWeight: 600, background: 'rgba(30,35,48,0.06)', padding: '1px 6px', borderRadius: 4, border: '1px solid rgba(30,35,48,0.12)' }}>{screen.path}</span>
             </div>
-            <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.65 }}>{screen.desc}</div>
+            <div style={{ fontSize: 13, color: '#676b5f', lineHeight: 1.65 }}>{screen.desc}</div>
           </Card>
         ))}
 
@@ -473,7 +472,7 @@ export default function DocumentationPage() {
 
         {[
           {
-            name: 'Business', color: '#eaef09', rgb: '234,239,9', price: '$89', participants: '240',
+            name: 'Business', color: '#254f1a', rgb: '37,79,26', price: '$89', participants: '240',
             subs: [
               { code: 'B1', name: 'Company or Startup Name', fields: 6, tone: 'Professional' },
               { code: 'B2', name: 'Product or Service Name', fields: 6, tone: 'Professional' },
@@ -483,7 +482,7 @@ export default function DocumentationPage() {
             ]
           },
           {
-            name: 'Team', color: '#8B5CF6', rgb: '139,92,246', price: '$29', participants: '60',
+            name: 'Team', color: '#780016', rgb: '120,0,22', price: '$29', participants: '60',
             subs: [
               { code: 'T1', name: 'Sports Team', fields: 3, tone: 'Energetic' },
               { code: 'T2', name: 'Band or Music Group', fields: 6, tone: 'Creative' },
@@ -494,7 +493,7 @@ export default function DocumentationPage() {
             ]
           },
           {
-            name: 'Personal', color: '#10B981', rgb: '16,185,129', price: '$9', participants: '15',
+            name: 'Personal', color: '#2665d6', rgb: '38,101,214', price: '$9', participants: '15',
             subs: [
               { code: 'P1', name: 'Baby Name', fields: 1, tone: 'Warm' },
               { code: 'P2', name: 'Pet Name', fields: 1, tone: 'Playful' },
@@ -506,8 +505,8 @@ export default function DocumentationPage() {
           <div key={seg.name} style={{ marginBottom: 32 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
               <div style={{ width: 12, height: 12, borderRadius: 3, background: seg.color }} />
-              <span style={{ fontSize: 18, fontWeight: 700, color: '#fff' }}>{seg.name}</span>
-              <span style={{ fontSize: 13, color: '#7a7a7a' }}>{seg.price} / up to {seg.participants} participants</span>
+              <span style={{ fontSize: 18, fontWeight: 700, color: '#1e2330' }}>{seg.name}</span>
+              <span style={{ fontSize: 13, color: '#1e2330', fontWeight: 600 }}>{seg.price} / up to {seg.participants} participants</span>
             </div>
             <DataTable
               compact
@@ -530,21 +529,21 @@ export default function DocumentationPage() {
           <Card style={{ flex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
               <Badge color="yellow" icon={<Wrench size={10} weight="bold" />}>Creator Score</Badge>
-              <span style={{ fontSize: 13, color: '#7a7a7a' }}>0-50 points</span>
+              <span style={{ fontSize: 13, color: '#1e2330', fontWeight: 600 }}>0-50 points</span>
             </div>
-            <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.65 }}>
-              <div style={{ marginBottom: 8 }}><strong style={{ color: '#fff' }}>Field completion (40 pts):</strong> Each required brief field is worth an equal share of 40 points. Auto-scales — if a sub-type has 6 fields, each is worth ~6.7 points.</div>
-              <div><strong style={{ color: '#fff' }}>Naming primer (10 pts):</strong> Bonus for reading the methodology introduction before building the brief.</div>
+            <div style={{ fontSize: 13, color: '#676b5f', lineHeight: 1.65 }}>
+              <div style={{ marginBottom: 8 }}><strong style={{ color: '#1e2330' }}>Field completion (40 pts):</strong> Each required brief field is worth an equal share of 40 points. Auto-scales — if a sub-type has 6 fields, each is worth ~6.7 points.</div>
+              <div><strong style={{ color: '#1e2330' }}>Naming primer (10 pts):</strong> Bonus for reading the methodology introduction before building the brief.</div>
             </div>
           </Card>
           <Card style={{ flex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
               <Badge color="blue" icon={<User size={10} weight="bold" />}>Participant Score</Badge>
-              <span style={{ fontSize: 13, color: '#7a7a7a' }}>0-50 points</span>
+              <span style={{ fontSize: 13, color: '#1e2330', fontWeight: 600 }}>0-50 points</span>
             </div>
-            <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.65 }}>
-              <div style={{ marginBottom: 8 }}><strong style={{ color: '#fff' }}>Articles read (25 pts):</strong> Based on completion percentage of Catchword naming methodology articles.</div>
-              <div><strong style={{ color: '#fff' }}>Naming points earned (25 pts):</strong> Based on participation activity — submissions, votes, quality of rationale.</div>
+            <div style={{ fontSize: 13, color: '#676b5f', lineHeight: 1.65 }}>
+              <div style={{ marginBottom: 8 }}><strong style={{ color: '#1e2330' }}>Articles read (25 pts):</strong> Based on completion percentage of Catchword naming methodology articles.</div>
+              <div><strong style={{ color: '#1e2330' }}>Naming points earned (25 pts):</strong> Based on participation activity — submissions, votes, quality of rationale.</div>
             </div>
           </Card>
         </div>
@@ -609,15 +608,15 @@ export default function DocumentationPage() {
 
         <SubHeading>Why These Prices</SubHeading>
         <Card>
-          <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.75 }}>
+          <div style={{ fontSize: 13, color: '#676b5f', lineHeight: 1.75 }}>
             <div style={{ marginBottom: 12 }}>
-              <strong style={{ color: '#fff' }}>Competitor pricing for context:</strong> Squadhelp starts at $299, Crowdspring at $299, NamingForce at $649, Hatchwise at $89. Namico's $9-$89 range is 3-30x cheaper than most alternatives.
+              <strong style={{ color: '#1e2330' }}>Competitor pricing for context:</strong> Squadhelp starts at $299, Crowdspring at $299, NamingForce at $649, Hatchwise at $89. Naming Contest's $9-$89 range is 3-30x cheaper than most alternatives.
             </div>
             <div style={{ marginBottom: 12 }}>
-              <strong style={{ color: '#fff' }}>Why competitors charge more:</strong> Most naming contest platforms (Squadhelp, Crowdspring, NamingForce) are creative marketplaces that source freelance namers to work on your project. Their pricing includes prize pools for winning freelancers, managed service overhead, and platform fees. Contest holders are paying for professional creative labor.
+              <strong style={{ color: '#1e2330' }}>Why competitors charge more:</strong> Most naming contest platforms (Squadhelp, Crowdspring, NamingForce) are creative marketplaces that source freelance namers to work on your project. Their pricing includes prize pools for winning freelancers, managed service overhead, and platform fees. Contest holders are paying for professional creative labor.
             </div>
             <div>
-              <strong style={{ color: '#fff' }}>Why Namico is different:</strong> Namico is a collaborative decision tool for teams and families who already have people with opinions. No freelancers, no prize pools — just structured naming with the people who matter. The platform provides the methodology, the structure, and the voting infrastructure. The ideas come from your own people.
+              <strong style={{ color: '#1e2330' }}>Why Naming Contest is different:</strong> Naming Contest is a collaborative decision tool for teams and families who already have people with opinions. No freelancers, no prize pools — just structured naming with the people who matter. The platform provides the methodology, the structure, and the voting infrastructure. The ideas come from your own people.
             </div>
           </div>
         </Card>
@@ -625,22 +624,22 @@ export default function DocumentationPage() {
         <SubHeading>Revenue Streams</SubHeading>
         <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
           <Card style={{ flex: 1 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 8 }}>Stream 1: Contest Purchases</div>
-            <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.6 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#1e2330', marginBottom: 8 }}>Stream 1: Contest Purchases</div>
+            <div style={{ fontSize: 13, color: '#676b5f', lineHeight: 1.6 }}>
               Direct revenue from paid contests at $9/$29/$89 per contest. Weighted average: ~$23 per paid contest (assuming 50% personal, 30% team, 20% business by volume).
             </div>
           </Card>
           <Card style={{ flex: 1 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 8 }}>Stream 2: Affiliate Revenue</div>
-            <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.6 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#1e2330', marginBottom: 8 }}>Stream 2: Affiliate Revenue</div>
+            <div style={{ fontSize: 13, color: '#676b5f', lineHeight: 1.6 }}>
               Contextual partner placements on the Results Page. Commissions range from 4% (Etsy) to $100/sale (Squarespace). Business segment generates highest affiliate value (LegalZoom, 99designs).
             </div>
           </Card>
         </div>
         <div style={{ marginBottom: 24 }}>
-          <Card style={{ borderColor: 'rgba(234,239,9,0.2)' }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#eaef09', marginBottom: 8 }}>Stream 3: Catchword Professional Services (Own Service)</div>
-            <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.6 }}>
+          <Card style={{ borderColor: 'rgba(30,35,48,0.2)' }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#1e2330', marginBottom: 8 }}>Stream 3: Catchword Professional Services (Own Service)</div>
+            <div style={{ fontSize: 13, color: '#676b5f', lineHeight: 1.6 }}>
               Business users are prompted to engage Catchword's professional services on all three post-vote paths. Confident users see a brand identity upsell ("Need a full brand identity? Catchword can help."), while users with second thoughts or uncertainty see a professional naming upsell ("Need expert help? Let Catchword name it for you."). This is not an affiliate — it's Catchword's own service. Contest data (brief, submissions, votes) transfers as a starting brief, reducing onboarding friction. Also appears as a persistent link on completed business contests in the Dashboard.
             </div>
           </Card>
@@ -663,9 +662,41 @@ export default function DocumentationPage() {
             ['Amazon', '4.5% (physical books)', '24 hrs', 'Amazon Associates', '$0.50-1 (naming books)'],
           ]}
         />
-        <div style={{ fontSize: 12, color: '#555', marginTop: 8, lineHeight: 1.5 }}>
+        <div style={{ fontSize: 12, color: '#8a8a82', marginTop: 8, lineHeight: 1.5 }}>
           * Commission rates verified March 2026. Rates may vary by tier, volume, and specific agreement. Highest-value affiliates: LegalZoom (business formation), 99designs (design contests), and Squarespace (website subscriptions).
         </div>
+
+        <Divider />
+
+        {/* ── Feature Comparison ── */}
+        <SectionLabel>Business Model</SectionLabel>
+        <SectionHeading id="feature-comparison">Feature Comparison</SectionHeading>
+        <Paragraph>
+          A full breakdown of which features are available across each tier — Free, Personal, Team, and Business. Use this to understand what unlocks at each price point and how to communicate tier value to prospective users.
+        </Paragraph>
+        <DataTable
+          headers={[
+            'Feature',
+            <span style={{ color: '#8a8a82' }}>Free</span>,
+            <span style={{ color: '#2665d6' }}>Personal $9</span>,
+            <span style={{ color: '#780016' }}>Team $29</span>,
+            <span style={{ color: '#254f1a' }}>Business $89</span>,
+          ]}
+          rows={[
+            ['Participants', '5', '15', '60', '240'],
+            ['Submission + Voting contest', '✓', '✓', '✓', '✓'],
+            ['Voting Only contest', '✓', '✓', '✓', '✓'],
+            ['Internal Brainstorm', '—', '✓', '✓', '✓'],
+            ['Brief Builder', '—', '✓', '✓', '✓'],
+            ['Anonymous submissions', '—', '✓', '✓', '✓'],
+            ['Multiple voting methods', '—', '✓', '✓', '✓'],
+            ['Multi-round contests', '—', '—', '✓', '✓'],
+            ['Export / PDF results', '—', '—', '✓', '✓'],
+            ['White-label output', '—', '—', '—', '✓'],
+            ['Naming methodology guide', '✓', '✓', '✓', '✓'],
+            ['Catchword consultation add-on', '—', '—', '—', '✓'],
+          ]}
+        />
 
         <Divider />
 
@@ -675,13 +706,13 @@ export default function DocumentationPage() {
 
         <SubHeading>Funnel Assumptions</SubHeading>
         <Card>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 13, color: '#a1a1a1' }}>
-            <div><strong style={{ color: '#fff' }}>Visitor to free contest:</strong> 8-12%</div>
-            <div><strong style={{ color: '#fff' }}>Free to paid upgrade:</strong> 3-5%</div>
-            <div><strong style={{ color: '#fff' }}>Results Page affiliate click:</strong> 10-15%</div>
-            <div><strong style={{ color: '#fff' }}>Affiliate click to conversion:</strong> 2-4%</div>
-            <div><strong style={{ color: '#fff' }}>Contest mix:</strong> 50% personal, 30% team, 20% business</div>
-            <div><strong style={{ color: '#fff' }}>Weighted avg price:</strong> ~$23</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 13, color: '#676b5f' }}>
+            <div><strong style={{ color: '#1e2330' }}>Visitor to free contest:</strong> 8-12%</div>
+            <div><strong style={{ color: '#1e2330' }}>Free to paid upgrade:</strong> 3-5%</div>
+            <div><strong style={{ color: '#1e2330' }}>Results Page affiliate click:</strong> 10-15%</div>
+            <div><strong style={{ color: '#1e2330' }}>Affiliate click to conversion:</strong> 2-4%</div>
+            <div><strong style={{ color: '#1e2330' }}>Contest mix:</strong> 50% personal, 30% team, 20% business</div>
+            <div><strong style={{ color: '#1e2330' }}>Weighted avg price:</strong> ~$23</div>
           </div>
         </Card>
 
@@ -730,9 +761,9 @@ export default function DocumentationPage() {
         />
         <Paragraph>Optimistic Year 1: ~$40,000 | Year 2: ~$160,000</Paragraph>
 
-        <Card style={{ borderColor: 'rgba(234,239,9,0.2)' }}>
-          <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.75 }}>
-            <strong style={{ color: '#eaef09' }}>Notes:</strong> Traffic numbers assume organic SEO + content marketing + word-of-mouth. No paid acquisition budget factored into pessimistic/moderate scenarios. Affiliate revenue only counts Results Page placements. Per-contest model means no recurring churn — each sale is one-time. Repeat usage is upside, not a dependency.
+        <Card style={{ borderColor: 'rgba(30,35,48,0.2)' }}>
+          <div style={{ fontSize: 13, color: '#676b5f', lineHeight: 1.75 }}>
+            <strong style={{ color: '#1e2330' }}>Notes:</strong> Traffic numbers assume organic SEO + content marketing + word-of-mouth. No paid acquisition budget factored into pessimistic/moderate scenarios. Affiliate revenue only counts Results Page placements. Per-contest model means no recurring churn — each sale is one-time. Repeat usage is upside, not a dependency.
           </div>
         </Card>
 
@@ -743,7 +774,7 @@ export default function DocumentationPage() {
         <Paragraph>
           Estimated monthly infrastructure costs based on projected traffic and the tech stack defined in "What Comes Next." A production launch requires paid tiers from day one — custom domain routing (Vercel Pro), reliable database uptime (Supabase Pro), and no daily email sending limits (Resend Pro). Free tiers are insufficient for a live product. Calculations use real 2025-2026 pricing.
         </Paragraph>
-        <div style={{ fontSize: 13, color: '#eaef09', fontWeight: 700, marginBottom: 20, padding: '10px 14px', background: 'rgba(234,239,9,0.06)', border: '1px solid rgba(234,239,9,0.2)', borderRadius: 8, maxWidth: 720 }}>
+        <div style={{ fontSize: 13, color: '#1e2330', fontWeight: 700, marginBottom: 20, padding: '10px 14px', background: 'rgba(30,35,48,0.06)', border: '1px solid rgba(30,35,48,0.2)', borderRadius: 8, maxWidth: 720 }}>
           Note: all cost and revenue calculations in this document are very preliminary and can drastically change upon real implementation.
         </div>
 
@@ -839,9 +870,9 @@ export default function DocumentationPage() {
           ]}
         />
 
-        <Card style={{ borderColor: 'rgba(234,239,9,0.2)' }}>
-          <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.75 }}>
-            <strong style={{ color: '#eaef09' }}>Key takeaway:</strong> Production launch requires <strong style={{ color: '#fff' }}>~$95/month</strong> in infrastructure from day one. The biggest cost driver at scale is <strong style={{ color: '#fff' }}>transactional email</strong> — business contests with 240 participants generate ~963 emails each. Even at 100K monthly visitors, total infrastructure stays under <strong style={{ color: '#fff' }}>4% of revenue</strong> — healthy SaaS gross margins. Developer maintenance is as-needed (<strong style={{ color: '#fff' }}>$100-$400 per incident</strong>), not a recurring monthly cost — no full-time DevOps or server management needed. The entire stack is serverless and managed.
+        <Card style={{ borderColor: 'rgba(30,35,48,0.2)' }}>
+          <div style={{ fontSize: 13, color: '#676b5f', lineHeight: 1.75 }}>
+            <strong style={{ color: '#1e2330' }}>Key takeaway:</strong> Production launch requires <strong style={{ color: '#1e2330' }}>~$95/month</strong> in infrastructure from day one. The biggest cost driver at scale is <strong style={{ color: '#1e2330' }}>transactional email</strong> — business contests with 240 participants generate ~963 emails each. Even at 100K monthly visitors, total infrastructure stays under <strong style={{ color: '#1e2330' }}>4% of revenue</strong> — healthy SaaS gross margins. Developer maintenance is as-needed (<strong style={{ color: '#1e2330' }}>$100-$400 per incident</strong>), not a recurring monthly cost — no full-time DevOps or server management needed. The entire stack is serverless and managed.
           </div>
         </Card>
 
@@ -864,8 +895,8 @@ export default function DocumentationPage() {
             'Pricing model and tier structure',
             'Contest lifecycle from brief to results',
           ].map(item => (
-            <span key={item} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, background: 'rgba(234,239,9,0.06)', border: '0.5px solid rgba(234,239,9,0.15)', fontSize: 12, color: '#a1a1a1' }}>
-              <CheckCircle size={12} color="#eaef09" weight="fill" /> {item}
+            <span key={item} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, background: 'rgba(30,35,48,0.08)', border: '1px solid rgba(30,35,48,0.15)', fontSize: 12, color: '#1e2330', fontWeight: 500 }}>
+              <CheckCircle size={12} color="#1e2330" weight="fill" /> {item}
             </span>
           ))}
         </div>
@@ -882,8 +913,8 @@ export default function DocumentationPage() {
             <Card key={title} style={{ padding: '14px 20px', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
               <Warning size={16} color="#f97316" weight="fill" style={{ marginTop: 2, flexShrink: 0 }} />
               <div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{title}</div>
-                <div style={{ fontSize: 12, color: '#7a7a7a' }}>{desc}</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#1e2330', marginBottom: 2 }}>{title}</div>
+                <div style={{ fontSize: 12, color: '#8a8a82' }}>{desc}</div>
               </div>
             </Card>
           ))}
@@ -895,8 +926,8 @@ export default function DocumentationPage() {
         </Paragraph>
 
         <SubHeading>What Comes Next</SubHeading>
-        <Card style={{ borderColor: 'rgba(234,239,9,0.2)' }}>
-          <div style={{ fontSize: 14, color: '#a1a1a1', lineHeight: 1.75, marginBottom: 20 }}>
+        <Card style={{ borderColor: 'rgba(30,35,48,0.2)' }}>
+          <div style={{ fontSize: 14, color: '#676b5f', lineHeight: 1.75, marginBottom: 20 }}>
             The current wireframe is very close to becoming a functioning product. Below are the specific implementation steps required to go from wireframe to production:
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -914,15 +945,15 @@ export default function DocumentationPage() {
               { title: 'Copywriting & Content', service: '', tech: false, desc: 'Production-quality educational content (naming methodology articles read by participants), UI microcopy, onboarding flows, email templates, and brief builder guidance text. Structure is defined in wireframe; actual writing is a separate effort.' },
               { title: 'Visual Design & Brand Identity', service: '', tech: false, desc: 'Polish UI components, microinteractions, loading states, error states, and empty states. Colors, fonts, and visual details can absolutely be adjusted — but it is recommended to evolve the current design rather than commissioning a full brand identity from scratch, which would add significant cost and timeline. The wireframe already establishes a functional layout and component system. Budget should prioritize functionality over visual overhaul.' },
             ].map((step, i) => (
-              <div key={i} style={{ padding: '14px 16px', background: '#141414', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 10 }}>
+              <div key={i} style={{ padding: '14px 16px', background: '#ffffff', border: '1px solid rgba(30,35,48,0.1)', borderRadius: 10, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-                  <span style={{ width: 24, height: 24, borderRadius: '50%', background: 'rgba(234,239,9,0.1)', border: '1px solid rgba(234,239,9,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#eaef09', flexShrink: 0 }}>
+                  <span style={{ width: 28, height: 28, borderRadius: '50%', background: '#1e2330', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#ffffff', flexShrink: 0 }}>
                     {i + 1}
                   </span>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>{step.title}</span>
-                  <span style={{ fontSize: 11, color: step.tech ? '#eaef09' : '#7a7a7a', fontWeight: 600, marginLeft: 'auto', flexShrink: 0 }}>{step.service}</span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: '#1e2330' }}>{step.title}</span>
+                  <span style={{ fontSize: 11, color: step.tech ? '#1e2330' : '#8a8a82', fontWeight: 600, marginLeft: 'auto', flexShrink: 0 }}>{step.service}</span>
                 </div>
-                <div style={{ fontSize: 13, color: '#7a7a7a', lineHeight: 1.6, paddingLeft: 34 }}>{step.desc}</div>
+                <div style={{ fontSize: 13, color: '#8a8a82', lineHeight: 1.6, paddingLeft: 34 }}>{step.desc}</div>
               </div>
             ))}
           </div>
@@ -935,8 +966,8 @@ export default function DocumentationPage() {
             {
               phase: 'Phase 2 into Phase 3',
               title: 'Payment, Feedback, Final Build',
-              color: '#eaef09',
-              rgb: '234,239,9',
+              color: '#1e2330',
+              rgb: '30,35,48',
               status: 'You are here',
               desc: 'Invoice payment for the completed Phase 2 wireframe. Following payment, any suggestions, questions, or small adjustments to the platform can be addressed. This is the window to refine details and request minor changes before moving into production.',
               divider: true,
@@ -949,29 +980,29 @@ export default function DocumentationPage() {
             {
               phase: 'Phase 4',
               title: 'Go-to-Market',
-              color: '#eaef09',
-              rgb: '234,239,9',
+              color: '#1e2330',
+              rgb: '30,35,48',
               status: 'Next step',
               dimmed: true,
               desc: 'Developing go-to-market strategy, creating marketing assets (ad creatives, landing page variants, social content), preparing ad campaigns across Google and Meta, SEO groundwork, and generating initial traffic to the platform.',
             },
           ].map((step, i, arr) => (
             <div key={i}>
-              <div style={{ padding: '20px 20px', background: step.dimmed ? '#111' : '#141414', border: `1px solid ${step.dimmed ? 'rgba(255,255,255,0.06)' : `rgba(${step.rgb},0.2)`}`, borderRadius: 12, borderStyle: step.dimmed ? 'dashed' : 'solid' }}>
+              <div style={{ padding: '20px 20px', background: step.dimmed ? '#f3f3f1' : '#ffffff', border: `1px solid ${step.dimmed ? 'rgba(30,35,48,0.08)' : `rgba(${step.rgb},0.2)`}`, borderRadius: 12, borderStyle: step.dimmed ? 'dashed' : 'solid', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-                  <span style={{ padding: '3px 10px', borderRadius: 6, background: step.dimmed ? 'rgba(255,255,255,0.04)' : `rgba(${step.rgb},0.1)`, border: `0.5px solid ${step.dimmed ? 'rgba(255,255,255,0.1)' : `rgba(${step.rgb},0.3)`}`, fontSize: 10, fontWeight: 700, color: step.dimmed ? '#666' : step.color, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{step.phase}</span>
-                  {step.status && <span style={{ padding: '3px 8px', borderRadius: 5, background: step.status === 'You are here' ? 'rgba(234,239,9,0.15)' : 'rgba(255,255,255,0.04)', fontSize: 10, fontWeight: 700, color: step.status === 'You are here' ? '#eaef09' : '#555', letterSpacing: '0.03em' }}>{step.status}</span>}
-                  <span style={{ fontSize: 16, fontWeight: 700, color: step.dimmed ? '#888' : '#fff' }}>{step.title}</span>
+                  <span style={{ padding: '3px 10px', borderRadius: 6, background: step.dimmed ? 'rgba(30,35,48,0.03)' : `rgba(${step.rgb},0.1)`, border: `0.5px solid ${step.dimmed ? 'rgba(30,35,48,0.08)' : `rgba(${step.rgb},0.3)`}`, fontSize: 10, fontWeight: 700, color: step.dimmed ? '#8a8a82' : step.color, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{step.phase}</span>
+                  {step.status && <span style={{ padding: '3px 8px', borderRadius: 5, background: step.status === 'You are here' ? 'rgba(30,35,48,0.1)' : 'rgba(30,35,48,0.03)', fontSize: 10, fontWeight: 700, color: step.status === 'You are here' ? '#1e2330' : '#8a8a82', letterSpacing: '0.03em' }}>{step.status}</span>}
+                  <span style={{ fontSize: 16, fontWeight: 700, color: step.dimmed ? '#8a8a82' : '#1e2330' }}>{step.title}</span>
                 </div>
-                {step.desc && <div style={{ fontSize: 13, color: step.dimmed ? '#555' : '#a1a1a1', lineHeight: 1.65 }}>{step.desc}</div>}
-                {step.divider && <div style={{ height: 1, background: 'rgba(234,239,9,0.15)', margin: '16px 0' }} />}
-                {step.desc2 && <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.65 }}>{step.desc2}</div>}
+                {step.desc && <div style={{ fontSize: 13, color: step.dimmed ? '#8a8a82' : '#676b5f', lineHeight: 1.65 }}>{step.desc}</div>}
+                {step.divider && <div style={{ height: 1, background: 'rgba(30,35,48,0.15)', margin: '16px 0' }} />}
+                {step.desc2 && <div style={{ fontSize: 13, color: '#676b5f', lineHeight: 1.65 }}>{step.desc2}</div>}
                 {step.options && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 16 }}>
                     {step.options.map((opt, j) => (
                       <div key={j} style={{ padding: '12px 14px', background: `rgba(${step.rgb},0.04)`, border: `0.5px solid rgba(${step.rgb},0.15)`, borderRadius: 8 }}>
                         <span style={{ fontSize: 12, fontWeight: 700, color: step.color, marginRight: 8 }}>{opt.label}:</span>
-                        <span style={{ fontSize: 13, color: '#a1a1a1' }}>{opt.text}</span>
+                        <span style={{ fontSize: 13, color: '#676b5f' }}>{opt.text}</span>
                       </div>
                     ))}
                   </div>
@@ -979,9 +1010,9 @@ export default function DocumentationPage() {
               </div>
               {i < arr.length - 1 && (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '6px 0', gap: 3 }}>
-                  <div style={{ width: 2, height: 12, background: 'rgba(234,239,9,0.3)' }} />
-                  <div style={{ width: 8, height: 8, borderRadius: '50%', border: '2px solid rgba(234,239,9,0.3)', background: 'transparent' }} />
-                  <div style={{ width: 2, height: 12, background: 'rgba(255,255,255,0.08)' }} />
+                  <div style={{ width: 2, height: 12, background: 'rgba(30,35,48,0.3)' }} />
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', border: '2px solid rgba(30,35,48,0.3)', background: 'transparent' }} />
+                  <div style={{ width: 2, height: 12, background: 'rgba(30,35,48,0.08)' }} />
                 </div>
               )}
             </div>
@@ -994,8 +1025,8 @@ export default function DocumentationPage() {
 
       <style>{`
         @keyframes sidebarPulse {
-          0%, 100% { background: rgba(234,239,9,0.04); border-color: rgba(234,239,9,0.15); }
-          50% { background: rgba(234,239,9,0.18); border-color: rgba(234,239,9,0.4); }
+          0%, 100% { background: rgba(30,35,48,0.04); border-color: rgba(30,35,48,0.15); }
+          50% { background: rgba(30,35,48,0.18); border-color: rgba(30,35,48,0.4); }
         }
       `}</style>
     </div>

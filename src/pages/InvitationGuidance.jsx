@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import namicoIcon from '../assets/namico-icon.svg';
-import { Link as LinkIcon, Envelope, QrCode, Copy, Check, ArrowRight, Users, Star, Info } from '@phosphor-icons/react';
+import { Link as LinkIcon, Envelope, QrCode, Copy, Check, ArrowRight, Users, Star, Info, ChatCircle, DeviceMobile } from '@phosphor-icons/react';
 import { getJourneyMeta } from '../utils/journey';
+import { getGroupTheme, LIGHT_THEME } from '../data/themeConfig';
 
 const INVITE_CONFIG = {
   'company-name': {
@@ -145,7 +146,7 @@ Submissions close [Date]. Thanks so much!`,
     subject: 'You\'re invited to a naming contest',
     body: `Hi there,
 
-You're invited to participate in a collaborative naming contest on Namico.com.
+You're invited to participate in a collaborative naming contest on NamingContest.com.
 
 Click the link below to submit your name ideas — no account required. The more perspectives we get, the better our final decision will be.
 
@@ -162,7 +163,8 @@ export default function InvitationGuidance() {
   const { contestId } = useParams();
   const navigate = useNavigate();
   const meta = getJourneyMeta(contestId);
-  const contest = { color: meta.color, label: meta.label, title: meta.contestTitle };
+  const tc = getGroupTheme(meta.group);
+  const contest = { color: tc.primary, label: meta.label, title: meta.contestTitle };
   const contestUrl = `https://namingcontest.com/contest/${contestId}`;
   const contestPin = '7429';
 
@@ -193,32 +195,33 @@ export default function InvitationGuidance() {
   ];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', fontFamily: 'Inter, sans-serif', padding: '0 0 80px' }}>
+    <div style={{ minHeight: '100vh', background: LIGHT_THEME.pageBg, fontFamily: LIGHT_THEME.fontBody, padding: '0 0 80px' }}>
 
       {/* Nav */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '16px 32px',
-        borderBottom: '0.5px solid rgba(255,255,255,0.07)',
+        background: LIGHT_THEME.navBg,
+        borderBottom: `0.5px solid ${LIGHT_THEME.navBorder}`,
       }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-          <div style={{ width: 28, height: 28, background: '#eaef09', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img src={namicoIcon} alt="Namico" style={{ width: 20, height: 20, display: 'block' }} />
+          <div style={{ width: 28, height: 28, background: tc.primary, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img src={namicoIcon} alt="Naming Contest" style={{ width: 20, height: 20, display: 'block', filter: 'brightness(0) invert(1)' }} />
           </div>
-          <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>Namico</span>
+          <span style={{ fontSize: 15, fontWeight: 700, color: LIGHT_THEME.textPrimary }}>NamingContest</span>
         </Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{
             fontSize: 11, fontWeight: 700,
-            color: contest.color,
-            background: `${contest.color}18`,
-            border: `0.5px solid ${contest.color}40`,
+            color: tc.tagText,
+            background: tc.tagBg,
+            border: `0.5px solid ${tc.tagBorder}`,
             borderRadius: 9999, padding: '3px 10px',
             textTransform: 'uppercase', letterSpacing: '0.06em',
           }}>
             {contest.label}
           </span>
-          <span style={{ fontSize: 13, color: '#a1a1a1', fontWeight: 500 }}>{contest.title}</span>
+          <span style={{ fontSize: 13, color: LIGHT_THEME.textSecondary, fontWeight: 500 }}>{contest.title}</span>
         </div>
       </div>
 
@@ -227,44 +230,45 @@ export default function InvitationGuidance() {
         {/* Phase badge */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
           <div style={{
-            fontSize: 10, fontWeight: 700, color: contest.color,
-            background: `${contest.color}15`, border: `0.5px solid ${contest.color}30`,
+            fontSize: 10, fontWeight: 700, color: tc.tagText,
+            background: tc.tagBg, border: `0.5px solid ${tc.tagBorder}`,
             borderRadius: 4, padding: '3px 8px', textTransform: 'uppercase', letterSpacing: '0.08em',
           }}>
             Phase 5
           </div>
-          <span style={{ fontSize: 14, color: '#7a7a7a' }}>Invitation & Outreach</span>
+          <span style={{ fontSize: 14, color: LIGHT_THEME.textMuted }}>Invitation & Outreach</span>
         </div>
 
-        <h1 style={{ fontSize: 30, fontWeight: 800, color: '#fff', marginBottom: 8 }}>
+        <h1 style={{ fontSize: 30, fontWeight: 800, color: LIGHT_THEME.textPrimary, marginBottom: 8, fontFamily: LIGHT_THEME.fontDisplay }}>
           Your contest is live. Now invite participants.
         </h1>
-        <p style={{ fontSize: 15, color: '#7a7a7a', marginBottom: 40, lineHeight: 1.6 }}>
+        <p style={{ fontSize: 15, color: LIGHT_THEME.textMuted, marginBottom: 40, lineHeight: 1.6 }}>
           The more perspectives you gather, the better your final name. Choose how you want to reach people below.
         </p>
 
         {/* Contest Access Card */}
         <div style={{
-          background: '#141414',
-          border: `0.5px solid ${contest.color}30`,
+          background: LIGHT_THEME.cardBg,
+          border: `0.5px solid ${tc.tagBorder}`,
           borderRadius: 14,
           padding: '20px 24px',
           marginBottom: 32,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
           flexWrap: 'wrap',
+          boxShadow: LIGHT_THEME.cardShadow,
         }}>
           <div>
-            <div style={{ fontSize: 10, color: '#7a7a7a', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Contest Access</div>
-            <div style={{ fontSize: 14, color: '#fff', fontFamily: 'monospace', marginBottom: 4 }}>{contestUrl}</div>
-            <div style={{ fontSize: 12, color: '#a1a1a1' }}>PIN: <span style={{ color: contest.color, fontFamily: 'monospace', fontWeight: 700 }}>{contestPin}</span></div>
+            <div style={{ fontSize: 10, color: LIGHT_THEME.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Contest Access</div>
+            <div style={{ fontSize: 14, color: LIGHT_THEME.textPrimary, fontFamily: 'monospace', marginBottom: 4 }}>{contestUrl}</div>
+            <div style={{ fontSize: 12, color: LIGHT_THEME.textSecondary }}>PIN: <span style={{ color: tc.primary, fontFamily: 'monospace', fontWeight: 700 }}>{contestPin}</span></div>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button
               onClick={() => handleCopy(`${contestUrl}\nPIN: ${contestPin}`, setCopiedCode)}
               style={{
                 display: 'flex', alignItems: 'center', gap: 6,
-                padding: '8px 14px', borderRadius: 8, border: '0.5px solid rgba(255,255,255,0.12)',
-                background: '#1e1e1e', color: copiedCode ? '#10B981' : '#fff',
+                padding: '8px 14px', borderRadius: 8, border: `0.5px solid ${LIGHT_THEME.inputBorder}`,
+                background: LIGHT_THEME.cardBg, color: copiedCode ? tc.primary : LIGHT_THEME.textPrimary,
                 fontSize: 12, fontWeight: 600, cursor: 'pointer',
               }}
             >
@@ -277,8 +281,9 @@ export default function InvitationGuidance() {
         {/* Tabs */}
         <div style={{
           display: 'flex', gap: 4,
-          background: '#141414', border: '0.5px solid rgba(255,255,255,0.08)',
+          background: LIGHT_THEME.cardBg, border: `0.5px solid ${LIGHT_THEME.cardBorder}`,
           borderRadius: 10, padding: 4, marginBottom: 24,
+          boxShadow: LIGHT_THEME.cardShadow,
         }}>
           {tabs.map(tab => (
             <button
@@ -287,9 +292,9 @@ export default function InvitationGuidance() {
               style={{
                 flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                 padding: '9px 16px', borderRadius: 7,
-                background: activeTab === tab.id ? '#2a2a2a' : 'transparent',
-                border: activeTab === tab.id ? '0.5px solid rgba(255,255,255,0.12)' : '0.5px solid transparent',
-                color: activeTab === tab.id ? '#fff' : '#7a7a7a',
+                background: activeTab === tab.id ? `rgba(${tc.primaryRgb},0.08)` : 'transparent',
+                border: activeTab === tab.id ? `0.5px solid rgba(${tc.primaryRgb},0.2)` : '0.5px solid transparent',
+                color: activeTab === tab.id ? tc.primary : LIGHT_THEME.textMuted,
                 fontSize: 13, fontWeight: 600, cursor: 'pointer',
               }}
             >
@@ -302,13 +307,14 @@ export default function InvitationGuidance() {
         {activeTab === 'link' && (
           <div>
             <div style={{
-              background: '#141414', border: '0.5px solid rgba(255,255,255,0.08)',
+              background: LIGHT_THEME.cardBg, border: `0.5px solid ${LIGHT_THEME.cardBorder}`,
               borderRadius: 12, padding: 20, marginBottom: 16,
               display: 'flex', gap: 10, alignItems: 'center',
+              boxShadow: LIGHT_THEME.cardShadow,
             }}>
               <div style={{
-                flex: 1, fontSize: 13, color: '#a1a1a1', fontFamily: 'monospace',
-                background: '#0f0f0f', border: '0.5px solid rgba(255,255,255,0.06)',
+                flex: 1, fontSize: 13, color: LIGHT_THEME.textSecondary, fontFamily: 'monospace',
+                background: LIGHT_THEME.pageBg, border: `0.5px solid ${LIGHT_THEME.inputBorder}`,
                 borderRadius: 7, padding: '10px 14px',
               }}>
                 {contestUrl}
@@ -318,9 +324,9 @@ export default function InvitationGuidance() {
                 style={{
                   display: 'flex', alignItems: 'center', gap: 6,
                   padding: '10px 16px', borderRadius: 8,
-                  background: copiedUrl ? 'rgba(16,185,129,0.15)' : contest.color,
-                  border: copiedUrl ? '0.5px solid rgba(16,185,129,0.4)' : 'none',
-                  color: copiedUrl ? '#10B981' : '#000',
+                  background: copiedUrl ? `rgba(${tc.primaryRgb},0.1)` : tc.primary,
+                  border: copiedUrl ? `0.5px solid rgba(${tc.primaryRgb},0.3)` : 'none',
+                  color: copiedUrl ? tc.primary : '#fff',
                   fontSize: 13, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap',
                 }}
               >
@@ -329,23 +335,24 @@ export default function InvitationGuidance() {
               </button>
             </div>
 
-            <div style={{ fontSize: 12, color: '#7a7a7a', marginBottom: 20, textAlign: 'center' }}>Share via platform</div>
+            <div style={{ fontSize: 12, color: LIGHT_THEME.textMuted, marginBottom: 20, textAlign: 'center' }}>Share via platform</div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 8 }}>
               {[
-                { name: 'Slack', emoji: '💬', desc: 'Post in a channel or DM', hint: 'Best for team contests' },
-                { name: 'Email', emoji: '📧', desc: 'Send to your list', hint: 'High open rates' },
-                { name: 'WhatsApp', emoji: '📱', desc: 'Share with groups', hint: 'Fast mobile reach' },
+                { name: 'Slack', icon: ChatCircle, desc: 'Post in a channel or DM', hint: 'Best for team contests' },
+                { name: 'Email', icon: Envelope, desc: 'Send to your list', hint: 'High open rates' },
+                { name: 'WhatsApp', icon: DeviceMobile, desc: 'Share with groups', hint: 'Fast mobile reach' },
               ].map(p => (
                 <div key={p.name} style={{
-                  background: '#141414', border: '0.5px solid rgba(255,255,255,0.08)',
+                  background: LIGHT_THEME.cardBg, border: `0.5px solid ${LIGHT_THEME.cardBorder}`,
                   borderRadius: 10, padding: '16px 14px', cursor: 'pointer',
                   transition: 'border-color 0.2s',
+                  boxShadow: LIGHT_THEME.cardShadow,
                 }}>
-                  <div style={{ fontSize: 22, marginBottom: 8 }}>{p.emoji}</div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#fff', marginBottom: 4 }}>{p.name}</div>
-                  <div style={{ fontSize: 11, color: '#7a7a7a', marginBottom: 6 }}>{p.desc}</div>
-                  <div style={{ fontSize: 10, color: contest.color, fontWeight: 600 }}>{p.hint}</div>
+                  <div style={{ marginBottom: 8 }}>{(() => { const I = p.icon; return <I size={22} weight="duotone" />; })()}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: LIGHT_THEME.textPrimary, marginBottom: 4 }}>{p.name}</div>
+                  <div style={{ fontSize: 11, color: LIGHT_THEME.textMuted, marginBottom: 6 }}>{p.desc}</div>
+                  <div style={{ fontSize: 10, color: tc.primary, fontWeight: 600 }}>{p.hint}</div>
                 </div>
               ))}
             </div>
@@ -363,9 +370,9 @@ export default function InvitationGuidance() {
                   onClick={() => setEmailMode(mode)}
                   style={{
                     padding: '7px 16px', borderRadius: 7,
-                    background: emailMode === mode ? '#2a2a2a' : 'transparent',
-                    border: `0.5px solid ${emailMode === mode ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.07)'}`,
-                    color: emailMode === mode ? '#fff' : '#7a7a7a',
+                    background: emailMode === mode ? `rgba(${tc.primaryRgb},0.08)` : 'transparent',
+                    border: `0.5px solid ${emailMode === mode ? `rgba(${tc.primaryRgb},0.2)` : LIGHT_THEME.cardBorder}`,
+                    color: emailMode === mode ? tc.primary : LIGHT_THEME.textMuted,
                     fontSize: 12, fontWeight: 600, cursor: 'pointer',
                     textTransform: 'capitalize',
                   }}
@@ -373,25 +380,26 @@ export default function InvitationGuidance() {
                   {mode}
                 </button>
               ))}
-              <span style={{ fontSize: 11, color: '#7a7a7a', alignSelf: 'center', marginLeft: 4 }}>
+              <span style={{ fontSize: 11, color: LIGHT_THEME.textMuted, alignSelf: 'center', marginLeft: 4 }}>
                 {emailMode === 'personalized' ? 'Higher open rates, feels human' : 'Efficient for larger lists'}
               </span>
             </div>
 
             {/* Email preview */}
             <div style={{
-              background: '#141414', border: '0.5px solid rgba(255,255,255,0.08)',
+              background: LIGHT_THEME.cardBg, border: `0.5px solid ${LIGHT_THEME.cardBorder}`,
               borderRadius: 12, padding: 20, marginBottom: 16,
+              boxShadow: LIGHT_THEME.cardShadow,
             }}>
-              <div style={{ fontSize: 10, color: '#7a7a7a', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>Preview</div>
-              <div style={{ fontSize: 12, color: '#a1a1a1', marginBottom: 6 }}>
-                <span style={{ color: '#7a7a7a' }}>Subject: </span>
+              <div style={{ fontSize: 10, color: LIGHT_THEME.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>Preview</div>
+              <div style={{ fontSize: 12, color: LIGHT_THEME.textSecondary, marginBottom: 6 }}>
+                <span style={{ color: LIGHT_THEME.textMuted }}>Subject: </span>
                 {EMAIL_TEMPLATES[emailMode].subject}
               </div>
               <div style={{
-                background: '#0f0f0f', border: '0.5px solid rgba(255,255,255,0.05)',
+                background: LIGHT_THEME.pageBg, border: `0.5px solid ${LIGHT_THEME.inputBorder}`,
                 borderRadius: 8, padding: 14,
-                fontSize: 12, color: '#a1a1a1', lineHeight: 1.7,
+                fontSize: 12, color: LIGHT_THEME.textSecondary, lineHeight: 1.7,
                 whiteSpace: 'pre-wrap', fontFamily: 'monospace',
               }}>
                 {EMAIL_TEMPLATES[emailMode].body}
@@ -400,9 +408,9 @@ export default function InvitationGuidance() {
 
             {/* Recipients */}
             <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: 12, color: '#7a7a7a', marginBottom: 8 }}>
+              <div style={{ fontSize: 12, color: LIGHT_THEME.textMuted, marginBottom: 8 }}>
                 Recipients — one email per line
-                {recipientCount > 0 && <span style={{ color: contest.color, marginLeft: 8 }}>{recipientCount} added</span>}
+                {recipientCount > 0 && <span style={{ color: tc.primary, marginLeft: 8 }}>{recipientCount} added</span>}
               </div>
               <textarea
                 value={recipients}
@@ -411,9 +419,9 @@ export default function InvitationGuidance() {
                 rows={5}
                 style={{
                   width: '100%', boxSizing: 'border-box',
-                  background: '#141414', border: '0.5px solid rgba(255,255,255,0.1)',
+                  background: LIGHT_THEME.inputBg, border: `0.5px solid ${LIGHT_THEME.inputBorder}`,
                   borderRadius: 8, padding: '12px 14px',
-                  color: '#fff', fontSize: 13, fontFamily: 'monospace',
+                  color: LIGHT_THEME.inputText, fontSize: 13, fontFamily: 'monospace',
                   resize: 'vertical', outline: 'none',
                 }}
               />
@@ -425,9 +433,9 @@ export default function InvitationGuidance() {
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
                 padding: '12px 24px', borderRadius: 10,
-                background: emailSent ? 'rgba(16,185,129,0.15)' : recipientCount > 0 ? contest.color : '#2a2a2a',
-                border: emailSent ? '0.5px solid rgba(16,185,129,0.4)' : 'none',
-                color: emailSent ? '#10B981' : recipientCount > 0 ? '#000' : '#7a7a7a',
+                background: emailSent ? `rgba(${tc.primaryRgb},0.1)` : recipientCount > 0 ? tc.primary : LIGHT_THEME.pageBg,
+                border: emailSent ? `0.5px solid rgba(${tc.primaryRgb},0.3)` : recipientCount > 0 ? 'none' : `0.5px solid ${LIGHT_THEME.cardBorder}`,
+                color: emailSent ? tc.primary : recipientCount > 0 ? '#fff' : LIGHT_THEME.textMuted,
                 fontSize: 13, fontWeight: 700, cursor: recipientCount > 0 ? 'pointer' : 'default',
               }}
             >
@@ -443,6 +451,8 @@ export default function InvitationGuidance() {
             <div style={{
               display: 'inline-block',
               background: '#fff', borderRadius: 16, padding: 24, marginBottom: 24,
+              border: `0.5px solid ${LIGHT_THEME.cardBorder}`,
+              boxShadow: LIGHT_THEME.cardShadow,
             }}>
               {/* SVG QR mock */}
               <svg width={180} height={180} viewBox="0 0 180 180" fill="none">
@@ -469,15 +479,15 @@ export default function InvitationGuidance() {
                 ))}
               </svg>
             </div>
-            <p style={{ fontSize: 13, color: '#7a7a7a', marginBottom: 24 }}>
+            <p style={{ fontSize: 13, color: LIGHT_THEME.textMuted, marginBottom: 24 }}>
               Scan to open the contest — no link needed.<br/>Perfect for physical spaces, events, or printed materials.
             </p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
               {['Download PNG', 'Print PDF'].map(action => (
                 <button key={action} style={{
                   padding: '10px 20px', borderRadius: 8,
-                  background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.12)',
-                  color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                  background: LIGHT_THEME.cardBg, border: `0.5px solid ${LIGHT_THEME.inputBorder}`,
+                  color: LIGHT_THEME.textPrimary, fontSize: 13, fontWeight: 600, cursor: 'pointer',
                 }}>
                   {action}
                 </button>
@@ -489,13 +499,13 @@ export default function InvitationGuidance() {
         {/* Who Should You Invite? */}
         <div style={{ marginTop: 48 }}>
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: contest.color, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: tc.primary, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
               Who Should You Invite?
             </div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: '#fff', marginBottom: 6 }}>
+            <div style={{ fontSize: 22, fontWeight: 800, color: LIGHT_THEME.textPrimary, marginBottom: 6, fontFamily: LIGHT_THEME.fontDisplay }}>
               Choose carefully — the right voices lead to the best names.
             </div>
-            <div style={{ fontSize: 14, color: '#7a7a7a' }}>
+            <div style={{ fontSize: 14, color: LIGHT_THEME.textMuted }}>
               Not all opinions are equal. Here's who will give you the most useful input for this specific naming contest.
             </div>
           </div>
@@ -503,9 +513,9 @@ export default function InvitationGuidance() {
           {(() => {
             const cfg = INVITE_CONFIG[meta.sub] || INVITE_CONFIG['other-personal'];
             const tierDefs = [
-              { key: 'essential', label: 'Essential', icon: <Star size={14} weight="fill" />, color: '#10B981', bg: 'rgba(16,185,129,0.07)', border: 'rgba(16,185,129,0.25)', items: cfg.essential, note: null },
-              ...(cfg.recommended.length > 0 ? [{ key: 'recommended', label: 'Recommended', icon: <Users size={14} weight="fill" />, color: contest.color, bg: `${contest.color}0f`, border: `${contest.color}35`, items: cfg.recommended, note: cfg.recommendedNote }] : []),
-              ...(cfg.optional.length > 0 ? [{ key: 'optional', label: 'Optional', icon: <Info size={14} weight="fill" />, color: '#7a7a7a', bg: 'rgba(255,255,255,0.03)', border: 'rgba(255,255,255,0.08)', items: cfg.optional, note: null }] : []),
+              { key: 'essential', label: 'Essential', icon: <Star size={14} weight="fill" />, color: tc.primary, bg: `rgba(${tc.primaryRgb},0.06)`, border: `rgba(${tc.primaryRgb},0.2)`, items: cfg.essential, note: null },
+              ...(cfg.recommended.length > 0 ? [{ key: 'recommended', label: 'Recommended', icon: <Users size={14} weight="fill" />, color: tc.primary, bg: `rgba(${tc.primaryRgb},0.04)`, border: `rgba(${tc.primaryRgb},0.15)`, items: cfg.recommended, note: cfg.recommendedNote }] : []),
+              ...(cfg.optional.length > 0 ? [{ key: 'optional', label: 'Optional', icon: <Info size={14} weight="fill" />, color: LIGHT_THEME.textMuted, bg: 'rgba(30,35,48,0.03)', border: LIGHT_THEME.cardBorder, items: cfg.optional, note: null }] : []),
             ];
             return (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -518,11 +528,11 @@ export default function InvitationGuidance() {
                     {tier.items.map((item, i) => (
                       <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 7 }}>
                         <span style={{ color: tier.color, flexShrink: 0, marginTop: 2, fontSize: 13 }}>·</span>
-                        <span style={{ fontSize: 13, color: '#c1c1c1', lineHeight: 1.55 }}>{item}</span>
+                        <span style={{ fontSize: 13, color: LIGHT_THEME.textSecondary, lineHeight: 1.55 }}>{item}</span>
                       </div>
                     ))}
                     {tier.note && (
-                      <div style={{ marginTop: 10, paddingTop: 10, borderTop: '0.5px solid rgba(255,255,255,0.06)', fontSize: 12, color: '#7a7a7a', lineHeight: 1.6, fontStyle: 'italic' }}>
+                      <div style={{ marginTop: 10, paddingTop: 10, borderTop: `0.5px solid ${LIGHT_THEME.divider}`, fontSize: 12, color: LIGHT_THEME.textMuted, lineHeight: 1.6, fontStyle: 'italic' }}>
                         {tier.note}
                       </div>
                     )}
@@ -530,12 +540,12 @@ export default function InvitationGuidance() {
                 ))}
 
                 {/* Sweet spot */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '14px 20px', background: '#111', borderRadius: 10, border: '0.5px solid rgba(255,255,255,0.07)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '14px 20px', background: LIGHT_THEME.cardBg, borderRadius: 10, border: `0.5px solid ${tc.tagBorder}`, boxShadow: LIGHT_THEME.cardShadow }}>
                   <div>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: '#7a7a7a', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 3 }}>Sweet Spot</div>
-                    <div style={{ fontSize: 20, fontWeight: 800, color: '#fff' }}>{cfg.sweetSpot} <span style={{ fontSize: 14, fontWeight: 500, color: '#7a7a7a' }}>people</span></div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: tc.primary, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 3 }}>Sweet Spot</div>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: LIGHT_THEME.textPrimary, fontFamily: LIGHT_THEME.fontDisplay }}>{cfg.sweetSpot} <span style={{ fontSize: 14, fontWeight: 500, color: LIGHT_THEME.textMuted }}>people</span></div>
                   </div>
-                  <div style={{ flex: 1, fontSize: 12, color: '#7a7a7a', lineHeight: 1.55 }}>{cfg.sweetSpotNote}</div>
+                  <div style={{ flex: 1, fontSize: 12, color: LIGHT_THEME.textMuted, lineHeight: 1.55 }}>{cfg.sweetSpotNote}</div>
                 </div>
               </div>
             );
@@ -545,21 +555,22 @@ export default function InvitationGuidance() {
         {/* CTA */}
         <div style={{
           marginTop: 48, padding: '28px 32px',
-          background: '#141414', border: '0.5px solid rgba(255,255,255,0.08)',
+          background: LIGHT_THEME.cardBg, border: `0.5px solid ${LIGHT_THEME.cardBorder}`,
           borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           gap: 16, flexWrap: 'wrap',
+          boxShadow: LIGHT_THEME.cardShadow,
         }}>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 4 }}>Invites sent? Head to your contest overview.</div>
-            <div style={{ fontSize: 13, color: '#7a7a7a' }}>Monitor submissions, manage phases, and track everything from your contest overview.</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: LIGHT_THEME.textPrimary, marginBottom: 4 }}>Invites sent? Head to your contest overview.</div>
+            <div style={{ fontSize: 13, color: LIGHT_THEME.textMuted }}>Monitor submissions, manage phases, and track everything from your contest overview.</div>
           </div>
           <button
             onClick={() => navigate(`/contest-detail/${contestId}`)}
             style={{
               display: 'flex', alignItems: 'center', gap: 8,
               padding: '12px 24px', borderRadius: 10,
-              background: contest.color, border: 'none',
-              color: '#000', fontSize: 14, fontWeight: 700, cursor: 'pointer',
+              background: tc.primary, border: 'none',
+              color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer',
               whiteSpace: 'nowrap',
             }}
           >

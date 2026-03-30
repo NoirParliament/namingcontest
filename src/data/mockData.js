@@ -1,5 +1,5 @@
 /**
- * Mock Data — Namico.com
+ * Mock Data — NamingContest.com
  * Sample data for all screens and flows
  */
 
@@ -39,7 +39,7 @@ export const mockContests = [
     endsAt: '2026-03-25',
     brief: 'A new B2B payments platform targeting small businesses. We need something modern, trustworthy, and memorable.',
     tags: ['fintech', 'payments', 'B2B'],
-    color: '#eaef09',
+    color: '#d2e823',
   },
   {
     id: 'demo-2',
@@ -67,7 +67,7 @@ export const mockContests = [
     endsAt: '2026-03-28',
     brief: 'Recreational co-ed soccer league, meets Sunday mornings. Friendly but competitive.',
     tags: ['soccer', 'recreational', 'co-ed'],
-    color: '#8B5CF6',
+    color: '#d2e823',
   },
   {
     id: 'demo-3',
@@ -95,7 +95,7 @@ export const mockContests = [
     endsAt: '2026-03-26',
     brief: 'We\'re expecting a girl in April. We\'d love input from our whole family.',
     tags: ['baby', 'family', 'girl'],
-    color: '#10B981',
+    color: '#d2e823',
   },
   {
     id: 'demo-4',
@@ -123,7 +123,7 @@ export const mockContests = [
     endsAt: '2026-03-30',
     brief: 'Our project management tool is pivoting to focus on remote teams. The old name "TaskFlow" no longer fits.',
     tags: ['saas', 'rebrand', 'remote'],
-    color: '#eaef09',
+    color: '#d2e823',
   },
   {
     id: 'demo-5',
@@ -142,7 +142,7 @@ export const mockContests = [
     endsAt: '2026-03-05',
     brief: '6-piece indie rock band, influences include Radiohead and Bon Iver. Looking for something evocative.',
     tags: ['band', 'indie', 'rock'],
-    color: '#8B5CF6',
+    color: '#d2e823',
   },
   {
     id: 'demo-6',
@@ -161,7 +161,7 @@ export const mockContests = [
     endsAt: '2026-03-01',
     brief: 'Launching an organic snack line targeting health-conscious millennials. Clean, natural feel.',
     tags: ['food', 'organic', 'consumer'],
-    color: '#eaef09',
+    color: '#d2e823',
   },
   {
     id: 'demo-7',
@@ -179,7 +179,7 @@ export const mockContests = [
     endsAt: '2026-04-02',
     brief: 'Weekly podcast about developer culture, burnout, and the human side of tech.',
     tags: ['podcast', 'tech', 'culture'],
-    color: '#8B5CF6',
+    color: '#d2e823',
   },
   {
     id: 'demo-8',
@@ -198,7 +198,7 @@ export const mockContests = [
     endsAt: '2026-03-10',
     brief: 'Just bought a beach house in Cape Cod. Want to name it something fun the whole family can vote on.',
     tags: ['home', 'beach', 'family'],
-    color: '#10B981',
+    color: '#d2e823',
   },
 ];
 
@@ -342,9 +342,9 @@ export const testimonials = [
     name: 'Sarah Chen',
     role: 'Co-Founder, Vanta Pay',
     tier: 'business',
-    color: '#eaef09',
+    color: '#d2e823',
     avatar: 'SC',
-    quote: 'We had 47 name ideas from across the company and absolutely zero consensus. Three days after launching a Namico, we had a clear winner with 89% approval. The structured voting made all the difference — no more loudest-voice-wins dynamics.',
+    quote: '47 name ideas, zero consensus. Three days after launching a contest, we had a winner with 89% approval. Structured voting changed everything.',
     context: 'Used for: Company Name',
     result: '"Vanta Pay" — chosen in 3 days',
     participants: 24,
@@ -355,9 +355,9 @@ export const testimonials = [
     name: 'Marcus Rodriguez',
     role: 'Lead Guitarist, Hollow Signal',
     tier: 'team',
-    color: '#8B5CF6',
+    color: '#d2e823',
     avatar: 'MR',
-    quote: 'Six band members, six very strong opinions, and zero agreement for 6 months. Namico gave everyone a voice without anyone feeling steamrolled. We voted, the data was clear, and now we\'re all proud of the name we own together.',
+    quote: 'Six members, six strong opinions, zero agreement for 6 months. We ran a contest, voted, and landed on a name we all own.',
     context: 'Used for: Band Name',
     result: '"Hollow Signal" — unanimous after voting',
     participants: 6,
@@ -368,9 +368,9 @@ export const testimonials = [
     name: 'James & Linda Morrison',
     role: 'Parents, Baby Clara Morrison',
     tier: 'personal',
-    color: '#10B981',
+    color: '#d2e823',
     avatar: 'JM',
-    quote: 'Twenty-three family members across three countries all voted on our daughter\'s name. Grandma in Dublin, cousins in California — everyone participated. Clara was chosen by the people who matter most.',
+    quote: '23 family members across three countries voted on our daughter\'s name. Clara was chosen by the people who matter most.',
     context: 'Used for: Baby Name',
     result: '"Clara" — chosen by 23 family members',
     participants: 23,
@@ -386,11 +386,6 @@ export const faqData = [
     answer: 'No. Participants join via a unique link you share — no signup, no download, no friction. They can submit names and vote immediately. Only the contest organizer needs an account.',
   },
   {
-    id: 'faq-2',
-    question: 'How does anonymous submission mode work?',
-    answer: 'When anonymous mode is enabled, names are submitted and displayed without attribution. Voters see the name and rationale only — not who submitted it. This eliminates anchoring bias and seniority effects.',
-  },
-  {
     id: 'faq-3',
     question: 'Can I run a free contest?',
     answer: 'Yes. The free tier supports one active contest with up to 5 participants and voting only. Paid plans — Personal ($9), Team ($29), and Business ($89) — unlock more participants, all 5 voting methods, open submissions, naming methodology, and more.',
@@ -398,12 +393,7 @@ export const faqData = [
   {
     id: 'faq-4',
     question: 'What\'s the Catchword Branding connection?',
-    answer: 'Namico.com is powered by Catchword Branding, the #1 Ranked Naming Agency Worldwide with 25+ years of experience. The platform uses Catchword\'s methodology — including their 10-criteria evaluation framework — built into every contest.',
-  },
-  {
-    id: 'faq-5',
-    question: 'How long should my contest run?',
-    answer: 'Research shows 8–11 days is the sweet spot. Shorter contests (under 5 days) reduce participation. Longer contests (over 14 days) lose momentum. You can extend a contest at any time.',
+    answer: 'NamingContest.com is powered by Catchword Branding, the #1 Ranked Naming Agency Worldwide with 25+ years of experience. The platform uses Catchword\'s methodology — including their 10-criteria evaluation framework — built into every contest.',
   },
   {
     id: 'faq-6',
@@ -411,24 +401,9 @@ export const faqData = [
     answer: 'Three paid tiers: Personal ($9/contest) for up to 15 participants — great for baby names, pets, and personal decisions. Team ($29/contest) for up to 60 participants with white-label output — ideal for bands, sports teams, and groups. Business ($89/contest) for up to 240 participants with full PDF reports — built for companies, products, and rebrands. All paid plans include every voting method, naming methodology, and automated reminders.',
   },
   {
-    id: 'faq-7',
-    question: 'Can I run multiple rounds?',
-    answer: 'Yes, on all paid plans. You can run an open submission round, curate a shortlist, then open voting. The system supports manual review between phases so you control what goes to ballot.',
-  },
-  {
     id: 'faq-8',
     question: 'What voting methods are available?',
     answer: 'Five methods: (1) Simple Poll — one vote per person. (2) Ranked Choice — rank all options. (3) Multi-Criteria Scoring — rate names across multiple dimensions. (4) Pairwise Comparison — choose between two at a time. (5) Weighted Voting — different voters have different vote weights.',
-  },
-  {
-    id: 'faq-9',
-    question: 'Can I export the results?',
-    answer: 'Yes. Team and Business plans include white-label output. The Business plan ($89) includes a full PDF results report with analytics, vote breakdowns, and a winner certificate. All paid plans include contest quality scores and submission breakdowns.',
-  },
-  {
-    id: 'faq-10',
-    question: 'What support is available?',
-    answer: 'Email support for all users. The platform is powered by Catchword\'s 25-year naming methodology, which is built into every contest through articles, scoring criteria, and quality frameworks. Business plan users get access to professional naming consultation as an add-on.',
   },
 ];
 
@@ -438,31 +413,31 @@ export const howItWorksSteps = [
     number: '01',
     icon: '🎯',
     title: 'Choose Your Path',
-    description: 'Tell us what you\'re naming — business, team, or something personal. We tailor the experience.',
+    description: 'Pick personal, team, or business. We\'ll tailor the flow.',
   },
   {
     number: '02',
     icon: '📋',
     title: 'Build Your Brief',
-    description: 'Define what makes a great name for you. Catchword\'s framework guides you through the key questions.',
+    description: 'Answer a few key questions. Our framework does the rest.',
   },
   {
     number: '03',
     icon: '✉️',
     title: 'Invite Your People',
-    description: 'Share a link. No signup required for participants — they join instantly on any device.',
+    description: 'Share a link. No signup needed — they join instantly.',
   },
   {
     number: '04',
     icon: '💡',
     title: 'Structured Input',
-    description: 'Everyone suggests, everyone votes. Anonymous mode eliminates bias. Multiple voting methods available.',
+    description: 'Everyone suggests. Everyone votes. Anonymous mode kills bias.',
   },
   {
     number: '05',
     icon: '✅',
     title: 'Clear Result',
-    description: 'A winner emerges with full analytics. Download your PDF certificate. Move forward together.',
+    description: 'A winner emerges with full analytics. Done.',
   },
 ];
 

@@ -2,13 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import namicoIcon from '../assets/namico-icon.svg';
 import { ArrowLeft, ArrowRight, Copy, Check, CalendarBlank, Users, BookOpen, X, UserCircle } from '@phosphor-icons/react';
-import { computeCreatorScore, saveCreatorQuality, getFieldDefs } from '../utils/quality';
-
-const TIER = {
-  business: { color: '#eaef09', rgb: '234,239,9', label: 'Business', textColor: '#000' },
-  team: { color: '#8B5CF6', rgb: '139,92,246', label: 'Team', textColor: '#fff' },
-  personal: { color: '#10B981', rgb: '16,185,129', label: 'Personal', textColor: '#fff' },
-};
+import { computeCreatorScore, saveCreatorQuality, getFieldDefs, isFilled, FIELD_LABELS, FIELD_PTS } from '../utils/quality';
+import { getGroupTheme, LIGHT_THEME } from '../data/themeConfig';
 
 // ── Primer content by subSegment ──
 function getPrimerContent(group, subSegment, tc) {
@@ -19,10 +14,10 @@ function getPrimerContent(group, subSegment, tc) {
     marginTop: 16,
     background: `rgba(${tc.rgb},0.05)`,
     fontSize: 14,
-    color: '#a1a1a1',
+    color: '#676b5f',
     lineHeight: 1.6,
   };
-  const quoteStyle = { fontFamily: 'Inter, sans-serif', fontSize: 17, color: '#fff', fontWeight: 400, display: 'block', marginBottom: 8 };
+  const quoteStyle = { fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 17, color: '#1e2330', fontWeight: 400, display: 'block', marginBottom: 8 };
 
   if (subSegment === 'company-name') return (
     <div>
@@ -32,87 +27,87 @@ function getPrimerContent(group, subSegment, tc) {
         <span style={quoteStyle}>"Your job: Define what 'works' means for your company."</span>
       </blockquote>
       <div style={boxStyle}>
-        <strong style={{ color: '#fff' }}>Real example:</strong> "Apple" tells you nothing about computers. But it's distinctive, memorable, ownable. That's what matters.
+        <strong style={{ color: '#1e2330' }}>Real example:</strong> "Apple" tells you nothing about computers. But it's distinctive, memorable, ownable. That's what matters.
       </div>
     </div>
   );
   if (subSegment === 'product-name') return (
     <div>
-      <p style={{ color: '#a1a1a1', lineHeight: 1.7, marginBottom: 14 }}>Products live under a brand umbrella. Your company name sets the stage. Your product name extends the story.</p>
-      <p style={{ color: '#a1a1a1', lineHeight: 1.7, marginBottom: 14 }}><strong style={{ color: '#fff' }}>Branded house</strong> (Google everything) vs <strong style={{ color: '#fff' }}>House of brands</strong> (P&G approach)</p>
-      <div style={boxStyle}><strong style={{ color: '#fff' }}>Example:</strong> Salesforce → Sales Cloud, Service Cloud, Marketing Cloud</div>
+      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>Products live under a brand umbrella. Your company name sets the stage. Your product name extends the story.</p>
+      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}><strong style={{ color: '#1e2330' }}>Branded house</strong> (Google everything) vs <strong style={{ color: '#1e2330' }}>House of brands</strong> (P&G approach)</p>
+      <div style={boxStyle}><strong style={{ color: '#1e2330' }}>Example:</strong> Salesforce → Sales Cloud, Service Cloud, Marketing Cloud</div>
     </div>
   );
   if (subSegment === 'project-name') return (
     <div>
-      <p style={{ color: '#a1a1a1', lineHeight: 1.7, marginBottom: 14 }}>Generic names kill momentum. 'Project Phoenix' has been done to death. A distinctive internal name drives adoption and builds morale.</p>
-      <div style={boxStyle}><strong style={{ color: '#fff' }}>Example:</strong> Google's "Project Loon" (internet balloons) became a cultural touchstone</div>
+      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>Generic names kill momentum. 'Project Phoenix' has been done to death. A distinctive internal name drives adoption and builds morale.</p>
+      <div style={boxStyle}><strong style={{ color: '#1e2330' }}>Example:</strong> Google's "Project Loon" (internet balloons) became a cultural touchstone</div>
     </div>
   );
   if (subSegment === 'rebrand') return (
     <div>
-      <p style={{ color: '#a1a1a1', lineHeight: 1.7, marginBottom: 14 }}>You're not starting from scratch. You have brand equity. The question is: <strong style={{ color: '#fff' }}>Evolution or Revolution?</strong></p>
-      <div style={boxStyle}><strong style={{ color: '#fff' }}>Examples:</strong> Mastercard (evolution — kept the name, dropped "MasterCard" spacing), Facebook→Meta (revolution), Dunkin' Donuts→Dunkin' (evolution — simplified)</div>
+      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>You're not starting from scratch. You have brand equity. The question is: <strong style={{ color: '#1e2330' }}>Evolution or Revolution?</strong></p>
+      <div style={boxStyle}><strong style={{ color: '#1e2330' }}>Examples:</strong> Mastercard (evolution — kept the name, dropped "MasterCard" spacing), Facebook→Meta (revolution), Dunkin' Donuts→Dunkin' (evolution — simplified)</div>
     </div>
   );
   if (subSegment === 'sports-team') return (
     <div>
-      <p style={{ color: '#a1a1a1', lineHeight: 1.7, marginBottom: 14 }}>The best sports names are chanted, cheerable, intimidating OR identity-building.</p>
-      <div style={boxStyle}><strong style={{ color: '#fff' }}>Examples:</strong> Oklahoma City Thunder (chosen by public vote from 64,000 submissions), Seattle Kraken</div>
+      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>The best sports names are chanted, cheerable, intimidating OR identity-building.</p>
+      <div style={boxStyle}><strong style={{ color: '#1e2330' }}>Examples:</strong> Oklahoma City Thunder (chosen by public vote from 64,000 submissions), Seattle Kraken</div>
     </div>
   );
   if (subSegment === 'band-music') return (
     <div>
-      <p style={{ color: '#a1a1a1', lineHeight: 1.7, marginBottom: 14 }}>Your band name is your first song. Fans will ask <em>'How'd you get your name?'</em> — have a good story.</p>
-      <div style={boxStyle}><strong style={{ color: '#fff' }}>Examples:</strong> Radiohead (from Talking Heads song), Foo Fighters (Dave Grohl's WWII UFO reference)</div>
+      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>Your band name is your first song. Fans will ask <em>'How'd you get your name?'</em> — have a good story.</p>
+      <div style={boxStyle}><strong style={{ color: '#1e2330' }}>Examples:</strong> Radiohead (from Talking Heads song), Foo Fighters (Dave Grohl's WWII UFO reference)</div>
     </div>
   );
   if (subSegment === 'podcast-channel') return (
     <div>
-      <p style={{ color: '#a1a1a1', lineHeight: 1.7, marginBottom: 14 }}>You're on a spectrum between <strong style={{ color: '#fff' }}>ultra-clear</strong> ("How I Built This") and <strong style={{ color: '#fff' }}>utterly intriguing</strong> ("Radiolab"). Both work — but they work differently.</p>
-      <div style={boxStyle}><strong style={{ color: '#fff' }}>The sweet spot:</strong> Most winning podcast names balance both. "Hidden Brain" is intriguing (why hidden?) but clearly about psychology. Aim for that.</div>
+      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>You're on a spectrum between <strong style={{ color: '#1e2330' }}>ultra-clear</strong> ("How I Built This") and <strong style={{ color: '#1e2330' }}>utterly intriguing</strong> ("Radiolab"). Both work — but they work differently.</p>
+      <div style={boxStyle}><strong style={{ color: '#1e2330' }}>The sweet spot:</strong> Most winning podcast names balance both. "Hidden Brain" is intriguing (why hidden?) but clearly about psychology. Aim for that.</div>
     </div>
   );
   if (subSegment === 'civic-school-nonprofit') return (
     <div>
-      <p style={{ color: '#a1a1a1', lineHeight: 1.7, marginBottom: 14 }}>You're naming something that should outlast you by decades. <strong style={{ color: '#fff' }}>Clarity</strong> beats cleverness. <strong style={{ color: '#fff' }}>Aspiration</strong> beats description.</p>
-      <div style={boxStyle}><strong style={{ color: '#fff' }}>Examples:</strong> Habitat for Humanity (clear + aspirational), charity: water (memorable lowercase), Doctors Without Borders (communicates scope and courage in 3 words).</div>
+      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>You're naming something that should outlast you by decades. <strong style={{ color: '#1e2330' }}>Clarity</strong> beats cleverness. <strong style={{ color: '#1e2330' }}>Aspiration</strong> beats description.</p>
+      <div style={boxStyle}><strong style={{ color: '#1e2330' }}>Examples:</strong> Habitat for Humanity (clear + aspirational), charity: water (memorable lowercase), Doctors Without Borders (communicates scope and courage in 3 words).</div>
     </div>
   );
   if (subSegment === 'other-team') return (
     <div>
-      <p style={{ color: '#a1a1a1', lineHeight: 1.7, marginBottom: 14 }}>Names shape group identity before a single shared experience happens. A great group name creates <strong style={{ color: '#fff' }}>belonging</strong> — outsiders want in.</p>
-      <div style={boxStyle}><strong style={{ color: '#fff' }}>Research shows:</strong> Groups named with aspirational titles ("The Visionaries") demonstrate more creative output than generic identifiers. Your name becomes a self-fulfilling prophecy.</div>
+      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>Names shape group identity before a single shared experience happens. A great group name creates <strong style={{ color: '#1e2330' }}>belonging</strong> — outsiders want in.</p>
+      <div style={boxStyle}><strong style={{ color: '#1e2330' }}>Research shows:</strong> Groups named with aspirational titles ("The Visionaries") demonstrate more creative output than generic identifiers. Your name becomes a self-fulfilling prophecy.</div>
     </div>
   );
   if (subSegment === 'gaming-group') return (
     <div>
-      <p style={{ color: '#a1a1a1', lineHeight: 1.7, marginBottom: 14 }}>Two camps: <strong style={{ color: '#fff' }}>intimidating</strong> (FaZe Clan, Team Liquid) or <strong style={{ color: '#fff' }}>meme-worthy</strong> (Panda Global, Golden Guardians).</p>
-      <p style={{ color: '#a1a1a1', lineHeight: 1.7 }}>Test: Can you yell it when you clutch a 1v5?</p>
+      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>Two camps: <strong style={{ color: '#1e2330' }}>intimidating</strong> (FaZe Clan, Team Liquid) or <strong style={{ color: '#1e2330' }}>meme-worthy</strong> (Panda Global, Golden Guardians).</p>
+      <p style={{ color: '#676b5f', lineHeight: 1.7 }}>Test: Can you yell it when you clutch a 1v5?</p>
     </div>
   );
   if (subSegment === 'baby-name') return (
     <div>
-      <p style={{ color: '#a1a1a1', lineHeight: 1.7, marginBottom: 14 }}>Invite family and friends. Everyone gets a voice. All in one place. Private voting. Beautiful certificate.</p>
-      <div style={boxStyle}><strong style={{ color: '#fff' }}>Example:</strong> The Morrison family invited 23 people. The certificate hangs in the nursery.</div>
+      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>Invite family and friends. Everyone gets a voice. All in one place. Private voting. Beautiful certificate.</p>
+      <div style={boxStyle}><strong style={{ color: '#1e2330' }}>Example:</strong> The Morrison family invited 23 people. The certificate hangs in the nursery.</div>
     </div>
   );
   if (subSegment === 'pet-name') return (
     <div>
-      <p style={{ color: '#a1a1a1', lineHeight: 1.7, marginBottom: 14 }}>Pets are family. Get input from everyone who loves them.</p>
+      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>Pets are family. Get input from everyone who loves them.</p>
       <div style={boxStyle}>A shared naming process means everyone feels invested from day one.</div>
     </div>
   );
   if (subSegment === 'home-property-fun') return (
     <div>
-      <p style={{ color: '#a1a1a1', lineHeight: 1.7, marginBottom: 14 }}>Named places feel more like <strong style={{ color: '#fff' }}>home</strong>. "The Bungalow" becomes a person. "Stella" the sailboat becomes a family legend.</p>
-      <div style={boxStyle}><strong style={{ color: '#fff' }}>Research shows:</strong> Named spaces are used more, cared for more, and remembered more fondly. The name you choose becomes part of the story you tell about this place.</div>
+      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>Named places feel more like <strong style={{ color: '#1e2330' }}>home</strong>. "The Bungalow" becomes a person. "Stella" the sailboat becomes a family legend.</p>
+      <div style={boxStyle}><strong style={{ color: '#1e2330' }}>Research shows:</strong> Named spaces are used more, cared for more, and remembered more fondly. The name you choose becomes part of the story you tell about this place.</div>
     </div>
   );
   return (
     <div>
-      <p style={{ color: '#a1a1a1', lineHeight: 1.7, marginBottom: 14 }}>A great name doesn't just describe what you do — it creates a container for everything you'll become.</p>
-      <div style={boxStyle}><strong style={{ color: '#fff' }}>Key insight:</strong> The best name isn't the one everyone likes. It's the one that works. Trust the process.</div>
+      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>A great name doesn't just describe what you do — it creates a container for everything you'll become.</p>
+      <div style={boxStyle}><strong style={{ color: '#1e2330' }}>Key insight:</strong> The best name isn't the one everyone likes. It's the one that works. Trust the process.</div>
     </div>
   );
 }
@@ -139,18 +134,18 @@ function getPrimerTitle(subSegment) {
 
 // ── Tip expandable component ──
 function TipRow({ tipContent, color = '#7a7a7a', rgb = '122,122,122' }) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   return (
     <div style={{ marginBottom: 4 }}>
       <button
         onClick={() => setOpen(v => !v)}
-        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: 12, color: color, display: 'flex', alignItems: 'center', gap: 4 }}
+        style={{ background: `rgba(${rgb},0.06)`, border: `1px solid rgba(${rgb},0.18)`, borderRadius: 8, padding: '8px 12px', cursor: 'pointer', fontSize: 12, color: color, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}
       >
         <span style={{ fontSize: 10 }}>{open ? '▼' : '▶'}</span>
-        Why does this matter?
+        💡 Why does this matter?
       </button>
       {open && (
-        <div style={{ marginTop: 8, padding: '12px 14px', background: `rgba(${rgb},0.06)`, border: `0.5px solid rgba(${rgb},0.25)`, borderRadius: 8, fontSize: 13, color: '#a1a1a1', lineHeight: 1.65 }}>
+        <div style={{ marginTop: 8, padding: '12px 14px', background: `rgba(${rgb},0.06)`, border: `0.5px solid rgba(${rgb},0.25)`, borderRadius: 8, fontSize: 13, color: '#676b5f', lineHeight: 1.65 }}>
           {tipContent}
           <div style={{ marginTop: 8, paddingTop: 6, borderTop: `0.5px solid rgba(${rgb},0.15)`, fontSize: 10, color: color, opacity: 0.6 }}>
             Source: Catchword Branding — naming strategy
@@ -166,16 +161,16 @@ function Toggle({ value, onChange, color }) {
   return (
     <div
       onClick={() => onChange(!value)}
-      style={{ width: 44, height: 24, borderRadius: 12, background: value ? color : '#333', cursor: 'pointer', position: 'relative', transition: 'background 0.2s', flexShrink: 0 }}
+      style={{ width: 44, height: 24, borderRadius: 12, background: value ? color : '#d0d0c8', cursor: 'pointer', position: 'relative', transition: 'background 0.2s', flexShrink: 0 }}
     >
       <div style={{ position: 'absolute', top: 3, left: value ? 23 : 3, width: 18, height: 18, borderRadius: '50%', background: '#fff', transition: 'left 0.2s' }} />
     </div>
   );
 }
 
-const inputStyle = { width: '100%', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.15)', borderRadius: 8, height: 36, padding: '0 12px', color: '#fff', fontSize: 14, fontFamily: 'Inter, sans-serif', boxSizing: 'border-box' };
+const inputStyle = { width: '100%', background: '#ffffff', border: '1px solid rgba(30,35,48,0.15)', borderRadius: 8, height: 36, padding: '0 12px', color: '#1e2330', fontSize: 14, fontFamily: 'Inter, sans-serif', boxSizing: 'border-box' };
 const textareaStyle = { ...inputStyle, height: 'auto', padding: '10px 12px', resize: 'vertical' };
-const labelStyle = { fontSize: 13, fontWeight: 600, color: '#fff', display: 'block', marginBottom: 6 };
+const labelStyle = { fontSize: 13, fontWeight: 600, color: '#1e2330', display: 'block', marginBottom: 6 };
 const fieldWrap = { marginBottom: 28 };
 
 // ── Business B1 fields ──
@@ -218,10 +213,10 @@ function B1Fields({ data, setData, tc, subSegment }) {
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Descriptive names tell you what it is (QuickBooks). Suggestive names hint at benefits (Salesforce). Abstract names mean nothing until you make them mean something (Verizon). Most successful tech companies choose Suggestive — trademarkable + memorable + flexible as you scale. Real examples: Asana (suggestive), Notion (abstract), Basecamp (descriptive)." />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
           {namingStyles.map(s => (
-            <label key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: data.namingStyle === s.id ? `rgba(${tc.rgb},0.08)` : '#141414', border: `0.5px solid ${data.namingStyle === s.id ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, cursor: 'pointer' }}>
+            <label key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: data.namingStyle === s.id ? `rgba(${tc.rgb},0.08)` : '#f8f8f5', border: `0.5px solid ${data.namingStyle === s.id ? tc.color : 'rgba(30,35,48,0.08)'}`, borderRadius: 8, cursor: 'pointer' }}>
               <input type="radio" name="namingStyle" value={s.id} checked={data.namingStyle === s.id} onChange={() => setData({ ...data, namingStyle: s.id })} style={{ accentColor: tc.color }} />
-              <span style={{ color: '#fff', fontSize: 14 }}>{s.label}</span>
-              <span style={{ marginLeft: 'auto', fontSize: 11, color: '#7a7a7a', background: '#222', padding: '2px 8px', borderRadius: 4 }}>{s.example}</span>
+              <span style={{ color: '#1e2330', fontSize: 14 }}>{s.label}</span>
+              <span style={{ marginLeft: 'auto', fontSize: 11, color: '#8a8a82', background: 'rgba(30,35,48,0.08)', padding: '2px 8px', borderRadius: 4 }}>{s.example}</span>
             </label>
           ))}
         </div>
@@ -238,7 +233,7 @@ function B1Fields({ data, setData, tc, subSegment }) {
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Geographic scope affects naming strategy significantly. Local names can use place references and community language. National names need to be culturally neutral across regions. Global names must work across languages — avoid sounds that mean something rude in major languages (like Chevy Nova, which means 'doesn't go' in Spanish)." />
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
           {['Local / Regional', 'National', 'Global / International', 'Not sure yet'].map(scope => (
-            <button key={scope} onClick={() => setData({ ...data, geoScope: scope })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.geoScope === scope ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.geoScope === scope ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{scope}</button>
+            <button key={scope} onClick={() => setData({ ...data, geoScope: scope })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.geoScope === scope ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.geoScope === scope ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{scope}</button>
           ))}
         </div>
       </div>
@@ -255,7 +250,7 @@ function B1Fields({ data, setData, tc, subSegment }) {
           <Toggle value={data.anonymous !== false} onChange={v => setData({ ...data, anonymous: v })} color={tc.color} />
         </div>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="We recommend anonymous for one simple reason: it removes bias. When people don't know who suggested what, they judge ideas on merit, not relationships. In our data, anonymous contests have 23% higher satisfaction with final results. The exception? If your team is small (<5 people) and wants attribution for morale, turn this off. Stat: 78% of contests use anonymous mode." />
-        <div style={{ marginTop: 6, fontSize: 12, color: '#7a7a7a' }}>Stat: 78% of contests use anonymous mode</div>
+        <div style={{ marginTop: 6, fontSize: 12, color: '#8a8a82' }}>Stat: 78% of contests use anonymous mode</div>
       </div>
 
       <div style={fieldWrap}>
@@ -263,7 +258,7 @@ function B1Fields({ data, setData, tc, subSegment }) {
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Sweet spot: 3-5 names per person. Here's why: 1 name = overthinking. Unlimited = quality drops after the first few. 3-5 = people submit their best ideas without overthinking or spamming. Data: Contests with 3-5 limit have 31% more 'quality badge' submissions. Recommended: 3 for small teams (<10), 5 for larger groups." />
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
           {subLimits.map(l => (
-            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '6px 14px', borderRadius: 6, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>
+            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '6px 14px', borderRadius: 6, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>
               {l}
             </button>
           ))}
@@ -312,11 +307,11 @@ function B2Fields({ data, setData, tc }) {
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Branded house (Google) = all products feel like extensions of the parent. House of brands (P&G) = each product is its own world. Endorsed brand = parent name lends credibility but product has its own identity. This affects whether the product name should reference your company at all." />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
           {architectures.map(a => (
-            <label key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: data.architecture === a.id ? `rgba(${tc.rgb},0.08)` : '#141414', border: `0.5px solid ${data.architecture === a.id ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, cursor: 'pointer' }}>
+            <label key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: data.architecture === a.id ? `rgba(${tc.rgb},0.08)` : '#f8f8f5', border: `0.5px solid ${data.architecture === a.id ? tc.color : 'rgba(30,35,48,0.08)'}`, borderRadius: 8, cursor: 'pointer' }}>
               <input type="radio" name="architecture" value={a.id} checked={data.architecture === a.id} onChange={() => setData({ ...data, architecture: a.id })} style={{ accentColor: tc.color }} />
               <div>
-                <div style={{ color: '#fff', fontSize: 14 }}>{a.label}</div>
-                <div style={{ color: '#7a7a7a', fontSize: 12 }}>{a.example}</div>
+                <div style={{ color: '#1e2330', fontSize: 14 }}>{a.label}</div>
+                <div style={{ color: '#8a8a82', fontSize: 12 }}>{a.example}</div>
               </div>
             </label>
           ))}
@@ -341,7 +336,7 @@ function B2Fields({ data, setData, tc }) {
         <label style={labelStyle}>Submission Limit per Person</label>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
           {[1, 2, 3, 5, 10, 'Unlimited'].map(l => (
-            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '6px 14px', borderRadius: 6, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
+            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '6px 14px', borderRadius: 6, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{l}</button>
           ))}
         </div>
       </div>
@@ -376,7 +371,7 @@ function B3Fields({ data, setData, tc }) {
         <label style={labelStyle}>How long will this project run?</label>
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           {['<3 months', '3–12 months', '1–3 years', 'Ongoing / permanent'].map(d => (
-            <button key={d} onClick={() => setData({ ...data, projDuration: d })} style={{ padding: '8px 12px', borderRadius: 8, border: `1px solid ${data.projDuration === d ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.projDuration === d ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 12, cursor: 'pointer' }}>{d}</button>
+            <button key={d} onClick={() => setData({ ...data, projDuration: d })} style={{ padding: '8px 12px', borderRadius: 8, border: `1px solid ${data.projDuration === d ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.projDuration === d ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 12, cursor: 'pointer' }}>{d}</button>
           ))}
         </div>
       </div>
@@ -385,11 +380,11 @@ function B3Fields({ data, setData, tc }) {
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Functional names are clear but forgettable. Inspirational names build morale but can feel forced. Codenames/abstract names (like Google's internal project names) feel cool but need internal adoption. The right choice depends on how much the name needs to communicate outside the core team." />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
           {nameTypes.map(t => (
-            <label key={t.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: data.projNameType === t.id ? `rgba(${tc.rgb},0.08)` : '#141414', border: `0.5px solid ${data.projNameType === t.id ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, cursor: 'pointer' }}>
+            <label key={t.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: data.projNameType === t.id ? `rgba(${tc.rgb},0.08)` : '#f8f8f5', border: `0.5px solid ${data.projNameType === t.id ? tc.color : 'rgba(30,35,48,0.08)'}`, borderRadius: 8, cursor: 'pointer' }}>
               <input type="radio" name="projNameType" value={t.id} checked={data.projNameType === t.id} onChange={() => setData({ ...data, projNameType: t.id })} style={{ accentColor: tc.color }} />
               <div>
-                <div style={{ color: '#fff', fontSize: 14 }}>{t.label}</div>
-                {t.example && <div style={{ color: '#7a7a7a', fontSize: 12 }}>{t.example}</div>}
+                <div style={{ color: '#1e2330', fontSize: 14 }}>{t.label}</div>
+                {t.example && <div style={{ color: '#8a8a82', fontSize: 12 }}>{t.example}</div>}
               </div>
             </label>
           ))}
@@ -399,7 +394,7 @@ function B3Fields({ data, setData, tc }) {
         <label style={labelStyle}>Submission Limit per Person</label>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
           {[1, 2, 3, 5, 10, 'Unlimited'].map(l => (
-            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '6px 14px', borderRadius: 6, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
+            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '6px 14px', borderRadius: 6, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{l}</button>
           ))}
         </div>
       </div>
@@ -437,7 +432,7 @@ function T1Fields({ data, setData, tc }) {
         <label style={labelStyle}>Age group / competitive level</label>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
           {ageGroups.map(g => (
-            <button key={g} onClick={() => setData({ ...data, ageGroup: g })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.ageGroup === g ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.ageGroup === g ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{g}</button>
+            <button key={g} onClick={() => setData({ ...data, ageGroup: g })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.ageGroup === g ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.ageGroup === g ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{g}</button>
           ))}
         </div>
       </div>
@@ -446,7 +441,7 @@ function T1Fields({ data, setData, tc }) {
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Personality drives tone. An intimidating name (Predators, Raptors) sets a different expectation than a pride-based name (Golden State, Pride FC). A fun name works for youth teams but may feel weak at adult competitive level. Be honest about your team's culture." />
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
           {personalities.map(p => (
-            <button key={p} onClick={() => setData({ ...data, personality: p })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.personality === p ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.personality === p ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{p}</button>
+            <button key={p} onClick={() => setData({ ...data, personality: p })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.personality === p ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.personality === p ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{p}</button>
           ))}
         </div>
       </div>
@@ -455,18 +450,18 @@ function T1Fields({ data, setData, tc }) {
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="The Oklahoma City Thunder was chosen from 64,000 public submissions — it won because it's both geographic and a force of nature. The Seattle Kraken broke convention with a creature name. Tell participants which direction to explore — or let them surprise you." />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
           {namingDirections.map(d => (
-            <label key={d.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: data.namingDirection === d.id ? `rgba(${tc.rgb},0.08)` : '#141414', border: `0.5px solid ${data.namingDirection === d.id ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, cursor: 'pointer' }}>
+            <label key={d.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: data.namingDirection === d.id ? `rgba(${tc.rgb},0.08)` : '#f8f8f5', border: `0.5px solid ${data.namingDirection === d.id ? tc.color : 'rgba(30,35,48,0.08)'}`, borderRadius: 8, cursor: 'pointer' }}>
               <input type="radio" name="namingDirection" value={d.id} checked={data.namingDirection === d.id} onChange={() => setData({ ...data, namingDirection: d.id })} style={{ accentColor: tc.color }} />
               <div>
-                <div style={{ color: '#fff', fontSize: 14 }}>{d.label}</div>
-                {d.example && <div style={{ color: '#7a7a7a', fontSize: 12 }}>{d.example}</div>}
+                <div style={{ color: '#1e2330', fontSize: 14 }}>{d.label}</div>
+                {d.example && <div style={{ color: '#8a8a82', fontSize: 12 }}>{d.example}</div>}
               </div>
             </label>
           ))}
         </div>
       </div>
       <div style={fieldWrap}>
-        <label style={labelStyle}>Local connection / geography <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
+        <label style={labelStyle}>Local connection / geography <span style={{ color: '#8a8a82', fontWeight: 400 }}>(optional)</span></label>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Place names ground a team in community. If your team is from a specific city, neighborhood, or region — share it. Local landmarks, rivers, weather patterns, and regional history can all inspire names that feel native to where you play." />
         <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={2} placeholder="City, region, or local landmarks that could inspire the name..." value={data.geography || ''} onChange={e => setData({ ...data, geography: e.target.value })} />
       </div>
@@ -475,19 +470,19 @@ function T1Fields({ data, setData, tc }) {
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="A chantable name changes the game-day experience. 'Let's go Thunder!' works because 'Thunder' is punchy and single-syllable. 'Let's go Riverside Athletic United!' doesn't chant. If this name will be chanted, it needs to be 1-2 syllables and end with energy." />
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           {['Yes — fans will chant it', 'Not important for us', 'Not sure'].map(opt => (
-            <button key={opt} onClick={() => setData({ ...data, chantable: opt })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.chantable === opt ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.chantable === opt ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 12, cursor: 'pointer' }}>{opt}</button>
+            <button key={opt} onClick={() => setData({ ...data, chantable: opt })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.chantable === opt ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.chantable === opt ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 12, cursor: 'pointer' }}>{opt}</button>
           ))}
         </div>
       </div>
       <div style={fieldWrap}>
-        <label style={labelStyle}>Team colors <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
+        <label style={labelStyle}>Team colors <span style={{ color: '#8a8a82', fontWeight: 400 }}>(optional)</span></label>
         <input style={{ ...inputStyle, marginTop: 4 }} placeholder="e.g. Navy and gold, all black, red and white" value={data.teamColors || ''} onChange={e => setData({ ...data, teamColors: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Submission Limit per Person</label>
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           {[3, 5, 'Unlimited'].map(l => (
-            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
+            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{l}</button>
           ))}
         </div>
       </div>
@@ -515,7 +510,7 @@ function T2Fields({ data, setData, tc }) {
         <input style={{ ...inputStyle, marginTop: 8 }} placeholder="e.g. Indie rock, hip-hop, classical, electronic..." value={data.genre || ''} onChange={e => setData({ ...data, genre: e.target.value })} />
       </div>
       <div style={fieldWrap}>
-        <label style={labelStyle}>Band origin story <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
+        <label style={labelStyle}>Band origin story <span style={{ color: '#8a8a82', fontWeight: 400 }}>(optional)</span></label>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Fans always ask 'How did you get your name?' A name with a great story is a permanent conversation starter. Lynyrd Skynyrd = named after a gym teacher. Radiohead = from a Talking Heads song. Foo Fighters = Dave Grohl's WWII UFO reference. Share the origin context so participants can suggest something with meaning." />
         <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={3} placeholder="How did the band form? Any meaningful context, inside references, or stories that could inspire a name?" value={data.originStory || ''} onChange={e => setData({ ...data, originStory: e.target.value })} />
       </div>
@@ -524,9 +519,9 @@ function T2Fields({ data, setData, tc }) {
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Three archetypes dominate great band names. Absurdist/Provocative (Arctic Monkeys, Vampire Weekend, Panic! at the Disco) — memorable for their strangeness. Evocative/Poetic (The National, Fleet Foxes, Portishead) — mood-first, feels like the music. Personal/Story-based (Dave Matthews Band, Lynyrd Skynyrd) — built around identity or lore. Pick one to guide submissions." />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
           {styles.map(s => (
-            <label key={s} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: data.nameStyle === s ? `rgba(${tc.rgb},0.08)` : '#141414', border: `0.5px solid ${data.nameStyle === s ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, cursor: 'pointer' }}>
+            <label key={s} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: data.nameStyle === s ? `rgba(${tc.rgb},0.08)` : '#f8f8f5', border: `0.5px solid ${data.nameStyle === s ? tc.color : 'rgba(30,35,48,0.08)'}`, borderRadius: 8, cursor: 'pointer' }}>
               <input type="radio" name="nameStyle" value={s} checked={data.nameStyle === s} onChange={() => setData({ ...data, nameStyle: s })} style={{ accentColor: tc.color }} />
-              <span style={{ color: '#fff', fontSize: 14 }}>{s}</span>
+              <span style={{ color: '#1e2330', fontSize: 14 }}>{s}</span>
             </label>
           ))}
         </div>
@@ -536,7 +531,7 @@ function T2Fields({ data, setData, tc }) {
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="If this is the legal band name for contracts, merch, and licensing — it needs to be distinctive enough to trademark and simple enough for legal docs. If it's a stage name only, you have more creative freedom. Some bands use a simplified version legally (The Artist Formerly Known As Prince → Prince legally)." />
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           {['Stage name (creative freedom)', 'Legal name (needs trademark-ability)', 'Both same name'].map(opt => (
-            <button key={opt} onClick={() => setData({ ...data, nameType: opt })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.nameType === opt ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.nameType === opt ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 12, cursor: 'pointer' }}>{opt}</button>
+            <button key={opt} onClick={() => setData({ ...data, nameType: opt })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.nameType === opt ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.nameType === opt ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 12, cursor: 'pointer' }}>{opt}</button>
           ))}
         </div>
       </div>
@@ -545,7 +540,7 @@ function T2Fields({ data, setData, tc }) {
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="In the streaming era, a band name that's searchable without 10,000 false positives is a real competitive advantage. 'The The', 'Girls', and '!!!' are famously unsearchable. 'Foo Fighters' returns exactly what you want. Tell participants: do you want a highly distinctive, searchable name, or are you okay with something more common?" />
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           {['Highly distinctive / searchable', 'Okay with some ambiguity', "Don't mind"].map(opt => (
-            <button key={opt} onClick={() => setData({ ...data, searchability: opt })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.searchability === opt ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.searchability === opt ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{opt}</button>
+            <button key={opt} onClick={() => setData({ ...data, searchability: opt })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.searchability === opt ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.searchability === opt ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{opt}</button>
           ))}
         </div>
       </div>
@@ -553,7 +548,7 @@ function T2Fields({ data, setData, tc }) {
         <label style={labelStyle}>Submission limit per person</label>
         <div style={{ display: 'flex', gap: 8 }}>
           {[3, 5, 'Unlimited'].map(l => (
-            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
+            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{l}</button>
           ))}
         </div>
       </div>
@@ -584,7 +579,7 @@ function T3Fields({ data, setData, tc }) {
         <label style={labelStyle}>Primary Platform</label>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
           {platforms.map(p => (
-            <button key={p} onClick={() => setData({ ...data, platform: p })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.platform === p ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.platform === p ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{p}</button>
+            <button key={p} onClick={() => setData({ ...data, platform: p })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.platform === p ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.platform === p ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{p}</button>
           ))}
         </div>
       </div>
@@ -593,12 +588,12 @@ function T3Fields({ data, setData, tc }) {
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Tone affects the name hugely. A comedy podcast can be absurdist. An educational show needs clarity. An interview show might lean on the host's personality. Share the tone so participants name appropriately." />
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
           {tones.map(t => (
-            <button key={t} onClick={() => setData({ ...data, tone: t })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.tone === t ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.tone === t ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{t}</button>
+            <button key={t} onClick={() => setData({ ...data, tone: t })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.tone === t ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.tone === t ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{t}</button>
           ))}
         </div>
       </div>
       <div style={fieldWrap}>
-        <label style={labelStyle}>Existing shows you admire <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(name style reference)</span></label>
+        <label style={labelStyle}>Existing shows you admire <span style={{ color: '#8a8a82', fontWeight: 400 }}>(name style reference)</span></label>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Like competitor names for brands, comparable show names tell participants what naming territory is taken and what style resonates with you. e.g. 'I love how How I Built This is clear, but want something with more personality like Radiolab.'" />
         <input style={{ ...inputStyle, marginTop: 8 }} placeholder="e.g. How I Built This, Lex Fridman, Hidden Brain..." value={data.compShows || ''} onChange={e => setData({ ...data, compShows: e.target.value })} />
       </div>
@@ -606,7 +601,7 @@ function T3Fields({ data, setData, tc }) {
         <label style={labelStyle}>Submission Limit per Person</label>
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           {[3, 5, 'Unlimited'].map(l => (
-            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.submissionLimit === l || (!data.submissionLimit && l === 3) ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.submissionLimit === l || (!data.submissionLimit && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
+            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.submissionLimit === l || (!data.submissionLimit && l === 3) ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.submissionLimit === l || (!data.submissionLimit && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{l}</button>
           ))}
         </div>
       </div>
@@ -631,7 +626,7 @@ function T4Fields({ data, setData, tc }) {
         <label style={labelStyle}>Organization type</label>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
           {orgTypes.map(t => (
-            <button key={t} onClick={() => setData({ ...data, orgType: t })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.orgType === t ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.orgType === t ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{t}</button>
+            <button key={t} onClick={() => setData({ ...data, orgType: t })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.orgType === t ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.orgType === t ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{t}</button>
           ))}
         </div>
       </div>
@@ -650,7 +645,7 @@ function T4Fields({ data, setData, tc }) {
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Some civic names are universally known by acronym: ACLU, YMCA, NAACP. If your organization will likely be shortened to initials, participants should know — so they can suggest names where the acronym is also strong. Ask yourself: will people say the full name or the letters?" />
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           {['Full name (no acronym expected)', 'Acronym likely (initials matter)', 'Not sure'].map(opt => (
-            <button key={opt} onClick={() => setData({ ...data, acronymPref: opt })} style={{ padding: '8px 12px', borderRadius: 8, border: `1px solid ${data.acronymPref === opt ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.acronymPref === opt ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 12, cursor: 'pointer' }}>{opt}</button>
+            <button key={opt} onClick={() => setData({ ...data, acronymPref: opt })} style={{ padding: '8px 12px', borderRadius: 8, border: `1px solid ${data.acronymPref === opt ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.acronymPref === opt ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 12, cursor: 'pointer' }}>{opt}</button>
           ))}
         </div>
       </div>
@@ -659,7 +654,7 @@ function T4Fields({ data, setData, tc }) {
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Community organizations often outlast their founders. A name should work for 50+ years. Avoid trend-driven language, technology references, or anything that feels 'of this moment.' Participants should know: is this meant to be timeless?" />
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           {['5-10 years', '10-25 years', '25+ years / permanent'].map(l => (
-            <button key={l} onClick={() => setData({ ...data, longevity: l })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.longevity === l ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.longevity === l ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
+            <button key={l} onClick={() => setData({ ...data, longevity: l })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.longevity === l ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.longevity === l ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{l}</button>
           ))}
         </div>
       </div>
@@ -667,7 +662,7 @@ function T4Fields({ data, setData, tc }) {
         <label style={labelStyle}>Submission Limit per Person</label>
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           {[3, 5, 'Unlimited'].map(l => (
-            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.submissionLimit === l || (!data.submissionLimit && l === 3) ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.submissionLimit === l || (!data.submissionLimit && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
+            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.submissionLimit === l || (!data.submissionLimit && l === 3) ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.submissionLimit === l || (!data.submissionLimit && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{l}</button>
           ))}
         </div>
       </div>
@@ -697,12 +692,12 @@ function T6Fields({ data, setData, tc }) {
         <label style={labelStyle}>Group vibe / personality</label>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
           {vibes.map(v => (
-            <button key={v} onClick={() => setData({ ...data, vibe: v })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.vibe === v ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.vibe === v ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{v}</button>
+            <button key={v} onClick={() => setData({ ...data, vibe: v })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.vibe === v ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.vibe === v ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{v}</button>
           ))}
         </div>
       </div>
       <div style={fieldWrap}>
-        <label style={labelStyle}>Any shared history or inside references? <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
+        <label style={labelStyle}>Any shared history or inside references? <span style={{ color: '#8a8a82', fontWeight: 400 }}>(optional)</span></label>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Group names with personal meaning create stronger belonging. If there's a shared joke, a founding story, or a place that matters — share it. Participants who know the group well might suggest something that hits differently." />
         <input style={{ ...inputStyle, marginTop: 8 }} placeholder="e.g. We all met at a conference in Berlin, our group chat is named after an inside joke..." value={data.history || ''} onChange={e => setData({ ...data, history: e.target.value })} />
       </div>
@@ -710,7 +705,7 @@ function T6Fields({ data, setData, tc }) {
         <label style={labelStyle}>Submission Limit per Person</label>
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           {[3, 5, 'Unlimited'].map(l => (
-            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.submissionLimit === l || (!data.submissionLimit && l === 3) ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.submissionLimit === l || (!data.submissionLimit && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
+            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.submissionLimit === l || (!data.submissionLimit && l === 3) ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.submissionLimit === l || (!data.submissionLimit && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{l}</button>
           ))}
         </div>
       </div>
@@ -748,7 +743,7 @@ function T5Fields({ data, setData, tc }) {
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Competitive teams need names that convey threat. Casual groups can lean into personality and in-jokes. A name like 'Ctrl+Alt+Delete' works for a casual squad but wouldn't intimidate at a tournament." />
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           {['Tournament / Competitive', 'Casual / Social', 'Both — we do both'].map(c => (
-            <button key={c} onClick={() => setData({ ...data, competitiveLevel: c })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.competitiveLevel === c ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.competitiveLevel === c ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{c}</button>
+            <button key={c} onClick={() => setData({ ...data, competitiveLevel: c })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.competitiveLevel === c ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.competitiveLevel === c ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{c}</button>
           ))}
         </div>
       </div>
@@ -756,7 +751,7 @@ function T5Fields({ data, setData, tc }) {
         <label style={labelStyle}>Vibe</label>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
           {vibes.map(v => (
-            <button key={v} onClick={() => setData({ ...data, vibe: v })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.vibe === v ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.vibe === v ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{v}</button>
+            <button key={v} onClick={() => setData({ ...data, vibe: v })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.vibe === v ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.vibe === v ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{v}</button>
           ))}
         </div>
       </div>
@@ -764,7 +759,7 @@ function T5Fields({ data, setData, tc }) {
         <label style={labelStyle}>Primary platform</label>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
           {platforms.map(p => (
-            <button key={p} onClick={() => setData({ ...data, platform: p })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.platform === p ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.platform === p ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{p}</button>
+            <button key={p} onClick={() => setData({ ...data, platform: p })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.platform === p ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.platform === p ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{p}</button>
           ))}
         </div>
       </div>
@@ -773,25 +768,25 @@ function T5Fields({ data, setData, tc }) {
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Esports teams are often known by tag (FaZe) or full name (FaZe Clan). Some teams use 'Gaming' or 'Esports' as a suffix when entering tournaments. Tell participants what structure you want — especially if the tag (3-5 letters shown in-game) matters." />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
           {tagStyles.map(s => (
-            <label key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: data.tagStyle === s.id ? `rgba(${tc.rgb},0.08)` : '#141414', border: `0.5px solid ${data.tagStyle === s.id ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, cursor: 'pointer' }}>
+            <label key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: data.tagStyle === s.id ? `rgba(${tc.rgb},0.08)` : '#f8f8f5', border: `0.5px solid ${data.tagStyle === s.id ? tc.color : 'rgba(30,35,48,0.08)'}`, borderRadius: 8, cursor: 'pointer' }}>
               <input type="radio" name="tagStyle" value={s.id} checked={data.tagStyle === s.id} onChange={() => setData({ ...data, tagStyle: s.id })} style={{ accentColor: tc.color }} />
               <div>
-                <div style={{ color: '#fff', fontSize: 14 }}>{s.label}</div>
-                {s.example && <div style={{ color: '#7a7a7a', fontSize: 12 }}>{s.example}</div>}
+                <div style={{ color: '#1e2330', fontSize: 14 }}>{s.label}</div>
+                {s.example && <div style={{ color: '#8a8a82', fontSize: 12 }}>{s.example}</div>}
               </div>
             </label>
           ))}
         </div>
       </div>
       <div style={fieldWrap}>
-        <label style={labelStyle}>Any inside references or crew history? <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
+        <label style={labelStyle}>Any inside references or crew history? <span style={{ color: '#8a8a82', fontWeight: 400 }}>(optional)</span></label>
         <input style={inputStyle} placeholder="e.g. We all went to the same school, our squad name started as a joke..." value={data.crewHistory || ''} onChange={e => setData({ ...data, crewHistory: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Submission Limit per Person</label>
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           {[3, 5, 'Unlimited'].map(l => (
-            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
+            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{l}</button>
           ))}
         </div>
       </div>
@@ -814,7 +809,7 @@ function P1Fields({ data, setData, tc }) {
   return (
     <div>
       <div style={fieldWrap}>
-        <label style={labelStyle}>When is your baby due? <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
+        <label style={labelStyle}>When is your baby due? <span style={{ color: '#8a8a82', fontWeight: 400 }}>(optional)</span></label>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="If already born, enter birth date — we'll generate a 'Welcome to the world' certificate with the actual birth date." />
         <input type="date" style={{ ...inputStyle, marginTop: 8 }} value={data.dueDate || ''} onChange={e => setData({ ...data, dueDate: e.target.value })} />
       </div>
@@ -823,17 +818,17 @@ function P1Fields({ data, setData, tc }) {
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="If surprise, people can suggest both boy and girl names. You pick after baby arrives. We'll keep all submissions organized." />
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
           {genders.map(g => (
-            <button key={g} onClick={() => setData({ ...data, gender: g })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.gender === g ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.gender === g ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{g}</button>
+            <button key={g} onClick={() => setData({ ...data, gender: g })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.gender === g ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.gender === g ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{g}</button>
           ))}
         </div>
       </div>
       <div style={fieldWrap}>
-        <label style={labelStyle}>Last name <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional — helps test name flow)</span></label>
+        <label style={labelStyle}>Last name <span style={{ color: '#8a8a82', fontWeight: 400 }}>(optional — helps test name flow)</span></label>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Testing 'Emma Chen' vs 'Emma Rodriguez' vs 'Emma O'Brien' changes what works. A long last name pairs better with a short first name. A short last name can support something longer. Sharing this helps participants think about the full name." />
         <input style={{ ...inputStyle, marginTop: 8 }} placeholder="e.g. Johnson, Park, Martinez (your last name)" value={data.lastName || ''} onChange={e => setData({ ...data, lastName: e.target.value })} />
       </div>
       <div style={fieldWrap}>
-        <label style={labelStyle}>Cultural or heritage context <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
+        <label style={labelStyle}>Cultural or heritage context <span style={{ color: '#8a8a82', fontWeight: 400 }}>(optional)</span></label>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Names carry cultural weight. Sharing heritage helps participants suggest names that honor your roots — or names that work across cultures if that's important to you. It also helps avoid names that mean something unfortunate in languages you're connected to." />
         <input style={{ ...inputStyle, marginTop: 8 }} placeholder="e.g. Irish and Japanese heritage, prefer names that work in both cultures" value={data.heritage || ''} onChange={e => setData({ ...data, heritage: e.target.value })} />
       </div>
@@ -842,7 +837,7 @@ function P1Fields({ data, setData, tc }) {
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Short names (Ava, Max, Zoe) are easy to say and remember — great call names. Longer formal names (Alexander, Genevieve) have more nicknames built in. Think about what they'll be called at school, at work, and at 70." />
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
           {lengthPrefs.map(l => (
-            <button key={l} onClick={() => setData({ ...data, lengthPref: l })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.lengthPref === l ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.lengthPref === l ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
+            <button key={l} onClick={() => setData({ ...data, lengthPref: l })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.lengthPref === l ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.lengthPref === l ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{l}</button>
           ))}
         </div>
       </div>
@@ -851,21 +846,21 @@ function P1Fields({ data, setData, tc }) {
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Some parents want only the full name used (no 'Rob' for Robert, no 'Liz' for Elizabeth). Others want a formal name with a built-in nickname. A few want something that can't be shortened. This shapes which names participants should suggest." />
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
           {['Yes — should have a natural nickname', 'No — use the full name only', 'Flexible either way'].map(opt => (
-            <button key={opt} onClick={() => setData({ ...data, nicknamePreference: opt })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.nicknamePreference === opt ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.nicknamePreference === opt ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 12, cursor: 'pointer' }}>{opt}</button>
+            <button key={opt} onClick={() => setData({ ...data, nicknamePreference: opt })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.nicknamePreference === opt ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.nicknamePreference === opt ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 12, cursor: 'pointer' }}>{opt}</button>
           ))}
         </div>
       </div>
       <div style={fieldWrap}>
-        <label style={labelStyle}>Initials to avoid <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
+        <label style={labelStyle}>Initials to avoid <span style={{ color: '#8a8a82', fontWeight: 400 }}>(optional)</span></label>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="The initials test. 'ASS', 'DIE', 'FAT' — people have been caught off guard. Participants who know the last name can avoid unfortunate combinations. Share if there are initial sequences to avoid." />
         <input style={{ ...inputStyle, marginTop: 8 }} placeholder="e.g. Avoid initials 'E.D.' or anything that spells something unfortunate" value={data.avoidInitials || ''} onChange={e => setData({ ...data, avoidInitials: e.target.value })} />
       </div>
       <div style={fieldWrap}>
-        <label style={labelStyle}>Family naming traditions <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
+        <label style={labelStyle}>Family naming traditions <span style={{ color: '#8a8a82', fontWeight: 400 }}>(optional)</span></label>
         <input style={{ ...inputStyle, marginTop: 4 }} placeholder="e.g. First child always has the father's name as middle name, names starting with 'M' for tradition..." value={data.traditions || ''} onChange={e => setData({ ...data, traditions: e.target.value })} />
       </div>
       <div style={fieldWrap}>
-        <label style={labelStyle}>Any names to avoid? <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
+        <label style={labelStyle}>Any names to avoid? <span style={{ color: '#8a8a82', fontWeight: 400 }}>(optional)</span></label>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Family names that didn't work out? Names of exes? We won't show these to voters — they stay private between you and the platform." />
         <input style={{ ...inputStyle, marginTop: 8 }} placeholder="Ex: No names starting with K (too many cousins already), no 'Jennifer'" value={data.avoidNames || ''} onChange={e => setData({ ...data, avoidNames: e.target.value })} />
       </div>
@@ -873,7 +868,7 @@ function P1Fields({ data, setData, tc }) {
         <label style={labelStyle}>Submission Limit per Person</label>
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           {[3, 5, 'Unlimited'].map(l => (
-            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
+            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{l}</button>
           ))}
         </div>
       </div>
@@ -900,17 +895,17 @@ function P2Fields({ data, setData, tc }) {
         <label style={labelStyle}>What kind of pet?</label>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
           {pets.map(p => (
-            <button key={p} onClick={() => setData({ ...data, petType: p })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.petType === p ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.petType === p ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{p}</button>
+            <button key={p} onClick={() => setData({ ...data, petType: p })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.petType === p ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.petType === p ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{p}</button>
           ))}
         </div>
       </div>
       <div style={fieldWrap}>
-        <label style={labelStyle}>Breed or description <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
+        <label style={labelStyle}>Breed or description <span style={{ color: '#8a8a82', fontWeight: 400 }}>(optional)</span></label>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Breed shapes the name archetype. A Chihuahua named 'Bruno' is funny. A Great Dane named 'Peanut' is funnier. A Siamese cat named 'Miso' fits perfectly. Participants who know the breed or look can suggest names that match the vibe." />
         <input style={{ ...inputStyle, marginTop: 8 }} placeholder="e.g. Golden Retriever, orange tabby, blue-eyed Husky, tiny black guinea pig..." value={data.breed || ''} onChange={e => setData({ ...data, breed: e.target.value })} />
       </div>
       <div style={fieldWrap}>
-        <label style={labelStyle}>Describe their personality <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
+        <label style={labelStyle}>Describe their personality <span style={{ color: '#8a8a82', fontWeight: 400 }}>(optional)</span></label>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="The name should fit the animal. 'Chaos' works for a hyperactive dog. 'Professor' works for a dignified cat. Share what you've noticed — their quirks, habits, or early personality signals — and let participants match the name to the animal." />
         <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={2} placeholder="'Chaotic gremlin energy' or 'Regal and aloof' or 'Timid but playful once comfortable'" value={data.petPersonality || ''} onChange={e => setData({ ...data, petPersonality: e.target.value })} />
       </div>
@@ -919,7 +914,7 @@ function P2Fields({ data, setData, tc }) {
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="The call name principle: dogs especially respond best to names ending in a vowel sound (Bella, Benny, Luna) because they're acoustically distinct. Short names are easier to shout across a park. Longer names work when you mostly use them at home." />
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
           {lengthPrefs.map(l => (
-            <button key={l} onClick={() => setData({ ...data, callNamePref: l })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.callNamePref === l ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.callNamePref === l ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
+            <button key={l} onClick={() => setData({ ...data, callNamePref: l })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.callNamePref === l ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.callNamePref === l ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{l}</button>
           ))}
         </div>
       </div>
@@ -927,19 +922,19 @@ function P2Fields({ data, setData, tc }) {
         <label style={labelStyle}>Tone / naming style</label>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
           {tonePrefs.map(t => (
-            <button key={t} onClick={() => setData({ ...data, nameTone: t })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.nameTone === t ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.nameTone === t ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{t}</button>
+            <button key={t} onClick={() => setData({ ...data, nameTone: t })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.nameTone === t ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.nameTone === t ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{t}</button>
           ))}
         </div>
       </div>
       <div style={fieldWrap}>
-        <label style={labelStyle}>Any names to avoid? <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
+        <label style={labelStyle}>Any names to avoid? <span style={{ color: '#8a8a82', fontWeight: 400 }}>(optional)</span></label>
         <input style={{ ...inputStyle, marginTop: 4 }} placeholder="Names already taken by other pets, names that sound like 'no', etc." value={data.avoidNames || ''} onChange={e => setData({ ...data, avoidNames: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Submission Limit per Person</label>
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           {[3, 5, 'Unlimited'].map(l => (
-            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
+            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{l}</button>
           ))}
         </div>
       </div>
@@ -966,7 +961,7 @@ function P3Fields({ data, setData, tc }) {
         <label style={labelStyle}>What are you naming?</label>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
           {namingTargets.map(t => (
-            <button key={t} onClick={() => setData({ ...data, namingTarget: t })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.namingTarget === t ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.namingTarget === t ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{t}</button>
+            <button key={t} onClick={() => setData({ ...data, namingTarget: t })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.namingTarget === t ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.namingTarget === t ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{t}</button>
           ))}
         </div>
       </div>
@@ -976,7 +971,7 @@ function P3Fields({ data, setData, tc }) {
         <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={3} placeholder="e.g. A 1920s craftsman bungalow with a big porch, always full of people on summer evenings..." value={data.propDesc || ''} onChange={e => setData({ ...data, propDesc: e.target.value })} />
       </div>
       <div style={fieldWrap}>
-        <label style={labelStyle}>Location / environment <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
+        <label style={labelStyle}>Location / environment <span style={{ color: '#8a8a82', fontWeight: 400 }}>(optional)</span></label>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Local geography, nature, or architectural style can inspire names that feel native to the place. A cabin in the Adirondacks has different naming territory than a beach house in the Florida Keys. Share where it is — or what's around it." />
         <input style={{ ...inputStyle, marginTop: 8 }} placeholder="e.g. Pacific Northwest lakefront, New England colonial, urban brownstone in Brooklyn..." value={data.location || ''} onChange={e => setData({ ...data, location: e.target.value })} />
       </div>
@@ -984,7 +979,7 @@ function P3Fields({ data, setData, tc }) {
         <label style={labelStyle}>Vibe / personality</label>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
           {vibes.map(v => (
-            <button key={v} onClick={() => setData({ ...data, vibe: v })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.vibe === v ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.vibe === v ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{v}</button>
+            <button key={v} onClick={() => setData({ ...data, vibe: v })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.vibe === v ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.vibe === v ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{v}</button>
           ))}
         </div>
       </div>
@@ -993,7 +988,7 @@ function P3Fields({ data, setData, tc }) {
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Names that will be engraved or displayed need to look good in print — not just sound good spoken. Short, elegant names work best on plaques. Boats in particular display their name on the hull, which means it needs to look right at a distance and read well in a serif or display font." />
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
           {['Yes — will be on a sign/plaque', 'Just for us, informal use', 'Not decided yet'].map(opt => (
-            <button key={opt} onClick={() => setData({ ...data, signDisplay: opt })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.signDisplay === opt ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.signDisplay === opt ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{opt}</button>
+            <button key={opt} onClick={() => setData({ ...data, signDisplay: opt })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.signDisplay === opt ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.signDisplay === opt ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{opt}</button>
           ))}
         </div>
       </div>
@@ -1001,19 +996,19 @@ function P3Fields({ data, setData, tc }) {
         <label style={labelStyle}>Language preference</label>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
           {languages.map(l => (
-            <button key={l} onClick={() => setData({ ...data, languagePref: l })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.languagePref === l ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.languagePref === l ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
+            <button key={l} onClick={() => setData({ ...data, languagePref: l })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.languagePref === l ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.languagePref === l ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{l}</button>
           ))}
         </div>
       </div>
       <div style={fieldWrap}>
-        <label style={labelStyle}>Names or words to avoid <span style={{ color: '#7a7a7a', fontWeight: 400 }}>(optional)</span></label>
+        <label style={labelStyle}>Names or words to avoid <span style={{ color: '#8a8a82', fontWeight: 400 }}>(optional)</span></label>
         <input style={{ ...inputStyle, marginTop: 4 }} placeholder="e.g. Nothing too generic, avoid 'haven' or 'hideaway' — too overused" value={data.avoidNames || ''} onChange={e => setData({ ...data, avoidNames: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Submission Limit per Person</label>
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           {[3, 5, 'Unlimited'].map(l => (
-            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
+            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{l}</button>
           ))}
         </div>
       </div>
@@ -1048,7 +1043,7 @@ function GenericFields({ data, setData, tc }) {
         <label style={labelStyle}>Submission Limit per Person</label>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
           {[1, 2, 3, 5, 10, 'Unlimited'].map(l => (
-            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '6px 14px', borderRadius: 6, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(255,255,255,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>{l}</button>
+            <button key={l} onClick={() => setData({ ...data, submissionLimit: l })} style={{ padding: '6px 14px', borderRadius: 6, border: `1px solid ${data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.submissionLimit === l || (data.submissionLimit === undefined && l === 3) ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{l}</button>
           ))}
         </div>
       </div>
@@ -1094,18 +1089,18 @@ function VotingMethodField({ data, setData, tc }) {
   };
 
   return (
-    <div style={{ marginTop: 32, paddingTop: 24, borderTop: '0.5px solid rgba(255,255,255,0.07)' }}>
+    <div style={{ marginTop: 32, paddingTop: 24, borderTop: '0.5px solid rgba(30,35,48,0.08)' }}>
       <label style={{ ...labelStyle, marginBottom: 6 }}>Voting Method</label>
       <TipRow color={tc.color} rgb={tc.rgb} tipContent="Simple Poll: Fast and familiar. Ranked Choice: Shows true consensus. Multi-Criteria: Most rigorous — score on 5 dimensions. Pairwise: Head-to-head matchups. Weighted: Assign different vote weights to key stakeholders (e.g. founder's vote counts 3x).">
         Which method is best for me?
       </TipRow>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
         {VOTING_METHODS.map(m => (
-          <label key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: data.votingMethod === m.id ? `rgba(${tc.rgb},0.08)` : '#141414', border: `0.5px solid ${data.votingMethod === m.id ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, cursor: 'pointer', position: 'relative' }}>
+          <label key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: data.votingMethod === m.id ? `rgba(${tc.rgb},0.08)` : '#f8f8f5', border: `0.5px solid ${data.votingMethod === m.id ? tc.color : 'rgba(30,35,48,0.08)'}`, borderRadius: 8, cursor: 'pointer', position: 'relative' }}>
             <input type="radio" name="votingMethodShared" value={m.id} checked={data.votingMethod === m.id} onChange={() => setData({ ...data, votingMethod: m.id })} style={{ accentColor: tc.color }} />
             <div>
-              <div style={{ color: '#fff', fontSize: 14 }}>{m.label}</div>
-              <div style={{ color: '#7a7a7a', fontSize: 12 }}>{m.desc}</div>
+              <div style={{ color: '#1e2330', fontSize: 14 }}>{m.label}</div>
+              <div style={{ color: '#8a8a82', fontSize: 12 }}>{m.desc}</div>
             </div>
             {m.recommended && <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 700, color: tc.color, border: `1px solid ${tc.color}`, borderRadius: 4, padding: '2px 6px' }}>RECOMMENDED</span>}
           </label>
@@ -1113,9 +1108,9 @@ function VotingMethodField({ data, setData, tc }) {
       </div>
 
       {data.votingMethod === 'weighted' && (
-        <div style={{ marginTop: 16, padding: '16px', background: '#141414', border: `0.5px solid rgba(${tc.rgb},0.2)`, borderRadius: 10 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 4 }}>Weighted Voters</div>
-          <div style={{ fontSize: 12, color: '#7a7a7a', marginBottom: 14 }}>Add people whose votes should count more. Default weight is 1x for everyone else.</div>
+        <div style={{ marginTop: 16, padding: '16px', background: '#f8f8f5', border: `0.5px solid rgba(${tc.rgb},0.2)`, borderRadius: 10 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#1e2330', marginBottom: 4 }}>Weighted Voters</div>
+          <div style={{ fontSize: 12, color: '#8a8a82', marginBottom: 14 }}>Add people whose votes should count more. Default weight is 1x for everyone else.</div>
           {weightedVoters.map((v, i) => (
             <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'center' }}>
               <input style={{ ...inputStyle, flex: 1 }} placeholder="Email address" value={v.email} onChange={e => handleVoterChange(i, 'email', e.target.value)} />
@@ -1141,11 +1136,11 @@ function VotingMethodField({ data, setData, tc }) {
 // ── Custom Requirements (shared across all segments) ──
 function CustomRequirementsField({ data, setData, tc }) {
   return (
-    <div style={{ marginTop: 32, paddingTop: 24, borderTop: '0.5px solid rgba(255,255,255,0.07)' }}>
+    <div style={{ marginTop: 32, paddingTop: 24, borderTop: '0.5px solid rgba(30,35,48,0.08)' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: data.customFieldEnabled ? 14 : 0 }}>
         <div>
           <label style={{ ...labelStyle, marginBottom: 2 }}>Custom Requirements</label>
-          <div style={{ fontSize: 12, color: '#7a7a7a' }}>Add your own criteria not covered above</div>
+          <div style={{ fontSize: 12, color: '#8a8a82' }}>Add your own criteria not covered above</div>
         </div>
         <Toggle value={!!data.customFieldEnabled} onChange={v => setData({ ...data, customFieldEnabled: v })} color={tc.color} />
       </div>
@@ -1187,13 +1182,13 @@ function BrandingField({ data, setData, tc, group, subSegment }) {
   };
 
   return (
-    <div style={{ marginTop: 32, paddingTop: 24, borderTop: '0.5px solid rgba(255,255,255,0.07)' }}>
+    <div style={{ marginTop: 32, paddingTop: 24, borderTop: '0.5px solid rgba(30,35,48,0.08)' }}>
       {isBizOrTeam && (
         <>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: data.brandingEnabled ? 14 : 0 }}>
             <div>
               <label style={{ ...labelStyle, marginBottom: 2 }}>Custom Branding</label>
-              <div style={{ fontSize: 12, color: '#7a7a7a' }}>Add your logo and brand colors for PDF export</div>
+              <div style={{ fontSize: 12, color: '#8a8a82' }}>Add your logo and brand colors for PDF export</div>
             </div>
             <Toggle value={!!data.brandingEnabled} onChange={v => setData({ ...data, brandingEnabled: v })} color={tc.color} />
           </div>
@@ -1203,9 +1198,9 @@ function BrandingField({ data, setData, tc, group, subSegment }) {
                 <label style={{ ...labelStyle, fontSize: 12 }}>Logo</label>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   {data.brandingLogo ? (
-                    <img src={data.brandingLogo} alt="Logo" style={{ width: 48, height: 48, objectFit: 'contain', borderRadius: 6, background: '#111', border: '0.5px solid rgba(255,255,255,0.1)' }} />
+                    <img src={data.brandingLogo} alt="Logo" style={{ width: 48, height: 48, objectFit: 'contain', borderRadius: 6, background: '#f3f3f1', border: '0.5px solid rgba(30,35,48,0.1)' }} />
                   ) : (
-                    <div style={{ width: 48, height: 48, borderRadius: 6, background: '#111', border: '1px dashed rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, color: '#555' }}>+</div>
+                    <div style={{ width: 48, height: 48, borderRadius: 6, background: '#f3f3f1', border: '1px dashed rgba(30,35,48,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, color: '#8a8a82' }}>+</div>
                   )}
                   <label style={{ padding: '6px 14px', borderRadius: 6, border: `1px solid rgba(${tc.rgb},0.3)`, background: 'transparent', color: tc.color, fontSize: 12, cursor: 'pointer' }}>
                     {data.brandingLogo ? 'Change' : 'Upload'}
@@ -1217,15 +1212,15 @@ function BrandingField({ data, setData, tc, group, subSegment }) {
                 <div style={{ flex: 1 }}>
                   <label style={{ ...labelStyle, fontSize: 12 }}>Primary color</label>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <input type="color" value={data.brandingPrimaryColor || '#eaef09'} onChange={e => setData({ ...data, brandingPrimaryColor: e.target.value })} style={{ width: 36, height: 36, border: 'none', borderRadius: 6, cursor: 'pointer', background: 'transparent' }} />
-                    <input style={{ ...inputStyle, flex: 1 }} value={data.brandingPrimaryColor || '#eaef09'} onChange={e => setData({ ...data, brandingPrimaryColor: e.target.value })} placeholder="#eaef09" />
+                    <input type="color" value={data.brandingPrimaryColor || tc.color} onChange={e => setData({ ...data, brandingPrimaryColor: e.target.value })} style={{ width: 36, height: 36, border: 'none', borderRadius: 6, cursor: 'pointer', background: 'transparent' }} />
+                    <input style={{ ...inputStyle, flex: 1 }} value={data.brandingPrimaryColor || tc.color} onChange={e => setData({ ...data, brandingPrimaryColor: e.target.value })} placeholder={tc.color} />
                   </div>
                 </div>
                 <div style={{ flex: 1 }}>
                   <label style={{ ...labelStyle, fontSize: 12 }}>Secondary color</label>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <input type="color" value={data.brandingSecondaryColor || '#141414'} onChange={e => setData({ ...data, brandingSecondaryColor: e.target.value })} style={{ width: 36, height: 36, border: 'none', borderRadius: 6, cursor: 'pointer', background: 'transparent' }} />
-                    <input style={{ ...inputStyle, flex: 1 }} value={data.brandingSecondaryColor || '#141414'} onChange={e => setData({ ...data, brandingSecondaryColor: e.target.value })} placeholder="#141414" />
+                    <input type="color" value={data.brandingSecondaryColor || '#1e2330'} onChange={e => setData({ ...data, brandingSecondaryColor: e.target.value })} style={{ width: 36, height: 36, border: 'none', borderRadius: 6, cursor: 'pointer', background: 'transparent' }} />
+                    <input style={{ ...inputStyle, flex: 1 }} value={data.brandingSecondaryColor || '#1e2330'} onChange={e => setData({ ...data, brandingSecondaryColor: e.target.value })} placeholder="#1e2330" />
                   </div>
                 </div>
               </div>
@@ -1239,12 +1234,12 @@ function BrandingField({ data, setData, tc, group, subSegment }) {
       {isPersonal && (
         <>
           <label style={{ ...labelStyle, marginBottom: 2 }}>Add a photo</label>
-          <div style={{ fontSize: 12, color: '#7a7a7a', marginBottom: 12 }}>{photoLabels[subSegment] || 'Upload a photo for your contest'}</div>
+          <div style={{ fontSize: 12, color: '#8a8a82', marginBottom: 12 }}>{photoLabels[subSegment] || 'Upload a photo for your contest'}</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {data.photoUrl ? (
-              <img src={data.photoUrl} alt="Contest photo" style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8, border: '0.5px solid rgba(255,255,255,0.1)' }} />
+              <img src={data.photoUrl} alt="Contest photo" style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8, border: '0.5px solid rgba(30,35,48,0.1)' }} />
             ) : (
-              <div style={{ width: 64, height: 64, borderRadius: 8, background: '#111', border: '1px dashed rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, color: '#555' }}>+</div>
+              <div style={{ width: 64, height: 64, borderRadius: 8, background: '#f3f3f1', border: '1px dashed rgba(30,35,48,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, color: '#8a8a82' }}>+</div>
             )}
             <label style={{ padding: '6px 14px', borderRadius: 6, border: `1px solid rgba(${tc.rgb},0.3)`, background: 'transparent', color: tc.color, fontSize: 12, cursor: 'pointer' }}>
               {data.photoUrl ? 'Change photo' : 'Upload photo'}
@@ -1263,15 +1258,15 @@ function PrizeField({ data, setData, tc }) {
   const isVotingOnly = contestType === 'voting_only';
 
   return (
-    <div style={{ marginTop: 32, paddingTop: 24, borderTop: '0.5px solid rgba(255,255,255,0.07)' }}>
-      <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 16 }}>Prizes</div>
+    <div style={{ marginTop: 32, paddingTop: 24, borderTop: '0.5px solid rgba(30,35,48,0.08)' }}>
+      <div style={{ fontSize: 15, fontWeight: 700, color: '#1e2330', marginBottom: 16 }}>Prizes</div>
 
       {!isVotingOnly && (
         <div style={{ marginBottom: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: data.submitterPrizeEnabled ? 14 : 0 }}>
             <div>
               <label style={{ ...labelStyle, marginBottom: 2 }}>Submitter Prize</label>
-              <div style={{ fontSize: 12, color: '#7a7a7a' }}>Reward the person who submitted the winning name</div>
+              <div style={{ fontSize: 12, color: '#8a8a82' }}>Reward the person who submitted the winning name</div>
             </div>
             <Toggle value={!!data.submitterPrizeEnabled} onChange={v => setData({ ...data, submitterPrizeEnabled: v })} color={tc.color} />
           </div>
@@ -1288,7 +1283,7 @@ function PrizeField({ data, setData, tc }) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: data.voterPrizeEnabled ? 14 : 0 }}>
           <div>
             <label style={{ ...labelStyle, marginBottom: 2 }}>Voter Prize</label>
-            <div style={{ fontSize: 12, color: '#7a7a7a' }}>Award a random voter to encourage participation</div>
+            <div style={{ fontSize: 12, color: '#8a8a82' }}>Award a random voter to encourage participation</div>
           </div>
           <Toggle value={!!data.voterPrizeEnabled} onChange={v => setData({ ...data, voterPrizeEnabled: v })} color={tc.color} />
         </div>
@@ -1689,17 +1684,17 @@ const CREATOR_ARTICLES = {
   ],
 };
 
-function ArticleCallout({ callout }) {
+function ArticleCallout({ callout, tc }) {
   const styles = {
-    insight: { bg: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.2)', label: 'Insight', labelColor: '#8B5CF6' },
-    example: { bg: 'rgba(234,239,9,0.06)', border: '1px solid rgba(234,239,9,0.2)', label: 'Real Example', labelColor: '#eaef09' },
+    insight: { bg: `rgba(${tc.rgb},0.06)`, border: `1px solid rgba(${tc.rgb},0.2)`, label: 'Insight', labelColor: tc.color },
+    example: { bg: `rgba(${tc.rgb},0.06)`, border: `1px solid rgba(${tc.rgb},0.2)`, label: 'Real Example', labelColor: tc.color },
     warning: { bg: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', label: 'Warning', labelColor: '#ef4444' },
   };
   const s = styles[callout.type] || styles.insight;
   return (
     <div style={{ padding: '12px 14px', background: s.bg, border: s.border, borderRadius: 8, marginTop: 16 }}>
       <div style={{ fontSize: 10, fontWeight: 700, color: s.labelColor, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{s.label}</div>
-      <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.6 }}>{callout.text}</div>
+      <div style={{ fontSize: 13, color: '#676b5f', lineHeight: 1.6 }}>{callout.text}</div>
     </div>
   );
 }
@@ -1718,15 +1713,15 @@ function CreatorArticlesScreen({ subSegment, tc, onContinue }) {
         <div style={{ fontSize: 11, fontWeight: 700, color: tc.color, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>
           Touchpoint 2 · Creator Education · {readCount}/{articles.length} read
         </div>
-        <h1 style={{ fontFamily: 'Inter, sans-serif', fontSize: 26, color: '#fff', marginBottom: 8, lineHeight: 1.3 }}>
+        <h1 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 26, color: '#1e2330', marginBottom: 8, lineHeight: 1.3 }}>
           Before You Build: The Naming Strategy Guides
         </h1>
-        <p style={{ fontSize: 14, color: '#7a7a7a', lineHeight: 1.6 }}>
+        <p style={{ fontSize: 14, color: '#8a8a82', lineHeight: 1.6 }}>
           Read these before filling out your brief. The more you understand about naming strategy, the better your brief — and the better the names participants suggest.
         </p>
       </div>
 
-      <div style={{ height: 3, background: '#222', borderRadius: 3, marginBottom: 24 }}>
+      <div style={{ height: 3, background: 'rgba(30,35,48,0.08)', borderRadius: 3, marginBottom: 24 }}>
         <div style={{ height: '100%', width: `${articles.length ? (readCount / articles.length) * 100 : 0}%`, background: tc.color, borderRadius: 3, transition: 'width 0.4s' }} />
       </div>
 
@@ -1735,27 +1730,27 @@ function CreatorArticlesScreen({ subSegment, tc, onContinue }) {
           const isOpen = expanded === article.id;
           const isDone = read[article.id];
           return (
-            <div key={article.id} style={{ background: isDone ? `rgba(${tc.rgb},0.04)` : '#1a1a1a', border: `0.5px solid ${isDone ? `rgba(${tc.rgb},0.3)` : 'rgba(255,255,255,0.08)'}`, borderRadius: 12, overflow: 'hidden' }}>
+            <div key={article.id} style={{ background: isDone ? `rgba(${tc.rgb},0.04)` : '#ffffff', border: `1px solid ${isDone ? `rgba(${tc.rgb},0.3)` : 'rgba(30,35,48,0.1)'}`, borderRadius: 12, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
               <div onClick={() => setExpanded(isOpen ? null : article.id)} style={{ padding: '16px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{ width: 28, height: 28, borderRadius: '50%', background: isDone ? tc.color : '#222', border: isDone ? 'none' : '1px solid #444', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  {isDone ? <Check size={14} weight="bold" color={tc.color === '#eaef09' ? '#000' : '#fff'} /> : <BookOpen size={13} color="#4a4a4a" />}
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: isDone ? tc.color : 'rgba(30,35,48,0.08)', border: isDone ? 'none' : '1px solid rgba(30,35,48,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  {isDone ? <Check size={14} weight="bold" color={tc.btnText} /> : <BookOpen size={13} color="#8a8a82" />}
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', lineHeight: 1.3 }}>{article.title}</div>
-                  <div style={{ fontSize: 12, color: '#7a7a7a', marginTop: 3 }}>{article.readTime}</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: '#1e2330', lineHeight: 1.3 }}>{article.title}</div>
+                  <div style={{ fontSize: 12, color: '#8a8a82', marginTop: 3 }}>{article.readTime}</div>
                 </div>
-                <div style={{ fontSize: 11, color: '#4a4a4a' }}>{isOpen ? '▲' : '▼'}</div>
+                <div style={{ fontSize: 11, color: '#b0b0a8' }}>{isOpen ? '▲' : '▼'}</div>
               </div>
               {isOpen && (
                 <div style={{ padding: '0 20px 20px' }}>
-                  <div style={{ borderTop: '0.5px solid rgba(255,255,255,0.06)', paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  <div style={{ borderTop: '0.5px solid rgba(30,35,48,0.08)', paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 14 }}>
                     {article.sections.map((sec, i) => (
                       <div key={i}>
                         <div style={{ fontSize: 13, fontWeight: 700, color: tc.color, marginBottom: 6 }}>{sec.heading}</div>
-                        <div style={{ fontSize: 14, color: '#a1a1a1', lineHeight: 1.7 }}>{sec.body}</div>
+                        <div style={{ fontSize: 14, color: '#676b5f', lineHeight: 1.7 }}>{sec.body}</div>
                       </div>
                     ))}
-                    {article.callout && <ArticleCallout callout={article.callout} />}
+                    {article.callout && <ArticleCallout callout={article.callout} tc={tc} />}
                     <button onClick={() => markRead(article.id)} style={{ height: 38, border: `1px solid rgba(${tc.rgb},0.4)`, borderRadius: 8, background: `rgba(${tc.rgb},0.08)`, color: tc.color, fontSize: 13, fontWeight: 600, cursor: 'pointer', marginTop: 4 }}>
                       ✓ Got it — mark as read
                     </button>
@@ -1771,7 +1766,7 @@ function CreatorArticlesScreen({ subSegment, tc, onContinue }) {
         {readCount > 0 ? `Continue to Brief Builder (${readCount}/${articles.length} read)` : 'Skip to Brief Builder →'}
         <ArrowRight size={18} />
       </button>
-      {readCount === 0 && <p style={{ textAlign: 'center', fontSize: 12, color: '#4a4a4a', marginTop: 8 }}>Reading takes 5 minutes. It saves hours of back-and-forth with participants.</p>}
+      {readCount === 0 && <p style={{ textAlign: 'center', fontSize: 12, color: '#b0b0a8', marginTop: 8 }}>Reading takes 5 minutes. It saves hours of back-and-forth with participants.</p>}
     </div>
   );
 }
@@ -1789,19 +1784,19 @@ function InviteScreen({ group, subSegment, tc, onLaunch }) {
   };
 
   const cfg = INVITE_CONFIG[subSegment] || INVITE_CONFIG['other-personal'];
-  const tierColors = { essential: '#10B981', recommended: tc.color, optional: '#7a7a7a' };
+  const tierColors = { essential: tc.color, recommended: tc.color, optional: '#8a8a82' };
 
   return (
     <div style={{ maxWidth: 600, margin: '0 auto', padding: '40px 24px' }}>
-      <h1 style={{ fontFamily: 'Inter, sans-serif', fontSize: 28, color: '#fff', marginBottom: 8 }}>Who Should You Invite?</h1>
-      <p style={{ color: '#a1a1a1', fontSize: 14, marginBottom: 32 }}>Choose carefully — the right voices lead to the best names.</p>
+      <h1 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 28, color: '#1e2330', marginBottom: 8 }}>Who Should You Invite?</h1>
+      <p style={{ color: '#676b5f', fontSize: 14, marginBottom: 32 }}>Choose carefully — the right voices lead to the best names.</p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
         {/* Essential */}
-        <div style={{ padding: '16px', background: '#1a1a1a', border: `1px solid ${tierColors.essential}`, borderRadius: 10 }}>
+        <div style={{ padding: '16px', background: '#ffffff', border: `1px solid ${tierColors.essential}`, borderRadius: 10 }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: tierColors.essential, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Essential ✓</div>
           {cfg.essential.map(item => (
-            <div key={item} style={{ fontSize: 14, color: '#a1a1a1', marginBottom: 6, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+            <div key={item} style={{ fontSize: 14, color: '#676b5f', marginBottom: 6, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
               <span style={{ color: tierColors.essential, flexShrink: 0, marginTop: 1 }}>·</span>
               <span>{item}</span>
             </div>
@@ -1810,16 +1805,16 @@ function InviteScreen({ group, subSegment, tc, onLaunch }) {
 
         {/* Recommended */}
         {cfg.recommended.length > 0 && (
-          <div style={{ padding: '16px', background: '#1a1a1a', border: `1px solid ${tierColors.recommended}`, borderRadius: 10 }}>
+          <div style={{ padding: '16px', background: '#ffffff', border: `1px solid ${tierColors.recommended}`, borderRadius: 10 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: tierColors.recommended, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Recommended</div>
             {cfg.recommended.map(item => (
-              <div key={item} style={{ fontSize: 14, color: '#a1a1a1', marginBottom: 6, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+              <div key={item} style={{ fontSize: 14, color: '#676b5f', marginBottom: 6, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                 <span style={{ color: tierColors.recommended, flexShrink: 0, marginTop: 1 }}>·</span>
                 <span>{item}</span>
               </div>
             ))}
             {cfg.recommendedNote && (
-              <div style={{ marginTop: 10, fontSize: 12, color: '#7a7a7a', lineHeight: 1.6, fontStyle: 'italic', borderTop: '0.5px solid rgba(255,255,255,0.06)', paddingTop: 10 }}>
+              <div style={{ marginTop: 10, fontSize: 12, color: '#8a8a82', lineHeight: 1.6, fontStyle: 'italic', borderTop: '0.5px solid rgba(30,35,48,0.08)', paddingTop: 10 }}>
                 {cfg.recommendedNote}
               </div>
             )}
@@ -1828,11 +1823,11 @@ function InviteScreen({ group, subSegment, tc, onLaunch }) {
 
         {/* Optional */}
         {cfg.optional.length > 0 && (
-          <div style={{ padding: '16px', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 10 }}>
+          <div style={{ padding: '16px', background: '#ffffff', border: '0.5px solid rgba(30,35,48,0.08)', borderRadius: 10 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: tierColors.optional, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Optional</div>
             {cfg.optional.map(item => (
-              <div key={item} style={{ fontSize: 14, color: '#a1a1a1', marginBottom: 6, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                <span style={{ color: '#4a4a4a', flexShrink: 0, marginTop: 1 }}>·</span>
+              <div key={item} style={{ fontSize: 14, color: '#676b5f', marginBottom: 6, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                <span style={{ color: '#b0b0a8', flexShrink: 0, marginTop: 1 }}>·</span>
                 <span>{item}</span>
               </div>
             ))}
@@ -1840,22 +1835,22 @@ function InviteScreen({ group, subSegment, tc, onLaunch }) {
         )}
 
         {/* Sweet spot bar */}
-        <div style={{ padding: '14px 16px', background: '#141414', borderRadius: 10, border: '0.5px solid rgba(255,255,255,0.06)' }}>
-          <div style={{ fontSize: 13, color: '#a1a1a1', marginBottom: 4 }}>
-            Sweet spot: <strong style={{ color: '#fff' }}>{cfg.sweetSpot} people</strong>
+        <div style={{ padding: '14px 16px', background: '#f8f8f5', borderRadius: 10, border: '0.5px solid rgba(30,35,48,0.08)' }}>
+          <div style={{ fontSize: 13, color: '#676b5f', marginBottom: 4 }}>
+            Sweet spot: <strong style={{ color: '#1e2330' }}>{cfg.sweetSpot} people</strong>
           </div>
-          <div style={{ fontSize: 12, color: '#7a7a7a', lineHeight: 1.5 }}>{cfg.sweetSpotNote}</div>
+          <div style={{ fontSize: 12, color: '#8a8a82', lineHeight: 1.5 }}>{cfg.sweetSpotNote}</div>
         </div>
       </div>
 
       {/* Invite link section */}
-      <div style={{ padding: '20px', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 12, marginBottom: 24 }}>
-        <div style={{ fontSize: 12, color: '#7a7a7a', marginBottom: 8 }}>Your invite link:</div>
+      <div style={{ padding: '20px', background: '#ffffff', border: '0.5px solid rgba(30,35,48,0.1)', borderRadius: 12, marginBottom: 24 }}>
+        <div style={{ fontSize: 12, color: '#8a8a82', marginBottom: 8 }}>Your invite link:</div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <div style={{ flex: 1, background: '#141414', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '8px 12px', fontSize: 13, color: '#a1a1a1', fontFamily: 'monospace' }}>
+          <div style={{ flex: 1, background: '#f8f8f5', border: '0.5px solid rgba(30,35,48,0.1)', borderRadius: 8, padding: '8px 12px', fontSize: 13, color: '#676b5f', fontFamily: 'monospace' }}>
             {inviteLink}
           </div>
-          <button onClick={handleCopy} style={{ padding: '0 14px', height: 36, border: `1px solid ${copied ? '#10B981' : 'rgba(255,255,255,0.2)'}`, borderRadius: 8, background: copied ? 'rgba(16,185,129,0.1)' : 'transparent', color: copied ? '#10B981' : '#fff', fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <button onClick={handleCopy} style={{ padding: '0 14px', height: 36, border: `1px solid ${copied ? tc.color : 'rgba(30,35,48,0.2)'}`, borderRadius: 8, background: copied ? `rgba(${tc.rgb},0.1)` : 'transparent', color: copied ? tc.color : '#1e2330', fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
             {copied ? <><Check size={14} />Copied!</> : <><Copy size={14} />Copy</>}
           </button>
         </div>
@@ -1890,13 +1885,13 @@ function LaunchedScreen({ group, tc, navigate }) {
           border-radius: 16px;
           padding: 32px 28px;
           background: linear-gradient(135deg,
-            #0d0d0d 0%,
-            rgba(${tc.rgb},0.1) 18%,
-            rgba(255,255,255,0.07) 28%,
-            rgba(${tc.rgb},0.32) 45%,
-            rgba(255,255,255,0.06) 58%,
-            rgba(${tc.rgb},0.12) 78%,
-            #0d0d0d 100%
+            #ffffff 0%,
+            rgba(${tc.rgb},0.08) 18%,
+            rgba(30,35,48,0.03) 28%,
+            rgba(${tc.rgb},0.18) 45%,
+            rgba(30,35,48,0.03) 58%,
+            rgba(${tc.rgb},0.08) 78%,
+            #ffffff 100%
           );
           background-size: 400% 400%;
           animation: holo-shimmer 5s ease infinite;
@@ -1924,65 +1919,65 @@ function LaunchedScreen({ group, tc, navigate }) {
       `}</style>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 32 }}>
-        <h1 style={{ fontFamily: 'Inter, sans-serif', fontSize: 28, color: '#fff', margin: 0 }}>Here's What to Expect</h1>
+        <h1 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 28, color: '#1e2330', margin: 0 }}>Here's What to Expect</h1>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 32 }}>
         {/* Card 1 */}
-        <div style={{ background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 20 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}><CalendarBlank size={18} color={tc.color} weight="duotone" /> What Happens Next</div>
+        <div style={{ background: '#ffffff', border: '0.5px solid rgba(30,35,48,0.08)', borderRadius: 12, padding: 20 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#1e2330', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}><CalendarBlank size={18} color={tc.color} weight="duotone" /> What Happens Next</div>
           {[
             { range: 'Day 1-2', color: '#3B82F6', label: 'Trickle of submissions (normal)' },
-            { range: 'Day 3-5', color: '#eaef09', label: 'Spike in submissions (deadline effect)' },
-            { range: 'Day 6-7', color: '#10B981', label: 'Voting opens' },
-            { range: 'Day 8-10', color: '#8B5CF6', label: 'Results' },
+            { range: 'Day 3-5', color: tc.color, label: 'Spike in submissions (deadline effect)' },
+            { range: 'Day 6-7', color: tc.color, label: 'Voting opens' },
+            { range: 'Day 8-10', color: tc.color, label: 'Results' },
           ].map(item => (
             <div key={item.range} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
               <div style={{ width: 10, height: 10, borderRadius: '50%', background: item.color, flexShrink: 0 }} />
-              <span style={{ fontSize: 13, fontWeight: 600, color: '#a1a1a1', minWidth: 60 }}>{item.range}</span>
-              <span style={{ fontSize: 13, color: '#fff' }}>{item.label}</span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#676b5f', minWidth: 60 }}>{item.range}</span>
+              <span style={{ fontSize: 13, color: '#1e2330' }}>{item.label}</span>
             </div>
           ))}
-          <div style={{ marginTop: 12, padding: '10px 12px', background: '#141414', borderRadius: 8, fontSize: 13, color: '#a1a1a1', fontStyle: 'italic' }}>
+          <div style={{ marginTop: 12, padding: '10px 12px', background: '#f8f8f5', borderRadius: 8, fontSize: 13, color: '#676b5f', fontStyle: 'italic' }}>
             "Don't panic if submissions are slow the first 48 hours. Most people submit in the final 2 days."
           </div>
         </div>
 
         {/* Card 2 */}
-        <div style={{ background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 20 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}><UserCircle size={18} color={tc.color} weight="duotone" /> Your Role While It Runs</div>
+        <div style={{ background: '#ffffff', border: '0.5px solid rgba(30,35,48,0.08)', borderRadius: 12, padding: 20 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#1e2330', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}><UserCircle size={18} color={tc.color} weight="duotone" /> Your Role While It Runs</div>
           <div style={{ marginBottom: 10 }}>
             {['Send a reminder email at Day 4', 'Answer questions participants post'].map(item => (
-              <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, fontSize: 13, color: '#10B981' }}>
+              <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, fontSize: 13, color: tc.color }}>
                 <Check size={14} weight="bold" />
-                <span style={{ color: '#fff' }}>{item}</span>
+                <span style={{ color: '#1e2330' }}>{item}</span>
               </div>
             ))}
           </div>
           {['Tell people your favorite name before voting (anchoring bias)', 'Extend the deadline unless truly necessary'].map(item => (
             <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, fontSize: 13, color: '#ef4444' }}>
               <X size={14} weight="bold" />
-              <span style={{ color: '#a1a1a1' }}>{item}</span>
+              <span style={{ color: '#676b5f' }}>{item}</span>
             </div>
           ))}
         </div>
 
         {/* Card 3 */}
-        <div style={{ background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 20 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 16 }}>Typical Participation Rates</div>
+        <div style={{ background: '#ffffff', border: '0.5px solid rgba(30,35,48,0.08)', borderRadius: 12, padding: 20 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#1e2330', marginBottom: 16 }}>Typical Participation Rates</div>
           {[
-            { label: 'Good', range: '60-70%', color: '#a1a1a1' },
-            { label: 'Great', range: '70-85%', color: '#eaef09' },
-            { label: 'Elite', range: '>85%', color: '#10B981' },
+            { label: 'Good', range: '60-70%', color: '#676b5f' },
+            { label: 'Great', range: '70-85%', color: tc.color },
+            { label: 'Elite', range: '>85%', color: tc.color },
           ].map(tier => (
-            <div key={tier.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, padding: '8px 12px', background: '#141414', borderRadius: 8 }}>
+            <div key={tier.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, padding: '8px 12px', background: '#f8f8f5', borderRadius: 8 }}>
               <span style={{ fontSize: 13, color: tier.color, fontWeight: 600 }}>{tier.label}</span>
-              <span style={{ fontSize: 13, color: '#fff' }}>{tier.range} participation</span>
+              <span style={{ fontSize: 13, color: '#1e2330' }}>{tier.range} participation</span>
             </div>
           ))}
-          <div style={{ marginTop: 12, fontSize: 13, color: '#a1a1a1', lineHeight: 1.6 }}>
+          <div style={{ marginTop: 12, fontSize: 13, color: '#676b5f', lineHeight: 1.6 }}>
             What drives it: 1) Clear brief · 2) Day 4 reminder · 3) Organizer engagement<br />
-            <span style={{ color: '#7a7a7a' }}>If participation is &lt;60%, send another reminder and extend deadline by 2 days.</span>
+            <span style={{ color: '#8a8a82' }}>If participation is &lt;60%, send another reminder and extend deadline by 2 days.</span>
           </div>
         </div>
       </div>
@@ -1991,10 +1986,10 @@ function LaunchedScreen({ group, tc, navigate }) {
         <div style={{ fontSize: 11, fontWeight: 700, color: tc.color, textTransform: 'uppercase', letterSpacing: '0.14em' }}>
           Ready?
         </div>
-        <div style={{ fontSize: 24, fontWeight: 800, color: '#fff', lineHeight: 1.2 }}>
+        <div style={{ fontSize: 24, fontWeight: 800, color: '#1e2330', lineHeight: 1.2 }}>
           Go Live &amp; Invite Participants →
         </div>
-        <div style={{ fontSize: 13, color: '#a1a1a1', marginTop: 4 }}>
+        <div style={{ fontSize: 13, color: '#676b5f', marginTop: 4 }}>
           Start spreading the word — the right voices are waiting.
         </div>
       </button>
@@ -2006,7 +2001,7 @@ function LaunchedScreen({ group, tc, navigate }) {
 export default function BriefBuilder() {
   const { group, subSegment } = useParams();
   const navigate = useNavigate();
-  const tc = TIER[group] || TIER.business;
+  const tc = getGroupTheme(group);
 
   const contestType = localStorage.getItem('contestType') || 'submission_voting';
   const votingPermissions = localStorage.getItem('votingPermissions') || 'all_participants';
@@ -2067,33 +2062,33 @@ export default function BriefBuilder() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ minHeight: '100vh', background: '#fafaf5', fontFamily: 'Inter, sans-serif' }}>
       {/* Nav bar */}
-      <div style={{ height: 56, background: '#141414', borderBottom: '0.5px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', padding: '0 24px', gap: 16 }}>
+      <div style={{ height: 56, background: '#ffffff', borderBottom: '1px solid rgba(30,35,48,0.08)', display: 'flex', alignItems: 'center', padding: '0 24px', gap: 16 }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
-          <div style={{ width: 26, height: 26, background: '#eaef09', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img src={namicoIcon} alt="Namico" style={{ width: 17, height: 17, display: 'block' }} />
+          <div style={{ width: 26, height: 26, background: tc.color, borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img src={namicoIcon} alt="NamingContest" style={{ width: 17, height: 17, display: 'block', filter: 'brightness(0) invert(1)' }} />
           </div>
-          <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Namico</span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: '#1e2330' }}>NamingContest</span>
         </Link>
         {step === 'brief' && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 16 }}>
-            <button onClick={() => setStep('primer')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#7a7a7a', display: 'flex', alignItems: 'center', gap: 4, fontSize: 13 }}>
+            <button onClick={() => setStep('primer')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#8a8a82', display: 'flex', alignItems: 'center', gap: 4, fontSize: 13 }}>
               <ArrowLeft size={14} /> Back
             </button>
-            <span style={{ color: '#7a7a7a', fontSize: 13 }}>·</span>
-            <span style={{ fontSize: 13, color: '#a1a1a1' }}>{groupLabel}</span>
-            <span style={{ color: '#7a7a7a', fontSize: 13 }}>→</span>
-            <span style={{ fontSize: 13, color: '#fff' }}>{subSegmentLabel}</span>
+            <span style={{ color: '#8a8a82', fontSize: 13 }}>·</span>
+            <span style={{ fontSize: 13, color: '#676b5f' }}>{groupLabel}</span>
+            <span style={{ color: '#8a8a82', fontSize: 13 }}>→</span>
+            <span style={{ fontSize: 13, color: '#1e2330' }}>{subSegmentLabel}</span>
           </div>
         )}
         {step === 'articles' && (
-          <button onClick={() => setStep('primer')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#7a7a7a', display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, marginLeft: 16 }}>
+          <button onClick={() => setStep('primer')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#8a8a82', display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, marginLeft: 16 }}>
             <ArrowLeft size={14} /> Back
           </button>
         )}
         {step === 'invite' && (
-          <button onClick={() => setStep('brief')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#7a7a7a', display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, marginLeft: 16 }}>
+          <button onClick={() => setStep('brief')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#8a8a82', display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, marginLeft: 16 }}>
             <ArrowLeft size={14} /> Back to Brief
           </button>
         )}
@@ -2106,18 +2101,18 @@ export default function BriefBuilder() {
 
       {/* Primer Modal Overlay */}
       {step === 'primer' && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-          <div style={{ background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 16, padding: 32, maxWidth: 560, width: '100%', maxHeight: '90vh', overflowY: 'auto' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(250,250,245,0.92)', backdropFilter: 'blur(4px)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          <div style={{ background: '#ffffff', border: '0.5px solid rgba(30,35,48,0.1)', borderRadius: 16, padding: 32, maxWidth: 560, width: '100%', maxHeight: '90vh', overflowY: 'auto' }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: tc.color, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>~90 seconds to read</div>
-            <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 24, color: '#fff', marginBottom: 20, lineHeight: 1.3 }}>
+            <h2 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 24, color: '#1e2330', marginBottom: 20, lineHeight: 1.3 }}>
               {getPrimerTitle(subSegment)}
             </h2>
             {getPrimerContent(group, subSegment, tc)}
             <div style={{ marginTop: 28, display: 'flex', flexDirection: 'column', gap: 10 }}>
               <button onClick={() => setStep('articles')} style={{ height: 48, border: `1.5px solid ${tc.color}`, borderRadius: 10, background: `rgba(${tc.rgb},0.12)`, color: tc.color, fontSize: 15, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                <BookOpen size={18} /> Read the Naming Strategy Guides
+                <BookOpen size={18} /><span>Read the Naming Strategy Guides</span>
               </button>
-              <button onClick={() => setStep('brief')} style={{ height: 36, border: '0.5px solid rgba(255,255,255,0.15)', borderRadius: 8, background: 'transparent', color: '#a1a1a1', fontSize: 13, cursor: 'pointer' }}>
+              <button onClick={() => setStep('brief')} style={{ height: 36, border: '0.5px solid rgba(30,35,48,0.15)', borderRadius: 8, background: 'transparent', color: '#676b5f', fontSize: 13, cursor: 'pointer' }}>
                 Skip guides (I've done this before)
               </button>
             </div>
@@ -2134,16 +2129,16 @@ export default function BriefBuilder() {
       {step === 'brief' && (
         <div style={{ maxWidth: 720, margin: '0 auto', padding: '40px 24px' }}>
           {/* ── Contest Quality Bar ── */}
-          <div style={{ marginBottom: 32, padding: '16px 18px', background: '#111', border: '0.5px solid rgba(255,255,255,0.07)', borderRadius: 12 }}>
+          <div style={{ marginBottom: 32, padding: '16px 18px', background: '#f3f3f1', border: '0.5px solid rgba(30,35,48,0.08)', borderRadius: 12 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
               <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', color: tc.color }}>
                 Contest Quality
               </div>
-              <div style={{ fontSize: 11, color: '#555' }}>Step 1 of 2</div>
+              <div style={{ fontSize: 11, color: '#8a8a82' }}>Step 1 of 2</div>
             </div>
 
             {/* Bar */}
-            <div style={{ position: 'relative', height: 8, borderRadius: 4, background: '#1e1e1e' }}>
+            <div style={{ position: 'relative', height: 8, borderRadius: 4, background: 'rgba(30,35,48,0.06)' }}>
               {/* Creator fill */}
               <div style={{
                 position: 'absolute', left: 0, top: 0, height: '100%',
@@ -2154,35 +2149,59 @@ export default function BriefBuilder() {
               {/* Midpoint divider */}
               <div style={{
                 position: 'absolute', left: '50%', top: -3, bottom: -3,
-                width: 1.5, background: 'rgba(255,255,255,0.18)', borderRadius: 1,
+                width: 1.5, background: 'rgba(30,35,48,0.18)', borderRadius: 1,
               }} />
               {/* Right half (participant zone) */}
               <div style={{
                 position: 'absolute', left: '50%', right: 0, top: 0, height: '100%',
-                background: 'rgba(255,255,255,0.03)', borderRadius: '0 4px 4px 0',
+                background: 'rgba(30,35,48,0.03)', borderRadius: '0 4px 4px 0',
               }} />
             </div>
 
             {/* Labels */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: creatorScore >= 40 ? tc.color : '#a1a1a1' }}>
-                Your setup: <span style={{ color: tc.color }}>{creatorScore}</span>/50
-                {primerRead && <span style={{ marginLeft: 6, fontSize: 10, color: '#555' }}>+10 guides read</span>}
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, marginBottom: 10 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#676b5f' }}>
+                Your half: <span style={{ color: tc.color, fontWeight: 800 }}>{creatorScore}/50</span>
               </div>
-              <div style={{ fontSize: 11, color: '#383838' }}>
-                ← participants fill the other half →
+              <div style={{ fontSize: 11, color: '#c8c8c0' }}>
+                Participants: 0/50
               </div>
             </div>
 
-            {/* Field completion detail */}
-            <div style={{ marginTop: 6, fontSize: 11, color: '#444' }}>
-              {fieldDefs.filter(k => briefData[k] !== undefined && briefData[k] !== '' && briefData[k] !== null).length}/{fieldDefs.length} fields complete
-              {!primerRead && <span style={{ marginLeft: 8, color: '#333' }}>· +10 pts if you read the guides</span>}
+            {/* Per-field breakdown */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+              {fieldDefs.map(k => {
+                const done = isFilled(briefData[k]);
+                return (
+                  <span key={k} style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 3,
+                    padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 600,
+                    background: done ? `rgba(${tc.rgb},0.1)` : 'rgba(30,35,48,0.04)',
+                    border: `0.5px solid ${done ? `rgba(${tc.rgb},0.25)` : 'rgba(30,35,48,0.1)'}`,
+                    color: done ? tc.color : '#a1a1a1',
+                    transition: 'all 0.2s',
+                  }}>
+                    {done ? '✓' : '○'} {FIELD_LABELS[k] || k}{' '}
+                    <span style={{ opacity: 0.55 }}>+{FIELD_PTS}</span>
+                  </span>
+                );
+              })}
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: 3,
+                padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 600,
+                background: primerRead ? `rgba(${tc.rgb},0.1)` : 'rgba(30,35,48,0.04)',
+                border: `0.5px solid ${primerRead ? `rgba(${tc.rgb},0.25)` : 'rgba(30,35,48,0.1)'}`,
+                color: primerRead ? tc.color : '#a1a1a1',
+                transition: 'all 0.2s',
+              }}>
+                {primerRead ? '✓' : '○'} Read naming guides{' '}
+                <span style={{ opacity: 0.55 }}>+10</span>
+              </span>
             </div>
           </div>
 
-          <h1 style={{ fontFamily: 'Inter, sans-serif', fontSize: 28, color: '#fff', marginBottom: 8 }}>Build Your Brief</h1>
-          <p style={{ color: '#a1a1a1', fontSize: 14, marginBottom: 32 }}>This context helps participants submit better names. Be specific — the more detail you share, the better the results.</p>
+          <h1 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 28, color: '#1e2330', marginBottom: 8 }}>Build Your Brief</h1>
+          <p style={{ color: '#676b5f', fontSize: 14, marginBottom: 32 }}>This context helps participants submit better names. Be specific — the more detail you share, the better the results.</p>
 
           {renderFormFields()}
           <VotingMethodField data={briefData} setData={setBriefData} tc={tc} />
@@ -2192,44 +2211,44 @@ export default function BriefBuilder() {
 
 
           {subSegment === 'baby-name' && (
-            <div style={{ marginTop: 24, padding: '18px 20px', background: '#1a1a1a', border: '0.5px solid rgba(16,185,129,0.25)', borderRadius: 12, position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: '#10B981' }} />
-              <div style={{ fontSize: 9, fontWeight: 800, color: '#10B981', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>
+            <div style={{ marginTop: 24, padding: '18px 20px', background: '#ffffff', border: `0.5px solid rgba(${tc.rgb},0.25)`, borderRadius: 12, position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: tc.color }} />
+              <div style={{ fontSize: 9, fontWeight: 800, color: tc.color, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>
                 Resource · Amazon · Sponsored
               </div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 6 }}>Need more inspiration?</div>
-              <div style={{ fontSize: 13, color: '#7a7a7a', marginBottom: 14, lineHeight: 1.5 }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#1e2330', marginBottom: 6 }}>Need more inspiration?</div>
+              <div style={{ fontSize: 13, color: '#8a8a82', marginBottom: 14, lineHeight: 1.5 }}>
                 Explore the most comprehensive baby name book — meanings, origins, and trends. Great if you want to check that the shortlist includes the right options.
               </div>
-              <a href="#" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 18px', borderRadius: 8, background: '#10B981', color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
+              <a href="#" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 18px', borderRadius: 8, background: tc.color, color: tc.btnText, fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
                 Browse baby name books →
               </a>
             </div>
           )}
 
           {/* ── Phase Transition Settings ── */}
-          <div style={{ marginTop: 32, paddingTop: 28, borderTop: '0.5px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ marginTop: 32, paddingTop: 28, borderTop: '0.5px solid rgba(30,35,48,0.08)' }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: tc.color, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 16 }}>Phase Transition Settings</div>
 
             {/* When submissions close */}
             <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', marginBottom: 10 }}>When submissions close:</div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: '#1e2330', marginBottom: 10 }}>When submissions close:</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {[
                   { value: 'manual', label: 'Manual review first (recommended)', desc: 'You review submissions, create a shortlist (5-12 names), then open voting. Shows curation guide.' },
                   { value: 'automatic', label: 'Automatic transition to voting', desc: `All ${contestType === 'internal_brainstorm' ? 'submitted' : 'names go to the'} ballot immediately after the submission deadline.` },
                 ].map(opt => (
-                  <label key={opt.value} onClick={() => { setTransitionMode(opt.value); localStorage.setItem('transitionMode', opt.value); window.dispatchEvent(new Event('storage')); }} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '12px 14px', background: transitionMode === opt.value ? `rgba(${tc.rgb},0.05)` : '#1a1a1a', border: `0.5px solid ${transitionMode === opt.value ? `rgba(${tc.rgb},0.4)` : 'rgba(255,255,255,0.08)'}`, borderRadius: 9, cursor: 'pointer' }}>
-                    <div style={{ width: 16, height: 16, borderRadius: '50%', border: `2px solid ${transitionMode === opt.value ? tc.color : '#444'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
+                  <label key={opt.value} onClick={() => { setTransitionMode(opt.value); localStorage.setItem('transitionMode', opt.value); window.dispatchEvent(new Event('storage')); }} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '12px 14px', background: transitionMode === opt.value ? `rgba(${tc.rgb},0.05)` : '#ffffff', border: `0.5px solid ${transitionMode === opt.value ? `rgba(${tc.rgb},0.4)` : 'rgba(30,35,48,0.08)'}`, borderRadius: 9, cursor: 'pointer' }}>
+                    <div style={{ width: 16, height: 16, borderRadius: '50%', border: `2px solid ${transitionMode === opt.value ? tc.color : '#b0b0a8'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
                       {transitionMode === opt.value && <div style={{ width: 6, height: 6, borderRadius: '50%', background: tc.color }} />}
                     </div>
                     <div>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>{opt.label}</div>
-                      <div style={{ fontSize: 12, color: '#7a7a7a', lineHeight: 1.5, marginTop: 2 }}>{opt.desc}</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: '#1e2330' }}>{opt.label}</div>
+                      <div style={{ fontSize: 12, color: '#8a8a82', lineHeight: 1.5, marginTop: 2 }}>{opt.desc}</div>
                       {opt.value === 'automatic' && transitionMode === 'automatic' && (
                         <label style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, cursor: 'pointer' }}>
                           <input type="checkbox" checked={randomizeBallot} onChange={e => setRandomizeBallot(e.target.checked)} style={{ accentColor: tc.color }} />
-                          <span style={{ fontSize: 12, color: '#a1a1a1' }}>Randomize ballot order</span>
+                          <span style={{ fontSize: 12, color: '#676b5f' }}>Randomize ballot order</span>
                         </label>
                       )}
                     </div>
@@ -2240,24 +2259,24 @@ export default function BriefBuilder() {
 
             {/* Voting duration */}
             <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', marginBottom: 8 }}>Voting duration:</div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: '#1e2330', marginBottom: 8 }}>Voting duration:</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 {[2, 3, 5, 7, 10].map(d => (
-                  <button key={d} onClick={() => setVotingDays(d)} style={{ width: 44, height: 36, border: `1px solid ${votingDays === d ? tc.color : 'rgba(255,255,255,0.1)'}`, borderRadius: 8, background: votingDays === d ? `rgba(${tc.rgb},0.1)` : 'transparent', color: votingDays === d ? tc.color : '#a1a1a1', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
+                  <button key={d} onClick={() => setVotingDays(d)} style={{ width: 44, height: 36, border: `1px solid ${votingDays === d ? tc.color : 'rgba(30,35,48,0.1)'}`, borderRadius: 8, background: votingDays === d ? `rgba(${tc.rgb},0.1)` : 'transparent', color: votingDays === d ? tc.color : '#676b5f', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
                     {d}d
                   </button>
                 ))}
-                <span style={{ fontSize: 12, color: '#7a7a7a', marginLeft: 4 }}>
+                <span style={{ fontSize: 12, color: '#8a8a82', marginLeft: 4 }}>
                   → Closes {new Date(Date.now() + votingDays * 86400000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 </span>
               </div>
             </div>
 
             {/* Voting permissions summary */}
-            <div style={{ padding: '12px 16px', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ padding: '12px 16px', background: '#ffffff', border: '0.5px solid rgba(30,35,48,0.08)', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#a1a1a1' }}>Voting permissions</div>
-                <div style={{ fontSize: 13, color: '#fff', marginTop: 2 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#676b5f' }}>Voting permissions</div>
+                <div style={{ fontSize: 13, color: '#1e2330', marginTop: 2 }}>
                   {contestType === 'voting_only'
                     ? votingPermissions === 'all_participants'
                       ? 'Anyone invited can vote'
@@ -2272,7 +2291,7 @@ export default function BriefBuilder() {
                 </div>
               </div>
               {contestType === 'voting_only'
-                ? <span style={{ fontSize: 12, color: '#7a7a7a', fontStyle: 'italic' }}>You'll invite voters in the next stage</span>
+                ? <span style={{ fontSize: 12, color: '#8a8a82', fontStyle: 'italic' }}>You'll invite voters in the next stage</span>
                 : <button onClick={() => navigate(`/contest-type/${group}/${subSegment}`)} style={{ fontSize: 12, color: tc.color, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>Edit voter list</button>
               }
             </div>

@@ -2,10 +2,11 @@
 // journey.js  –  Single source of truth for journey context, steps, and tracking
 // ─────────────────────────────────────────────────────────────────────────────
 
+// V2 group-specific colors
 export const TIER = {
-  business: { color: '#eaef09', rgb: '234,239,9', label: 'Business', textColor: '#000' },
-  team:     { color: '#8B5CF6', rgb: '139,92,246', label: 'Team',     textColor: '#fff' },
-  personal: { color: '#10B981', rgb: '16,185,129', label: 'Personal', textColor: '#fff' },
+  business: { color: '#254f1a', rgb: '37,79,26',   label: 'Business', textColor: '#ffffff' },
+  team:     { color: '#780016', rgb: '120,0,22',    label: 'Team',     textColor: '#ffffff' },
+  personal: { color: '#2665d6', rgb: '38,101,214',  label: 'Personal', textColor: '#ffffff' },
 };
 
 // Fallback: map demo contest IDs → group (used when no localStorage context)
@@ -358,7 +359,7 @@ export function detectStep(path, steps, storedStep) {
 }
 
 export const PHASE_COLORS = {
-  setup: '#eaef09', outreach: '#8B5CF6', submission: '#10B981',
-  curation: '#f97316', ballot: '#f97316', voting: '#3b82f6',
-  results: '#ec4899', manage: '#eaef09',
+  setup: '#d2e823', outreach: '#d2e823', submission: '#d2e823',
+  curation: '#d19400', ballot: '#d19400', voting: '#d2e823',
+  results: '#a66802', manage: '#d2e823',
 };

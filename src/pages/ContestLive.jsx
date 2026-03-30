@@ -8,14 +8,9 @@ import {
 } from '@phosphor-icons/react';
 import { mockContests } from '../data/mockData';
 import { getJourneyMeta } from '../utils/journey';
+import { getGroupTheme, LIGHT_THEME } from '../data/themeConfig';
 import MindMap from '../components/MindMap';
-import { loadCreatorQuality, computeParticipantScore, saveParticipantQuality } from '../utils/quality';
-
-const TIER = {
-  business: { color: '#eaef09', rgb: '234,239,9', label: 'Business' },
-  team: { color: '#8B5CF6', rgb: '139,92,246', label: 'Team' },
-  personal: { color: '#10B981', rgb: '16,185,129', label: 'Personal' },
-};
+import { loadCreatorQuality, computeParticipantScore, saveParticipantQuality, PARTICIPANT_ACTIONS } from '../utils/quality';
 
 /* ─── Quiz ─── */
 function Quiz({ questions, onComplete, points, tc, qualityPct }) {
@@ -33,10 +28,10 @@ function Quiz({ questions, onComplete, points, tc, qualityPct }) {
   };
 
   if (submitted) return (
-    <div style={{ textAlign: 'center', padding: '24px', background: `rgba(${tc.rgb},0.06)`, border: `1px solid rgba(${tc.rgb},0.2)`, borderRadius: 10 }}>
-      <Confetti size={28} color={tc.color} weight="duotone" />
-      <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, color: '#fff', marginTop: 8 }}>+{Math.round((score / points) * qualityPct)}% quality</div>
-      <div style={{ fontSize: 13, color: '#a1a1a1', marginTop: 4 }}>Article & quiz complete</div>
+    <div style={{ textAlign: 'center', padding: '24px', background: `rgba(${tc.primaryRgb},0.06)`, border: `1px solid rgba(${tc.primaryRgb},0.2)`, borderRadius: 10 }}>
+      <Confetti size={28} color={tc.primary} weight="duotone" />
+      <div style={{ fontFamily: LIGHT_THEME.fontDisplay, fontSize: 22, color: LIGHT_THEME.textPrimary, marginTop: 8 }}>+{Math.round(score)} pts</div>
+      <div style={{ fontSize: 13, color: LIGHT_THEME.textSecondary, marginTop: 4 }}>Article & quiz complete</div>
     </div>
   );
 
@@ -44,64 +39,59 @@ function Quiz({ questions, onComplete, points, tc, qualityPct }) {
     <div>
       {questions.map((q, qi) => (
         <div key={qi} style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', marginBottom: 10, lineHeight: 1.5 }}>Q{qi + 1}: {q.question}</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: LIGHT_THEME.textPrimary, marginBottom: 10, lineHeight: 1.5 }}>Q{qi + 1}: {q.question}</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {q.options.map((opt, oi) => (
-              <label key={oi} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', background: answers[qi] === oi ? `rgba(${tc.rgb},0.08)` : '#141414', border: `0.5px solid ${answers[qi] === oi ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, cursor: 'pointer' }}>
-                <input type="radio" name={`q${qi}`} checked={answers[qi] === oi} onChange={() => setAnswers({ ...answers, [qi]: oi })} style={{ accentColor: tc.color }} />
-                <span style={{ fontSize: 13, color: '#fff' }}>{opt}</span>
+              <label key={oi} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', background: answers[qi] === oi ? `rgba(${tc.primaryRgb},0.08)` : LIGHT_THEME.cardBg, border: `0.5px solid ${answers[qi] === oi ? tc.primary : LIGHT_THEME.cardBorder}`, borderRadius: 8, cursor: 'pointer' }}>
+                <input type="radio" name={`q${qi}`} checked={answers[qi] === oi} onChange={() => setAnswers({ ...answers, [qi]: oi })} style={{ accentColor: tc.primary }} />
+                <span style={{ fontSize: 13, color: LIGHT_THEME.textPrimary }}>{opt}</span>
               </label>
             ))}
           </div>
         </div>
       ))}
-      <button onClick={handleSubmit} disabled={Object.keys(answers).length < questions.length} style={{ width: '100%', height: 40, border: `1px solid ${tc.color}`, borderRadius: 8, background: `rgba(${tc.rgb},0.1)`, color: tc.color, fontSize: 14, fontWeight: 600, cursor: Object.keys(answers).length < questions.length ? 'not-allowed' : 'pointer', opacity: Object.keys(answers).length < questions.length ? 0.5 : 1 }}>
-        Submit Quiz (+{qualityPct}% quality)
+      <button onClick={handleSubmit} disabled={Object.keys(answers).length < questions.length} style={{ width: '100%', height: 40, border: `1px solid ${tc.primary}`, borderRadius: 8, background: `rgba(${tc.primaryRgb},0.1)`, color: tc.primary, fontSize: 14, fontWeight: 600, cursor: Object.keys(answers).length < questions.length ? 'not-allowed' : 'pointer', opacity: Object.keys(answers).length < questions.length ? 0.5 : 1 }}>
+        Submit Quiz (up to +{qualityPct} pts)
       </button>
     </div>
   );
 }
 
 /* ─── Article ─── */
-function Article({ article, tc, onComplete, quizPoints, articleN, totalMaxPoints }) {
+function Article({ article, tc, onComplete, quizPoints, readPts }) {
   const [quizOpen, setQuizOpen] = useState(false);
   const [done, setDone] = useState(false);
   const [earned, setEarned] = useState(0);
 
-  const readQualityPct   = Math.max(1, Math.round(article.readPoints / totalMaxPoints * 25));
-  const completionPct    = Math.max(1, Math.round(25 / articleN));
-  const quizQualityPct   = Math.max(1, Math.round(quizPoints / totalMaxPoints * 25));
-  const totalArticlePct  = readQualityPct + quizQualityPct + completionPct;
-
-  const handleRead = () => { setQuizOpen(true); onComplete(article.readPoints, 'read'); };
+  const handleRead = () => { setQuizOpen(true); onComplete(readPts, 'read'); };
   const handleQuizComplete = (pts) => { setEarned(pts); setDone(true); onComplete(pts, 'quiz'); };
 
   return (
     <div style={{ marginBottom: 32 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-        <span style={{ fontSize: 12, color: '#7a7a7a', display: 'flex', alignItems: 'center', gap: 4 }}><BookOpen size={12} /> {article.readTime} read</span>
-        <span style={{ fontSize: 12, color: `rgba(${tc.rgb},0.8)` }}>+{totalArticlePct}% quality</span>
+        <span style={{ fontSize: 12, color: LIGHT_THEME.textMuted, display: 'flex', alignItems: 'center', gap: 4 }}><BookOpen size={12} /> {article.readTime} read</span>
+        <span style={{ fontSize: 12, color: `rgba(${tc.primaryRgb},0.8)` }}>+{readPts + quizPoints} pts</span>
       </div>
-      <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, color: '#fff', marginBottom: 16 }}>{article.title}</h3>
-      <div style={{ fontSize: 14, color: '#a1a1a1', lineHeight: 1.75, marginBottom: 16 }}>
+      <h3 style={{ fontFamily: LIGHT_THEME.fontDisplay, fontSize: 22, color: LIGHT_THEME.textPrimary, marginBottom: 16 }}>{article.title}</h3>
+      <div style={{ fontSize: 14, color: LIGHT_THEME.textSecondary, lineHeight: 1.75, marginBottom: 16 }}>
         {article.body.map((para, i) => (
           <p key={i} style={{ marginBottom: 14 }} dangerouslySetInnerHTML={{ __html: para }} />
         ))}
       </div>
       {!quizOpen && !done && (
-        <button onClick={handleRead} style={{ height: 40, padding: '0 20px', border: `1px solid ${tc.color}`, borderRadius: 8, background: `rgba(${tc.rgb},0.08)`, color: tc.color, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-          Mark as Read (+{readQualityPct}% quality) →
+        <button onClick={handleRead} style={{ height: 40, padding: '0 20px', border: `1px solid ${tc.primary}`, borderRadius: 8, background: `rgba(${tc.primaryRgb},0.08)`, color: tc.primary, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+          Mark as Read (+{readPts} pts) →
         </button>
       )}
       {quizOpen && !done && (
-        <div style={{ marginTop: 20, padding: 20, background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 10 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 16 }}>Quick Quiz</div>
-          <Quiz questions={article.quiz} onComplete={handleQuizComplete} points={quizPoints} tc={tc} qualityPct={quizQualityPct + completionPct} />
+        <div style={{ marginTop: 20, padding: 20, background: LIGHT_THEME.cardBg, border: `1px solid ${LIGHT_THEME.cardBorder}`, borderRadius: 10, boxShadow: LIGHT_THEME.cardShadow }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: LIGHT_THEME.textPrimary, marginBottom: 16 }}>Quick Quiz</div>
+          <Quiz questions={article.quiz} onComplete={handleQuizComplete} points={quizPoints} tc={tc} qualityPct={quizPoints} />
         </div>
       )}
       {done && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 8, color: '#10B981', fontSize: 13 }}>
-          <Check size={16} weight="bold" /> Article & quiz complete · +{readQualityPct + Math.round((earned / quizPoints) * (quizQualityPct + completionPct))}% quality
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: `rgba(${tc.primaryRgb},0.08)`, border: `1px solid rgba(${tc.primaryRgb},0.3)`, borderRadius: 8, color: tc.primary, fontSize: 13 }}>
+          <Check size={16} weight="bold" /> Article & quiz complete · +{readPts + Math.round(earned)} pts
         </div>
       )}
     </div>
@@ -559,46 +549,46 @@ function BriefImmersionCard({ contest, tc, onPoints, qualityPct }) {
   };
 
   return (
-    <div style={{ marginBottom: 28, padding: 20, background: '#1a1a1a', border: `0.5px solid rgba(${tc.rgb},0.2)`, borderRadius: 12 }}>
+    <div style={{ marginBottom: 28, padding: 20, background: LIGHT_THEME.cardBg, border: `1px solid ${LIGHT_THEME.cardBorder}`, borderRadius: 12, boxShadow: LIGHT_THEME.cardShadow }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-        <div style={{ width: 32, height: 32, background: `rgba(${tc.rgb},0.1)`, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <BookOpen size={16} color={tc.color} />
+        <div style={{ width: 32, height: 32, background: `rgba(${tc.primaryRgb},0.1)`, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <BookOpen size={16} color={tc.primary} />
         </div>
         <div>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>Brief Immersion</div>
-          <div style={{ fontSize: 11, color: '#7a7a7a' }}>Understand the contest context before you submit</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: LIGHT_THEME.textPrimary }}>Brief Immersion</div>
+          <div style={{ fontSize: 11, color: LIGHT_THEME.textMuted }}>Understand the contest context before you submit</div>
         </div>
         {!pointsAwarded && (
-          <div style={{ marginLeft: 'auto', fontSize: 11, color: tc.color, fontWeight: 600 }}>+{qualityPct}% quality</div>
+          <div style={{ marginLeft: 'auto', fontSize: 11, color: tc.primary, fontWeight: 600 }}>+{qualityPct} pts</div>
         )}
         {pointsAwarded && (
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#10B981' }}>
-            <Check size={12} weight="bold" /> +{qualityPct}% quality added
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: tc.primary }}>
+            <Check size={12} weight="bold" /> +{qualityPct} pts added
           </div>
         )}
       </div>
       {!expanded ? (
-        <button onClick={handleRead} style={{ height: 36, padding: '0 16px', border: `1px solid rgba(${tc.rgb},0.3)`, borderRadius: 8, background: 'transparent', color: tc.color, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-          Read the Brief (+{qualityPct}% quality) →
+        <button onClick={handleRead} style={{ height: 36, padding: '0 16px', border: `1px solid rgba(${tc.primaryRgb},0.3)`, borderRadius: 8, background: 'transparent', color: tc.primary, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+          Read the Brief (+{qualityPct} pts) →
         </button>
       ) : (
-        <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.75 }}>
-          <div style={{ marginBottom: 10 }}><strong style={{ color: '#fff' }}>Contest:</strong> {contest?.title}</div>
-          <div style={{ marginBottom: 10 }}><strong style={{ color: '#fff' }}>Organized by:</strong> {contest?.organizer}</div>
-          <div style={{ marginBottom: 10 }}><strong style={{ color: '#fff' }}>Category:</strong> {tc.label}</div>
-          <div style={{ marginBottom: 10 }}><strong style={{ color: '#fff' }}>Deadline:</strong> {contest?.daysLeft || 5} days left to submit</div>
+        <div style={{ fontSize: 13, color: LIGHT_THEME.textSecondary, lineHeight: 1.75 }}>
+          <div style={{ marginBottom: 10 }}><strong style={{ color: LIGHT_THEME.textPrimary }}>Contest:</strong> {contest?.title}</div>
+          <div style={{ marginBottom: 10 }}><strong style={{ color: LIGHT_THEME.textPrimary }}>Organized by:</strong> {contest?.organizer}</div>
+          <div style={{ marginBottom: 10 }}><strong style={{ color: LIGHT_THEME.textPrimary }}>Category:</strong> {tc.label}</div>
+          <div style={{ marginBottom: 10 }}><strong style={{ color: LIGHT_THEME.textPrimary }}>Deadline:</strong> {contest?.daysLeft || 5} days left to submit</div>
           {SIMULATED_BRIEF[contest?.subSegment] ? (
-            <div style={{ marginTop: 12, padding: '14px 16px', background: '#141414', borderRadius: 8 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: tc.color, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 10 }}>Creator's Brief</div>
+            <div style={{ marginTop: 12, padding: '14px 16px', background: LIGHT_THEME.sidebarBg, borderRadius: 8 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: tc.primary, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 10 }}>Creator's Brief</div>
               {Object.entries(SIMULATED_BRIEF[contest?.subSegment]).map(([label, val]) => (
                 <div key={label} style={{ marginBottom: 8, fontSize: 13, lineHeight: 1.6 }}>
-                  <strong style={{ color: '#fff' }}>{label}:</strong>{' '}
-                  <span style={{ color: '#a1a1a1' }}>{val}</span>
+                  <strong style={{ color: LIGHT_THEME.textPrimary }}>{label}:</strong>{' '}
+                  <span style={{ color: LIGHT_THEME.textSecondary }}>{val}</span>
                 </div>
               ))}
             </div>
           ) : (
-            <div style={{ padding: '12px 14px', background: '#141414', borderRadius: 8, fontSize: 13, color: '#a1a1a1', fontStyle: 'italic', marginTop: 12 }}>
+            <div style={{ padding: '12px 14px', background: LIGHT_THEME.sidebarBg, borderRadius: 8, fontSize: 13, color: LIGHT_THEME.textSecondary, fontStyle: 'italic', marginTop: 12 }}>
               "We're looking for a name that's distinctive, memorable, and positions us for growth. Read the articles below to understand what makes a great name in this context."
             </div>
           )}
@@ -629,22 +619,22 @@ function ScratchPad({ tc, onPoints, qualityPct }) {
   ];
 
   return (
-    <div style={{ marginBottom: 28, padding: 20, background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 12 }}>
+    <div style={{ marginBottom: 28, padding: 20, background: LIGHT_THEME.cardBg, border: `1px solid ${LIGHT_THEME.cardBorder}`, borderRadius: 12, boxShadow: LIGHT_THEME.cardShadow }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-        <div style={{ width: 32, height: 32, background: 'rgba(255,255,255,0.04)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <NotePencil size={16} color="#a1a1a1" />
+        <div style={{ width: 32, height: 32, background: 'rgba(30,35,48,0.04)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <NotePencil size={16} color={LIGHT_THEME.textSecondary} />
         </div>
         <div>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>Exploration Scratch Pad</div>
-          <div style={{ fontSize: 11, color: '#7a7a7a' }}>Brainstorm freely — your notes are private</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: LIGHT_THEME.textPrimary }}>Exploration Scratch Pad</div>
+          <div style={{ fontSize: 11, color: LIGHT_THEME.textMuted }}>Brainstorm freely — your notes are private</div>
         </div>
-        <div style={{ marginLeft: 'auto', fontSize: 11, color: pointsAwarded ? '#10B981' : '#7a7a7a', fontWeight: 600 }}>
+        <div style={{ marginLeft: 'auto', fontSize: 11, color: pointsAwarded ? tc.primary : LIGHT_THEME.textMuted, fontWeight: 600 }}>
           {pointsAwarded ? `✓ +${qualityPct}% quality` : `+${qualityPct}% quality for using`}
         </div>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 12 }}>
         {prompts.map((p, i) => (
-          <div key={i} style={{ fontSize: 12, color: '#7a7a7a', padding: '6px 10px', background: '#141414', borderRadius: 6 }}>
+          <div key={i} style={{ fontSize: 12, color: LIGHT_THEME.textMuted, padding: '6px 10px', background: LIGHT_THEME.sidebarBg, borderRadius: 6 }}>
             💭 {p}
           </div>
         ))}
@@ -653,7 +643,7 @@ function ScratchPad({ tc, onPoints, qualityPct }) {
         value={notes}
         onChange={e => handleNotes(e.target.value)}
         placeholder="Start brainstorming here..."
-        style={{ width: '100%', boxSizing: 'border-box', minHeight: 100, background: '#141414', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '10px 12px', color: '#fff', fontSize: 13, fontFamily: 'Inter, sans-serif', resize: 'vertical' }}
+        style={{ width: '100%', boxSizing: 'border-box', minHeight: 100, background: LIGHT_THEME.inputBg, border: `1px solid ${LIGHT_THEME.inputBorder}`, borderRadius: 8, padding: '10px 12px', color: LIGHT_THEME.inputText, fontSize: 13, fontFamily: 'Inter, sans-serif', resize: 'vertical' }}
       />
     </div>
   );
@@ -684,14 +674,14 @@ function SelfScreeningChecklist({ tc, group }) {
   const allChecked = items.every(item => checked[item.id]);
 
   return (
-    <div style={{ marginBottom: 28, padding: 20, background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 12 }}>
+    <div style={{ marginBottom: 28, padding: 20, background: LIGHT_THEME.cardBg, border: `1px solid ${LIGHT_THEME.cardBorder}`, borderRadius: 12, boxShadow: LIGHT_THEME.cardShadow }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-        <div style={{ width: 32, height: 32, background: 'rgba(255,255,255,0.04)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <CheckCircle size={16} color="#a1a1a1" />
+        <div style={{ width: 32, height: 32, background: 'rgba(30,35,48,0.04)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <CheckCircle size={16} color={LIGHT_THEME.textSecondary} />
         </div>
         <div>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>Self-Screening Checklist</div>
-          <div style={{ fontSize: 11, color: '#7a7a7a' }}>Run your names through this before submitting</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: LIGHT_THEME.textPrimary }}>Self-Screening Checklist</div>
+          <div style={{ fontSize: 11, color: LIGHT_THEME.textMuted }}>Run your names through this before submitting</div>
         </div>
       </div>
       {items.map(item => (
@@ -701,23 +691,23 @@ function SelfScreeningChecklist({ tc, group }) {
               onClick={() => toggle(item.id)}
               style={{
                 width: 18, height: 18, borderRadius: 4, flexShrink: 0, marginTop: 1,
-                background: checked[item.id] ? tc.color : 'transparent',
-                border: `1.5px solid ${checked[item.id] ? tc.color : 'rgba(255,255,255,0.2)'}`,
+                background: checked[item.id] ? tc.primary : 'transparent',
+                border: `1.5px solid ${checked[item.id] ? tc.primary : 'rgba(30,35,48,0.2)'}`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 transition: 'all 0.15s',
               }}
             >
-              {checked[item.id] && <Check size={11} weight="bold" color={tc.color === '#eaef09' ? '#000' : '#fff'} />}
+              {checked[item.id] && <Check size={11} weight="bold" color={tc.btnText} />}
             </div>
             <div>
-              <div style={{ fontSize: 13, color: checked[item.id] ? '#fff' : '#a1a1a1', fontWeight: checked[item.id] ? 600 : 400, transition: 'all 0.15s' }}>{item.label}</div>
-              <div style={{ fontSize: 12, color: '#555', marginTop: 2 }}>{item.tip}</div>
+              <div style={{ fontSize: 13, color: checked[item.id] ? LIGHT_THEME.textPrimary : LIGHT_THEME.textSecondary, fontWeight: checked[item.id] ? 600 : 400, transition: 'all 0.15s' }}>{item.label}</div>
+              <div style={{ fontSize: 12, color: LIGHT_THEME.textMuted, marginTop: 2 }}>{item.tip}</div>
             </div>
           </label>
         </div>
       ))}
       {allChecked && (
-        <div style={{ marginTop: 12, padding: '10px 14px', background: `rgba(${tc.rgb},0.08)`, border: `1px solid rgba(${tc.rgb},0.3)`, borderRadius: 8, fontSize: 13, color: tc.color, fontWeight: 600 }}>
+        <div style={{ marginTop: 12, padding: '10px 14px', background: `rgba(${tc.primaryRgb},0.08)`, border: `1px solid rgba(${tc.primaryRgb},0.3)`, borderRadius: 8, fontSize: 13, color: tc.primary, fontWeight: 600 }}>
           ✓ All checks passed — ready to submit!
         </div>
       )}
@@ -726,29 +716,29 @@ function SelfScreeningChecklist({ tc, group }) {
 }
 
 /* ─── Context Stats (post-submission) ─── */
-function getQualityTier(score, max) {
+function getQualityTier(score, max, tc) {
   const pct = max > 0 ? (score / max) * 100 : 0;
-  if (pct >= 82) return { label: 'Excellent', color: '#eaef09', desc: 'You went above and beyond' };
-  if (pct >= 52) return { label: 'Strong', color: '#8B5CF6', desc: 'You completed most activities' };
-  if (pct >= 26) return { label: 'Good', color: '#10B981', desc: 'You engaged with the brief and explored ideas' };
-  return { label: 'Standard', color: '#555', desc: 'You participated' };
+  if (pct >= 82) return { label: 'Excellent', color: tc.primary, desc: 'You went above and beyond' };
+  if (pct >= 52) return { label: 'Strong', color: tc.primary, desc: 'You completed most activities' };
+  if (pct >= 26) return { label: 'Good', color: tc.primary, desc: 'You engaged with the brief and explored ideas' };
+  return { label: 'Standard', color: '#8a8a82', desc: 'You participated' };
 }
 
-function getOverallTier(total) {
-  if (total >= 85) return { label: 'Excellent', color: '#eaef09' };
-  if (total >= 65) return { label: 'Strong', color: '#8B5CF6' };
-  if (total >= 45) return { label: 'Good', color: '#10B981' };
+function getOverallTier(total, tc) {
+  if (total >= 85) return { label: 'Excellent', color: tc.primary };
+  if (total >= 65) return { label: 'Strong', color: tc.primary };
+  if (total >= 45) return { label: 'Good', color: tc.primary };
   if (total >= 25) return { label: 'Fair', color: '#f97316' };
-  return { label: 'Low', color: '#555' };
+  return { label: 'Low', color: '#8a8a82' };
 }
 
 function ContextStats({ submittedNames, totalPoints, maxPoints, tc, group, participantQuality, creatorQuality }) {
   const totalSubs = 47 + submittedNames.length;
   const totalParticipants = 18;
   const totalQuality = (creatorQuality || 0) + participantQuality;
-  const yourTier = getQualityTier(participantQuality, 50);
-  const creatorTier = getQualityTier(creatorQuality || 0, 50);
-  const overallTier = getOverallTier(totalQuality);
+  const yourTier = getQualityTier(participantQuality, 50, tc);
+  const creatorTier = getQualityTier(creatorQuality || 0, 50, tc);
+  const overallTier = getOverallTier(totalQuality, tc);
 
   const timeline = [
     { label: 'Day 1', subs: 8 }, { label: 'Day 2', subs: 11 }, { label: 'Day 3', subs: 19 },
@@ -758,52 +748,52 @@ function ContextStats({ submittedNames, totalPoints, maxPoints, tc, group, parti
 
   return (
     <div style={{ marginTop: 32 }}>
-      <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
-        <ChartBar size={18} color={tc.color} /> Contest Quality
+      <div style={{ fontSize: 14, fontWeight: 700, color: LIGHT_THEME.textPrimary, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <ChartBar size={18} color={tc.primary} /> Contest Quality
       </div>
 
       {/* Your Quality */}
-      <div style={{ padding: '16px', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 10, marginBottom: 12 }}>
+      <div style={{ padding: '16px', background: LIGHT_THEME.cardBg, border: `1px solid ${LIGHT_THEME.cardBorder}`, borderRadius: 10, marginBottom: 12, boxShadow: LIGHT_THEME.cardShadow }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: '#fff' }}>Your contribution</div>
+          <div style={{ fontSize: 12, fontWeight: 600, color: LIGHT_THEME.textPrimary }}>Your contribution</div>
           <div style={{ fontSize: 13, fontWeight: 700, color: yourTier.color }}>{participantQuality}/50</div>
         </div>
-        <div style={{ height: 8, background: '#222', borderRadius: 4, overflow: 'hidden', marginBottom: 8 }}>
+        <div style={{ height: 8, background: 'rgba(30,35,48,0.08)', borderRadius: 4, overflow: 'hidden', marginBottom: 8 }}>
           <div style={{ height: '100%', width: `${Math.round((participantQuality / 50) * 100)}%`, background: yourTier.color, borderRadius: 4, transition: 'width 0.4s' }} />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 11, fontWeight: 700, color: yourTier.color, padding: '2px 8px', background: `${yourTier.color}15`, border: `0.5px solid ${yourTier.color}40`, borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{yourTier.label}</span>
-          <span style={{ fontSize: 11, color: '#7a7a7a' }}>{yourTier.desc}</span>
+          <span style={{ fontSize: 11, color: LIGHT_THEME.textMuted }}>{yourTier.desc}</span>
         </div>
       </div>
 
       {/* Creator Quality */}
-      <div style={{ padding: '16px', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 10, marginBottom: 12 }}>
+      <div style={{ padding: '16px', background: LIGHT_THEME.cardBg, border: `1px solid ${LIGHT_THEME.cardBorder}`, borderRadius: 10, marginBottom: 12, boxShadow: LIGHT_THEME.cardShadow }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: '#fff' }}>Creator's brief quality</div>
+          <div style={{ fontSize: 12, fontWeight: 600, color: LIGHT_THEME.textPrimary }}>Creator's brief quality</div>
           <div style={{ fontSize: 13, fontWeight: 700, color: creatorTier.color }}>{creatorQuality || 0}/50</div>
         </div>
-        <div style={{ height: 8, background: '#222', borderRadius: 4, overflow: 'hidden', marginBottom: 8 }}>
+        <div style={{ height: 8, background: 'rgba(30,35,48,0.08)', borderRadius: 4, overflow: 'hidden', marginBottom: 8 }}>
           <div style={{ height: '100%', width: `${Math.round(((creatorQuality || 0) / 50) * 100)}%`, background: creatorTier.color, borderRadius: 4, transition: 'width 0.4s' }} />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 11, fontWeight: 700, color: creatorTier.color, padding: '2px 8px', background: `${creatorTier.color}15`, border: `0.5px solid ${creatorTier.color}40`, borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{creatorTier.label}</span>
-          <span style={{ fontSize: 11, color: '#7a7a7a' }}>The creator's brief quality affects the overall contest score</span>
+          <span style={{ fontSize: 11, color: LIGHT_THEME.textMuted }}>The creator's brief quality affects the overall contest score</span>
         </div>
       </div>
 
       {/* Total Contest Quality */}
-      <div style={{ padding: '16px', background: '#1a1a1a', border: `0.5px solid rgba(${tc.rgb},0.2)`, borderRadius: 10, marginBottom: 20 }}>
+      <div style={{ padding: '16px', background: LIGHT_THEME.cardBg, border: `1px solid rgba(${tc.primaryRgb},0.2)`, borderRadius: 10, marginBottom: 20, boxShadow: LIGHT_THEME.cardShadow }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>Contest Quality Score</div>
-          <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 20, fontWeight: 800, color: overallTier.color }}>{totalQuality}/100</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: LIGHT_THEME.textPrimary }}>Contest Quality Score</div>
+          <div style={{ fontFamily: LIGHT_THEME.fontDisplay, fontSize: 20, fontWeight: 800, color: overallTier.color }}>{totalQuality}/100</div>
         </div>
-        <div style={{ height: 10, background: '#222', borderRadius: 5, overflow: 'hidden', marginBottom: 8 }}>
+        <div style={{ height: 10, background: 'rgba(30,35,48,0.08)', borderRadius: 5, overflow: 'hidden', marginBottom: 8 }}>
           <div style={{ height: '100%', width: `${totalQuality}%`, background: overallTier.color, borderRadius: 5, transition: 'width 0.4s' }} />
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 11, fontWeight: 700, color: overallTier.color, padding: '2px 8px', background: `${overallTier.color}15`, border: `0.5px solid ${overallTier.color}40`, borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{overallTier.label}</span>
-          <span style={{ fontSize: 11, color: '#7a7a7a' }}>Creator {creatorQuality || 0}/50 + You {participantQuality}/50</span>
+          <span style={{ fontSize: 11, color: LIGHT_THEME.textMuted }}>Creator {creatorQuality || 0}/50 + You {participantQuality}/50</span>
         </div>
       </div>
 
@@ -813,22 +803,22 @@ function ContextStats({ submittedNames, totalPoints, maxPoints, tc, group, parti
           { label: 'Total Submissions', value: totalSubs, sub: 'so far' },
           { label: 'Participants', value: totalParticipants, sub: 'joined' },
         ].map((stat, i) => (
-          <div key={i} style={{ padding: '16px', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 10, textAlign: 'center' }}>
-            <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 24, fontWeight: 800, color: '#fff', marginBottom: 4 }}>{stat.value}</div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: '#a1a1a1' }}>{stat.label}</div>
-            <div style={{ fontSize: 11, color: '#555' }}>{stat.sub}</div>
+          <div key={i} style={{ padding: '16px', background: LIGHT_THEME.cardBg, border: `1px solid ${LIGHT_THEME.cardBorder}`, borderRadius: 10, textAlign: 'center', boxShadow: LIGHT_THEME.cardShadow }}>
+            <div style={{ fontFamily: LIGHT_THEME.fontDisplay, fontSize: 24, fontWeight: 800, color: LIGHT_THEME.textPrimary, marginBottom: 4 }}>{stat.value}</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: LIGHT_THEME.textSecondary }}>{stat.label}</div>
+            <div style={{ fontSize: 11, color: LIGHT_THEME.textMuted }}>{stat.sub}</div>
           </div>
         ))}
       </div>
 
       {/* Submission timeline */}
-      <div style={{ padding: '14px 16px', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 10 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: '#fff', marginBottom: 12 }}>Submission Timeline</div>
+      <div style={{ padding: '14px 16px', background: LIGHT_THEME.cardBg, border: `1px solid ${LIGHT_THEME.cardBorder}`, borderRadius: 10, boxShadow: LIGHT_THEME.cardShadow }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: LIGHT_THEME.textPrimary, marginBottom: 12 }}>Submission Timeline</div>
         <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 60 }}>
           {timeline.map((t, i) => (
             <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-              <div style={{ width: '100%', background: i === timeline.length - 1 ? tc.color : 'rgba(255,255,255,0.15)', borderRadius: '3px 3px 0 0', height: `${Math.round((t.subs / maxSubs) * 48)}px`, minHeight: 4 }} />
-              <div style={{ fontSize: 10, color: '#555', textAlign: 'center' }}>{t.label}</div>
+              <div style={{ width: '100%', background: i === timeline.length - 1 ? tc.primary : 'rgba(30,35,48,0.15)', borderRadius: '3px 3px 0 0', height: `${Math.round((t.subs / maxSubs) * 48)}px`, minHeight: 4 }} />
+              <div style={{ fontSize: 10, color: LIGHT_THEME.textMuted, textAlign: 'center' }}>{t.label}</div>
             </div>
           ))}
         </div>
@@ -843,7 +833,7 @@ export default function ContestLive() {
   const navigate = useNavigate();
   const _contest = mockContests.find(c => c.id === contestId) || mockContests[0];
   const meta = getJourneyMeta(contestId);
-  const tc = meta;
+  const tc = getGroupTheme(meta.group);
   // Override contest group and title with journey context so articles/content match
   const contest = { ..._contest, group: meta.group, title: meta.contestTitle, subSegment: meta.sub };
 
@@ -859,22 +849,16 @@ export default function ContestLive() {
   const isPersonalContest = isPersonal(contest);
   const isGamingContest = isGaming(contest);
   const limit = isGamingContest ? 3 : 5;
-  const maxPoints = articles.reduce((sum, a) => sum + a.readPoints + 30, 0) + 15 || (isPersonalContest || isGamingContest ? 15 : 165);
   const educationDone = isPersonalContest || isGamingContest || Object.keys(completedArticles).length >= articles.length;
 
-  // Quality scores
+  // Quality scores — each action gives fixed pts via PARTICIPANT_ACTIONS
   const creatorQuality = loadCreatorQuality(meta.group);
-  const participantQuality = computeParticipantScore(
-    Object.keys(completedArticles).length,
-    articles.length || 1,
-    totalPoints,
-    maxPoints,
-  );
+  const participantQuality = computeParticipantScore(totalPoints);
   useEffect(() => {
     saveParticipantQuality(meta.group, participantQuality);
   }, [participantQuality, meta.group]);
   const daysLeft = contest?.daysLeft || 5;
-  const smallQualityPct = Math.max(1, Math.round(5 / maxPoints * 25));
+  const smallQualityPct = PARTICIPANT_ACTIONS.brief;
 
   const addPoints = (pts) => setTotalPoints(p => p + pts);
 
@@ -906,62 +890,62 @@ export default function ContestLive() {
   const tipCards = isGamingContest ? GAMING_TIPS : (isPersonalContest ? personalTips : []);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', fontFamily: 'Inter, sans-serif', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: LIGHT_THEME.pageBg, fontFamily: LIGHT_THEME.fontBody, display: 'flex', flexDirection: 'column' }}>
       {/* Nav */}
-      <div style={{ height: 52, background: '#141414', borderBottom: '0.5px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', padding: '0 24px', gap: 12, flexShrink: 0 }}>
+      <div style={{ height: 52, background: LIGHT_THEME.navBg, borderBottom: `1px solid ${LIGHT_THEME.navBorder}`, display: 'flex', alignItems: 'center', padding: '0 24px', gap: 12, flexShrink: 0 }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 7, textDecoration: 'none' }}>
-          <div style={{ width: 24, height: 24, background: '#eaef09', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img src={namicoIcon} alt="Namico" style={{ width: 16, height: 16, display: 'block' }} />
+          <div style={{ width: 24, height: 24, background: LIGHT_THEME.textPrimary, borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img src={namicoIcon} alt="NamingContest" style={{ width: 16, height: 16, display: 'block', filter: 'brightness(0) invert(1)' }} />
           </div>
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>Namico</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: LIGHT_THEME.textPrimary }}>NamingContest</span>
         </Link>
-        <span style={{ color: '#444', fontSize: 13 }}>·</span>
-        <span style={{ fontSize: 13, color: '#a1a1a1' }}>{contest?.title}</span>
+        <span style={{ color: '#d0d0c8', fontSize: 13 }}>·</span>
+        <span style={{ fontSize: 13, color: LIGHT_THEME.textSecondary }}>{contest?.title}</span>
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Clock size={13} color="#7a7a7a" />
-          <span style={{ fontSize: 12, color: '#7a7a7a' }}>{daysLeft} days left</span>
+          <Clock size={13} color={LIGHT_THEME.textMuted} />
+          <span style={{ fontSize: 12, color: LIGHT_THEME.textMuted }}>{daysLeft} days left</span>
         </div>
       </div>
 
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         {/* Sidebar */}
-        <div style={{ width: 240, background: '#0f0f0f', borderRight: '0.5px solid rgba(255,255,255,0.06)', padding: 20, flexShrink: 0, overflowY: 'auto' }}>
+        <div style={{ width: 240, background: LIGHT_THEME.sidebarBg, borderRight: `1px solid ${LIGHT_THEME.sidebarBorder}`, padding: 20, flexShrink: 0, overflowY: 'auto' }}>
           {/* Contest card */}
-          <div style={{ padding: '14px', background: '#1a1a1a', border: `0.5px solid rgba(${tc.rgb},0.2)`, borderRadius: 10, marginBottom: 20 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: tc.color, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>{tc.label}</div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 6 }}>{contest?.title}</div>
-            <div style={{ fontSize: 12, color: '#7a7a7a' }}>by {contest?.organizer}</div>
+          <div style={{ padding: '14px', background: LIGHT_THEME.cardBg, border: `1px solid rgba(${tc.primaryRgb},0.2)`, borderRadius: 10, marginBottom: 20, boxShadow: LIGHT_THEME.cardShadow }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: tc.primary, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>{tc.label}</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: LIGHT_THEME.textPrimary, marginBottom: 6 }}>{contest?.title}</div>
+            <div style={{ fontSize: 12, color: LIGHT_THEME.textMuted }}>by {contest?.organizer}</div>
           </div>
 
           {/* Progress */}
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#7a7a7a', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Your Progress</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: LIGHT_THEME.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Your Progress</div>
             {[
               { label: 'Education', done: educationDone },
               { label: 'Names submitted', done: submitted },
             ].map(item => (
               <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <div style={{ width: 16, height: 16, borderRadius: '50%', background: item.done ? tc.color : '#222', border: item.done ? 'none' : '1px solid #444', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  {item.done && <Check size={10} weight="bold" color={tc.color === '#eaef09' ? '#000' : '#fff'} />}
+                <div style={{ width: 16, height: 16, borderRadius: '50%', background: item.done ? tc.primary : 'rgba(30,35,48,0.08)', border: item.done ? 'none' : '1px solid #d0d0c8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  {item.done && <Check size={10} weight="bold" color={tc.btnText} />}
                 </div>
-                <span style={{ fontSize: 12, color: item.done ? '#fff' : '#7a7a7a' }}>{item.label}</span>
+                <span style={{ fontSize: 12, color: item.done ? LIGHT_THEME.textPrimary : LIGHT_THEME.textMuted }}>{item.label}</span>
               </div>
             ))}
           </div>
 
           {/* ── Contest Quality Bar ── */}
-          <div style={{ marginBottom: 20, padding: '14px', background: '#111', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: 10 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: tc.color, marginBottom: 8 }}>
+          <div style={{ marginBottom: 20, padding: '14px', background: LIGHT_THEME.cardBg, border: `1px solid ${LIGHT_THEME.cardBorder}`, borderRadius: 10, boxShadow: LIGHT_THEME.cardShadow }}>
+            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: tc.primary, marginBottom: 8 }}>
               Contest Quality
             </div>
 
             {/* Bar track */}
-            <div style={{ position: 'relative', height: 7, borderRadius: 3, background: '#1e1e1e', marginBottom: 6 }}>
+            <div style={{ position: 'relative', height: 7, borderRadius: 3, background: 'rgba(30,35,48,0.08)', marginBottom: 6 }}>
               {/* Creator fill (left half) */}
               <div style={{
                 position: 'absolute', left: 0, top: 0, height: '100%',
                 width: `${creatorQuality}%`,
-                background: tc.color,
+                background: tc.primary,
                 borderRadius: 3, opacity: 0.7,
               }} />
               {/* Participant fill (right half, starts at 50%) */}
@@ -970,24 +954,46 @@ export default function ContestLive() {
                 left: `${50}%`,
                 top: 0, height: '100%',
                 width: `${participantQuality}%`,
-                background: tc.color,
+                background: tc.primary,
                 borderRadius: 3,
                 transition: 'width 0.4s ease',
               }} />
               {/* Midpoint divider */}
               <div style={{
                 position: 'absolute', left: '50%', top: -2, bottom: -2,
-                width: 1.5, background: 'rgba(255,255,255,0.2)',
+                width: 1.5, background: 'rgba(30,35,48,0.2)',
               }} />
             </div>
 
             {/* Scores */}
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, marginBottom: 4 }}>
-              <span style={{ color: '#555' }}>Creator: <span style={{ color: tc.color, fontWeight: 700 }}>{creatorQuality}/50</span></span>
-              <span style={{ color: '#555' }}>You: <span style={{ color: tc.color, fontWeight: 700 }}>{participantQuality}/50</span></span>
+              <span style={{ color: LIGHT_THEME.textMuted }}>Creator: <span style={{ color: tc.primary, fontWeight: 700 }}>{creatorQuality}/50</span></span>
+              <span style={{ color: LIGHT_THEME.textMuted }}>You: <span style={{ color: tc.primary, fontWeight: 700 }}>{participantQuality}/50</span></span>
             </div>
-            <div style={{ fontSize: 10, color: '#383838', lineHeight: 1.5 }}>
-              Creator did {creatorQuality}/50 of the work. Earn points to fill your half.
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 2 }}>
+              {(isPersonalContest || isGamingContest
+                ? [
+                    { label: 'Brief', pts: PARTICIPANT_ACTIONS.brief },
+                    { label: 'Mind map', pts: PARTICIPANT_ACTIONS.mindmap },
+                    { label: 'Scratchpad', pts: PARTICIPANT_ACTIONS.scratchpad },
+                    { label: 'Each tip card', pts: PARTICIPANT_ACTIONS.tip },
+                  ]
+                : [
+                    { label: 'Brief', pts: PARTICIPANT_ACTIONS.brief },
+                    { label: 'Mind map', pts: PARTICIPANT_ACTIONS.mindmap },
+                    { label: 'Scratchpad', pts: PARTICIPANT_ACTIONS.scratchpad },
+                    { label: 'Article read', pts: PARTICIPANT_ACTIONS.articleRead },
+                    { label: 'Article quiz', pts: PARTICIPANT_ACTIONS.articleQuiz },
+                  ]
+              ).map(({ label, pts }) => (
+                <span key={label} style={{
+                  padding: '1px 6px', borderRadius: 3, fontSize: 9, fontWeight: 600,
+                  background: 'rgba(30,35,48,0.04)', border: '0.5px solid rgba(30,35,48,0.1)',
+                  color: '#8a8a82',
+                }}>
+                  {label} <span style={{ color: tc.primary }}>+{pts}</span>
+                </span>
+              ))}
             </div>
           </div>
 
@@ -996,7 +1002,7 @@ export default function ContestLive() {
             { id: 'education', label: 'Learn & Explore', icon: <BookOpen size={14} /> },
             { id: 'submit', label: 'Submit Names', icon: <PencilSimple size={14} /> },
           ].map(item => (
-            <button key={item.id} onClick={() => setTab(item.id)} style={{ width: '100%', height: 36, display: 'flex', alignItems: 'center', gap: 8, padding: '0 12px', borderRadius: 8, border: 'none', background: tab === item.id ? `rgba(${tc.rgb},0.1)` : 'transparent', color: tab === item.id ? tc.color : '#7a7a7a', fontSize: 13, cursor: 'pointer', marginBottom: 4, textAlign: 'left' }}>
+            <button key={item.id} onClick={() => setTab(item.id)} style={{ width: '100%', height: 36, display: 'flex', alignItems: 'center', gap: 8, padding: '0 12px', borderRadius: 8, border: 'none', background: tab === item.id ? `rgba(${tc.primaryRgb},0.1)` : 'transparent', color: tab === item.id ? tc.primary : LIGHT_THEME.textMuted, fontSize: 13, cursor: 'pointer', marginBottom: 4, textAlign: 'left' }}>
               {item.icon} {item.label}
             </button>
           ))}
@@ -1009,10 +1015,10 @@ export default function ContestLive() {
           {/* EDUCATION TAB */}
           {tab === 'education' && (
             <div>
-              <h1 style={{ fontFamily: 'Inter, sans-serif', fontSize: 26, color: '#fff', marginBottom: 6 }}>
+              <h1 style={{ fontFamily: LIGHT_THEME.fontDisplay, fontSize: 26, color: LIGHT_THEME.textPrimary, marginBottom: 6 }}>
                 {(isPersonalContest || isGamingContest) ? 'Fun Tips to Get You in the Spirit' : 'Learn to Name Like a Pro'}
               </h1>
-              <p style={{ color: '#a1a1a1', fontSize: 13, marginBottom: 28 }}>
+              <p style={{ color: LIGHT_THEME.textSecondary, fontSize: 13, marginBottom: 28 }}>
                 {(isPersonalContest || isGamingContest)
                   ? 'No articles needed — just read these tips and jump in.'
                   : `Complete all ${articles.length} articles to boost your quality score. Then submit your names.`}
@@ -1027,8 +1033,13 @@ export default function ContestLive() {
               {/* Tip Cards (personal / gaming) */}
               {(isPersonalContest || isGamingContest) && (
                 <div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 16 }}>
-                    {isGamingContest ? '🎮 Gaming Name Tips' : '💛 Fun Facts'}
+                  <div style={{ fontSize: 14, fontWeight: 700, color: LIGHT_THEME.textPrimary, marginBottom: 16 }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      {isGamingContest
+                        ? <><GameController size={16} weight="duotone" color={tc.primary} /> Gaming Name Tips</>
+                        : <><Sparkle size={16} weight="fill" color={tc.primary} /> Fun Facts</>
+                      }
+                    </span>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 32 }}>
                     {tipCards.map((tip, i) => (
@@ -1036,25 +1047,25 @@ export default function ContestLive() {
                         key={i}
                         onClick={() => handleTipCollect(`tip-${i}`)}
                         style={{
-                          padding: '20px', background: '#1a1a1a',
-                          border: `0.5px solid ${tipsCollected[`tip-${i}`] ? `rgba(${tc.rgb},0.3)` : 'rgba(255,255,255,0.06)'}`,
-                          borderRadius: 12, cursor: 'pointer', transition: 'all 0.2s',
+                          padding: '20px', background: LIGHT_THEME.cardBg,
+                          border: `1px solid ${tipsCollected[`tip-${i}`] ? `rgba(${tc.primaryRgb},0.3)` : LIGHT_THEME.cardBorder}`,
+                          borderRadius: 12, cursor: 'pointer', transition: 'all 0.2s', boxShadow: LIGHT_THEME.cardShadow,
                         }}
                       >
                         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
                           <div>
                             <div style={{ fontSize: 24, marginBottom: 10 }}>{tip.icon}</div>
-                            <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 8 }}>{tip.title}</div>
-                            <div style={{ fontSize: 14, color: '#a1a1a1', lineHeight: 1.65 }}>{tip.text}</div>
+                            <div style={{ fontSize: 15, fontWeight: 700, color: LIGHT_THEME.textPrimary, marginBottom: 8 }}>{tip.title}</div>
+                            <div style={{ fontSize: 14, color: LIGHT_THEME.textSecondary, lineHeight: 1.65 }}>{tip.text}</div>
                           </div>
-                          <div style={{ fontSize: 11, color: tipsCollected[`tip-${i}`] ? '#10B981' : '#555', fontWeight: 600, minWidth: 60, textAlign: 'right' }}>
+                          <div style={{ fontSize: 11, color: tipsCollected[`tip-${i}`] ? tc.primary : LIGHT_THEME.textMuted, fontWeight: 600, minWidth: 60, textAlign: 'right' }}>
                             {tipsCollected[`tip-${i}`] ? `✓ +${smallQualityPct}%` : `+${smallQualityPct}% quality`}
                           </div>
                         </div>
                       </div>
                     ))}
                   </div>
-                  <button onClick={() => setTab('submit')} style={{ height: 44, padding: '0 24px', border: `1.5px solid ${tc.color}`, borderRadius: 10, background: `rgba(${tc.rgb},0.1)`, color: tc.color, fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <button onClick={() => setTab('submit')} style={{ height: 44, padding: '0 24px', border: `1.5px solid ${tc.primary}`, borderRadius: 10, background: `rgba(${tc.primaryRgb},0.1)`, color: tc.primary, fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
                     Submit Names <ArrowRight size={16} />
                   </button>
                 </div>
@@ -1065,19 +1076,19 @@ export default function ContestLive() {
                 <div>
                   {articles.map((article, i) => (
                     <div key={article.id}>
-                      {i > 0 && <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '24px 0' }} />}
+                      {i > 0 && <div style={{ height: 1, background: LIGHT_THEME.divider, margin: '24px 0' }} />}
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                        <div style={{ width: 24, height: 24, borderRadius: '50%', background: completedArticles[article.id] ? tc.color : '#222', border: completedArticles[article.id] ? 'none' : `1px solid rgba(${tc.rgb},0.3)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: completedArticles[article.id] ? (tc.color === '#eaef09' ? '#000' : '#fff') : tc.color }}>
-                          {completedArticles[article.id] ? <Check size={12} weight="bold" color={tc.color === '#eaef09' ? '#000' : '#fff'} /> : i + 1}
+                        <div style={{ width: 24, height: 24, borderRadius: '50%', background: completedArticles[article.id] ? tc.primary : 'rgba(30,35,48,0.08)', border: completedArticles[article.id] ? 'none' : `1px solid rgba(${tc.primaryRgb},0.3)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: completedArticles[article.id] ? tc.btnText : tc.primary }}>
+                          {completedArticles[article.id] ? <Check size={12} weight="bold" color={tc.btnText} /> : i + 1}
                         </div>
-                        <span style={{ fontSize: 12, color: '#7a7a7a' }}>Article {i + 1} of {articles.length}</span>
+                        <span style={{ fontSize: 12, color: LIGHT_THEME.textMuted }}>Article {i + 1} of {articles.length}</span>
                       </div>
-                      <Article article={article} tc={tc} quizPoints={30} onComplete={(pts, type) => handleArticleComplete(article.id, pts, type)} articleN={articles.length} totalMaxPoints={maxPoints} />
+                      <Article article={article} tc={tc} readPts={PARTICIPANT_ACTIONS.articleRead} quizPoints={PARTICIPANT_ACTIONS.articleQuiz} onComplete={(pts, type) => handleArticleComplete(article.id, pts, type)} />
                     </div>
                   ))}
                   {educationDone && (
                     <div style={{ marginTop: 20 }}>
-                      <button onClick={() => setTab('submit')} style={{ height: 44, padding: '0 24px', border: `1.5px solid ${tc.color}`, borderRadius: 10, background: `rgba(${tc.rgb},0.1)`, color: tc.color, fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <button onClick={() => setTab('submit')} style={{ height: 44, padding: '0 24px', border: `1.5px solid ${tc.primary}`, borderRadius: 10, background: `rgba(${tc.primaryRgb},0.1)`, color: tc.primary, fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
                         Education complete! Submit your names <ArrowRight size={16} />
                       </button>
                     </div>
@@ -1090,8 +1101,8 @@ export default function ContestLive() {
           {/* SUBMIT TAB */}
           {tab === 'submit' && (
             <div>
-              <h1 style={{ fontFamily: 'Inter, sans-serif', fontSize: 26, color: '#fff', marginBottom: 6 }}>Submit Your Names</h1>
-              <div style={{ padding: '10px 14px', background: `rgba(${tc.rgb},0.06)`, border: `0.5px solid rgba(${tc.rgb},0.2)`, borderRadius: 8, fontSize: 13, color: tc.color, marginBottom: 24 }}>
+              <h1 style={{ fontFamily: LIGHT_THEME.fontDisplay, fontSize: 26, color: LIGHT_THEME.textPrimary, marginBottom: 6 }}>Submit Your Names</h1>
+              <div style={{ padding: '10px 14px', background: `rgba(${tc.primaryRgb},0.06)`, border: `1px solid rgba(${tc.primaryRgb},0.2)`, borderRadius: 8, fontSize: 13, color: tc.primary, marginBottom: 24 }}>
                 You can submit up to {limit} names · {participantQuality}/50 quality score earned
               </div>
 
@@ -1109,22 +1120,22 @@ export default function ContestLive() {
                 } catch {}
                 if (!prizes || (!prizes.submitter && !prizes.voter)) return null;
                 return (
-                  <div style={{ marginBottom: 20, padding: '16px 18px', background: 'linear-gradient(135deg, rgba(234,239,9,0.04), rgba(139,92,246,0.04))', border: '1px solid rgba(234,239,9,0.15)', borderRadius: 12, position: 'relative', overflow: 'hidden' }}>
-                    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg, #eaef09, #8B5CF6, #10B981)' }} />
+                  <div style={{ marginBottom: 20, padding: '16px 18px', background: `linear-gradient(135deg, rgba(${tc.primaryRgb},0.04), rgba(${tc.primaryRgb},0.04))`, border: `1px solid rgba(${tc.primaryRgb},0.15)`, borderRadius: 12, position: 'relative', overflow: 'hidden' }}>
+                    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, ${tc.primary}, ${tc.primary})` }} />
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                      <Trophy size={16} color="#eaef09" weight="fill" />
-                      <span style={{ fontSize: 12, fontWeight: 700, color: '#eaef09', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Prizes</span>
+                      <Trophy size={16} color={tc.primary} weight="fill" />
+                      <span style={{ fontSize: 12, fontWeight: 700, color: tc.primary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Prizes</span>
                     </div>
                     {prizes.submitter && (
                       <div style={{ marginBottom: prizes.voter ? 10 : 0 }}>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Best name wins: {prizes.submitter.name}</div>
-                        {prizes.submitter.desc && <div style={{ fontSize: 12, color: '#7a7a7a', marginTop: 2 }}>{prizes.submitter.desc}</div>}
+                        <div style={{ fontSize: 14, fontWeight: 700, color: LIGHT_THEME.textPrimary }}>Best name wins: {prizes.submitter.name}</div>
+                        {prizes.submitter.desc && <div style={{ fontSize: 12, color: LIGHT_THEME.textMuted, marginTop: 2 }}>{prizes.submitter.desc}</div>}
                       </div>
                     )}
                     {prizes.voter && (
-                      <div style={{ fontSize: 12, color: '#a1a1a1', paddingTop: prizes.submitter ? 8 : 0, borderTop: prizes.submitter ? '0.5px solid rgba(255,255,255,0.06)' : 'none' }}>
-                        {prizes.submitter ? 'A random voter also wins: ' : 'One lucky voter wins: '}<strong style={{ color: '#fff' }}>{prizes.voter.name}</strong>
-                        {prizes.voter.desc && <div style={{ fontSize: 12, color: '#555', marginTop: 2 }}>{prizes.voter.desc}</div>}
+                      <div style={{ fontSize: 12, color: LIGHT_THEME.textSecondary, paddingTop: prizes.submitter ? 8 : 0, borderTop: prizes.submitter ? `1px solid ${LIGHT_THEME.divider}` : 'none' }}>
+                        {prizes.submitter ? 'A random voter also wins: ' : 'One lucky voter wins: '}<strong style={{ color: LIGHT_THEME.textPrimary }}>{prizes.voter.name}</strong>
+                        {prizes.voter.desc && <div style={{ fontSize: 12, color: LIGHT_THEME.textMuted, marginTop: 2 }}>{prizes.voter.desc}</div>}
                       </div>
                     )}
                   </div>
@@ -1136,37 +1147,37 @@ export default function ContestLive() {
 
               {submitted ? (
                 <div>
-                  <div style={{ padding: '20px', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 10, marginBottom: 24 }}>
+                  <div style={{ padding: '20px', background: `rgba(${tc.primaryRgb},0.08)`, border: `1px solid rgba(${tc.primaryRgb},0.3)`, borderRadius: 10, marginBottom: 24 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                      <CheckCircle size={22} color="#10B981" weight="fill" />
-                      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 18, color: '#fff' }}>Names submitted successfully!</span>
+                      <CheckCircle size={22} color={tc.primary} weight="fill" />
+                      <span style={{ fontFamily: LIGHT_THEME.fontDisplay, fontSize: 18, color: LIGHT_THEME.textPrimary }}>Names submitted successfully!</span>
                     </div>
-                    <div style={{ fontSize: 13, color: '#a1a1a1' }}>You submitted {submittedNames.length} name{submittedNames.length !== 1 ? 's' : ''}. You can add more or remove until the deadline.</div>
+                    <div style={{ fontSize: 13, color: LIGHT_THEME.textSecondary }}>You submitted {submittedNames.length} name{submittedNames.length !== 1 ? 's' : ''}. You can add more or remove until the deadline.</div>
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
                     {submittedNames.map((entry, i) => (
-                      <div key={i} style={{ padding: '12px 16px', background: '#1a1a1a', border: `0.5px solid rgba(${tc.rgb},0.2)`, borderRadius: 10 }}>
+                      <div key={i} style={{ padding: '12px 16px', background: LIGHT_THEME.cardBg, border: `1px solid rgba(${tc.primaryRgb},0.2)`, borderRadius: 10, boxShadow: LIGHT_THEME.cardShadow }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                          <Check size={16} color="#10B981" weight="bold" />
-                          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 18, color: '#fff', flex: 1 }}>{entry.name || entry}</span>
+                          <Check size={16} color={tc.primary} weight="bold" />
+                          <span style={{ fontFamily: LIGHT_THEME.fontDisplay, fontSize: 18, color: LIGHT_THEME.textPrimary, flex: 1 }}>{entry.name || entry}</span>
                           <button onClick={() => {
                             const updated = submittedNames.filter((_, idx) => idx !== i);
                             setSubmittedNames(updated);
                             if (updated.length === 0) setSubmitted(false);
-                          }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#7a7a7a', flexShrink: 0 }}>
+                          }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: LIGHT_THEME.textMuted, flexShrink: 0 }}>
                             <Trash size={14} />
                           </button>
                         </div>
                         {(entry.description || typeof entry === 'object') && entry.description && (
-                          <div style={{ fontSize: 12, color: '#7a7a7a', marginTop: 4, paddingLeft: 26, lineHeight: 1.5 }}>{entry.description}</div>
+                          <div style={{ fontSize: 12, color: LIGHT_THEME.textMuted, marginTop: 4, paddingLeft: 26, lineHeight: 1.5 }}>{entry.description}</div>
                         )}
                       </div>
                     ))}
                   </div>
 
                   {submittedNames.length < limit && (
-                    <button onClick={() => { setSubmitted(false); setNames(['']); }} style={{ height: 36, padding: '0 16px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, background: 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer', marginBottom: 8 }}>
+                    <button onClick={() => { setSubmitted(false); setNames(['']); }} style={{ height: 36, padding: '0 16px', border: `1px solid ${LIGHT_THEME.inputBorder}`, borderRadius: 8, background: 'transparent', color: LIGHT_THEME.textPrimary, fontSize: 13, cursor: 'pointer', marginBottom: 8 }}>
                       + Add more names
                     </button>
                   )}
@@ -1175,24 +1186,24 @@ export default function ContestLive() {
                   <ContextStats submittedNames={submittedNames} totalPoints={totalPoints} maxPoints={maxPoints} tc={tc} group={contest?.group} participantQuality={participantQuality} creatorQuality={creatorQuality} />
 
                   {meta.transitionMode === 'manual' ? (
-                    <div style={{ marginTop: 24, padding: '24px 20px', background: '#111', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 12, textAlign: 'center' }}>
+                    <div style={{ marginTop: 24, padding: '24px 20px', background: LIGHT_THEME.sidebarBg, border: `1px solid ${LIGHT_THEME.cardBorder}`, borderRadius: 12, textAlign: 'center' }}>
                       <div style={{ fontSize: 28, marginBottom: 12 }}>⏳</div>
-                      <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 8 }}>
+                      <div style={{ fontSize: 16, fontWeight: 700, color: LIGHT_THEME.textPrimary, marginBottom: 8 }}>
                         Waiting for the creator to open voting
                       </div>
-                      <div style={{ fontSize: 13, color: '#7a7a7a', lineHeight: 1.6, marginBottom: 16 }}>
+                      <div style={{ fontSize: 13, color: LIGHT_THEME.textMuted, lineHeight: 1.6, marginBottom: 16 }}>
                         The contest organizer will review all submissions and hand-pick a shortlist before opening voting. You'll receive an email as soon as voting opens.
                       </div>
-                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 20, background: `${tc.color}15`, border: `0.5px solid ${tc.color}35`, fontSize: 12, fontWeight: 600, color: tc.color }}>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 20, background: `${tc.primary}15`, border: `0.5px solid ${tc.primary}35`, fontSize: 12, fontWeight: 600, color: tc.primary }}>
                         <Clock size={12} /> Your submission is in — sit tight
                       </div>
                     </div>
                   ) : (
                     <div style={{ marginTop: 24, display: 'flex', gap: 12 }}>
-                      <button onClick={() => navigate(`/vote/${contest?.id || 'demo-1'}`)} style={{ flex: 1, height: 44, border: `1.5px solid ${tc.color}`, borderRadius: 10, background: `rgba(${tc.rgb},0.12)`, color: tc.color, fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
+                      <button onClick={() => navigate(`/vote/${contest?.id || 'demo-1'}`)} style={{ flex: 1, height: 44, border: `1.5px solid ${tc.primary}`, borderRadius: 10, background: `rgba(${tc.primaryRgb},0.12)`, color: tc.primary, fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
                         See Voting Interface →
                       </button>
-                      <button onClick={() => navigate('/dashboard')} style={{ height: 44, padding: '0 20px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 10, background: 'transparent', color: '#fff', fontSize: 14, cursor: 'pointer' }}>
+                      <button onClick={() => navigate('/dashboard')} style={{ height: 44, padding: '0 20px', border: `1px solid ${LIGHT_THEME.inputBorder}`, borderRadius: 10, background: 'transparent', color: LIGHT_THEME.textPrimary, fontSize: 14, cursor: 'pointer' }}>
                         Dashboard
                       </button>
                     </div>
@@ -1202,27 +1213,27 @@ export default function ContestLive() {
                 <div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
                     {names.map((entry, i) => (
-                      <div key={i} style={{ background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 10, overflow: 'hidden' }}>
+                      <div key={i} style={{ background: LIGHT_THEME.inputBg, border: `1px solid ${LIGHT_THEME.inputBorder}`, borderRadius: 10, overflow: 'hidden' }}>
                         <div style={{ display: 'flex', gap: 0 }}>
-                          <input value={entry.name} onChange={e => handleNameChange(i, e.target.value)} placeholder="Enter a name..." style={{ flex: 1, background: 'transparent', border: 'none', borderBottom: '0.5px solid rgba(255,255,255,0.08)', height: 44, padding: '0 14px', color: '#fff', fontSize: 16, fontFamily: 'Inter, sans-serif', outline: 'none' }} />
+                          <input value={entry.name} onChange={e => handleNameChange(i, e.target.value)} placeholder="Enter a name..." style={{ flex: 1, background: 'transparent', border: 'none', borderBottom: `1px solid ${LIGHT_THEME.divider}`, height: 44, padding: '0 14px', color: LIGHT_THEME.inputText, fontSize: 16, fontFamily: LIGHT_THEME.fontBody, outline: 'none' }} />
                           {names.length > 1 && (
-                            <button onClick={() => handleRemoveName(i)} style={{ height: 44, width: 44, border: 'none', borderBottom: '0.5px solid rgba(255,255,255,0.08)', background: 'transparent', color: '#7a7a7a', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <button onClick={() => handleRemoveName(i)} style={{ height: 44, width: 44, border: 'none', borderBottom: `1px solid ${LIGHT_THEME.divider}`, background: 'transparent', color: LIGHT_THEME.textMuted, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                               <Trash size={14} />
                             </button>
                           )}
                         </div>
-                        <input value={entry.description} onChange={e => handleDescChange(i, e.target.value)} placeholder="Why this name? Short rationale (optional)" style={{ width: '100%', boxSizing: 'border-box', background: 'transparent', border: 'none', height: 34, padding: '0 14px', color: '#7a7a7a', fontSize: 12, fontFamily: 'Inter, sans-serif', outline: 'none' }} />
+                        <input value={entry.description} onChange={e => handleDescChange(i, e.target.value)} placeholder="Why this name? Short rationale (optional)" style={{ width: '100%', boxSizing: 'border-box', background: 'transparent', border: 'none', height: 34, padding: '0 14px', color: LIGHT_THEME.textMuted, fontSize: 12, fontFamily: LIGHT_THEME.fontBody, outline: 'none' }} />
                       </div>
                     ))}
                   </div>
 
                   {names.length < limit && (
-                    <button onClick={handleAddName} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 36, padding: '0 14px', border: '1px dashed rgba(255,255,255,0.2)', borderRadius: 8, background: 'transparent', color: '#7a7a7a', fontSize: 13, cursor: 'pointer', marginBottom: 20 }}>
+                    <button onClick={handleAddName} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 36, padding: '0 14px', border: '1px dashed rgba(30,35,48,0.2)', borderRadius: 8, background: 'transparent', color: LIGHT_THEME.textMuted, fontSize: 13, cursor: 'pointer', marginBottom: 20 }}>
                       <Plus size={14} /> Add another name
                     </button>
                   )}
 
-                  <button onClick={handleSubmit} disabled={!names.some(n => n.name.trim())} style={{ height: 48, padding: '0 28px', border: `1.5px solid ${tc.color}`, borderRadius: 10, background: `rgba(${tc.rgb},0.12)`, color: tc.color, fontSize: 15, fontWeight: 700, cursor: names.some(n => n.name.trim()) ? 'pointer' : 'not-allowed', opacity: names.some(n => n.name.trim()) ? 1 : 0.5 }}>
+                  <button onClick={handleSubmit} disabled={!names.some(n => n.name.trim())} style={{ height: 48, padding: '0 28px', border: `1.5px solid ${tc.primary}`, borderRadius: 10, background: `rgba(${tc.primaryRgb},0.12)`, color: tc.primary, fontSize: 15, fontWeight: 700, cursor: names.some(n => n.name.trim()) ? 'pointer' : 'not-allowed', opacity: names.some(n => n.name.trim()) ? 1 : 0.5 }}>
                     Submit Names
                   </button>
                 </div>

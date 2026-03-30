@@ -10,7 +10,9 @@ import {
   ClipboardText, SpeakerSlash, Ruler, Scales, X, Sparkle,
 } from '@phosphor-icons/react';
 import { platformStats, testimonials, faqData, howItWorksSteps, almostNames, methodologyItems } from '../data/mockData';
-import HeroCardStream from '../components/HeroCardStream';
+import personalIllustration from '../assets/personal-illustration.png';
+import teamIllustration from '../assets/team-illustration.png';
+import businessIllustration from '../assets/business-illustration.png';
 
 /* ── Typewriter Word Animation ── */
 function RotatingWord({ words }) {
@@ -44,13 +46,13 @@ function RotatingWord({ words }) {
   }, [text, isDeleting, wordIdx, words]);
 
   return (
-    <span style={{ color: '#eaef09', fontWeight: 800 }}>
+    <span style={{ color: '#254f1a', fontWeight: 800 }}>
       {text}
       <span style={{
         display: 'inline-block',
         width: 2,
         height: '0.85em',
-        background: '#eaef09',
+        background: '#254f1a',
         marginLeft: 1,
         marginRight: -2,
         verticalAlign: 'baseline',
@@ -63,16 +65,36 @@ function RotatingWord({ words }) {
 /* ── Glassmorphism Navbar ── */
 function Navbar() {
   const navigate = useNavigate();
+  const [visible, setVisible] = useState(true);
+  const lastY = useRef(0);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (y < 80) { setVisible(true); }
+      else if (y > lastY.current + 6) { setVisible(false); }
+      else if (y < lastY.current - 6) { setVisible(true); }
+      lastY.current = y;
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
-    <div style={{ position: 'sticky', top: 16, zIndex: 1000, padding: '0 24px' }}>
+    <div style={{
+      position: 'fixed', top: 0, left: 0, right: 0,
+      zIndex: 1000, padding: '16px 24px',
+      transform: visible ? 'translateY(0)' : 'translateY(-120%)',
+      transition: 'transform 0.35s cubic-bezier(0.4,0,0.2,1)',
+    }}>
+      <div style={{ maxWidth: 1504, margin: '0 auto' }}>
       <nav style={{
-        background: 'rgba(20,20,20,0.6)',
+        background: 'rgba(239,240,236,0.92)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        border: '0.5px solid rgba(255,255,255,0.08)',
-        borderRadius: 16,
-        padding: '0 24px',
-        height: 56,
+        borderRadius: 999,
+        padding: '10px 10px 10px 28px',
+        boxShadow: '0 2px 16px rgba(30,35,48,0.08)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -81,14 +103,14 @@ function Navbar() {
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
           <div style={{
             width: 32, height: 32,
-            background: '#eaef09',
-            borderRadius: 6,
+            background: '#d2e823',
+            borderRadius: 8,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <img src={namicoIcon} alt="Namico" style={{ width: 24, height: 24, display: 'block' }} />
+            <img src={namicoIcon} alt="Naming Contest" style={{ width: 24, height: 24, display: 'block' }} />
           </div>
-          <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: 16, color: '#fff' }}>
-            Namico
+          <span style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontWeight: 700, fontSize: 18, color: '#1e2330' }}>
+            NamingContest
           </span>
         </Link>
 
@@ -96,9 +118,9 @@ function Navbar() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
           {[{ label: 'How It Works', href: '#shared-accountability' }, { label: 'Examples', href: '#examples' }, { label: 'Pricing', href: '#pricing' }].map(link => (
             <a key={link.label} href={link.href}
-              style={{ color: '#a1a1a1', fontSize: 14, fontWeight: 500, textDecoration: 'none', transition: 'color 0.2s' }}
-              onMouseEnter={e => e.target.style.color = '#fff'}
-              onMouseLeave={e => e.target.style.color = '#a1a1a1'}
+              style={{ color: '#1e2330', fontSize: 16, fontWeight: 500, textDecoration: 'none', transition: 'color 0.2s' }}
+              onMouseEnter={e => e.target.style.color = '#254f1a'}
+              onMouseLeave={e => e.target.style.color = '#1e2330'}
             >
               {link.label}
             </a>
@@ -106,22 +128,29 @@ function Navbar() {
         </div>
 
         {/* Right Side */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {/* Wireframe Flow Testing — hidden from public nav, kept for internal use */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button onClick={() => navigate('/wireframe')} style={{ display: 'none' }}>
             Wireframe Flow Testing
           </button>
           <button onClick={() => navigate('/dashboard')} style={{
-            background: 'none', border: 'none', color: '#a1a1a1',
-            fontSize: 14, fontWeight: 500, cursor: 'pointer', padding: '0 8px',
+            background: 'none', border: 'none', color: '#1e2330',
+            fontSize: 16, fontWeight: 500, cursor: 'pointer', padding: '14px 20px',
           }}>
             Sign In
           </button>
-          <button onClick={() => navigate('/select')} className="btn-primary btn-neutral">
+          <button onClick={() => navigate('/select')} style={{
+            background: '#1e2330', border: 'none', borderRadius: 999, color: '#fff',
+            fontSize: 16, fontWeight: 500, cursor: 'pointer', padding: '14px 28px',
+            transition: 'opacity 0.2s',
+          }}
+            onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+            onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+          >
             Get Started
           </button>
         </div>
       </nav>
+      </div>
     </div>
   );
 }
@@ -134,21 +163,14 @@ const CATCHWORD_CLIENTS = [
 
 function SocialProofSection() {
   return (
-    <section style={{ background: '#141414', padding: '48px 0', overflow: 'hidden' }}>
-      <div style={{ textAlign: 'center', marginBottom: 28, padding: '0 24px' }}>
-        <div style={{ fontSize: 15, color: '#a1a1a1', lineHeight: 1.7 }}>
-          Namico is powered by{' '}
-          <span style={{ color: '#eaef09', fontWeight: 700 }}>Catchword Branding</span>
-          , #1 naming firm globally, trusted by:
-        </div>
-      </div>
+    <section style={{ background: '#f3f3f1', padding: '48px 0', overflow: 'hidden' }}>
 
       {/* Marquee */}
       <div style={{ position: 'relative' }}>
         {/* Left fade */}
-        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 120, background: 'linear-gradient(90deg, #141414, transparent)', zIndex: 2, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 120, background: 'linear-gradient(90deg, #f3f3f1, transparent)', zIndex: 2, pointerEvents: 'none' }} />
         {/* Right fade */}
-        <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 120, background: 'linear-gradient(270deg, #141414, transparent)', zIndex: 2, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 120, background: 'linear-gradient(270deg, #f3f3f1, transparent)', zIndex: 2, pointerEvents: 'none' }} />
 
         <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
           {[0, 1].map(copy => (
@@ -166,11 +188,11 @@ function SocialProofSection() {
                 <span
                   key={i}
                   style={{
-                    fontFamily: 'Inter, sans-serif',
+                    fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
                     fontSize: 28,
                     fontWeight: 700,
-                    color: '#ffffff',
-                    opacity: 0.7,
+                    color: '#1e2330',
+                    opacity: 0.45,
                     letterSpacing: '-0.01em',
                   }}
                 >
@@ -198,22 +220,22 @@ function Accordion({ items }) {
   return (
     <div>
       {items.map(item => (
-        <div key={item.id} style={{ borderBottom: '0.5px solid rgba(0,0,0,0.08)' }}>
+        <div key={item.id} style={{ borderBottom: '0.5px solid rgba(30,35,48,0.12)' }}>
           <button
             onClick={() => setOpen(open === item.id ? null : item.id)}
             style={{
               width: '100%', background: 'none', border: 'none',
               padding: '20px 0',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              color: '#1C1917', fontSize: 16, fontWeight: 600,
-              fontFamily: 'Inter, sans-serif', cursor: 'pointer', textAlign: 'left',
+              color: '#1e2330', fontSize: 18, fontWeight: 600,
+              fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", cursor: 'pointer', textAlign: 'left',
               gap: 16,
             }}
           >
             <span>{item.question}</span>
             {open === item.id
-              ? <Minus size={18} weight="bold" style={{ color: '#eaef09', flexShrink: 0 }} />
-              : <Plus size={18} weight="bold" style={{ color: '#a1a1a1', flexShrink: 0 }} />
+              ? <Minus size={18} weight="bold" style={{ color: '#254f1a', flexShrink: 0 }} />
+              : <Plus size={18} weight="bold" style={{ color: '#254f1a', flexShrink: 0 }} />
             }
           </button>
           <div style={{
@@ -222,7 +244,7 @@ function Accordion({ items }) {
             transition: 'max-height 0.35s ease',
             paddingBottom: open === item.id ? 20 : 0,
           }}>
-            <p style={{ fontSize: 15, color: '#78716C', lineHeight: 1.7 }}>{item.answer}</p>
+            <p style={{ fontSize: 16, color: 'rgba(30,35,48,0.7)', lineHeight: 1.7 }}>{item.answer}</p>
           </div>
         </div>
       ))}
@@ -255,7 +277,7 @@ function FlipCard({ item }) {
           boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
         }}>
           <div style={{
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
             fontSize: 26, fontWeight: 700, color: '#0a0a0a',
             marginBottom: 8, textAlign: 'center',
           }}>
@@ -263,11 +285,11 @@ function FlipCard({ item }) {
           </div>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
-            background: 'rgba(234,239,9,0.1)',
-            border: '0.5px solid rgba(234,239,9,0.3)',
+            background: 'rgba(210,232,35,0.15)',
+            border: '0.5px solid rgba(210,232,35,0.4)',
             borderRadius: 9999,
             padding: '2px 10px',
-            fontSize: 11, color: '#78716C',
+            fontSize: 15, color: '#254f1a',
           }}>
             <CheckCircle size={10} weight="fill" /> Winner
           </div>
@@ -276,7 +298,7 @@ function FlipCard({ item }) {
         {/* Back */}
         <div style={{
           position: 'absolute', inset: 0,
-          background: '#f5f2ee',
+          background: '#e8efd6',
           border: '0.5px solid rgba(0,0,0,0.08)',
           borderRadius: 12,
           backfaceVisibility: 'hidden',
@@ -286,18 +308,15 @@ function FlipCard({ item }) {
           overflow: 'hidden',
           boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
         }}>
-          <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#999', marginBottom: 6 }}>
+          <div style={{ fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#1e2330', marginBottom: 6 }}>
             Almost named...
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 3, marginBottom: 8 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             {item.rejected.slice(0, 3).map(r => (
-              <div key={r} style={{ fontSize: 12, color: '#444', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
+              <div key={r} style={{ fontSize: 14, color: '#1e2330', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
                 <X size={10} weight="bold" style={{ flexShrink: 0, opacity: 0.4 }} /> {r}
               </div>
             ))}
-          </div>
-          <div style={{ fontSize: 10, color: '#888', lineHeight: 1.4 }}>
-            {item.context.substring(0, 80)}...
           </div>
         </div>
       </div>
@@ -310,10 +329,10 @@ function FlipCard({ item }) {
 /* ── Pricing Feature Table ── */
 function PricingFeatureTable() {
   const cols = [
-    { label: 'Free',     color: '#7a7a7a' },
-    { label: 'Personal', color: '#10B981' },
-    { label: 'Team',     color: '#8B5CF6' },
-    { label: 'Business', color: '#A89000' },
+    { label: 'Free',     color: '#1e2330' },
+    { label: 'Personal', color: '#2665d6' },
+    { label: 'Team',     color: '#780016' },
+    { label: 'Business', color: '#254f1a' },
   ];
 
   const sections = [
@@ -376,9 +395,9 @@ function PricingFeatureTable() {
     <div style={{ borderRadius: 16, overflow: 'hidden', border: '0.5px solid rgba(0,0,0,0.08)' }}>
       {/* Header row */}
       <div style={{ display: 'grid', gridTemplateColumns: '200px repeat(4, 1fr)', background: '#fff', borderBottom: '0.5px solid rgba(0,0,0,0.08)' }}>
-        <div style={{ padding: '12px 16px', fontSize: 10, color: '#999', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em' }}>Feature</div>
+        <div style={{ padding: '12px 16px', fontSize: 14, color: '#1e2330', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em' }}>Feature</div>
         {cols.map((c, i) => (
-          <div key={i} style={{ padding: '12px 8px', textAlign: 'center', fontSize: 11, fontWeight: 800, color: c.color, borderLeft: '0.5px solid rgba(0,0,0,0.05)', letterSpacing: '0.03em' }}>
+          <div key={i} style={{ padding: '12px 8px', textAlign: 'center', fontSize: 15, fontWeight: 800, color: c.color, borderLeft: '0.5px solid rgba(0,0,0,0.05)', letterSpacing: '0.03em' }}>
             {c.label}
           </div>
         ))}
@@ -387,16 +406,16 @@ function PricingFeatureTable() {
       {sections.map((section, si) => (
         <div key={si} style={{ borderBottom: '0.5px solid rgba(0,0,0,0.06)' }}>
           {/* Section label */}
-          <div style={{ padding: '10px 16px', background: 'rgba(0,0,0,0.03)', fontSize: 12, fontWeight: 700, color: '#1C1917', borderBottom: '0.5px solid rgba(0,0,0,0.05)' }}>
+          <div style={{ padding: '10px 16px', background: 'rgba(0,0,0,0.03)', fontSize: 14, fontWeight: 700, color: '#1e2330', borderBottom: '0.5px solid rgba(0,0,0,0.05)' }}>
             {section.label}
           </div>
           {section.rows.map((row, ri) => {
             const vals = [row.free, row.personal, row.team, row.business];
             return (
               <div key={ri} style={{ display: 'grid', gridTemplateColumns: '200px repeat(4, 1fr)', background: ri % 2 === 1 ? 'rgba(0,0,0,0.02)' : '#fff' }}>
-                <div style={{ padding: '9px 16px 9px 24px', fontSize: 12, color: '#4a4a4a', display: 'flex', alignItems: 'center' }}>{row.feature}</div>
+                <div style={{ padding: '9px 16px 9px 24px', fontSize: 14, color: '#1e2330', display: 'flex', alignItems: 'center' }}>{row.feature}</div>
                 {vals.map((v, vi) => (
-                  <div key={vi} style={{ padding: '9px 8px', textAlign: 'center', fontSize: 12, borderLeft: '0.5px solid rgba(0,0,0,0.04)', fontWeight: v === '—' ? 400 : 600, color: v === '✓' ? cols[vi].color : v === '—' ? '#ccc' : '#4a4a4a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div key={vi} style={{ padding: '9px 8px', textAlign: 'center', fontSize: 14, borderLeft: '0.5px solid rgba(0,0,0,0.04)', fontWeight: v === '—' ? 400 : 600, color: v === '✓' ? cols[vi].color : v === '—' ? '#ccc' : '#4a4a4a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {v}
                   </div>
                 ))}
@@ -413,15 +432,69 @@ function PricingFeatureTable() {
 export default function LandingPage() {
   const navigate = useNavigate();
 
+  /* ── Cursor letter trail (hero only) ── */
+  const heroRef = useRef(null);
+  useEffect(() => {
+    const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let lastX = 0, lastY = 0;
+
+    const onMove = (e) => {
+      const hero = heroRef.current;
+      if (!hero) return;
+      const rect = hero.getBoundingClientRect();
+      // Only active inside the hero section
+      if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) return;
+
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
+      if (dx * dx + dy * dy < 400) return;
+      lastX = e.clientX;
+      lastY = e.clientY;
+
+      const el = document.createElement('span');
+      el.textContent = CHARS[Math.floor(Math.random() * CHARS.length)];
+      const size = Math.random() * 18 + 12;
+      const angle = (Math.random() - 0.5) * 40;
+      const drift = (Math.random() - 0.5) * 40;
+      const drop = 80 + Math.random() * 60;
+      const dur = 700 + Math.random() * 500;
+
+      Object.assign(el.style, {
+        position: 'fixed',
+        left: e.clientX + 'px',
+        top: e.clientY + 'px',
+        fontSize: size + 'px',
+        fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
+        fontWeight: '800',
+        color: 'rgb(30,35,48)',
+        pointerEvents: 'none',
+        zIndex: '99999',
+        userSelect: 'none',
+        lineHeight: '1',
+        transformOrigin: 'center',
+      });
+      document.body.appendChild(el);
+
+      el.animate([
+        { transform: `translate(-50%, -50%) rotate(${angle}deg) scale(1)`, opacity: 0.85 },
+        { transform: `translate(calc(-50% + ${drift}px), calc(-50% + ${drop}px)) rotate(${angle + 25}deg) scale(0.4)`, opacity: 0 },
+      ], { duration: dur, easing: 'cubic-bezier(0.25,0.46,0.45,0.94)', fill: 'forwards' })
+        .finished.then(() => el.remove());
+    };
+
+    window.addEventListener('mousemove', onMove);
+    return () => window.removeEventListener('mousemove', onMove);
+  }, []);
+
   const segmentCards = [
     {
       group: 'personal',
       label: 'Personal',
-      icon: <Baby size={28} weight="duotone" color="#10B981" />,
+      icon: <Baby size={28} weight="duotone" color="#d2e823" />,
       title: 'No opinions are too many',
-      subtitle: "Invite the people whose opinion matters",
-      color: '#10B981',
-      colorRgb: '16,185,129',
+      subtitle: "Invite the people who matter",
+      color: '#d2e823',
+      colorRgb: '210,232,35',
       tags: ['Baby Name', 'Pet Name', 'Home', 'Something Fun'],
       cta: 'Start Personal Contest',
       price: '$9',
@@ -440,11 +513,11 @@ export default function LandingPage() {
     {
       group: 'team',
       label: 'Group',
-      icon: <Users size={28} weight="duotone" color="#8B5CF6" />,
+      icon: <Users size={28} weight="duotone" color="#e9c0e9" />,
       title: 'Let the squad decide',
-      subtitle: "From group chat chaos to a name everyone reps",
-      color: '#8B5CF6',
-      colorRgb: '139,92,246',
+      subtitle: "One name the whole squad stands behind",
+      color: '#d2e823',
+      colorRgb: '210,232,35',
       tags: ['Sports Team', 'Band', 'Podcast', 'Gaming Group'],
       cta: 'Start Team Contest',
       price: '$29',
@@ -463,11 +536,11 @@ export default function LandingPage() {
     {
       group: 'business',
       label: 'Business',
-      icon: <Buildings size={28} weight="duotone" color="#eaef09" />,
+      icon: <Buildings size={28} weight="duotone" color="#254f1a" />,
       title: 'Naming is a business decision',
-      subtitle: 'Structured naming with real methodology',
-      color: '#eaef09',
-      colorRgb: '234,239,9',
+      subtitle: 'Naming with structure behind it',
+      color: '#d2e823',
+      colorRgb: '210,232,35',
       tags: ['Company', 'Product', 'Project', 'Rebrand'],
       cta: 'Start Business Contest',
       price: '$89',
@@ -494,149 +567,100 @@ export default function LandingPage() {
   ];
 
   const methodIcons = [
-    <SpeakerSlash size={28} weight="duotone" color="#eaef09" />,
-    <Ruler size={28} weight="duotone" color="#eaef09" />,
-    <Scales size={28} weight="duotone" color="#eaef09" />,
+    <SpeakerSlash size={28} weight="duotone" color="#d2e823" />,
+    <Ruler size={28} weight="duotone" color="#d2e823" />,
+    <Scales size={28} weight="duotone" color="#d2e823" />,
   ];
 
   return (
-    <div style={{ background: '#0a0a0a', minHeight: '100vh' }}>
+    <div style={{ background: '#f3f3f1', minHeight: '100vh' }}>
       <Navbar />
 
       {/* ── Hero Section ── */}
-      <section style={{
+      <section ref={heroRef} style={{
         position: 'relative',
-        background: '#0a0a0a',
-        padding: '80px 0 0',
+        background: '#d2e823',
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
         overflow: 'hidden',
       }}>
-        {/* Radial glow */}
-        <div style={{
-          position: 'absolute',
-          top: '10%', left: '50%', transform: 'translateX(-50%)',
-          width: 800, height: 400,
-          background: 'radial-gradient(ellipse, rgba(234,239,9,0.06) 0%, transparent 70%)',
-          pointerEvents: 'none',
-        }} />
-
-        {/* Grid overlay */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)',
-          backgroundSize: '60px 60px',
-          pointerEvents: 'none',
-        }} />
-
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 1, textAlign: 'center' }}>
-          {/* Eyebrow */}
-          <div style={{
-            fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em',
-            color: '#eaef09', marginBottom: 24,
-            animation: 'fadeUp 0.6s ease both',
-          }}>
-            Powered by Catchword, the #1 Ranked Naming Agency Worldwide
-          </div>
-
+        <div style={{ maxWidth: 1504, width: '100%', margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 1, textAlign: 'center' }}>
           {/* H1 */}
           <h1 style={{
-            fontFamily: 'Inter, sans-serif',
-            fontSize: 'clamp(40px, 6vw, 70px)',
+            fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
+            fontSize: 'clamp(40px, 6vw, 80px)',
             fontWeight: 800,
-            color: '#fff',
-            lineHeight: 1.1,
-            marginBottom: 24,
-            maxWidth: 900,
+            color: '#254f1a',
+            lineHeight: 1.07,
+            maxWidth: 'none',
             margin: '0 auto 24px',
-            animation: 'fadeUp 0.7s ease 0.1s both',
           }}>
-            Name things together<br />
-            <em style={{ color: '#eaef09', fontStyle: 'italic' }}>with Namico</em>
+            New band, brand, or a baby?<br />
+            <span style={{ color: '#1e2330' }}>Run a naming contest maybe?</span>
           </h1>
 
           {/* Subheadline */}
           <p style={{
-            fontSize: 18,
-            color: '#a1a1a1',
+            fontSize: 20,
+            color: '#254f1a',
             maxWidth: 520,
-            margin: '0 auto 0',
-            lineHeight: 1.6,
-            animation: 'fadeUp 0.7s ease 0.2s both',
+            margin: '0 auto 40px',
+            lineHeight: 1.5,
           }}>
-            The only personal naming assistant built on 25 years of naming methodology
+            No spreadsheets. No group chat debates. Just invite people, collect real ideas, vote, and crown a winner.
           </p>
+
+          {/* CTA Button */}
+          <div>
+            <button
+              onClick={() => navigate('/select')}
+              style={{
+                background: '#254f1a', border: 'none', borderRadius: 999,
+                color: '#fff', fontSize: 18, fontWeight: 600, cursor: 'pointer',
+                padding: '16px 40px', display: 'inline-flex', alignItems: 'center', gap: 8,
+                transition: 'opacity 0.2s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+            >
+              Launch a naming contest
+              <ArrowRight size={16} weight="bold" />
+            </button>
+          </div>
         </div>
 
-        {/* Card stream animation — full width, inside hero */}
-        <HeroCardStream />
       </section>
 
-      {/* ── Segment Entry Cards ── */}
-      <section id="pricing" style={{ background: '#f5f2ee', padding: '80px 0' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <div style={{
-              fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em',
-              color: '#999', marginBottom: 12,
-            }}>
-              Start Your Contest
-            </div>
-            <h2 style={{
-              fontFamily: 'Inter, sans-serif',
-              fontSize: 'clamp(28px, 4vw, 42px)',
-              fontWeight: 800,
-              color: '#0a0a0a',
-              marginBottom: 16,
-              lineHeight: 1.15,
-            }}>
-              Every name starts differently,<br />your contest already knows that
-            </h2>
-            <p style={{ fontSize: 16, color: '#444', maxWidth: 520, margin: '0 auto', lineHeight: 1.65 }}>
-              Business brands, team identities, or personal milestones — every great name deserves a structured process and a fair vote.
-            </p>
-          </div>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 28,
-            maxWidth: 1200,
-            margin: '0 auto',
-          }}>
-            {segmentCards.map((card, i) => (
-              <SegmentCard key={card.group} card={card} navigate={navigate} delay={i * 0.1} />
-            ))}
-          </div>
-
-          {/* Full feature breakdown — expandable */}
-          <FeatureBreakdown />
-        </div>
-      </section>
-
-      {/* ── Stats ── */}
-      <SocialProofSection />
+      {/* ── Segment Blocks (Linktree-style alternating) ── */}
+      <div id="pricing">
+        {segmentCards.map((card, i) => (
+          <SegmentBlock key={card.group} card={card} navigate={navigate} index={i} />
+        ))}
+      </div>
 
       {/* ── Success Stories ── */}
-      <section style={{ background: '#FBF8F3', padding: '80px 0' }} id="examples">
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+      <section style={{ background: '#f3f3f1', padding: '80px 0' }} id="examples">
+        <div style={{ maxWidth: 1504, margin: '0 auto', padding: '0 24px' }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <div style={{
-              fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em',
-              color: '#7a7a7a', marginBottom: 12,
+              fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em',
+              color: '#1e2330', marginBottom: 12,
             }}>
               Real Results
             </div>
             <h2 style={{
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
               fontSize: 'clamp(28px, 4vw, 42px)',
               fontWeight: 800,
-              color: '#1C1917',
+              color: '#1e2330',
               marginBottom: 12,
               lineHeight: 1.15,
             }}>
               Names chosen together,<br />owned by everyone
             </h2>
-            <p style={{ fontSize: 16, color: '#78716C', maxWidth: 480, margin: '0 auto' }}>
-              From startups to family milestones, Namico delivers clear results.
-            </p>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
@@ -648,8 +672,16 @@ export default function LandingPage() {
       </section>
 
       {/* ── How It Works ── */}
-      <section style={{ background: '#F8F7F2', padding: '8px 0 40px' }} id="how-it-works">
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+      <section style={{ background: '#254f1a', padding: '80px 0' }} id="how-it-works">
+        <div style={{ maxWidth: 1504, margin: '0 auto', padding: '0 24px' }}>
+          <div style={{ textAlign: 'center', marginBottom: 48 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(210,232,35,0.65)', marginBottom: 12 }}>
+              How It Works
+            </div>
+            <h2 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 'clamp(32px, 5vw, 56px)', fontWeight: 700, color: '#d2e823', lineHeight: 1.15 }}>
+              Five steps to the perfect name
+            </h2>
+          </div>
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(5, 1fr)',
@@ -658,111 +690,118 @@ export default function LandingPage() {
           }}>
             {howItWorksSteps.map((step, i) => (
               <div key={i} style={{ textAlign: 'center', position: 'relative' }}>
-                {/* Connecting line */}
                 {i < 4 && (
                   <div style={{
                     position: 'absolute',
                     top: 24, left: '60%',
                     width: '80%', height: 1,
-                    borderTop: '1px dashed rgba(0,0,0,0.12)',
+                    borderTop: '1px dashed rgba(255,255,255,0.2)',
                     zIndex: 0,
                   }} />
                 )}
-
-                {/* Step number badge */}
                 <div style={{
                   width: 48, height: 48,
-                  background: '#fff',
-                  border: '0.5px solid rgba(0,0,0,0.12)',
+                  background: '#d2e823',
                   borderRadius: '50%',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   margin: '0 auto 16px',
-                  fontSize: 13, fontWeight: 700, color: '#1C1917',
+                  fontSize: 15, fontWeight: 700, color: '#000',
                   position: 'relative', zIndex: 1,
-                  boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
                 }}>
                   {step.number}
                 </div>
-
-                <div style={{ marginBottom: 12 }}>{stepIcons[i]}</div>
-
-                <h3 style={{ fontSize: 15, fontWeight: 700, color: '#1C1917', marginBottom: 8 }}>
+                <h3 style={{ fontSize: 18, fontWeight: 700, color: '#ffffff', marginBottom: 8 }}>
                   {step.title}
                 </h3>
-                <p style={{ fontSize: 13, color: '#78716C', lineHeight: 1.6 }}>
+                <p style={{ fontSize: 15, color: 'rgba(210,232,35,0.8)', lineHeight: 1.6 }}>
                   {step.description}
                 </p>
               </div>
             ))}
           </div>
+          <div style={{ textAlign: 'center', marginTop: 48 }}>
+            <button
+              onClick={() => navigate('/select')}
+              style={{
+                background: '#d2e823', border: 'none', borderRadius: 999,
+                color: '#254f1a', fontSize: 18, fontWeight: 600, cursor: 'pointer',
+                padding: '16px 40px', display: 'inline-flex', alignItems: 'center', gap: 8,
+                transition: 'opacity 0.2s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+            >
+              Start your contest
+              <ArrowRight size={16} weight="bold" />
+            </button>
+          </div>
         </div>
       </section>
 
       {/* ── Contest Quality System ── */}
-      <section id="shared-accountability" style={{ background: '#141414', padding: '80px 0' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+      <section id="shared-accountability" style={{ background: '#e8efd6', padding: '80px 0' }}>
+        <div style={{ maxWidth: 1504, margin: '0 auto', padding: '0 24px' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <div style={{
-              fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em',
-              color: '#eaef09', marginBottom: 12,
+              fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em',
+              color: '#1e2330', marginBottom: 12,
             }}>
               Shared Accountability
             </div>
             <h2 style={{
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
               fontSize: 'clamp(28px, 4vw, 42px)',
               fontWeight: 800,
-              color: '#fff',
+              color: '#254f1a',
               marginBottom: 16,
               lineHeight: 1.15,
             }}>
-              Great names take two sides,
+              Both sides do the work.
               <br />
-              <span style={{ color: '#eaef09' }}>Track your half of the work</span>
+              <span style={{ color: '#1e2330' }}>Both sides get the credit.</span>
             </h2>
-            <p style={{ fontSize: 16, color: '#a1a1a1', maxWidth: 520, margin: '0 auto', lineHeight: 1.7 }}>
-              Every contest has a 100-point quality score split evenly between the creator and participants. The better both sides prepare, the better the names you'll get.
+            <p style={{ fontSize: 18, color: '#1e2330', maxWidth: 520, margin: '0 auto', lineHeight: 1.7, opacity: 0.75 }}>
+              A 100-point score split between creator and participants.
             </p>
           </div>
 
           {/* Visual quality bar demo */}
           <div style={{
-            maxWidth: 1200,
-            margin: '0 auto 64px',
-            background: 'rgba(255,255,255,0.03)',
-            border: '0.5px solid rgba(255,255,255,0.08)',
+            maxWidth: 1504,
+            margin: '0 auto',
+            background: '#ffffff',
+            border: '0.5px solid rgba(68,34,4,0.1)',
             borderRadius: 20,
             padding: '36px 40px',
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', letterSpacing: '0.04em' }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#1e2330', letterSpacing: '0.04em' }}>
                 Contest Quality Score
               </div>
               <div style={{
-                fontSize: 12, fontWeight: 600,
-                background: 'rgba(234,239,9,0.15)',
-                border: '0.5px solid rgba(234,239,9,0.3)',
-                borderRadius: 99, padding: '3px 12px',
-                color: '#eaef09',
+                fontSize: 14, fontWeight: 600,
+                background: '#d2e823',
+                borderRadius: 99, padding: '4px 14px',
+                color: '#000',
               }}>
                 Strong · 78/100
               </div>
             </div>
 
             {/* The split bar */}
-            <div style={{ position: 'relative', height: 12, borderRadius: 6, background: '#333333', marginBottom: 10 }}>
+            <div style={{ position: 'relative', height: 12, borderRadius: 6, background: 'rgba(30,35,48,0.12)', marginBottom: 10 }}>
               {/* Creator fill - 38/50 */}
               <div style={{
                 position: 'absolute', left: 0, top: 0, bottom: 0,
                 width: '38%',
-                background: 'linear-gradient(90deg, #eaef09aa, #eaef09)',
+                background: 'linear-gradient(90deg, rgba(210,232,35,0.6), #d2e823)',
                 borderRadius: '6px 0 0 6px',
               }} />
               {/* Participant fill - 40/50, starts at midpoint */}
               <div style={{
                 position: 'absolute', left: '50%', top: 0, bottom: 0,
                 width: '40%',
-                background: 'linear-gradient(90deg, #ffffffaa, #ffffff)',
+                background: 'linear-gradient(90deg, rgba(68,34,4,0.25), rgba(68,34,4,0.55))',
                 borderRadius: '0 6px 6px 0',
               }} />
               {/* Midpoint divider */}
@@ -774,36 +813,36 @@ export default function LandingPage() {
               }} />
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#7a7a7a', marginBottom: 28 }}>
-              <span style={{ color: '#eaef09cc' }}>◀ Creator's half · 38/50</span>
-              <span style={{ color: '#ffffffcc' }}>Participants' half · 40/50 ▶</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 15, color: '#1e2330', marginBottom: 28 }}>
+              <span style={{ color: '#254f1a', fontWeight: 600 }}>◀ Creator's half · 38/50</span>
+              <span style={{ color: '#1e2330', fontWeight: 600 }}>Participants' half · 40/50 ▶</span>
             </div>
 
             {/* Two-column explanation */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               {[
                 {
-                  color: '#eaef09',
+                  color: '#254f1a',
                   label: 'Creator (0–50)',
                   items: ['Complete all brief fields', 'Read the naming primer', 'Set submission rules & deadline'],
                   note: 'Done before anyone else joins.',
                 },
                 {
-                  color: '#ffffff',
+                  color: '#1e2330',
                   label: 'Participants (0–50)',
                   items: ['Read naming methodology articles', 'Submit quality name ideas', 'Earn naming points through feedback'],
                   note: 'Crowd effort, tracked live.',
                 },
               ].map((col, i) => (
                 <div key={i} style={{
-                  background: '#0a0a0a',
-                  border: `0.5px solid ${col.color}33`,
+                  background: '#ffffff',
+                  border: `0.5px solid ${col.color}22`,
                   borderRadius: 12,
                   padding: '18px 20px',
                 }}>
                   <div style={{
-                    fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
-                    letterSpacing: '0.08em', color: col.color, marginBottom: 14,
+                    fontSize: 13, fontWeight: 700, textTransform: 'uppercase',
+                    letterSpacing: '0.1em', color: col.color, marginBottom: 14,
                   }}>
                     {col.label}
                   </div>
@@ -812,16 +851,16 @@ export default function LandingPage() {
                       <div key={j} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                         <div style={{
                           width: 5, height: 5, borderRadius: '50%',
-                          background: col.color, opacity: 0.7,
+                          background: col.color, opacity: 0.6,
                           marginTop: 5, flexShrink: 0,
                         }} />
-                        <span style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.5 }}>{item}</span>
+                        <span style={{ fontSize: 15, color: '#1e2330', lineHeight: 1.5 }}>{item}</span>
                       </div>
                     ))}
                   </div>
                   <div style={{
-                    fontSize: 11, color: '#555',
-                    borderTop: '0.5px solid rgba(255,255,255,0.06)',
+                    fontSize: 14, color: '#1e2330',
+                    borderTop: '0.5px solid rgba(30,35,48,0.08)',
                     paddingTop: 10,
                   }}>
                     {col.note}
@@ -831,166 +870,37 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Three callout cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
-            {[
-              {
-                icon: <ChartBar size={26} weight="duotone" color="#eaef09" />,
-                title: 'See it in your dashboard',
-                desc: 'Every contest shows its split score — creator prep on the left, participant effort on the right. Know instantly which side needs work.',
-              },
-              {
-                icon: <Users size={26} weight="duotone" color="#eaef09" />,
-                title: 'Participants see your half',
-                desc: 'When someone joins your contest they can see how much you prepared as creator. A high creator score signals a serious, well-run contest.',
-              },
-              {
-                icon: <Certificate size={26} weight="duotone" color="#eaef09" />,
-                title: 'Quality predicts results',
-                desc: 'Contests scoring 80+ consistently produce stronger shortlists. Both sides matter — don\'t leave points on the table.',
-              },
-            ].map((card, i) => (
-              <div key={i} style={{
-                background: 'rgba(255,255,255,0.03)',
-                border: '0.5px solid rgba(255,255,255,0.08)',
-                borderRadius: 16,
-                padding: '28px 24px',
-              }}>
-                <div style={{ marginBottom: 16 }}>{card.icon}</div>
-                <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 10 }}>
-                  {card.title}
-                </h3>
-                <p style={{ fontSize: 13, color: '#7a7a7a', lineHeight: 1.6 }}>
-                  {card.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Almost Names Flip Widget ── */}
-      <section style={{ background: '#fbf8f3', padding: '80px 0' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <h2 style={{
-              fontFamily: 'Inter, sans-serif',
-              fontSize: 'clamp(28px, 4vw, 42px)',
-              fontWeight: 800,
-              color: '#0a0a0a',
-              marginBottom: 12,
-            }}>
-              Every great name almost wasn't
-            </h2>
-            <p style={{ fontSize: 16, color: '#555', maxWidth: 540, margin: '0 auto' }}>
-              Here are the names that almost became the world's most iconic brands.
-            </p>
-          </div>
-
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: 16,
-            marginBottom: 24,
-          }}>
-            {almostNames.map(item => (
-              <FlipCard key={item.id} item={item} />
-            ))}
-          </div>
-
-          <p style={{ textAlign: 'center', marginBottom: 32 }}>
-            <em style={{ color: '#888', fontSize: 14 }}>Hover each card to reveal the alternatives.</em>
-          </p>
-
-          <div style={{ textAlign: 'center' }}>
-            <a
-              href="#pricing"
-              className="btn-primary btn-lg btn-neutral"
-              style={{ background: '#0a0a0a', textDecoration: 'none' }}
+          <div style={{ textAlign: 'center', marginTop: 48 }}>
+            <button
+              onClick={() => navigate('/select')}
+              style={{
+                background: '#254f1a', border: 'none', borderRadius: 999,
+                color: '#fff', fontSize: 18, fontWeight: 600, cursor: 'pointer',
+                padding: '16px 40px', display: 'inline-flex', alignItems: 'center', gap: 8,
+                transition: 'opacity 0.2s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
             >
-              <span>Don't let that happen to you</span>
+              See it in action
               <ArrowRight size={16} weight="bold" />
-            </a>
+            </button>
           </div>
+
         </div>
       </section>
 
-      {/* ── Methodology ── */}
-      <section style={{ background: '#141414', padding: '80px 0' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <div style={{
-              fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em',
-              color: '#eaef09', marginBottom: 12,
-            }}>
-              Naming Methodology
-            </div>
-            <h2 style={{
-              fontFamily: 'Inter, sans-serif',
-              fontSize: 'clamp(28px, 4vw, 42px)',
-              fontWeight: 800,
-              color: '#fff',
-              marginBottom: 12,
-              lineHeight: 1.15,
-            }}>
-              Why naming contests usually fail,<br /><span style={{ color: '#eaef09' }}>and how we fix it</span>
-            </h2>
-          </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
-            {methodologyItems.map((item, i) => (
-              <div key={i} style={{
-                background: 'rgba(255,255,255,0.04)',
-                border: '0.5px solid rgba(255,255,255,0.08)',
-                backdropFilter: 'blur(12px)',
-                borderRadius: 16,
-                padding: 28,
-              }}>
-                <div style={{ marginBottom: 16 }}>{methodIcons[i]}</div>
-                <div style={{
-                  fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
-                  letterSpacing: '0.08em', color: '#7a7a7a',
-                  marginBottom: 6,
-                }}>
-                  The Problem
-                </div>
-                <h3 style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 8 }}>
-                  "{item.problem}"
-                </h3>
-                <p style={{ fontSize: 13, color: '#7a7a7a', marginBottom: 20, lineHeight: 1.5 }}>
-                  {item.problemDetail}
-                </p>
-                <div style={{
-                  height: 1, background: 'rgba(255,255,255,0.08)', marginBottom: 20,
-                }} />
-                <div style={{
-                  fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
-                  letterSpacing: '0.08em', color: '#eaef09',
-                  marginBottom: 6,
-                }}>
-                  Our Fix
-                </div>
-                <h4 style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 8 }}>
-                  {item.solution}
-                </h4>
-                <p style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.5 }}>
-                  {item.solutionDetail}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ── FAQ ── */}
-      <section style={{ background: '#FAFAF7', padding: '80px 0' }}>
-        <div style={{ maxWidth: 760, margin: '0 auto', padding: '0 24px' }}>
+      <section style={{ background: '#f3f3f1', padding: '80px 0' }}>
+        <div style={{ maxWidth: 860, margin: '0 auto', padding: '0 24px' }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <h2 style={{
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
               fontSize: 'clamp(26px, 4vw, 40px)',
               fontWeight: 800,
-              color: '#1C1917',
+              color: '#1e2330',
             }}>
               Frequently asked questions
             </h2>
@@ -1006,10 +916,6 @@ export default function LandingPage() {
       <Footer />
 
       <style>{`
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
         @keyframes blink {
           0%, 100% { opacity: 1; }
           50% { opacity: 0; }
@@ -1033,47 +939,47 @@ function NewsletterSection() {
 
   return (
     <section style={{
-      background: 'linear-gradient(180deg, #0a0a0a 0%, #141414 100%)',
+      background: '#d2e823',
       padding: '100px 0',
       textAlign: 'center',
     }}>
-      <div style={{ maxWidth: 640, margin: '0 auto', padding: '0 24px' }}>
+      <div style={{ maxWidth: 720, margin: '0 auto', padding: '0 24px' }}>
 
         {/* Eyebrow */}
         <div style={{
-          fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
-          letterSpacing: '0.1em', color: '#eaef09', marginBottom: 20,
+          fontSize: 13, fontWeight: 700, textTransform: 'uppercase',
+          letterSpacing: '0.14em', color: 'rgba(37,79,26,0.6)', marginBottom: 20,
         }}>
           Stay in the loop
         </div>
 
         {/* Heading */}
         <h2 style={{
-          fontFamily: 'Inter, sans-serif',
+          fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
           fontSize: 'clamp(24px, 3vw, 34px)',
-          fontWeight: 800, color: '#fff',
+          fontWeight: 800, color: '#254f1a',
           marginBottom: 12, lineHeight: 1.15,
           whiteSpace: 'nowrap',
         }}>
           Naming <RotatingWord words={['tips', 'hacks', 'guides', 'gems']} /> straight to your inbox
         </h2>
 
-        <p style={{ fontSize: 15, color: '#7a7a7a', marginBottom: 8, lineHeight: 1.6 }}>
-          Platform updates, naming methodology, and real contest examples.
+        <p style={{ fontSize: 18, color: '#254f1a', marginBottom: 8, lineHeight: 1.6, opacity: 0.8 }}>
+          Updates, tips, and real contest stories.
         </p>
 
         {/* Social proof */}
-        <p style={{ fontSize: 12, color: '#4a4a4a', marginBottom: 36 }}>
-          Join 2,400+ naming enthusiasts
+        <p style={{ fontSize: 14, color: 'rgba(37,79,26,0.55)', marginBottom: 36 }}>
+          2,400+ subscribers
         </p>
 
         {status === 'success' ? (
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 10,
-            background: 'rgba(16,185,129,0.1)',
-            border: '0.5px solid rgba(16,185,129,0.3)',
+            background: 'rgba(210,232,35,0.15)',
+            border: '0.5px solid rgba(210,232,35,0.4)',
             borderRadius: 12, padding: '16px 28px',
-            fontSize: 15, fontWeight: 600, color: '#10B981',
+            fontSize: 18, fontWeight: 600, color: '#254f1a',
           }}>
             <CheckCircle size={20} weight="fill" />
             You're on the list. Talk soon.
@@ -1091,25 +997,28 @@ function NewsletterSection() {
                 required
                 style={{
                   flex: 1, height: 48,
-                  background: '#141414',
-                  border: `0.5px solid ${status === 'error' ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.12)'}`,
+                  background: '#ffffff',
+                  border: `0.5px solid ${status === 'error' ? 'rgba(239,68,68,0.6)' : 'rgba(0,0,0,0.12)'}`,
                   borderRadius: 10, padding: '0 16px',
-                  color: '#fff', fontSize: 14,
-                  fontFamily: 'Inter, sans-serif',
+                  color: '#1e2330', fontSize: 14,
+                  fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
                   outline: 'none',
                   transition: 'border-color 0.2s',
                 }}
-                onFocus={e => e.target.style.borderColor = 'rgba(234,239,9,0.5)'}
-                onBlur={e => e.target.style.borderColor = status === 'error' ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.12)'}
+                onFocus={e => e.target.style.borderColor = 'rgba(210,232,35,0.6)'}
+                onBlur={e => e.target.style.borderColor = status === 'error' ? 'rgba(239,68,68,0.6)' : 'rgba(0,0,0,0.12)'}
                 disabled={status === 'loading'}
               />
               <button
                 type="submit"
                 className={`btn-primary btn-business${status === 'loading' ? ' btn-disabled' : ''}`}
                 style={{
-                  background: '#eaef09',
+                  background: '#254f1a',
                   height: 48, padding: '0 24px',
                   flexShrink: 0,
+                  borderRadius: 999,
+                  border: 'none',
+                  cursor: 'pointer',
                 }}
               >
                 {status === 'loading' ? (
@@ -1123,24 +1032,21 @@ function NewsletterSection() {
                   }} />
                 ) : (
                   <>
-                    <span style={{ color: '#000' }}>Subscribe</span>
-                    <ArrowRight size={14} weight="bold" style={{ color: '#000', position: 'relative', zIndex: 1 }} />
+                    <span style={{ color: '#ffffff' }}>Subscribe</span>
+                    <ArrowRight size={14} weight="bold" style={{ color: '#ffffff', position: 'relative', zIndex: 1 }} />
                   </>
                 )}
               </button>
             </form>
 
             <p style={{
-              fontSize: 12, marginTop: 8,
+              fontSize: 14, marginTop: 8,
               color: status === 'error' ? '#ef4444' : 'transparent',
               transition: 'color 0.2s',
             }}>
               Please enter a valid email address.
             </p>
 
-            <p style={{ fontSize: 11, color: '#3a3a3a', marginTop: 16 }}>
-              No spam. Unsubscribe anytime.
-            </p>
           </>
         )}
       </div>
@@ -1164,9 +1070,9 @@ function FeatureBreakdown() {
             border: '1px solid rgba(0,0,0,0.12)',
             borderRadius: 10,
             padding: '12px 24px',
-            fontSize: 13, fontWeight: 600, color: '#4a4a4a',
+            fontSize: 15, fontWeight: 600, color: '#1e2330',
             cursor: 'pointer',
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
             transition: 'all 0.2s',
           }}
           onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.3)'; e.currentTarget.style.color = '#1C1917'; }}
@@ -1186,13 +1092,262 @@ function FeatureBreakdown() {
         marginTop: open ? 24 : 0,
       }}>
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: 20, fontWeight: 700, color: '#1C1917', margin: 0 }}>
+          <h3 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 20, fontWeight: 700, color: '#1e2330', margin: 0 }}>
             Everything included, plan by plan
           </h3>
         </div>
         <PricingFeatureTable />
       </div>
     </div>
+  );
+}
+
+/* ── Segment Block (Linktree-style alternating full-width) ── */
+function SegmentBlock({ card, navigate, index }) {
+  const CONFIGS = {
+    personal: {
+      bg: '#2665d6',
+      eyebrow: 'rgba(210,232,35,0.65)',
+      heading: '#d2e823',
+      body: 'rgba(255,255,255,0.9)',
+      tagBg: 'rgba(210,232,35,0.12)',
+      tagBorder: 'rgba(210,232,35,0.3)',
+      tagText: '#d2e823',
+      priceColor: '#ffffff',
+      priceSubColor: 'rgba(255,255,255,0.65)',
+      featureOn: '#d2e823',
+      featureOff: 'rgba(255,255,255,0.2)',
+      featureOnText: 'rgba(255,255,255,0.9)',
+      featureOffText: 'rgba(255,255,255,0.3)',
+      divider: 'rgba(255,255,255,0.12)',
+      btnBg: '#d2e823',
+      btnText: '#000000',
+      tryFree: 'rgba(210,232,35,0.45)',
+      visualBg: 'rgba(255,255,255,0.04)',
+      visualBorder: 'rgba(210,232,35,0.25)',
+      visualIcon: '#d2e823',
+    },
+    team: {
+      bg: '#780016',
+      eyebrow: 'rgba(233,192,233,0.65)',
+      heading: '#e9c0e9',
+      body: 'rgba(255,255,255,0.9)',
+      tagBg: 'rgba(233,192,233,0.12)',
+      tagBorder: 'rgba(233,192,233,0.3)',
+      tagText: '#e9c0e9',
+      priceColor: '#ffffff',
+      priceSubColor: 'rgba(255,255,255,0.65)',
+      featureOn: '#e9c0e9',
+      featureOff: 'rgba(255,255,255,0.2)',
+      featureOnText: 'rgba(255,255,255,0.9)',
+      featureOffText: 'rgba(255,255,255,0.3)',
+      divider: 'rgba(255,255,255,0.12)',
+      btnBg: '#e9c0e9',
+      btnText: '#000000',
+      tryFree: 'rgba(233,192,233,0.45)',
+      visualBg: 'rgba(255,255,255,0.04)',
+      visualBorder: 'rgba(233,192,233,0.25)',
+      visualIcon: '#e9c0e9',
+    },
+    business: {
+      bg: '#e8efd6',
+      eyebrow: '#1e2330',
+      heading: '#254f1a',
+      body: '#1e2330',
+      tagBg: 'rgba(37,79,26,0.08)',
+      tagBorder: 'rgba(37,79,26,0.2)',
+      tagText: '#254f1a',
+      priceColor: '#254f1a',
+      priceSubColor: '#1e2330',
+      featureOn: '#254f1a',
+      featureOff: 'rgba(30,35,48,0.2)',
+      featureOnText: '#1e2330',
+      featureOffText: 'rgba(30,35,48,0.3)',
+      divider: 'rgba(30,35,48,0.1)',
+      btnBg: '#1e2330',
+      btnText: '#ffffff',
+      tryFree: '#1e2330',
+      visualBg: 'rgba(255,255,255,0.5)',
+      visualBorder: 'rgba(37,79,26,0.2)',
+      visualIcon: '#254f1a',
+    },
+  };
+
+  const c = CONFIGS[card.group] || CONFIGS.personal;
+  const isEven = index % 2 === 1; // Team (index 1) → text left, visual right
+
+  const illustrationMap = { personal: personalIllustration, team: teamIllustration, business: businessIllustration };
+  const illustration = illustrationMap[card.group];
+
+  const tiltAngles = { personal: -2, team: 2.5, business: -1.5 };
+  const baseTilt = tiltAngles[card.group] || 0;
+
+  const VisualArea = () => illustration ? (
+    <div
+      onMouseMove={(e) => {
+        const r = e.currentTarget.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5;
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        e.currentTarget.style.transform = `perspective(900px) rotateY(${x * 18}deg) rotateX(${-y * 14}deg) rotate(${baseTilt}deg) scale(1.03)`;
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = `rotate(${baseTilt}deg)`;
+      }}
+      style={{
+        borderRadius: 20,
+        minHeight: 460,
+        overflow: 'hidden',
+        position: 'relative',
+        transition: 'transform 0.25s ease-out',
+        willChange: 'transform',
+        transform: `rotate(${baseTilt}deg)`,
+        boxShadow: '10px 10px 0px rgba(0,0,0,0.07)',
+      }}
+    >
+      <img
+        src={illustration}
+        alt="Illustration"
+        style={{
+          position: 'absolute', inset: 0,
+          width: '100%', height: '100%',
+          objectFit: 'cover', objectPosition: 'center top',
+          display: 'block',
+        }}
+      />
+    </div>
+  ) : (
+    <div style={{
+      borderRadius: 20,
+      minHeight: 460,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'column',
+      gap: 12,
+      background: c.visualBg,
+      boxShadow: '10px 10px 0px rgba(0,0,0,0.07)',
+    }}>
+      <Sparkle size={52} color={c.visualIcon} style={{ opacity: 0.25 }} />
+      <span style={{ fontSize: 13, color: c.visualIcon, opacity: 0.3, fontWeight: 500, letterSpacing: '0.04em' }}>
+        Illustration coming soon
+      </span>
+    </div>
+  );
+
+
+  const TextArea = () => (
+    <div>
+      {/* Eyebrow */}
+      <div style={{
+        fontSize: 13, fontWeight: 700, textTransform: 'uppercase',
+        letterSpacing: '0.14em', color: c.eyebrow, marginBottom: 18,
+      }}>
+        {card.label}
+      </div>
+
+      {/* Heading */}
+      <h2 style={{
+        fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
+        fontSize: 'clamp(30px, 3.2vw, 50px)',
+        fontWeight: 800,
+        color: c.heading,
+        lineHeight: 1.1,
+        letterSpacing: '-0.02em',
+        marginBottom: 20,
+      }}>
+        {card.title}
+      </h2>
+
+      {/* Subtitle */}
+      <p style={{ fontSize: 18, color: c.body, lineHeight: 1.65, marginBottom: 28, maxWidth: 420 }}>
+        {card.subtitle}
+      </p>
+
+      {/* Tags */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 32 }}>
+        {card.tags.map(tag => (
+          <span key={tag} style={{
+            background: c.tagBg,
+            border: `0.5px solid ${c.tagBorder}`,
+            borderRadius: 999, padding: '5px 14px',
+            fontSize: 14, fontWeight: 500, color: c.tagText,
+          }}>
+            {tag}
+          </span>
+        ))}
+      </div>
+
+      {/* Divider */}
+      <div style={{ height: 1, background: c.divider, marginBottom: 28 }} />
+
+      {/* Price */}
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 24 }}>
+        <span style={{ fontSize: 42, fontWeight: 800, color: c.priceColor, lineHeight: 1 }}>
+          {card.price}
+        </span>
+        <span style={{ fontSize: 16, color: c.priceSubColor }}>{card.priceSub}</span>
+      </div>
+
+      {/* Features */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 36 }}>
+        {card.features.map((f, fi) => (
+          <div key={fi} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <CheckCircle
+              size={16}
+              weight={f.included ? 'fill' : 'regular'}
+              color={f.included ? c.featureOn : c.featureOff}
+              style={{ flexShrink: 0 }}
+            />
+            <span style={{
+              fontSize: 15,
+              color: f.included ? c.featureOnText : c.featureOffText,
+              textDecoration: f.included ? 'none' : 'line-through',
+            }}>
+              {f.label}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* CTA */}
+      <button
+        onClick={() => {
+          localStorage.setItem('selectedGroup', card.group);
+          localStorage.removeItem('selectedSubSegment');
+          navigate('/auth');
+        }}
+        style={{
+          background: c.btnBg, color: c.btnText,
+          border: 'none', borderRadius: 999,
+          padding: '16px 36px', fontSize: 16, fontWeight: 700,
+          cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8,
+          transition: 'opacity 0.2s',
+        }}
+        onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+        onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+      >
+        {card.cta}
+        <ArrowRight size={16} weight="bold" />
+      </button>
+      <div style={{ marginTop: 12, fontSize: 13, color: c.priceSubColor }}>
+        Free preview available · 5 participants
+      </div>
+    </div>
+  );
+
+  return (
+    <section style={{ background: c.bg, padding: '100px 0' }}>
+      <div style={{
+        maxWidth: 1280, margin: '0 auto', padding: '0 64px',
+        display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center',
+      }}>
+        {isEven ? (
+          <><TextArea /><VisualArea /></>
+        ) : (
+          <><VisualArea /><TextArea /></>
+        )}
+      </div>
+    </section>
   );
 }
 
@@ -1210,8 +1365,8 @@ function SegmentCard({ card, navigate, delay }) {
         navigate('/auth');
       }}
       style={{
-        background: '#1a1a1a',
-        border: `0.5px solid ${hovered ? `rgba(${card.colorRgb},0.4)` : 'rgba(255,255,255,0.1)'}`,
+        background: '#ffffff',
+        border: `0.5px solid ${hovered ? `rgba(${card.colorRgb},0.4)` : `rgba(${card.colorRgb},0.15)`}`,
         borderRadius: 16,
         padding: 28,
         cursor: 'pointer',
@@ -1237,7 +1392,7 @@ function SegmentCard({ card, navigate, delay }) {
           {card.icon}
         </div>
         <span style={{
-          fontSize: 10, fontWeight: 700,
+          fontSize: 14, fontWeight: 700,
           textTransform: 'uppercase', letterSpacing: '0.1em',
           color: card.color,
           background: `rgba(${card.colorRgb},0.1)`,
@@ -1251,15 +1406,15 @@ function SegmentCard({ card, navigate, delay }) {
 
       {/* Title */}
       <h3 style={{
-        fontFamily: 'Inter, sans-serif',
-        fontSize: 20, fontWeight: 700, color: '#fff',
+        fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
+        fontSize: 20, fontWeight: 700, color: '#1e2330',
         lineHeight: 1.2,
       }}>
         {card.title}
       </h3>
 
       {/* Subtitle */}
-      <p style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.5 }}>
+      <p style={{ fontSize: 15, color: '#1e2330', lineHeight: 1.5 }}>
         {card.subtitle}
       </p>
 
@@ -1267,7 +1422,7 @@ function SegmentCard({ card, navigate, delay }) {
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, maxWidth: '75%' }}>
         {card.tags.map(tag => (
           <span key={tag} style={{
-            fontSize: 11, fontWeight: 500,
+            fontSize: 15, fontWeight: 500,
             background: `rgba(${card.colorRgb},0.08)`,
             color: card.color,
             border: `0.5px solid rgba(${card.colorRgb},0.2)`,
@@ -1284,16 +1439,16 @@ function SegmentCard({ card, navigate, delay }) {
 
       {/* Price */}
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
-        <span style={{ fontSize: 28, fontWeight: 800, color: '#fff', lineHeight: 1 }}>
+        <span style={{ fontSize: 28, fontWeight: 800, color: '#1e2330', lineHeight: 1 }}>
           {card.price}
         </span>
         {card.priceSub && (
-          <span style={{ fontSize: 11, color: '#7a7a7a' }}>{card.priceSub}</span>
+          <span style={{ fontSize: 15, color: '#1e2330' }}>{card.priceSub}</span>
         )}
       </div>
 
       {/* Free preview note */}
-      <div style={{ fontSize: 11, color: '#4a4a4a', lineHeight: 1.4 }}>
+      <div style={{ fontSize: 15, color: '#8a8a82', lineHeight: 1.4 }}>
         Free preview available · 5 participants
       </div>
 
@@ -1312,7 +1467,7 @@ function SegmentCard({ card, navigate, delay }) {
               }} />
             </div>
             <span style={{
-              fontSize: 12,
+              fontSize: 14,
               color: f.included ? '#a1a1a1' : '#3a3a3a',
               textDecoration: f.included ? 'none' : 'line-through',
             }}>
@@ -1322,17 +1477,25 @@ function SegmentCard({ card, navigate, delay }) {
         ))}
       </div>
 
-      {/* CTA — uses btn-primary CSS class for ripple animation */}
-      <button className={`btn-primary btn-${card.group}`} style={{
+      {/* CTA */}
+      <button style={{
         marginTop: 4,
         width: '100%',
-        justifyContent: 'center',
-        height: 40,
-        color: card.color,
-        fontSize: 13, fontWeight: 600,
-      }}>
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+        height: 44,
+        borderRadius: 999,
+        background: '#1e2330',
+        color: '#fff',
+        border: 'none',
+        fontSize: 15, fontWeight: 600,
+        cursor: 'pointer',
+        transition: 'opacity 0.2s',
+      }}
+        onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+        onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+      >
         <span>{card.cta}</span>
-        <ArrowRight size={14} weight="bold" style={{ position: 'relative', zIndex: 1 }} />
+        <ArrowRight size={14} weight="bold" />
       </button>
 
       {/* Ghost try free CTA */}
@@ -1340,10 +1503,10 @@ function SegmentCard({ card, navigate, delay }) {
         onClick={e => { e.stopPropagation(); localStorage.setItem('selectedGroup', card.group); localStorage.removeItem('selectedSubSegment'); navigate('/auth'); }}
         style={{
           background: 'none', border: 'none', cursor: 'pointer',
-          fontSize: 12, color: '#4a4a4a',
+          fontSize: 14, color: '#1e2330',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
           padding: '2px 0',
-          fontFamily: 'Inter, sans-serif',
+          fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
           transition: 'color 0.2s',
         }}
         onMouseEnter={e => e.currentTarget.style.color = '#7a7a7a'}
@@ -1360,9 +1523,9 @@ function SegmentCard({ card, navigate, delay }) {
 function TestimonialCard({ testimonial }) {
   const [hovered, setHovered] = useState(false);
   const tierColors = {
-    business: { color: '#eaef09', rgb: '234,239,9', label: 'Business' },
-    team: { color: '#8B5CF6', rgb: '139,92,246', label: 'Team' },
-    personal: { color: '#10B981', rgb: '16,185,129', label: 'Personal' },
+    personal: { color: '#2665d6', rgb: '38,101,214',  label: 'Personal' },
+    team:     { color: '#780016', rgb: '120,0,22',    label: 'Team'     },
+    business: { color: '#254f1a', rgb: '37,79,26',    label: 'Business' },
   };
   const tc = tierColors[testimonial.tier];
 
@@ -1387,7 +1550,7 @@ function TestimonialCard({ testimonial }) {
         border: `0.5px solid rgba(${tc.rgb},0.3)`,
         borderRadius: 9999,
         padding: '3px 10px',
-        fontSize: 11, fontWeight: 600, color: '#1C1917',
+        fontSize: 15, fontWeight: 600, color: '#1e2330',
         marginBottom: 16,
       }}>
         {tc.label}
@@ -1396,13 +1559,13 @@ function TestimonialCard({ testimonial }) {
       {/* Stars */}
       <div style={{ display: 'flex', gap: 2, marginBottom: 16 }}>
         {[1,2,3,4,5].map(s => (
-          <Star key={s} size={14} weight="fill" color="#f59e0b" />
+          <Star key={s} size={14} weight="fill" color={tc.color} />
         ))}
       </div>
 
       {/* Quote */}
       <p style={{
-        fontSize: 15, color: '#1C1917', lineHeight: 1.65,
+        fontSize: 18, color: '#1e2330', lineHeight: 1.65,
         marginBottom: 20, fontStyle: 'italic',
       }}>
         "{testimonial.quote}"
@@ -1410,11 +1573,11 @@ function TestimonialCard({ testimonial }) {
 
       {/* Result callout */}
       <div style={{
-        background: `rgba(${tc.rgb},0.06)`,
-        border: `0.5px solid rgba(${tc.rgb},0.15)`,
+        background: `rgba(${tc.rgb},0.08)`,
+        border: `0.5px solid rgba(${tc.rgb},0.2)`,
         borderRadius: 8,
         padding: '8px 12px',
-        fontSize: 12, color: '#1C1917', fontWeight: 600,
+        fontSize: 14, color: '#1e2330', fontWeight: 600,
         marginBottom: 16,
       }}>
         {testimonial.result}
@@ -1427,13 +1590,13 @@ function TestimonialCard({ testimonial }) {
           background: `rgba(${tc.rgb},0.15)`,
           borderRadius: '50%',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 12, fontWeight: 700, color: '#1C1917',
+          fontSize: 14, fontWeight: 700, color: '#1e2330',
         }}>
           {testimonial.avatar}
         </div>
         <div>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#1C1917' }}>{testimonial.name}</div>
-          <div style={{ fontSize: 11, color: '#78716C' }}>{testimonial.role}</div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: '#1e2330' }}>{testimonial.name}</div>
+          <div style={{ fontSize: 15, color: '#1e2330' }}>{testimonial.role}</div>
         </div>
       </div>
     </div>

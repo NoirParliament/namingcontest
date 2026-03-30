@@ -1,91 +1,342 @@
 /* ═══════════════════════════════════════════════════════════
-   NamingContest.com — Design Tokens v1.0
-   Extracted from NamingContest_DesignSystem__1_.html
+   NamingContest.com — Design Tokens v3.0
+   Color system based on Linktree palette
    ═══════════════════════════════════════════════════════════ */
 
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
 :root {
-  /* ─── BRAND COLORS ─── */
-  --orange:        #E8704B;
-  --orange-light:  #F09875;
-  --orange-dark:   #D45A35;
 
-  /* ─── SEGMENT COLORS ─── */
-  --purple:        #9333EA;  /* Business */
-  --purple-light:  #A855F7;
-  --purple-dark:   #7E22CE;
+  /* ─── LINKTREE RAW PALETTE ──────────────────────────────────────────────────── */
+  --lt-lime:     #d2e823;   /* primary accent — hero bg, buttons, headings on dark */
+  --lt-forest:   #254f1a;   /* primary dark — dark text, dark section bg           */
+  --lt-blue:     #2665d6;   /* section color 1                                     */
+  --lt-crimson:  #780016;   /* section color 2                                     */
+  --lt-sage:     #e8efd6;   /* section color 3 / light sections                    */
+  --lt-lavender: #e9c0e9;   /* accent on crimson — heading + button                */
+  --lt-navy:     #1e2330;   /* dark sections bg / primary text / dark buttons      */
+  --lt-neutral:  #f3f3f1;   /* page background / in-between sections               */
+  --lt-nav:      #eff0ec;   /* navbar background                                   */
+  --lt-white:    #ffffff;   /* body text on dark/vivid sections                    */
+  --lt-muted:    #676b5f;   /* secondary / caption text                            */
+  --lt-lime-dark: #b8cc15;  /* lime hover state                                    */
 
-  --green:         #10B981;  /* Team/Group */
-  --green-light:   #34D399;
-  --green-dark:    #059669;
+  /* ─── NEUTRAL ───────────────────────────────────────────────────────────────── */
+  --neutral-50:  #fafaf8;
+  --neutral-100: #f3f3f1;
+  --neutral-200: #e8e8e4;
+  --neutral-300: #d0d0cb;
+  --neutral-400: #a8a8a0;
+  --neutral-500: #787872;
+  --neutral-600: #58584f;
+  --neutral-700: #3f3f38;
+  --neutral-800: #2a2a25;
+  --neutral-900: #1a1a16;
+  --neutral-950: #0d0d0a;
 
-  --yellow:        #F59E0B;  /* Personal */
-  --yellow-light:  #FBBF24;
-  --yellow-dark:   #D97706;
+  /* ─── ACCENT: DEEP BLUE ────────────────────────────────────────────────────── */
+  --blue-50:  #eef3ff;
+  --blue-100: #dbe4fe;
+  --blue-200: #bfcefe;
+  --blue-300: #93adfb;
+  --blue-400: #6083f7;
+  --blue-500: #3b5bf2;
+  --blue-600: #2538d4;
+  --blue-700: #1e2cba;
+  --blue-800: #1f2897;
+  --blue-900: #1f2878;
+  --blue-950: #171a49;
+
+  /* ─── ACCENT: CRIMSON ──────────────────────────────────────────────────────── */
+  --crimson-50:  #fef2f3;
+  --crimson-100: #fde6e8;
+  --crimson-200: #fbd0d5;
+  --crimson-300: #f7aab3;
+  --crimson-400: #f17a8a;
+  --crimson-500: #e54b63;
+  --crimson-600: #d12a4c;
+  --crimson-700: #af1d3e;
+  --crimson-800: #8b1a32;
+  --crimson-900: #7a1a31;
+  --crimson-950: #440a16;
+
+  /* ─── ACCENT: VIVID PURPLE ─────────────────────────────────────────────────── */
+  --vivid-50:  #f5f3ff;
+  --vivid-100: #ede9fe;
+  --vivid-200: #ddd6fe;
+  --vivid-300: #c4b5fd;
+  --vivid-400: #a78bfa;
+  --vivid-500: #8b5cf6;
+  --vivid-600: #7c3aed;
+  --vivid-700: #6d28d9;
+  --vivid-800: #5b21b6;
+  --vivid-900: #4c1d95;
+  --vivid-950: #2e1065;
+
+  /* ─── ACCENT: EMERALD ──────────────────────────────────────────────────────── */
+  --emerald-50:  #ecfdf5;
+  --emerald-100: #d1fae5;
+  --emerald-200: #a7f3d0;
+  --emerald-300: #6ee7b7;
+  --emerald-400: #34d399;
+  --emerald-500: #10b981;
+  --emerald-600: #059669;
+  --emerald-700: #047857;
+  --emerald-800: #065f46;
+  --emerald-900: #064e3b;
+  --emerald-950: #022c22;
+
+
+  /* ═══════════════════════════════════════════════════════════
+     SEMANTIC TOKENS — Linktree color logic
+     ═══════════════════════════════════════════════════════════ */
 
   /* ─── BACKGROUNDS ─── */
-  --bg-cream:      #FBF8F3;
-  --bg-white:      #FFFFFF;
-  --bg-light:      #F7F4EF;
-  --bg-dark:       #2C2A29;
+  --color-bg:         var(--lt-neutral);   /* #f3f3f1 — page background        */
+  --color-bg-alt:     var(--lt-sage);      /* #e8efd6 — alternate light section */
+  --color-bg-muted:   var(--lt-nav);       /* #eff0ec — subtle fills            */
+  --color-bg-white:   #ffffff;             /* cards, inputs, modals             */
+  --color-bg-dark:    var(--lt-navy);      /* #1e2330 — dark sections           */
+  --color-bg-overlay: rgba(30, 35, 48, 0.6); /* navy overlay                   */
+
+  /* ─── BRAND SURFACES ─── */
+  --color-surface-primary:  var(--lt-lime);    /* #d2e823 — hero, CTAs          */
+  --color-surface-accent:   var(--lt-lime);    /* #d2e823 — highlights          */
+  --color-surface-dark:     var(--lt-forest);  /* #254f1a — dark contrast       */
+  --color-surface-gradient: linear-gradient(135deg, var(--lt-lime) 0%, var(--lt-forest) 100%);
 
   /* ─── TEXT ─── */
-  --text-primary:   #1C1917;
-  --text-secondary: #57534E;
-  --text-tertiary:  #A8A29E;
-  --text-inverse:   #FAFAF9;
+  --color-text:            var(--lt-navy);     /* #1e2330 — primary text        */
+  --color-text-secondary:  var(--lt-muted);    /* #676b5f — supporting text     */
+  --color-text-muted:      #8a8a82;            /* captions, hints               */
+  --color-text-inverse:    var(--lt-white);    /* #ffffff — text on dark bg     */
+  --color-text-on-lime:    #000000;            /* black on lime accent          */
+  --color-text-link:       var(--lt-forest);   /* links                         */
+  --color-text-link-hover: var(--lt-navy);     /* link hover                    */
 
   /* ─── BORDERS ─── */
-  --border-light:  #E7E5E4;
-  --border-medium: #D6D3D1;
-  --border-dark:   #A8A29E;
+  --color-border:        rgba(30, 35, 48, 0.12); /* default border              */
+  --color-border-strong: rgba(30, 35, 48, 0.25); /* emphasized                 */
+  --color-border-muted:  rgba(30, 35, 48, 0.06); /* subtle dividers            */
+  --color-border-focus:  var(--lt-lime);          /* focus rings                */
 
-  /* ─── SEMANTIC COLORS ─── */
-  --success: #10B981;
-  --warning: #F59E0B;
-  --error:   #EF4444;
-  --info:    #3B82F6;
+  /* ─── BUTTONS ─── */
+  /* PRIMARY = lime + black text (Linktree pattern) */
+  --color-btn-primary-bg:       var(--lt-lime);      /* #d2e823 */
+  --color-btn-primary-text:     #000000;             /* black on lime */
+  --color-btn-primary-hover:    var(--lt-lime-dark);  /* #b8cc15 */
+  /* DARK = navy + white text */
+  --color-btn-dark-bg:          var(--lt-navy);      /* #1e2330 */
+  --color-btn-dark-text:        var(--lt-white);     /* #ffffff */
+  --color-btn-dark-hover:       #2a3144;
+  /* GHOST */
+  --color-btn-secondary-bg:     transparent;
+  --color-btn-secondary-text:   var(--lt-navy);
+  --color-btn-secondary-border: rgba(30, 35, 48, 0.3);
+  /* DISABLED */
+  --color-btn-disabled-bg:      var(--lt-neutral);
+  --color-btn-disabled-text:    var(--lt-muted);
+
+  /* ─── FORM INPUTS ─── */
+  --input-bg:           var(--color-bg-white);
+  --input-border:       rgba(30, 35, 48, 0.15);
+  --input-border-hover: rgba(30, 35, 48, 0.3);
+  --input-border-focus: var(--lt-lime);
+  --input-text:         var(--lt-navy);
+  --input-placeholder:  var(--lt-muted);
+  --input-ring:         rgba(210, 232, 35, 0.3);
+
+  /* ─── SEMANTIC STATUS ─── */
+  --color-success:      var(--emerald-500);
+  --color-success-bg:   var(--emerald-50);
+  --color-success-text: var(--emerald-800);
+  --color-warning:      #d2a800;
+  --color-warning-bg:   #fffde7;
+  --color-warning-text: #7a5c00;
+  --color-error:        #ef4444;
+  --color-error-bg:     #fef2f2;
+  --color-error-text:   #991b1b;
+  --color-info:         var(--lt-blue);
+  --color-info-bg:      var(--blue-50);
+  --color-info-text:    var(--blue-800);
+
+  /* ─── CONTEST STATUS BADGES ─── */
+  --status-active:      var(--emerald-600);
+  --status-active-bg:   var(--emerald-50);
+  --status-active-text: var(--emerald-800);
+  --status-pending:     #b8a200;
+  --status-pending-bg:  #fffde7;
+  --status-pending-text:#7a5c00;
+  --status-closed:      var(--lt-muted);
+  --status-closed-bg:   var(--lt-neutral);
+  --status-closed-text: var(--lt-navy);
+  --status-draft:       var(--lt-muted);
+  --status-draft-bg:    var(--lt-neutral);
+  --status-draft-text:  var(--lt-navy);
+
+  /* ─── VOTING UI ─── */
+  --vote-selected:      var(--lt-lime);
+  --vote-selected-text: #000000;
+  --vote-hover:         var(--lt-sage);
+  --vote-rank-gold:     var(--lt-lime);
+  --vote-rank-silver:   var(--lt-sage);
+  --vote-rank-bronze:   var(--lt-muted);
+
+  /* ─── DASHBOARD / CARDS ─── */
+  --sidebar-bg:           var(--color-bg-white);
+  --sidebar-border:       var(--color-border);
+  --sidebar-active:       var(--lt-sage);
+  --sidebar-active-text:  var(--lt-forest);
+  --card-bg:              var(--color-bg-white);
+  --card-border:          var(--color-border);
+  --card-shadow:          0 1px 3px rgba(30, 35, 48, 0.06);
+  --table-header-bg:      var(--lt-neutral);
+  --table-row-hover:      var(--lt-sage);
+  --table-border:         var(--color-border);
+
+  /* ─── NAVIGATION ─── */
+  --nav-bg:           rgba(239, 240, 236, 0.88); /* lt-nav glass */
+  --nav-shadow:       0 2px 16px rgba(30, 35, 48, 0.08);
+  --nav-text:         var(--lt-navy);
+  --nav-text-active:  var(--lt-forest);
+  --nav-accent:       var(--lt-lime);
+
+  /* ─── BADGES / TAGS ─── */
+  --badge-light-bg:     var(--lt-sage);
+  --badge-light-text:   var(--lt-forest);
+  --badge-light-border: rgba(37, 79, 26, 0.2);
+  --badge-dark-bg:      var(--lt-forest);
+  --badge-dark-text:    var(--lt-white);
+  --badge-grad-bg:      linear-gradient(135deg, var(--lt-lime), var(--lt-forest));
+  --badge-grad-text:    var(--lt-white);
+
+  /* ─── TOAST / NOTIFICATION ─── */
+  --toast-bg:     var(--color-bg-white);
+  --toast-border: var(--color-border);
+  --toast-shadow: 0 4px 12px rgba(30, 35, 48, 0.1);
+
+  /* ─── PROGRESS / TRACK ─── */
+  --progress-track:    var(--lt-sage);
+  --progress-fill:     var(--lt-lime);
+  --progress-fill-alt: var(--lt-forest);
+
+  /* ─── UNIFIED TIER COLOR (lime accent) ─── */
+  --tier-color:       var(--lt-lime);
+  --tier-color-light: var(--lt-sage);
+  --tier-color-dark:  var(--lt-forest);
+  --tier-color-text:  #000000;
+  --tier-color-rgb:   210, 232, 35;
+
+  /* ─── LEGACY SEGMENT VARS (all → lime now) ─── */
+  --color-business: var(--lt-lime);
+  --color-team:     var(--lt-lime);
+  --color-personal: var(--lt-lime);
+
+  --purple:       var(--lt-lime);
+  --purple-light: var(--lt-lime);
+  --purple-dark:  var(--lt-forest);
+  --green:        var(--lt-lime);
+  --green-light:  var(--lt-lime);
+  --green-dark:   var(--lt-forest);
+  --yellow:       var(--lt-lime);
+  --yellow-light: var(--lt-lime);
+  --yellow-dark:  var(--lt-forest);
+  --orange:       var(--lt-lime);
+  --orange-light: var(--lt-lime);
+  --orange-dark:  var(--lt-forest);
+
+  /* ─── LEGACY SUPERNOVA (redirected to Linktree equivalents) ─── */
+  --supernova-50:  var(--lt-neutral);
+  --supernova-100: var(--lt-sage);
+  --supernova-200: var(--lt-nav);
+  --supernova-300: #c5da1a;
+  --supernova-400: var(--lt-lime);
+  --supernova-500: var(--lt-lime);
+  --supernova-600: var(--lt-forest);
+  --supernova-700: var(--lt-forest);
+  --supernova-800: var(--lt-forest);
+  --supernova-900: var(--lt-navy);
+  --supernova-950: var(--lt-navy);
+
+  /* ─── LEGACY SEMANTIC (redirected) ─── */
+  --success: var(--color-success);
+  --warning: var(--color-warning);
+  --error:   var(--color-error);
+  --info:    var(--color-info);
+
+  /* ─── LEGACY BACKGROUNDS (redirected) ─── */
+  --bg-cream: var(--color-bg);
+  --bg-white: var(--color-bg-white);
+  --bg-light: var(--lt-sage);
+  --bg-dark:  var(--lt-navy);
+
+  /* ─── LEGACY TEXT (redirected) ─── */
+  --text-primary:   var(--color-text);
+  --text-secondary: var(--color-text-secondary);
+  --text-tertiary:  var(--color-text-muted);
+  --text-inverse:   var(--color-text-inverse);
+
+  /* ─── LEGACY BORDERS (redirected) ─── */
+  --border-light:  var(--color-border-muted);
+  --border-medium: var(--color-border);
+  --border-dark:   var(--color-border-strong);
 
   /* ─── TYPOGRAPHY ─── */
-  --font-serif: 'Crimson Pro', Georgia, serif;
-  --font-sans:  'Inter', system-ui, sans-serif;
-  --font-mono:  'JetBrains Mono', monospace;
+  --font-display: 'Bricolage Grotesque', 'Inter', sans-serif;
+  --font-serif:   'Crimson Pro', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
 
   /* ─── SPACING ─── */
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 32px;
-  --space-2xl: 48px;
-  --space-3xl: 64px;
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --space-32: 128px;
+  --space-xs:  var(--space-1);
+  --space-sm:  var(--space-2);
+  --space-md:  var(--space-4);
+  --space-lg:  var(--space-6);
+  --space-xl:  var(--space-8);
+  --space-2xl: var(--space-12);
+  --space-3xl: var(--space-16);
 
   /* ─── BORDER RADIUS ─── */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+  --radius-2xl:  32px;
+  --radius-full: 999px;
 
   /* ─── SHADOWS ─── */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+  --shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md:  0 2px 6px rgba(0, 0, 0, 0.06);
+  --shadow-lg:  0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-xl:  0 8px 24px rgba(0, 0, 0, 0.1);
+  --shadow-2xl: 0 16px 48px rgba(0, 0, 0, 0.12);
+  --shadow-nav: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
 
   /* ─── TRANSITIONS ─── */
   --transition-fast: 150ms ease;
   --transition-base: 200ms ease;
   --transition-slow: 300ms ease;
 
-  /* ─── Z-INDEX SCALE ─── */
-  --z-base: 0;
-  --z-dropdown: 100;
-  --z-sticky: 200;
-  --z-fixed: 300;
+  /* ─── Z-INDEX ─── */
+  --z-base:           0;
+  --z-dropdown:       100;
+  --z-sticky:         200;
+  --z-fixed:          300;
   --z-modal-backdrop: 400;
-  --z-modal: 500;
-  --z-popover: 600;
-  --z-toast: 700;
+  --z-modal:          500;
+  --z-popover:        600;
+  --z-toast:          700;
 }
-
-/* ─── GOOGLE FONTS IMPORT ─── */
-@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');

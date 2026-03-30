@@ -202,28 +202,28 @@ export default function MindMap({ tc, onPoints, qualityPct, subSegment }) {
   const nodeW = 140, nodeH = 36, rootW = 160, rootH = 44;
 
   return (
-    <div style={{ marginBottom: 28, background: '#1a1a1a', border: `0.5px solid rgba(${tc.rgb},0.2)`, borderRadius: 12, overflow: 'hidden' }}>
+    <div style={{ marginBottom: 28, background: '#fafaf5', border: `0.5px solid rgba(${tc.rgb},0.2)`, borderRadius: 12, overflow: 'hidden' }}>
       {/* Header */}
-      <div style={{ padding: '14px 20px', display: 'flex', alignItems: 'center', gap: 10, borderBottom: '0.5px solid rgba(255,255,255,0.06)' }}>
+      <div style={{ padding: '14px 20px', display: 'flex', alignItems: 'center', gap: 10, borderBottom: '0.5px solid rgba(30,35,48,0.08)' }}>
         <div style={{ width: 32, height: 32, background: `rgba(${tc.rgb},0.1)`, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Brain size={16} color={tc.color} weight="duotone" />
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>Exploration Mind Map</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#1e2330' }}>Exploration Mind Map</div>
           <div style={{ fontSize: 11, color: '#7a7a7a' }}>Branch out your ideas — click + to add, drag to move, scroll to zoom</div>
         </div>
         <button onClick={() => alert('PDF export will be available in the full release.')} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 10px', border: `0.5px solid rgba(${tc.rgb},0.3)`, borderRadius: 6, background: 'transparent', color: tc.color, fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
           <FilePdf size={13} /> Export PDF
         </button>
         {!pointsAwarded ? (
-          <div style={{ fontSize: 11, color: tc.color, fontWeight: 600 }}>+{qualityPct}% quality for exploring</div>
+          <div style={{ fontSize: 11, color: tc.color, fontWeight: 600 }}>+{qualityPct} pts for exploring</div>
         ) : (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: '#10B981', fontWeight: 600 }}><Check size={12} weight="bold" /> +{qualityPct}% quality earned</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: tc.color, fontWeight: 600 }}><Check size={12} weight="bold" /> +{qualityPct} pts earned</div>
         )}
       </div>
 
       {/* SVG Canvas */}
-      <div style={{ position: 'relative', height: 420, background: '#141414', cursor: isPanning ? 'grabbing' : draggingId ? 'grabbing' : 'grab' }}>
+      <div style={{ position: 'relative', height: 420, background: 'transparent', cursor: isPanning ? 'grabbing' : draggingId ? 'grabbing' : 'grab' }}>
         <svg
           ref={svgRef}
           width="100%" height="100%"
@@ -237,7 +237,7 @@ export default function MindMap({ tc, onPoints, qualityPct, subSegment }) {
           {/* Grid dots */}
           <defs>
             <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <circle cx="20" cy="20" r="0.5" fill="rgba(255,255,255,0.05)" />
+              <circle cx="20" cy="20" r="0.5" fill="rgba(30,35,48,0.06)" />
             </pattern>
           </defs>
           <rect x={viewBox.x - 500} y={viewBox.y - 500} width={viewBox.w + 1000} height={viewBox.h + 1000} fill="url(#grid)" />
@@ -280,13 +280,13 @@ export default function MindMap({ tc, onPoints, qualityPct, subSegment }) {
                       onChange={e => setEditText(e.target.value)}
                       onBlur={commitEdit}
                       onKeyDown={e => { if (e.key === 'Enter') commitEdit(); if (e.key === 'Escape') { setEditingId(null); if (!editText.trim()) setNodes(prev => prev.filter(nd => nd.id !== n.id)); } }}
-                      style={{ width: '100%', height: '100%', background: 'transparent', border: 'none', outline: 'none', color: n.isRoot ? '#000' : '#fff', fontSize: 12, fontWeight: 600, fontFamily: 'Inter, sans-serif', textAlign: 'center' }}
+                      style={{ width: '100%', height: '100%', background: 'transparent', border: 'none', outline: 'none', color: n.isRoot ? '#000' : '#1e2330', fontSize: 12, fontWeight: 600, fontFamily: 'Inter, sans-serif', textAlign: 'center' }}
                     />
                   </foreignObject>
                 ) : (
                   <text
                     x={n.x} y={n.y} textAnchor="middle" dominantBaseline="central"
-                    fill={n.isRoot ? '#000' : '#fff'} fontSize={n.isRoot ? 13 : 11} fontWeight={n.isRoot ? 700 : 600}
+                    fill={n.isRoot ? '#000' : '#1e2330'} fontSize={n.isRoot ? 13 : 11} fontWeight={n.isRoot ? 700 : 600}
                     fontFamily="Inter, sans-serif"
                     style={{ pointerEvents: 'none' }}
                   >
@@ -317,14 +317,14 @@ export default function MindMap({ tc, onPoints, qualityPct, subSegment }) {
         {/* Zoom controls */}
         <div style={{ position: 'absolute', top: 10, right: 10, display: 'flex', flexDirection: 'column', gap: 4 }}>
           {[{ label: '+', fn: zoomIn }, { label: '−', fn: zoomOut }, { label: '⟲', fn: resetView }].map(b => (
-            <button key={b.label} onClick={b.fn} style={{ width: 28, height: 28, border: '0.5px solid rgba(255,255,255,0.15)', borderRadius: 6, background: 'rgba(20,20,20,0.8)', color: '#fff', fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <button key={b.label} onClick={b.fn} style={{ width: 28, height: 28, border: '0.5px solid rgba(30,35,48,0.12)', borderRadius: 6, background: 'rgba(255,255,255,0.95)', color: '#1e2330', fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {b.label}
             </button>
           ))}
         </div>
 
         {/* Node count */}
-        <div style={{ position: 'absolute', bottom: 10, left: 14, fontSize: 11, color: '#5a5a5a' }}>
+        <div style={{ position: 'absolute', bottom: 10, left: 14, fontSize: 11, color: '#8a8a82' }}>
           {nodes.length} nodes {userNodeCount > 0 && `· ${userNodeCount} added by you`}
         </div>
       </div>

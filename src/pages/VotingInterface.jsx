@@ -7,15 +7,10 @@ import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } 
 import { CSS } from '@dnd-kit/utilities';
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 import { getJourneyMeta } from '../utils/journey';
-
-const TIER = {
-  business: { color: '#eaef09', rgb: '234,239,9', label: 'Business', textColor: '#000' },
-  team: { color: '#8B5CF6', rgb: '139,92,246', label: 'Team', textColor: '#fff' },
-  personal: { color: '#10B981', rgb: '16,185,129', label: 'Personal', textColor: '#fff' },
-};
+import { getGroupTheme, LIGHT_THEME } from '../data/themeConfig';
 
 // ── SortableItem for Ranked Choice ──
-function SortableItem({ id, name, rationale, index }) {
+function SortableItem({ id, name, rationale, index, tc }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -23,13 +18,13 @@ function SortableItem({ id, name, rationale, index }) {
     opacity: isDragging ? 0.5 : 1,
   };
   return (
-    <div ref={setNodeRef} style={{ ...style, display: 'flex', alignItems: 'flex-start', gap: 12, padding: '14px 16px', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 10, marginBottom: 8, cursor: 'grab' }} {...attributes} {...listeners}>
-      <span style={{ fontSize: 18, fontWeight: 700, color: '#eaef09', minWidth: 28, paddingTop: 2 }}>#{index + 1}</span>
+    <div ref={setNodeRef} style={{ ...style, display: 'flex', alignItems: 'flex-start', gap: 12, padding: '14px 16px', background: '#ffffff', border: '0.5px solid rgba(30,35,48,0.1)', borderRadius: 10, marginBottom: 8, cursor: 'grab' }} {...attributes} {...listeners}>
+      <span style={{ fontSize: 18, fontWeight: 700, color: tc.primary, minWidth: 28, paddingTop: 2 }}>#{index + 1}</span>
       <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 18, fontFamily: 'Inter, sans-serif', color: '#fff' }}>{name}</div>
-        {rationale && <div style={{ fontSize: 12, color: '#7a7a7a', marginTop: 4, lineHeight: 1.5 }}>{rationale}</div>}
+        <div style={{ fontSize: 18, fontFamily: "'Inter', sans-serif", color: '#1e2330' }}>{name}</div>
+        {rationale && <div style={{ fontSize: 12, color: '#8a8a82', marginTop: 4, lineHeight: 1.5 }}>{rationale}</div>}
       </div>
-      <span style={{ color: '#7a7a7a', fontSize: 18, flexShrink: 0, paddingTop: 2 }}>⠿</span>
+      <span style={{ color: '#8a8a82', fontSize: 18, flexShrink: 0, paddingTop: 2 }}>⠿</span>
     </div>
   );
 }
@@ -40,18 +35,18 @@ function SuccessScreen({ tc, contestId }) {
   const [copied, setCopied] = useState(false);
   return (
     <div style={{ textAlign: 'center', padding: '60px 24px' }}>
-      <div style={{ width: 80, height: 80, borderRadius: '50%', background: `rgba(${tc.rgb},0.12)`, border: `2px solid ${tc.color}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-        <Check size={36} weight="bold" color={tc.color} />
+      <div style={{ width: 80, height: 80, borderRadius: '50%', background: `rgba(${tc.primaryRgb},0.12)`, border: `2px solid ${tc.primary}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+        <Check size={36} weight="bold" color={tc.primary} />
       </div>
-      <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 32, color: '#fff', marginBottom: 8 }}>Your vote has been recorded!</h2>
-      <p style={{ color: '#a1a1a1', fontSize: 15, marginBottom: 32 }}>
+      <h2 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 32, color: '#1e2330', marginBottom: 8 }}>Your vote has been recorded!</h2>
+      <p style={{ color: '#676b5f', fontSize: 15, marginBottom: 32 }}>
         Results will be published once voting closes.
       </p>
       <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-        <button onClick={() => navigate(`/results/${contestId}`)} style={{ height: 44, padding: '0 24px', border: `1.5px solid ${tc.color}`, borderRadius: 10, background: `rgba(${tc.rgb},0.1)`, color: tc.color, fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
+        <button onClick={() => navigate(`/results/${contestId}`)} style={{ height: 44, padding: '0 24px', border: 'none', borderRadius: 10, background: tc.primary, color: '#ffffff', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
           View Live Results
         </button>
-        <button onClick={() => { navigator.clipboard.writeText(window.location.href).catch(() => {}); setCopied(true); setTimeout(() => setCopied(false), 2000); }} style={{ height: 44, padding: '0 20px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 10, background: 'transparent', color: '#fff', fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <button onClick={() => { navigator.clipboard.writeText(window.location.href).catch(() => {}); setCopied(true); setTimeout(() => setCopied(false), 2000); }} style={{ height: 44, padding: '0 20px', border: '1px solid rgba(30,35,48,0.15)', borderRadius: 10, background: 'transparent', color: '#1e2330', fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
           <Share size={16} /> {copied ? 'Copied!' : 'Share'}
         </button>
       </div>
@@ -62,7 +57,7 @@ function SuccessScreen({ tc, contestId }) {
 // ── Candidate Description ──
 function CandidateDesc({ rationale }) {
   if (!rationale) return null;
-  return <div style={{ fontSize: 12, color: '#7a7a7a', marginTop: 4, lineHeight: 1.5 }}>{rationale}</div>;
+  return <div style={{ fontSize: 12, color: '#8a8a82', marginTop: 4, lineHeight: 1.5 }}>{rationale}</div>;
 }
 
 // ── Simple Poll ──
@@ -74,21 +69,21 @@ function SimplePoll({ candidates, tc, onVote }) {
 
   return (
     <div>
-      <div style={{ marginBottom: 24, fontSize: 13, color: '#a1a1a1' }}>Select the name you think best fits the brief.</div>
+      <div style={{ marginBottom: 24, fontSize: 13, color: '#676b5f' }}>Select the name you think best fits the brief.</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
         {candidates.map((c, i) => (
-          <label key={i} onClick={() => setSelected(i)} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, padding: '16px 20px', background: selected === i ? `rgba(${tc.rgb},0.08)` : '#1a1a1a', border: `0.5px solid ${selected === i ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 12, cursor: 'pointer', transition: 'all 0.15s' }}>
-            <div style={{ width: 20, height: 20, borderRadius: '50%', border: `2px solid ${selected === i ? tc.color : '#444'}`, background: selected === i ? tc.color : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 3 }}>
+          <label key={i} onClick={() => setSelected(i)} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, padding: '16px 20px', background: selected === i ? `rgba(${tc.primaryRgb},0.08)` : '#ffffff', border: `0.5px solid ${selected === i ? tc.primary : 'rgba(30,35,48,0.1)'}`, borderRadius: 12, cursor: 'pointer', transition: 'all 0.15s' }}>
+            <div style={{ width: 20, height: 20, borderRadius: '50%', border: `2px solid ${selected === i ? tc.primary : '#ccc'}`, background: selected === i ? tc.primary : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 3 }}>
               {selected === i && <div style={{ width: 8, height: 8, borderRadius: '50%', background: tc.textColor }} />}
             </div>
             <div>
-              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, color: '#fff' }}>{c.name}</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 22, color: '#1e2330' }}>{c.name}</div>
               <CandidateDesc rationale={c.rationale} />
             </div>
           </label>
         ))}
       </div>
-      <button onClick={() => { if (selected !== null) { setVoted(true); onVote(); } }} disabled={selected === null} style={{ height: 48, padding: '0 28px', border: `1.5px solid ${tc.color}`, borderRadius: 10, background: `rgba(${tc.rgb},0.12)`, color: tc.color, fontSize: 15, fontWeight: 700, cursor: selected !== null ? 'pointer' : 'not-allowed', opacity: selected !== null ? 1 : 0.5 }}>
+      <button onClick={() => { if (selected !== null) { setVoted(true); onVote(); } }} disabled={selected === null} style={{ height: 48, padding: '0 28px', border: 'none', borderRadius: 10, background: tc.primary, color: '#ffffff', fontSize: 15, fontWeight: 700, cursor: selected !== null ? 'pointer' : 'not-allowed', opacity: selected !== null ? 1 : 0.5 }}>
         Submit Vote
       </button>
     </div>
@@ -115,18 +110,18 @@ function RankedChoice({ candidates, tc, onVote }) {
 
   return (
     <div>
-      <div style={{ marginBottom: 20, fontSize: 13, color: '#a1a1a1' }}>Drag names to rank them from your favorite (#1) to least favorite.</div>
-      <div style={{ padding: '10px 14px', background: '#141414', borderRadius: 8, marginBottom: 16, fontSize: 12, color: '#7a7a7a' }}>
-        Your #1 choice: <strong style={{ color: '#fff' }}>{items[0]?.name}</strong>
+      <div style={{ marginBottom: 20, fontSize: 13, color: '#676b5f' }}>Drag names to rank them from your favorite (#1) to least favorite.</div>
+      <div style={{ padding: '10px 14px', background: '#f3f3f1', borderRadius: 8, marginBottom: 16, fontSize: 12, color: '#8a8a82' }}>
+        Your #1 choice: <strong style={{ color: '#1e2330' }}>{items[0]?.name}</strong>
       </div>
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
           {items.map((item, index) => (
-            <SortableItem key={item.id} id={item.id} name={item.name} rationale={item.rationale} index={index} />
+            <SortableItem key={item.id} id={item.id} name={item.name} rationale={item.rationale} index={index} tc={tc} />
           ))}
         </SortableContext>
       </DndContext>
-      <button onClick={() => { setVoted(true); onVote(); }} style={{ marginTop: 16, height: 48, padding: '0 28px', border: `1.5px solid ${tc.color}`, borderRadius: 10, background: `rgba(${tc.rgb},0.12)`, color: tc.color, fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
+      <button onClick={() => { setVoted(true); onVote(); }} style={{ marginTop: 16, height: 48, padding: '0 28px', border: 'none', borderRadius: 10, background: tc.primary, color: '#ffffff', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
         Submit Ranking
       </button>
     </div>
@@ -157,44 +152,44 @@ function MultiCriteria({ candidates, tc, onVote }) {
     ...Object.fromEntries(names.map(name => [name, scores[name][cr]])),
   }));
 
-  const radarColors = ['#eaef09', '#8B5CF6', '#10B981', '#3B82F6', '#f97316'];
+  const radarColors = [tc.primary, '#d19400', '#ffd60d', '#3B82F6', '#f97316'];
 
   if (voted) return null;
 
   return (
     <div>
-      <div style={{ marginBottom: 16, fontSize: 13, color: '#a1a1a1' }}>Rate each name 1-10 on all 5 criteria.</div>
+      <div style={{ marginBottom: 16, fontSize: 13, color: '#676b5f' }}>Rate each name 1-10 on all 5 criteria.</div>
       {candidates.map((c, ni) => (
-        <div key={c.name} style={{ marginBottom: 20, padding: '16px', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 12 }}>
+        <div key={c.name} style={{ marginBottom: 20, padding: '16px', background: '#ffffff', border: '0.5px solid rgba(30,35,48,0.1)', borderRadius: 12 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
             <div>
-              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 20, color: '#fff' }}>{c.name}</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 20, color: '#1e2330' }}>{c.name}</div>
               <CandidateDesc rationale={c.rationale} />
             </div>
-            <span style={{ fontSize: 13, color: tc.color, fontWeight: 700, flexShrink: 0, marginLeft: 12 }}>Avg: {getAvg(c.name)}/10</span>
+            <span style={{ fontSize: 13, color: tc.primary, fontWeight: 700, flexShrink: 0, marginLeft: 12 }}>Avg: {getAvg(c.name)}/10</span>
           </div>
           <div style={{ marginTop: 14 }}>
             {CRITERIA.map(criterion => (
               <div key={criterion} style={{ marginBottom: 12 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                  <span style={{ fontSize: 12, color: '#a1a1a1' }}>{criterion}</span>
-                  <span style={{ fontSize: 12, color: '#fff', fontWeight: 600 }}>{scores[c.name][criterion]}</span>
+                  <span style={{ fontSize: 12, color: '#676b5f' }}>{criterion}</span>
+                  <span style={{ fontSize: 12, color: '#1e2330', fontWeight: 600 }}>{scores[c.name][criterion]}</span>
                 </div>
-                <input type="range" min={1} max={10} value={scores[c.name][criterion]} onChange={e => setScores({ ...scores, [c.name]: { ...scores[c.name], [criterion]: Number(e.target.value) } })} style={{ width: '100%', accentColor: tc.color, height: 4 }} />
+                <input type="range" min={1} max={10} value={scores[c.name][criterion]} onChange={e => setScores({ ...scores, [c.name]: { ...scores[c.name], [criterion]: Number(e.target.value) } })} style={{ width: '100%', accentColor: tc.primary, height: 4 }} />
               </div>
             ))}
           </div>
         </div>
       ))}
-      <button onClick={() => setShowRadar(!showRadar)} style={{ marginBottom: 16, height: 36, padding: '0 16px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, background: 'transparent', color: '#a1a1a1', fontSize: 13, cursor: 'pointer' }}>
+      <button onClick={() => setShowRadar(!showRadar)} style={{ marginBottom: 16, height: 36, padding: '0 16px', border: '1px solid rgba(30,35,48,0.15)', borderRadius: 8, background: 'transparent', color: '#676b5f', fontSize: 13, cursor: 'pointer' }}>
         {showRadar ? 'Hide' : 'Show'} Radar Comparison
       </button>
       {showRadar && (
-        <div style={{ background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 16, marginBottom: 16, height: 280 }}>
+        <div style={{ background: '#ffffff', border: '0.5px solid rgba(30,35,48,0.1)', borderRadius: 12, padding: 16, marginBottom: 16, height: 280 }}>
           <ResponsiveContainer width="100%" height="100%">
             <RadarChart data={radarData}>
-              <PolarGrid stroke="rgba(255,255,255,0.1)" />
-              <PolarAngleAxis dataKey="criterion" tick={{ fill: '#7a7a7a', fontSize: 11 }} />
+              <PolarGrid stroke="rgba(30,35,48,0.1)" />
+              <PolarAngleAxis dataKey="criterion" tick={{ fill: '#8a8a82', fontSize: 11 }} />
               {names.map((name, i) => (
                 <Radar key={name} name={name} dataKey={name} stroke={radarColors[i % radarColors.length]} fill={radarColors[i % radarColors.length]} fillOpacity={0.15} />
               ))}
@@ -202,7 +197,7 @@ function MultiCriteria({ candidates, tc, onVote }) {
           </ResponsiveContainer>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginTop: 8 }}>
             {names.map((name, i) => (
-              <div key={name} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#a1a1a1' }}>
+              <div key={name} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#676b5f' }}>
                 <div style={{ width: 10, height: 10, borderRadius: '50%', background: radarColors[i % radarColors.length] }} />
                 {name}
               </div>
@@ -210,7 +205,7 @@ function MultiCriteria({ candidates, tc, onVote }) {
           </div>
         </div>
       )}
-      <button onClick={() => { setVoted(true); onVote(); }} style={{ height: 48, padding: '0 28px', border: `1.5px solid ${tc.color}`, borderRadius: 10, background: `rgba(${tc.rgb},0.12)`, color: tc.color, fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
+      <button onClick={() => { setVoted(true); onVote(); }} style={{ height: 48, padding: '0 28px', border: 'none', borderRadius: 10, background: tc.primary, color: '#ffffff', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
         Submit Scores
       </button>
     </div>
@@ -244,7 +239,7 @@ function Pairwise({ candidates, tc, onVote }) {
   };
 
   if (voted) return null;
-  if (pairs.length === 0) return <div style={{ color: '#7a7a7a' }}>Not enough names for pairwise comparison.</div>;
+  if (pairs.length === 0) return <div style={{ color: '#8a8a82' }}>Not enough names for pairwise comparison.</div>;
 
   const currentPair = pairs[pairIndex];
   const progress = ((pairIndex) / pairs.length) * 100;
@@ -252,25 +247,25 @@ function Pairwise({ candidates, tc, onVote }) {
   return (
     <div>
       <div style={{ marginBottom: 16 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#7a7a7a', marginBottom: 6 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#8a8a82', marginBottom: 6 }}>
           <span>Comparison {pairIndex + 1} of {pairs.length}</span>
           <span>{Math.round(progress)}% complete</span>
         </div>
-        <div style={{ height: 4, background: '#222', borderRadius: 4 }}>
-          <div style={{ height: '100%', width: `${progress}%`, background: tc.color, borderRadius: 4, transition: 'width 0.3s' }} />
+        <div style={{ height: 4, background: '#e8e8e4', borderRadius: 4 }}>
+          <div style={{ height: '100%', width: `${progress}%`, background: tc.primary, borderRadius: 4, transition: 'width 0.3s' }} />
         </div>
       </div>
-      <div style={{ textAlign: 'center', fontSize: 13, color: '#a1a1a1', marginBottom: 20 }}>Which name better fits the brief?</div>
+      <div style={{ textAlign: 'center', fontSize: 13, color: '#676b5f', marginBottom: 20 }}>Which name better fits the brief?</div>
       <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
         {currentPair.map((c, i) => (
-          <div key={i} onClick={() => setSelected(c.name)} style={{ flex: 1, padding: '28px 20px', background: selected === c.name ? `rgba(${tc.rgb},0.1)` : '#1a1a1a', border: `2px solid ${selected === c.name ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 14, textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s', boxShadow: selected === c.name ? `0 0 20px rgba(${tc.rgb},0.2)` : 'none' }}>
-            <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 28, color: '#fff', marginBottom: 8 }}>{c.name}</div>
-            {c.rationale && <div style={{ fontSize: 12, color: '#7a7a7a', lineHeight: 1.5, marginBottom: 8 }}>{c.rationale}</div>}
-            {selected === c.name && <Check size={20} color={tc.color} weight="bold" style={{ margin: '0 auto' }} />}
+          <div key={i} onClick={() => setSelected(c.name)} style={{ flex: 1, padding: '28px 20px', background: selected === c.name ? `rgba(${tc.primaryRgb},0.06)` : '#ffffff', border: `2px solid ${selected === c.name ? tc.primary : 'rgba(30,35,48,0.1)'}`, borderRadius: 14, textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s', boxShadow: selected === c.name ? `0 0 20px rgba(${tc.primaryRgb},0.15)` : 'none' }}>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 28, color: '#1e2330', marginBottom: 8 }}>{c.name}</div>
+            {c.rationale && <div style={{ fontSize: 12, color: '#8a8a82', lineHeight: 1.5, marginBottom: 8 }}>{c.rationale}</div>}
+            {selected === c.name && <Check size={20} color={tc.primary} weight="bold" style={{ margin: '0 auto' }} />}
           </div>
         ))}
       </div>
-      <button onClick={handleNext} disabled={selected === null} style={{ height: 48, padding: '0 28px', border: `1.5px solid ${tc.color}`, borderRadius: 10, background: `rgba(${tc.rgb},0.12)`, color: tc.color, fontSize: 15, fontWeight: 700, cursor: selected !== null ? 'pointer' : 'not-allowed', opacity: selected !== null ? 1 : 0.5, display: 'flex', alignItems: 'center', gap: 8 }}>
+      <button onClick={handleNext} disabled={selected === null} style={{ height: 48, padding: '0 28px', border: 'none', borderRadius: 10, background: tc.primary, color: '#ffffff', fontSize: 15, fontWeight: 700, cursor: selected !== null ? 'pointer' : 'not-allowed', opacity: selected !== null ? 1 : 0.5, display: 'flex', alignItems: 'center', gap: 8 }}>
         {pairIndex < pairs.length - 1 ? 'Next Pair' : 'Submit'} <ArrowRight size={16} />
       </button>
     </div>
@@ -287,26 +282,26 @@ function WeightedVoting({ candidates, tc, onVote }) {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: `rgba(${tc.rgb},0.06)`, border: `0.5px solid rgba(${tc.rgb},0.2)`, borderRadius: 8, marginBottom: 20, fontSize: 13, color: '#a1a1a1' }}>
-        Your vote weight: <span style={{ color: tc.color, fontWeight: 700 }}>3x</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: `rgba(${tc.primaryRgb},0.06)`, border: `0.5px solid rgba(${tc.primaryRgb},0.2)`, borderRadius: 8, marginBottom: 20, fontSize: 13, color: '#676b5f' }}>
+        Your vote weight: <span style={{ color: tc.primary, fontWeight: 700 }}>3x</span>
         <span style={{ marginLeft: 4 }}>{'●'.repeat(voterWeight)}{'○'.repeat(3 - voterWeight)}</span>
       </div>
-      <div style={{ marginBottom: 24, fontSize: 13, color: '#a1a1a1' }}>Select the name you think best fits the brief. Your vote carries extra weight.</div>
+      <div style={{ marginBottom: 24, fontSize: 13, color: '#676b5f' }}>Select the name you think best fits the brief. Your vote carries extra weight.</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
         {candidates.map((c, i) => (
-          <label key={i} onClick={() => setSelected(i)} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, padding: '16px 20px', background: selected === i ? `rgba(${tc.rgb},0.08)` : '#1a1a1a', border: `0.5px solid ${selected === i ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 12, cursor: 'pointer', transition: 'all 0.15s' }}>
-            <div style={{ width: 20, height: 20, borderRadius: '50%', border: `2px solid ${selected === i ? tc.color : '#444'}`, background: selected === i ? tc.color : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 3 }}>
+          <label key={i} onClick={() => setSelected(i)} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, padding: '16px 20px', background: selected === i ? `rgba(${tc.primaryRgb},0.08)` : '#ffffff', border: `0.5px solid ${selected === i ? tc.primary : 'rgba(30,35,48,0.1)'}`, borderRadius: 12, cursor: 'pointer', transition: 'all 0.15s' }}>
+            <div style={{ width: 20, height: 20, borderRadius: '50%', border: `2px solid ${selected === i ? tc.primary : '#ccc'}`, background: selected === i ? tc.primary : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 3 }}>
               {selected === i && <div style={{ width: 8, height: 8, borderRadius: '50%', background: tc.textColor }} />}
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, color: '#fff' }}>{c.name}</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 22, color: '#1e2330' }}>{c.name}</div>
               <CandidateDesc rationale={c.rationale} />
             </div>
-            <span style={{ fontSize: 11, color: '#7a7a7a', flexShrink: 0, marginTop: 4 }}>×{voterWeight} weight</span>
+            <span style={{ fontSize: 11, color: '#8a8a82', flexShrink: 0, marginTop: 4 }}>{'\u00d7'}{voterWeight} weight</span>
           </label>
         ))}
       </div>
-      <button onClick={() => { if (selected !== null) { setVoted(true); onVote(); } }} disabled={selected === null} style={{ height: 48, padding: '0 28px', border: `1.5px solid ${tc.color}`, borderRadius: 10, background: `rgba(${tc.rgb},0.12)`, color: tc.color, fontSize: 15, fontWeight: 700, cursor: selected !== null ? 'pointer' : 'not-allowed', opacity: selected !== null ? 1 : 0.5 }}>
+      <button onClick={() => { if (selected !== null) { setVoted(true); onVote(); } }} disabled={selected === null} style={{ height: 48, padding: '0 28px', border: 'none', borderRadius: 10, background: tc.primary, color: '#ffffff', fontSize: 15, fontWeight: 700, cursor: selected !== null ? 'pointer' : 'not-allowed', opacity: selected !== null ? 1 : 0.5 }}>
         Submit Vote (3x weight)
       </button>
     </div>
@@ -320,7 +315,8 @@ export default function VotingInterface() {
   const navigate = useNavigate();
 
   const meta = getJourneyMeta(contestId);
-  const tc = meta;
+  const group = meta.group;
+  const tc = getGroupTheme(group);
   const candidates = meta.candidates;
 
   const methodParam = searchParams.get('method');
@@ -338,18 +334,18 @@ export default function VotingInterface() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ minHeight: '100vh', background: '#fafaf5', fontFamily: "'Inter', sans-serif" }}>
       {/* Header */}
-      <div style={{ background: '#141414', borderBottom: '0.5px solid rgba(255,255,255,0.06)', padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', gap: 16 }}>
+      <div style={{ background: '#ffffff', borderBottom: '1px solid rgba(30,35,48,0.08)', padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', gap: 16 }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
-          <div style={{ width: 26, height: 26, background: '#eaef09', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img src={namicoIcon} alt="Namico" style={{ width: 17, height: 17, display: 'block' }} />
+          <div style={{ width: 26, height: 26, background: tc.primary, borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img src={namicoIcon} alt="NamingContest" style={{ width: 17, height: 17, display: 'block', filter: 'brightness(0) invert(1)' }} />
           </div>
-          <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Namico</span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: '#1e2330' }}>NamingContest</span>
         </Link>
-        <span style={{ color: '#444' }}>·</span>
-        <span style={{ fontSize: 13, color: '#a1a1a1' }}>{meta.contestTitle}</span>
-        <div style={{ marginLeft: 'auto', padding: '3px 10px', background: `rgba(${tc.rgb},0.1)`, border: `0.5px solid rgba(${tc.rgb},0.3)`, borderRadius: 20, fontSize: 11, fontWeight: 600, color: tc.color, textTransform: 'uppercase' }}>
+        <span style={{ color: '#ccc' }}>·</span>
+        <span style={{ fontSize: 13, color: '#676b5f' }}>{meta.contestTitle}</span>
+        <div style={{ marginLeft: 'auto', padding: '3px 10px', background: `rgba(${tc.primaryRgb},0.08)`, border: `0.5px solid rgba(${tc.primaryRgb},0.2)`, borderRadius: 20, fontSize: 11, fontWeight: 600, color: tc.primary, textTransform: 'uppercase' }}>
           {methodLabels[method]}
         </div>
       </div>
@@ -360,9 +356,9 @@ export default function VotingInterface() {
           const stored = JSON.parse(localStorage.getItem('contestPrizes') || '{}');
           if (!stored.voterPrizeEnabled || !stored.voterPrizeName) return null;
           return (
-            <div style={{ padding: '8px 24px', background: 'linear-gradient(90deg, rgba(139,92,246,0.08), rgba(234,239,9,0.06))', borderBottom: '0.5px solid rgba(139,92,246,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-              <Trophy size={14} color="#8B5CF6" weight="fill" />
-              <span style={{ fontSize: 12, color: '#a1a1a1' }}>One random voter wins: <strong style={{ color: '#fff' }}>{stored.voterPrizeName}</strong></span>
+            <div style={{ padding: '8px 24px', background: `linear-gradient(90deg, rgba(${tc.primaryRgb},0.06), rgba(${tc.primaryRgb},0.04))`, borderBottom: `0.5px solid rgba(${tc.primaryRgb},0.15)`, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+              <Trophy size={14} color={tc.primary} weight="fill" />
+              <span style={{ fontSize: 12, color: '#676b5f' }}>One random voter wins: <strong style={{ color: '#1e2330' }}>{stored.voterPrizeName}</strong></span>
             </div>
           );
         } catch { return null; }
@@ -370,10 +366,10 @@ export default function VotingInterface() {
 
       <div style={{ display: 'flex', minHeight: 'calc(100vh - 56px)' }}>
         {/* Sidebar */}
-        <div style={{ width: 220, background: '#0f0f0f', borderRight: '0.5px solid rgba(255,255,255,0.06)', padding: '24px 16px', flexShrink: 0 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#7a7a7a', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>Shortlisted Names</div>
+        <div style={{ width: 220, background: '#f8f8f5', borderRight: '1px solid rgba(30,35,48,0.08)', padding: '24px 16px', flexShrink: 0 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: '#8a8a82', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>Shortlisted Names</div>
           {candidates.map((c, i) => (
-            <div key={i} style={{ padding: '8px 10px', borderRadius: 7, marginBottom: 4, fontSize: 14, fontFamily: 'Inter, sans-serif', color: '#a1a1a1' }}>
+            <div key={i} style={{ padding: '8px 10px', borderRadius: 7, marginBottom: 4, fontSize: 14, fontFamily: "'Inter', sans-serif", color: '#676b5f' }}>
               {c.name}
             </div>
           ))}
@@ -385,8 +381,8 @@ export default function VotingInterface() {
             <SuccessScreen tc={tc} contestId={contestId || 'demo-1'} />
           ) : (
             <>
-              <h1 style={{ fontFamily: 'Inter, sans-serif', fontSize: 28, color: '#fff', marginBottom: 6 }}>Cast Your Vote</h1>
-              <div style={{ fontSize: 13, color: '#7a7a7a', marginBottom: 32 }}>Method: {methodLabels[method]} · {candidates.length} names in the shortlist</div>
+              <h1 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 28, color: '#1e2330', marginBottom: 6 }}>Cast Your Vote</h1>
+              <div style={{ fontSize: 13, color: '#8a8a82', marginBottom: 32 }}>Method: {methodLabels[method]} · {candidates.length} names in the shortlist</div>
 
               {method === 'simple' && <SimplePoll candidates={candidates} tc={tc} onVote={() => setVoted(true)} />}
               {method === 'ranked' && <RankedChoice candidates={candidates} tc={tc} onVote={() => setVoted(true)} />}
@@ -399,11 +395,11 @@ export default function VotingInterface() {
           )}
 
           {/* Method switcher for demo */}
-          <div style={{ marginTop: 48, padding: '16px', background: '#141414', borderRadius: 10, border: '0.5px solid rgba(255,255,255,0.06)' }}>
-            <div style={{ fontSize: 11, color: '#7a7a7a', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Demo: Try other voting methods</div>
+          <div style={{ marginTop: 48, padding: '16px', background: '#ffffff', borderRadius: 10, border: '1px solid rgba(30,35,48,0.08)' }}>
+            <div style={{ fontSize: 11, color: '#8a8a82', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Demo: Try other voting methods</div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {Object.entries(methodLabels).map(([key, label]) => (
-                <Link key={key} to={`/vote/${contestId || 'demo-1'}?method=${key}`} style={{ padding: '5px 10px', border: `1px solid ${method === key ? tc.color : 'rgba(255,255,255,0.1)'}`, borderRadius: 6, background: method === key ? `rgba(${tc.rgb},0.1)` : 'transparent', color: method === key ? tc.color : '#7a7a7a', fontSize: 11, textDecoration: 'none', fontWeight: method === key ? 600 : 400 }} onClick={() => setVoted(false)}>
+                <Link key={key} to={`/vote/${contestId || 'demo-1'}?method=${key}`} style={{ padding: '5px 10px', border: `1px solid ${method === key ? tc.primary : 'rgba(30,35,48,0.1)'}`, borderRadius: 6, background: method === key ? `rgba(${tc.primaryRgb},0.08)` : 'transparent', color: method === key ? tc.primary : '#8a8a82', fontSize: 11, textDecoration: 'none', fontWeight: method === key ? 600 : 400 }} onClick={() => setVoted(false)}>
                   {label}
                 </Link>
               ))}

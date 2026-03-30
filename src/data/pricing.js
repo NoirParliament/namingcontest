@@ -1,6 +1,6 @@
 /**
  * Pricing Tiers Configuration
- * Based on NamingContest_Pricing_Model_v3.md
+ * Based on Naming Contest_Pricing_Model_v3.md
  */
 
 export const PRICING_TIERS = {
@@ -27,7 +27,7 @@ export const pricing = {
         anonymity: true,
         liveSession: false,
         multiRound: false,
-        branding: 'platform', // "Powered by Namico.com"
+        branding: 'platform', // "Powered by NamingContest.com"
       },
     },
     paid: {

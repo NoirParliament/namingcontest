@@ -4,12 +4,7 @@ import namicoIcon from '../assets/namico-icon.svg';
 import { Trophy, Copy, Check, DownloadSimple, Share, ArrowRight, TwitterLogo, LinkedinLogo, Brain, Scales, Target, Envelope } from '@phosphor-icons/react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { getJourneyMeta } from '../utils/journey';
-
-const TIER = {
-  business: { color: '#eaef09', rgb: '234,239,9', label: 'Business', textColor: '#000' },
-  team: { color: '#8B5CF6', rgb: '139,92,246', label: 'Team', textColor: '#fff' },
-  personal: { color: '#10B981', rgb: '16,185,129', label: 'Personal', textColor: '#fff' },
-};
+import { getGroupTheme, LIGHT_THEME } from '../data/themeConfig';
 
 const MEDALS = ['#1', '#2', '#3'];
 
@@ -21,7 +16,7 @@ function CopyBtn({ text, label }) {
     setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <button onClick={handle} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 36, padding: '0 14px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, background: 'transparent', color: copied ? '#10B981' : '#fff', fontSize: 13, cursor: 'pointer' }}>
+    <button onClick={handle} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 36, padding: '0 14px', border: '1px solid rgba(30,35,48,0.15)', borderRadius: 8, background: 'transparent', color: copied ? LIGHT_THEME.textPrimary : '#676b5f', fontSize: 13, cursor: 'pointer' }}>
       {copied ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> {label}</>}
     </button>
   );
@@ -158,7 +153,7 @@ function ParticleCanvas({ baseHue }) {
     }
 
     function animate() {
-      ctx.fillStyle = 'rgba(20,20,22,0.88)';
+      ctx.fillStyle = 'rgba(250,250,245,0.88)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       [dustArr, particlesArr, ripplesArr, fwArr].forEach(arr => {
         for (let i = arr.length - 1; i >= 0; i--) { arr[i].update(); arr[i].draw(); if (arr[i].isDone() || arr[i].isDead()) arr.splice(i, 1); }
@@ -205,7 +200,7 @@ function ParticleCanvas({ baseHue }) {
 function SimBtn({ label, icon }) {
   const [clicked, setClicked] = useState(false);
   return (
-    <button onClick={() => { setClicked(true); setTimeout(() => setClicked(false), 2000); }} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 36, padding: '0 14px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, background: 'transparent', color: clicked ? '#10B981' : '#fff', fontSize: 13, cursor: 'pointer' }}>
+    <button onClick={() => { setClicked(true); setTimeout(() => setClicked(false), 2000); }} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 36, padding: '0 14px', border: '1px solid rgba(30,35,48,0.15)', borderRadius: 8, background: 'transparent', color: clicked ? LIGHT_THEME.textPrimary : '#676b5f', fontSize: 13, cursor: 'pointer' }}>
       {icon}{clicked ? 'Done!' : label}
     </button>
   );
@@ -222,11 +217,11 @@ function DomainChecker() {
   };
   return (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-      <input value={domain} onChange={e => setDomain(e.target.value)} onKeyDown={e => e.key === 'Enter' && check()} placeholder="yourname" style={{ background: '#141414', border: '0.5px solid rgba(255,255,255,0.15)', borderRadius: 8, height: 36, padding: '0 12px', color: '#fff', fontSize: 14, width: 160 }} />
-      <span style={{ color: '#7a7a7a', fontSize: 13 }}>.com</span>
-      <button onClick={check} style={{ height: 36, padding: '0 14px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 8, background: 'transparent', color: '#fff', fontSize: 13, cursor: 'pointer' }}>Check</button>
+      <input value={domain} onChange={e => setDomain(e.target.value)} onKeyDown={e => e.key === 'Enter' && check()} placeholder="yourname" style={{ background: '#ffffff', border: '1px solid rgba(30,35,48,0.15)', borderRadius: 8, height: 36, padding: '0 12px', color: '#1e2330', fontSize: 14, width: 160 }} />
+      <span style={{ color: '#8a8a82', fontSize: 13 }}>.com</span>
+      <button onClick={check} style={{ height: 36, padding: '0 14px', border: '1px solid rgba(30,35,48,0.2)', borderRadius: 8, background: 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>Check</button>
       {result && (
-        <span style={{ fontSize: 13, color: result.available ? '#10B981' : '#ef4444', fontWeight: 600 }}>
+        <span style={{ fontSize: 13, color: result.available ? '#16a34a' : '#ef4444', fontWeight: 600 }}>
           {result.available ? `✓ ${result.domain}.com is Available!` : `✗ Taken — try .co or add a word`}
         </span>
       )}
@@ -243,7 +238,7 @@ function SocialChecker({ platform }) {
     setAvailable(Math.random() > 0.5);
   };
   return (
-    <button onClick={handle} style={{ height: 32, padding: '0 12px', border: `1px solid ${checked ? (available ? '#10B981' : '#ef4444') : 'rgba(255,255,255,0.15)'}`, borderRadius: 6, background: 'transparent', color: checked ? (available ? '#10B981' : '#ef4444') : '#a1a1a1', fontSize: 12, cursor: 'pointer' }}>
+    <button onClick={handle} style={{ height: 32, padding: '0 12px', border: `1px solid ${checked ? (available ? '#16a34a' : '#ef4444') : 'rgba(30,35,48,0.15)'}`, borderRadius: 6, background: 'transparent', color: checked ? (available ? '#16a34a' : '#ef4444') : '#676b5f', fontSize: 12, cursor: 'pointer' }}>
       {checked ? (available ? `✓ @handle available on ${platform}` : `✗ Taken on ${platform}`) : `Check ${platform}`}
     </button>
   );
@@ -254,7 +249,8 @@ export default function ResultsPage() {
   const navigate = useNavigate();
 
   const meta = getJourneyMeta(contestId);
-  const tc = meta;
+  const tc = getGroupTheme(meta.group);
+  const hueMap = { personal: 220, team: 345, business: 110 };
   // Segment-appropriate candidates (replaces mock submissions)
   const submissions = meta.candidates.map(c => ({ ...c, id: c.id, contestId }));
   const winner = submissions[0];
@@ -295,7 +291,7 @@ export default function ResultsPage() {
 
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ minHeight: '100vh', background: '#fafaf5', fontFamily: "'Inter', sans-serif" }}>
       <style>{`
         @keyframes countPop { 0% { transform: scale(2.2); opacity: 0; } 30% { opacity: 1; } 75% { transform: scale(1); opacity: 1; } 100% { transform: scale(0.8); opacity: 0; } }
         @keyframes winnerReveal { 0% { opacity: 0; transform: scale(0.85); filter: blur(16px); } 60% { filter: blur(0); } 100% { opacity: 1; transform: scale(1); } }
@@ -303,16 +299,16 @@ export default function ResultsPage() {
         @keyframes overlayOut { 0% { opacity: 1; } 100% { opacity: 0; pointer-events: none; } }
       `}</style>
       {/* Nav */}
-      <div style={{ background: '#141414', borderBottom: '0.5px solid rgba(255,255,255,0.06)', padding: '0 32px', height: 52, display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ background: '#ffffff', borderBottom: '1px solid rgba(30,35,48,0.08)', padding: '0 32px', height: 52, display: 'flex', alignItems: 'center', gap: 12 }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 7, textDecoration: 'none' }}>
-          <div style={{ width: 24, height: 24, background: '#eaef09', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img src={namicoIcon} alt="Namico" style={{ width: 16, height: 16, display: 'block' }} />
+          <div style={{ width: 24, height: 24, background: tc.primary, borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img src={namicoIcon} alt="NamingContest" style={{ width: 16, height: 16, display: 'block', filter: 'brightness(0) invert(1)' }} />
           </div>
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>Namico</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#1e2330' }}>NamingContest</span>
         </Link>
-        <span style={{ color: '#444' }}>·</span>
-        <span style={{ fontSize: 13, color: '#a1a1a1' }}>{meta.contestTitle} — Results</span>
-        <button onClick={() => navigate('/dashboard')} style={{ marginLeft: 'auto', height: 32, padding: '0 14px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 7, background: 'transparent', color: '#a1a1a1', fontSize: 12, cursor: 'pointer' }}>
+        <span style={{ color: '#d0d0c8' }}>·</span>
+        <span style={{ fontSize: 13, color: '#676b5f' }}>{meta.contestTitle} — Results</span>
+        <button onClick={() => navigate('/dashboard')} style={{ marginLeft: 'auto', height: 32, padding: '0 14px', border: '1px solid rgba(30,35,48,0.15)', borderRadius: 7, background: 'transparent', color: '#676b5f', fontSize: 12, cursor: 'pointer' }}>
           ← Dashboard
         </button>
       </div>
@@ -320,40 +316,40 @@ export default function ResultsPage() {
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '40px 24px' }}>
 
         {/* Zone 1: Winner Announcement */}
-        <div style={{ position: 'relative', textAlign: 'center', marginBottom: 48, padding: '48px 24px', borderRadius: 20, border: `0.5px solid rgba(${tc.rgb},0.25)`, overflow: 'hidden' }}>
-          <ParticleCanvas baseHue={tc.color === '#eaef09' ? 63 : tc.color === '#8B5CF6' ? 262 : 160} />
+        <div style={{ position: 'relative', textAlign: 'center', marginBottom: 48, padding: '48px 24px', borderRadius: 20, border: `0.5px solid rgba(${tc.primaryRgb},0.25)`, overflow: 'hidden' }}>
+          <ParticleCanvas baseHue={hueMap[meta.group] || 110} />
           {/* Winner content — always rendered at full size, revealed after countdown */}
           <div style={{ position: 'relative', zIndex: 1, pointerEvents: 'none', animation: countdown === 0 ? 'winnerReveal 0.9s cubic-bezier(0.22,1,0.36,1) forwards' : 'none', opacity: countdown > 0 ? 0 : undefined }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', background: `rgba(${tc.rgb},0.18)`, border: `1px solid rgba(${tc.rgb},0.4)`, borderRadius: 20, fontSize: 12, fontWeight: 700, color: tc.color, textTransform: 'uppercase', marginBottom: 20, boxShadow: `0 0 12px rgba(${tc.rgb},0.5), 0 0 32px rgba(${tc.rgb},0.25)` }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', background: `rgba(${tc.primaryRgb},0.18)`, border: `1px solid rgba(${tc.primaryRgb},0.4)`, borderRadius: 20, fontSize: 12, fontWeight: 700, color: tc.primary, textTransform: 'uppercase', marginBottom: 20, boxShadow: `0 0 12px rgba(${tc.primaryRgb},0.5), 0 0 32px rgba(${tc.primaryRgb},0.25)` }}>
               <Trophy size={14} weight="bold" /> Winner
             </div>
-            <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 64, fontWeight: 800, color: '#fff', lineHeight: 1.1, marginBottom: 12, animation: countdown === 0 ? 'fadeSlideUp 0.7s 0.3s cubic-bezier(0.22,1,0.36,1) both' : 'none' }}>
+            <div style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 64, fontWeight: 800, color: '#1e2330', lineHeight: 1.1, marginBottom: 12, animation: countdown === 0 ? 'fadeSlideUp 0.7s 0.3s cubic-bezier(0.22,1,0.36,1) both' : 'none' }}>
               {winner?.name || 'Hollow Signal'}
             </div>
             {winner?.rationale && (
-              <div style={{ maxWidth: 520, margin: '0 auto 16px', fontSize: 15, color: '#a1a1a1', lineHeight: 1.65, animation: countdown === 0 ? 'fadeSlideUp 0.7s 0.5s cubic-bezier(0.22,1,0.36,1) both' : 'none' }}>
+              <div style={{ maxWidth: 520, margin: '0 auto 16px', fontSize: 15, color: '#676b5f', lineHeight: 1.65, animation: countdown === 0 ? 'fadeSlideUp 0.7s 0.5s cubic-bezier(0.22,1,0.36,1) both' : 'none' }}>
                 {winner.rationale}
               </div>
             )}
-            <div style={{ fontSize: 16, color: '#a1a1a1', marginBottom: 24, animation: countdown === 0 ? 'fadeSlideUp 0.7s 0.65s cubic-bezier(0.22,1,0.36,1) both' : 'none' }}>
-              <span style={{ color: tc.color, fontWeight: 700, fontSize: 20 }}>{winnerPct}%</span> of votes
+            <div style={{ fontSize: 16, color: '#676b5f', marginBottom: 24, animation: countdown === 0 ? 'fadeSlideUp 0.7s 0.65s cubic-bezier(0.22,1,0.36,1) both' : 'none' }}>
+              <span style={{ color: tc.primary, fontWeight: 700, fontSize: 20 }}>{winnerPct}%</span> of votes
             </div>
             {(prizeData.submitter || prizeData.voter) && (
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 16 }}>
                 {prizeData.submitter && (
-                  <div style={{ padding: '14px 18px', background: 'linear-gradient(135deg, rgba(234,239,9,0.06), rgba(139,92,246,0.04))', border: '1px solid rgba(234,239,9,0.2)', borderRadius: 10, maxWidth: 320, textAlign: 'left' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}><Trophy size={14} color="#eaef09" weight="fill" /><span style={{ fontSize: 11, fontWeight: 700, color: '#eaef09', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Submitter Prize</span></div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{prizeData.submitter.name}</div>
-                    {prizeData.submitter.desc && <div style={{ fontSize: 12, color: '#7a7a7a', marginBottom: 8 }}>{prizeData.submitter.desc}</div>}
-                    {prizeData.winnerContact && <div style={{ fontSize: 12, color: '#a1a1a1' }}>Submitted by: <strong style={{ color: '#fff' }}>{prizeData.winnerContact.name}</strong> · {prizeData.winnerContact.email}</div>}
+                  <div style={{ padding: '14px 18px', background: `linear-gradient(135deg, rgba(${tc.primaryRgb},0.06), rgba(${tc.primaryRgb},0.04))`, border: `1px solid rgba(${tc.primaryRgb},0.2)`, borderRadius: 10, maxWidth: 320, textAlign: 'left' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}><Trophy size={14} color={tc.primary} weight="fill" /><span style={{ fontSize: 11, fontWeight: 700, color: tc.primary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Submitter Prize</span></div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#1e2330', marginBottom: 2 }}>{prizeData.submitter.name}</div>
+                    {prizeData.submitter.desc && <div style={{ fontSize: 12, color: '#8a8a82', marginBottom: 8 }}>{prizeData.submitter.desc}</div>}
+                    {prizeData.winnerContact && <div style={{ fontSize: 12, color: '#676b5f' }}>Submitted by: <strong style={{ color: '#1e2330' }}>{prizeData.winnerContact.name}</strong> · {prizeData.winnerContact.email}</div>}
                   </div>
                 )}
                 {prizeData.voter && (
-                  <div style={{ padding: '14px 18px', background: 'rgba(139,92,246,0.04)', border: '1px solid rgba(139,92,246,0.15)', borderRadius: 10, maxWidth: 320, textAlign: 'left' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}><Trophy size={14} color="#8B5CF6" weight="fill" /><span style={{ fontSize: 11, fontWeight: 700, color: '#8B5CF6', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Voter Prize</span></div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{prizeData.voter.name}</div>
-                    {prizeData.voter.desc && <div style={{ fontSize: 12, color: '#7a7a7a', marginBottom: 8 }}>{prizeData.voter.desc}</div>}
-                    {prizeData.voterWinner && <div style={{ fontSize: 12, color: '#a1a1a1' }}>Random voter: <strong style={{ color: '#fff' }}>{prizeData.voterWinner.name}</strong> · {prizeData.voterWinner.email}</div>}
+                  <div style={{ padding: '14px 18px', background: `rgba(${tc.primaryRgb},0.04)`, border: `1px solid rgba(${tc.primaryRgb},0.15)`, borderRadius: 10, maxWidth: 320, textAlign: 'left' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}><Trophy size={14} color={tc.primary} weight="fill" /><span style={{ fontSize: 11, fontWeight: 700, color: tc.primary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Voter Prize</span></div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#1e2330', marginBottom: 2 }}>{prizeData.voter.name}</div>
+                    {prizeData.voter.desc && <div style={{ fontSize: 12, color: '#8a8a82', marginBottom: 8 }}>{prizeData.voter.desc}</div>}
+                    {prizeData.voterWinner && <div style={{ fontSize: 12, color: '#676b5f' }}>Random voter: <strong style={{ color: '#1e2330' }}>{prizeData.voterWinner.name}</strong> · {prizeData.voterWinner.email}</div>}
                   </div>
                 )}
               </div>
@@ -368,9 +364,9 @@ export default function ResultsPage() {
               };
               const { body, cta } = subCTA[meta.sub] || subCTA['company-name'];
               return (
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '12px 20px', background: '#141414', border: '0.5px solid rgba(234,239,9,0.3)', borderRadius: 10, fontSize: 13, color: '#a1a1a1' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '12px 20px', background: '#ffffff', border: `1px solid rgba(${tc.primaryRgb},0.3)`, borderRadius: 10, fontSize: 13, color: '#676b5f', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
                   {body}
-                  <a href="#" style={{ color: '#eaef09', fontWeight: 600, textDecoration: 'none', pointerEvents: 'auto', whiteSpace: 'nowrap' }}>{cta}</a>
+                  <a href="#" style={{ color: tc.primary, fontWeight: 600, textDecoration: 'none', pointerEvents: 'auto', whiteSpace: 'nowrap' }}>{cta}</a>
                 </div>
               );
             })()}
@@ -379,7 +375,7 @@ export default function ResultsPage() {
           {/* Countdown overlay — sits on top, fades out when done */}
           {countdown > 0 && (
             <div style={{ position: 'absolute', inset: 0, zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 20 }}>
-              <div key={countdown} style={{ fontSize: 140, fontWeight: 900, color: tc.color, lineHeight: 1, textShadow: `0 0 60px rgba(${tc.rgb},1), 0 0 120px rgba(${tc.rgb},0.5)`, animation: 'countPop 0.85s cubic-bezier(0.22,1,0.36,1) forwards' }}>
+              <div key={countdown} style={{ fontSize: 140, fontWeight: 900, color: tc.primary, lineHeight: 1, textShadow: `0 0 60px rgba(${tc.primaryRgb},1), 0 0 120px rgba(${tc.primaryRgb},0.5)`, animation: 'countPop 0.85s cubic-bezier(0.22,1,0.36,1) forwards' }}>
                 {countdown}
               </div>
             </div>
@@ -388,7 +384,7 @@ export default function ResultsPage() {
 
         {/* Zone 2: Analytics Dashboard */}
         <div style={{ marginBottom: 40 }}>
-          <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, color: '#fff', marginBottom: 20 }}>Analytics Dashboard</h2>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 22, color: '#1e2330', marginBottom: 20 }}>Analytics Dashboard</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
             {[
               { label: 'Total Votes Cast', value: totalVotes || 47 },
@@ -396,24 +392,24 @@ export default function ResultsPage() {
               { label: 'Contest Quality', value: '78%' },
               { label: 'Contest Duration', value: '9 days' },
             ].map((stat, i) => (
-              <div key={i} style={{ background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '16px 14px', textAlign: 'center' }}>
-                <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 26, fontWeight: 700, color: '#fff', marginBottom: 4 }}>{stat.value}</div>
-                <div style={{ fontSize: 11, color: '#7a7a7a' }}>{stat.label}</div>
+              <div key={i} style={{ background: '#ffffff', border: '1px solid rgba(30,35,48,0.1)', borderRadius: 10, padding: '16px 14px', textAlign: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 26, fontWeight: 700, color: '#1e2330', marginBottom: 4 }}>{stat.value}</div>
+                <div style={{ fontSize: 11, color: '#8a8a82' }}>{stat.label}</div>
               </div>
             ))}
           </div>
 
           {/* Bar chart */}
-          <div style={{ background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: '20px', height: 220 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#fff', marginBottom: 12 }}>Vote Distribution</div>
+          <div style={{ background: '#ffffff', border: '1px solid rgba(30,35,48,0.1)', borderRadius: 12, padding: '20px', height: 220, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: '#1e2330', marginBottom: 12 }}>Vote Distribution</div>
             <ResponsiveContainer width="100%" height="80%">
               <BarChart data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: -30 }}>
-                <XAxis dataKey="name" tick={{ fill: '#7a7a7a', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: '#7a7a7a', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#fff' }} labelStyle={{ color: '#a1a1a1' }} cursor={{ fill: 'rgba(255,255,255,0.03)' }} formatter={(val, name, props) => [val, props.payload.fullName]} />
+                <XAxis dataKey="name" tick={{ fill: '#8a8a82', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: '#8a8a82', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid rgba(30,35,48,0.1)', borderRadius: 8, color: '#1e2330' }} labelStyle={{ color: '#676b5f' }} cursor={{ fill: 'rgba(30,35,48,0.03)' }} formatter={(val, name, props) => [val, props.payload.fullName]} />
                 <Bar dataKey="votes" radius={[4, 4, 0, 0]}>
                   {chartData.map((entry, index) => (
-                    <Cell key={index} fill={index === 0 ? tc.color : `rgba(${tc.rgb},${0.4 - index * 0.05})`} />
+                    <Cell key={index} fill={index === 0 ? tc.primary : `rgba(${tc.primaryRgb},${0.4 - index * 0.05})`} />
                   ))}
                 </Bar>
               </BarChart>
@@ -423,17 +419,17 @@ export default function ResultsPage() {
 
         {/* Zone 3: Runner-Up & Shortlist */}
         <div style={{ marginBottom: 40 }}>
-          <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, color: '#fff', marginBottom: 20 }}>The Final Shortlist</h2>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 22, color: '#1e2330', marginBottom: 20 }}>The Final Shortlist</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {submissions.slice(0, 5).map((sub, i) => (
-              <div key={sub.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px', background: i === 0 ? `rgba(${tc.rgb},0.06)` : '#1a1a1a', border: `0.5px solid ${i === 0 ? tc.color : 'rgba(255,255,255,0.08)'}`, borderRadius: 12 }}>
+              <div key={sub.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px', background: i === 0 ? `rgba(${tc.primaryRgb},0.06)` : '#ffffff', border: `1px solid ${i === 0 ? tc.primary : 'rgba(30,35,48,0.1)'}`, borderRadius: 12, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
                 <span style={{ fontSize: 20, minWidth: 28 }}>{MEDALS[i] || `#${i + 1}`}</span>
-                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 20, color: '#fff', flex: 1 }}>{sub.name}</span>
-                <span style={{ fontSize: 13, color: '#a1a1a1', minWidth: 60, textAlign: 'right' }}>{sub.voteCount} votes</span>
-                <div style={{ width: 80, height: 6, background: '#222', borderRadius: 4, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${totalVotes ? Math.round((sub.voteCount / totalVotes) * 100) : 0}%`, background: i === 0 ? tc.color : `rgba(${tc.rgb},0.5)`, borderRadius: 4 }} />
+                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 20, color: '#1e2330', flex: 1 }}>{sub.name}</span>
+                <span style={{ fontSize: 13, color: '#676b5f', minWidth: 60, textAlign: 'right' }}>{sub.voteCount} votes</span>
+                <div style={{ width: 80, height: 6, background: 'rgba(30,35,48,0.08)', borderRadius: 4, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${totalVotes ? Math.round((sub.voteCount / totalVotes) * 100) : 0}%`, background: i === 0 ? tc.primary : `rgba(${tc.primaryRgb},0.5)`, borderRadius: 4 }} />
                 </div>
-                <span style={{ fontSize: 12, color: '#7a7a7a', minWidth: 36, textAlign: 'right' }}>{totalVotes ? Math.round((sub.voteCount / totalVotes) * 100) : 0}%</span>
+                <span style={{ fontSize: 12, color: '#8a8a82', minWidth: 36, textAlign: 'right' }}>{totalVotes ? Math.round((sub.voteCount / totalVotes) * 100) : 0}%</span>
               </div>
             ))}
           </div>
@@ -441,23 +437,23 @@ export default function ResultsPage() {
 
         {/* Zone 4: Contest Quality Metrics */}
         <div style={{ marginBottom: 40 }}>
-          <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, color: '#fff', marginBottom: 20 }}>Your Contest's Performance</h2>
-          <div style={{ background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 20 }}>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 22, color: '#1e2330', marginBottom: 20 }}>Your Contest's Performance</h2>
+          <div style={{ background: '#ffffff', border: '1px solid rgba(30,35,48,0.1)', borderRadius: 12, padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
               {[
-                { label: 'Creator completion', value: '38/50', color: '#10B981' },
-                { label: 'Participant avg completion', value: '40/50', color: tc.color },
-                { label: 'Overall contest quality', value: '78/100', color: '#8B5CF6' },
-                { label: 'Quality tier', value: 'Strong', color: '#a1a1a1' },
+                { label: 'Creator completion', value: '38/50', color: tc.primary },
+                { label: 'Participant avg completion', value: '40/50', color: tc.primary },
+                { label: 'Overall contest quality', value: '78/100', color: tc.primary },
+                { label: 'Quality tier', value: 'Strong', color: '#676b5f' },
               ].map((m, i) => (
-                <div key={i} style={{ padding: '12px 14px', background: '#141414', borderRadius: 8 }}>
+                <div key={i} style={{ padding: '12px 14px', background: '#f8f8f5', borderRadius: 8 }}>
                   <div style={{ fontSize: 18, fontWeight: 700, color: m.color, marginBottom: 2 }}>{m.value}</div>
-                  <div style={{ fontSize: 12, color: '#7a7a7a' }}>{m.label}</div>
+                  <div style={{ fontSize: 12, color: '#8a8a82' }}>{m.label}</div>
                 </div>
               ))}
             </div>
             {submissions.length >= 2 && Math.abs(submissions[0].voteCount - submissions[1].voteCount) / totalVotes < 0.05 && (
-              <div style={{ padding: '10px 14px', background: 'rgba(234,239,9,0.06)', border: '1px solid rgba(234,239,9,0.2)', borderRadius: 8, fontSize: 13, color: '#eaef09' }}>
+              <div style={{ padding: '10px 14px', background: `rgba(${tc.primaryRgb},0.06)`, border: `1px solid rgba(${tc.primaryRgb},0.2)`, borderRadius: 8, fontSize: 13, color: tc.primary }}>
                 Close call — {Math.round(Math.abs(submissions[0].voteCount - submissions[1].voteCount) / totalVotes * 100)}% separated winner and runner-up
               </div>
             )}
@@ -476,16 +472,16 @@ export default function ResultsPage() {
           const isPet = sub === 'pet-name';
           const winName = winner?.name || 'your name';
 
-          const AffCard = ({ badge, title, body, cta, href, accent, sub: subText }) => (
-            <div style={{ background: '#1a1a1a', border: `1px solid ${accent || tc.color}30`, borderRadius: 14, padding: '20px 22px', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: accent || tc.color }} />
+          const AffCard = ({ badge, title, body, cta, href, sub: subText }) => (
+            <div style={{ background: '#ffffff', border: `1px solid rgba(${tc.primaryRgb},0.18)`, borderRadius: 14, padding: '20px 22px', position: 'relative', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: tc.primary }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
-                <span style={{ fontSize: 10, fontWeight: 800, background: `${accent || tc.color}20`, color: accent || tc.color, borderRadius: 4, padding: '2px 7px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{badge}</span>
+                <span style={{ fontSize: 10, fontWeight: 800, background: `rgba(${tc.primaryRgb},0.12)`, color: tc.primary, borderRadius: 4, padding: '2px 7px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{badge}</span>
               </div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 6 }}>{title}</div>
-              <div style={{ fontSize: 13, color: '#7a7a7a', marginBottom: 4, lineHeight: 1.5 }}>{body}</div>
-              {subText && <div style={{ fontSize: 11, color: '#555', marginBottom: 14 }}>{subText}</div>}
-              <a href={href || '#'} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 20px', borderRadius: 8, background: accent || tc.color, color: accent ? '#fff' : tc.textColor, fontSize: 13, fontWeight: 700, textDecoration: 'none', cursor: 'pointer' }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#1e2330', marginBottom: 6 }}>{title}</div>
+              <div style={{ fontSize: 13, color: '#8a8a82', marginBottom: 4, lineHeight: 1.5 }}>{body}</div>
+              {subText && <div style={{ fontSize: 11, color: '#676b5f', marginBottom: 14 }}>{subText}</div>}
+              <a href={href || '#'} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 20px', borderRadius: 8, background: tc.primary, color: tc.btnText, fontSize: 13, fontWeight: 700, textDecoration: 'none', cursor: 'pointer' }}>
                 {cta}
               </a>
             </div>
@@ -494,12 +490,12 @@ export default function ResultsPage() {
           return (
             <div style={{ marginBottom: 40 }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 8 }}>
-                <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, color: '#fff', margin: 0 }}>
+                <h2 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 22, color: '#1e2330', margin: 0 }}>
                   You have a name. Now make it real.
                 </h2>
               </div>
-              <p style={{ fontSize: 13, color: '#7a7a7a', marginBottom: 20 }}>
-                <strong style={{ color: tc.color }}>{winName}</strong> is chosen — here's what to do next, in order.
+              <p style={{ fontSize: 13, color: '#8a8a82', marginBottom: 20 }}>
+                <strong style={{ color: tc.primary }}>{winName}</strong> is chosen — here's what to do next, in order.
               </p>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px,1fr))', gap: 14 }}>
@@ -513,7 +509,6 @@ export default function ResultsPage() {
                       subText="20–30% off first purchase · Real-time availability"
                       cta="Check on Namecheap →"
                       href="https://namecheap.com"
-                      accent={tc.color}
                     />
                     <AffCard
                       badge="Trademark · USPTO"
@@ -522,7 +517,6 @@ export default function ResultsPage() {
                       subText="Zero cost — builds confidence before you commit"
                       cta="Search TESS (Free) →"
                       href="https://tmsearch.uspto.gov"
-                      accent="#3b82f6"
                     />
                     <AffCard
                       badge="Trademark · LegalZoom"
@@ -531,7 +525,6 @@ export default function ResultsPage() {
                       subText="~$199 · 30-day cookie · 15% commission"
                       cta="Full Search via LegalZoom →"
                       href="#"
-                      accent="#8B5CF6"
                     />
                     {(sub === 'company-name' || sub === 'rebrand') && (
                       <AffCard
@@ -541,7 +534,6 @@ export default function ResultsPage() {
                         subText="~$149+ · 30-day cookie · 15% commission"
                         cta="Form Your LLC →"
                         href="#"
-                        accent="#f97316"
                       />
                     )}
                     <AffCard
@@ -551,7 +543,6 @@ export default function ResultsPage() {
                       subText="$40–$299 · Coverage at every price point"
                       cta="Design on Looka (fast) →"
                       href="#"
-                      accent="#ec4899"
                     />
                   </>
                 )}
@@ -566,7 +557,6 @@ export default function ResultsPage() {
                       subText="~$17/yr per signup · Highest expected conversion"
                       cta="Distribute on DistroKid →"
                       href="#"
-                      accent="#1DB954"
                     />
                     <AffCard
                       badge="Trademark · LegalZoom"
@@ -575,7 +565,6 @@ export default function ResultsPage() {
                       subText="~$199 full search · 30-day cookie"
                       cta="Trademark via LegalZoom →"
                       href="#"
-                      accent="#8B5CF6"
                     />
                     <AffCard
                       badge="Domain · Namecheap"
@@ -584,7 +573,6 @@ export default function ResultsPage() {
                       subText="20–30% off first purchase"
                       cta="Check on Namecheap →"
                       href="#"
-                      accent={tc.color}
                     />
                     <AffCard
                       badge="Logo · 99designs / Looka"
@@ -593,7 +581,6 @@ export default function ResultsPage() {
                       subText="$40–$299"
                       cta="Create on Looka →"
                       href="#"
-                      accent="#ec4899"
                     />
                   </>
                 )}
@@ -608,7 +595,6 @@ export default function ResultsPage() {
                       subText="20–30% off first purchase"
                       cta="Check on Namecheap →"
                       href="#"
-                      accent={tc.color}
                     />
                     <AffCard
                       badge="Cover Art · Looka"
@@ -617,7 +603,6 @@ export default function ResultsPage() {
                       subText="~$20 one-time · 25–35% commission"
                       cta="Create Cover Art →"
                       href="#"
-                      accent="#ec4899"
                     />
                   </>
                 )}
@@ -632,7 +617,6 @@ export default function ResultsPage() {
                       subText="~15% per order · No minimums"
                       cta="Order Merch on Printful →"
                       href="#"
-                      accent={tc.color}
                     />
                     <AffCard
                       badge="Merchandise · Custom Ink"
@@ -641,7 +625,6 @@ export default function ResultsPage() {
                       subText="~15% per order"
                       cta="Quote on Custom Ink →"
                       href="#"
-                      accent="#8B5CF6"
                     />
                     <AffCard
                       badge="Domain · Namecheap"
@@ -650,7 +633,6 @@ export default function ResultsPage() {
                       subText="From $10/yr · 20–30% off first purchase"
                       cta="Check on Namecheap →"
                       href="#"
-                      accent="#3b82f6"
                     />
                   </>
                 )}
@@ -665,7 +647,6 @@ export default function ResultsPage() {
                       subText="~10% per order · Warm tone, not hard-sell · Ships in 5–7 days"
                       cta="Design Announcements →"
                       href="#"
-                      accent={tc.color}
                     />
                     <AffCard
                       badge="Personalised Gifts · Etsy"
@@ -674,7 +655,6 @@ export default function ResultsPage() {
                       subText="Handmade · Ships worldwide"
                       cta="Shop personalised gifts →"
                       href="#"
-                      accent="#f59e0b"
                     />
                   </>
                 )}
@@ -689,7 +669,6 @@ export default function ResultsPage() {
                       subText="ID tags from $8 · Personalised collars, bowls, and more"
                       cta="Get a custom ID tag →"
                       href="#"
-                      accent={tc.color}
                     />
                     <AffCard
                       badge="Personalised Gifts · Etsy"
@@ -698,7 +677,6 @@ export default function ResultsPage() {
                       subText="Handmade · Ships worldwide"
                       cta="Shop pet gifts →"
                       href="#"
-                      accent="#f59e0b"
                     />
                   </>
                 )}
@@ -713,7 +691,6 @@ export default function ResultsPage() {
                       subText="~15% per order · Ships in 3–5 days"
                       cta="Design team merch →"
                       href="#"
-                      accent={tc.color}
                     />
                     <AffCard
                       badge="Logo Design · 99designs"
@@ -722,7 +699,6 @@ export default function ResultsPage() {
                       subText="From $299 · 30-day cookie"
                       cta="Get a team logo →"
                       href="#"
-                      accent="#ec4899"
                     />
                     <AffCard
                       badge="Website · Squarespace"
@@ -731,7 +707,6 @@ export default function ResultsPage() {
                       subText="From $16/mo · 14-day free trial"
                       cta="Build your team site →"
                       href="#"
-                      accent="#3b82f6"
                     />
                     <AffCard
                       badge="Domain · Namecheap"
@@ -740,7 +715,6 @@ export default function ResultsPage() {
                       subText="From $10/yr"
                       cta="Check domain →"
                       href="#"
-                      accent="#8B5CF6"
                     />
                   </>
                 )}
@@ -755,7 +729,6 @@ export default function ResultsPage() {
                       subText="Ships worldwide"
                       cta="Shop personalised gifts →"
                       href="#"
-                      accent="#f59e0b"
                     />
                     <AffCard
                       badge="Domain · Namecheap"
@@ -764,7 +737,6 @@ export default function ResultsPage() {
                       subText="From $10/yr · 20–30% off first purchase"
                       cta="Check on Namecheap →"
                       href="#"
-                      accent={tc.color}
                     />
                   </>
                 )}
@@ -778,7 +750,7 @@ export default function ResultsPage() {
 
         {/* Zone 8: Export */}
         <div style={{ marginBottom: 40 }}>
-          <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, color: '#fff', marginBottom: 20 }}>Export Your Data</h2>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 22, color: '#1e2330', marginBottom: 20 }}>Export Your Data</h2>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
             {[
               { label: 'Download CSV', desc: 'All submissions, votes, timestamps' },
@@ -787,7 +759,7 @@ export default function ResultsPage() {
             ].map(item => (
               <div key={item.label}>
                 <SimBtn label={item.label} icon={<DownloadSimple size={14} />} />
-                <div style={{ fontSize: 11, color: '#7a7a7a', marginTop: 4 }}>{item.desc}</div>
+                <div style={{ fontSize: 11, color: '#8a8a82', marginTop: 4 }}>{item.desc}</div>
               </div>
             ))}
           </div>
@@ -795,11 +767,11 @@ export default function ResultsPage() {
 
         {/* Zone 9: Share & Next Steps */}
         <div style={{ marginBottom: 40 }}>
-          <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, color: '#fff', marginBottom: 20 }}>Share Your Results</h2>
-          <div style={{ background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 20 }}>
-            <div style={{ fontSize: 12, color: '#7a7a7a', marginBottom: 8 }}>Shareable results link:</div>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 22, color: '#1e2330', marginBottom: 20 }}>Share Your Results</h2>
+          <div style={{ background: '#ffffff', border: '1px solid rgba(30,35,48,0.1)', borderRadius: 12, padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+            <div style={{ fontSize: 12, color: '#8a8a82', marginBottom: 8 }}>Shareable results link:</div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 20 }}>
-              <div style={{ flex: 1, background: '#141414', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '8px 12px', fontSize: 13, color: '#a1a1a1', fontFamily: 'monospace' }}>
+              <div style={{ flex: 1, background: '#f8f8f5', border: '1px solid rgba(30,35,48,0.1)', borderRadius: 8, padding: '8px 12px', fontSize: 13, color: '#676b5f', fontFamily: 'monospace' }}>
                 {shareUrl}
               </div>
               <CopyBtn text={`https://${shareUrl}`} label="Copy" />
@@ -809,29 +781,29 @@ export default function ResultsPage() {
               <SimBtn label="Share on LinkedIn" icon={<LinkedinLogo size={14} />} />
               <SimBtn label="Share on Facebook" icon={<Share size={14} />} />
             </div>
-            <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', marginBottom: 20 }} />
+            <div style={{ height: 1, background: 'rgba(30,35,48,0.08)', marginBottom: 20 }} />
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              <button onClick={() => navigate('/select')} style={{ height: 44, padding: '0 20px', border: `1.5px solid ${tc.color}`, borderRadius: 10, background: `rgba(${tc.rgb},0.1)`, color: tc.color, fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <button onClick={() => navigate('/select')} style={{ height: 44, padding: '0 20px', border: `1.5px solid ${tc.primary}`, borderRadius: 10, background: `rgba(${tc.primaryRgb},0.1)`, color: tc.primary, fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
                 Run Another Round <ArrowRight size={16} />
               </button>
-              <button onClick={() => navigate('/dashboard')} style={{ height: 44, padding: '0 20px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10, background: 'transparent', color: '#fff', fontSize: 14, cursor: 'pointer' }}>
+              <button onClick={() => navigate('/dashboard')} style={{ height: 44, padding: '0 20px', border: '1px solid rgba(30,35,48,0.15)', borderRadius: 10, background: 'transparent', color: '#1e2330', fontSize: 14, cursor: 'pointer' }}>
                 Back to Dashboard
               </button>
             </div>
 
             {isBusiness && (
-              <div style={{ marginTop: 20, padding: '20px 24px', background: 'rgba(234,239,9,0.04)', border: '1.5px solid rgba(234,239,9,0.25)', borderRadius: 12 }}>
+              <div style={{ marginTop: 20, padding: '20px 24px', background: `rgba(${tc.primaryRgb},0.04)`, border: `1.5px solid rgba(${tc.primaryRgb},0.25)`, borderRadius: 12 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#eaef09' }} />
-                  <span style={{ fontSize: 10, fontWeight: 700, color: '#eaef09', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Catchword Professional Services</span>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: tc.primary }} />
+                  <span style={{ fontSize: 10, fontWeight: 700, color: tc.primary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Catchword Professional Services</span>
                 </div>
-                <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 6 }}>
+                <div style={{ fontSize: 16, fontWeight: 700, color: '#1e2330', marginBottom: 6 }}>
                   Need a full brand identity? Catchword can help.
                 </div>
-                <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.6, marginBottom: 14 }}>
+                <div style={{ fontSize: 13, color: '#676b5f', lineHeight: 1.6, marginBottom: 14 }}>
                   From naming to brand strategy, verbal identity, and taglines — Catchword has built 3,000+ brands.
                 </div>
-                <a href="#" style={{ fontSize: 13, color: '#eaef09', fontWeight: 600, textDecoration: 'none' }}>
+                <a href="#" style={{ fontSize: 13, color: tc.primary, fontWeight: 600, textDecoration: 'none' }}>
                   Explore Catchword Services →
                 </a>
               </div>
@@ -853,17 +825,17 @@ function CertificateSection({ winner, meta, tc }) {
 
   return (
     <div style={{ marginBottom: 40 }}>
-      <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, color: '#fff', marginBottom: 20 }}>Official Naming Certificate</h2>
+      <h2 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 22, color: '#1e2330', marginBottom: 20 }}>Official Naming Certificate</h2>
 
       {/* Branding toggle */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
         <button
           onClick={() => setWhiteLabel(false)}
           style={{
-            padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif',
-            background: !whiteLabel ? `rgba(${tc.rgb},0.15)` : 'transparent',
-            border: `1px solid ${!whiteLabel ? tc.color : 'rgba(255,255,255,0.12)'}`,
-            color: !whiteLabel ? tc.color : '#7a7a7a',
+            padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+            background: !whiteLabel ? `rgba(${tc.primaryRgb},0.15)` : 'transparent',
+            border: `1px solid ${!whiteLabel ? tc.primary : 'rgba(30,35,48,0.12)'}`,
+            color: !whiteLabel ? tc.primary : '#8a8a82',
           }}
         >
           Powered by Catchword
@@ -871,10 +843,10 @@ function CertificateSection({ winner, meta, tc }) {
         <button
           onClick={() => setWhiteLabel(true)}
           style={{
-            padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif',
-            background: whiteLabel ? `rgba(${tc.rgb},0.15)` : 'transparent',
-            border: `1px solid ${whiteLabel ? tc.color : 'rgba(255,255,255,0.12)'}`,
-            color: whiteLabel ? tc.color : '#7a7a7a',
+            padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+            background: whiteLabel ? `rgba(${tc.primaryRgb},0.15)` : 'transparent',
+            border: `1px solid ${whiteLabel ? tc.primary : 'rgba(30,35,48,0.12)'}`,
+            color: whiteLabel ? tc.primary : '#8a8a82',
           }}
         >
           Your Branding (White-label)
@@ -882,7 +854,7 @@ function CertificateSection({ winner, meta, tc }) {
       </div>
 
       {/* Certificate */}
-      <div style={{ background: '#f9f6ef', border: '2px solid #d4a853', borderRadius: 16, padding: '32px', maxWidth: 480, marginBottom: 16 }}>
+      <div style={{ background: '#f9f6ef', border: `2px solid ${tc.primary}`, borderRadius: 16, padding: '32px', maxWidth: 480, marginBottom: 16 }}>
         <div style={{ textAlign: 'center', fontFamily: 'Inter, sans-serif' }}>
           <div style={{ fontSize: 11, color: '#888', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>Official Certificate of Naming</div>
           <div style={{ fontSize: 13, color: '#555', marginBottom: 12 }}>This certifies that the name</div>
@@ -959,94 +931,94 @@ function PostResultsReflection({ winnerName, contestTitle, tc, isBusiness }) {
   return (
     <div style={{ marginTop: 40, marginBottom: 40 }}>
       {/* Simulated email envelope header */}
-      <div style={{ background: '#141414', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 12, overflow: 'hidden' }}>
+      <div style={{ background: '#ffffff', border: '1px solid rgba(30,35,48,0.1)', borderRadius: 12, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
         {/* Email meta bar */}
-        <div style={{ background: '#0f0f0f', borderBottom: '0.5px solid rgba(255,255,255,0.06)', padding: '12px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ width: 32, height: 32, borderRadius: '50%', background: `rgba(${tc.rgb},0.15)`, border: `1px solid rgba(${tc.rgb},0.3)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Envelope size={14} color={tc.color} /></div>
+        <div style={{ background: '#f8f8f5', borderBottom: '1px solid rgba(30,35,48,0.08)', padding: '12px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ width: 32, height: 32, borderRadius: '50%', background: `rgba(${tc.primaryRgb},0.15)`, border: `1px solid rgba(${tc.primaryRgb},0.3)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Envelope size={14} color={tc.primary} /></div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 12, color: '#fff', fontWeight: 600 }}>team@namingcontest.com → You</div>
-            <div style={{ fontSize: 11, color: '#7a7a7a' }}>Subject: How did <em style={{ color: '#a1a1a1' }}>{winnerName || 'your winning name'}</em> turn out? · Touchpoint 7</div>
+            <div style={{ fontSize: 12, color: '#1e2330', fontWeight: 600 }}>team@namingcontest.com → You</div>
+            <div style={{ fontSize: 11, color: '#8a8a82' }}>Subject: How did <em style={{ color: '#676b5f' }}>{winnerName || 'your winning name'}</em> turn out? · Touchpoint 7</div>
           </div>
-          <div style={{ fontSize: 11, color: '#4a4a4a' }}>7 days post-results</div>
+          <div style={{ fontSize: 11, color: '#8a8a82' }}>7 days post-results</div>
         </div>
 
         {/* Email body */}
         <div style={{ padding: '28px 28px 24px' }}>
           {!response ? (
             <>
-              <p style={{ fontSize: 14, color: '#a1a1a1', lineHeight: 1.7, marginBottom: 8 }}>Hi there,</p>
-              <p style={{ fontSize: 14, color: '#a1a1a1', lineHeight: 1.7, marginBottom: 16 }}>
-                It's been a week since you chose <strong style={{ color: '#fff' }}>{winnerName || 'your winning name'}</strong>{contestTitle ? ` for ${contestTitle}` : ''}. Now that you've lived with it for a few days:
+              <p style={{ fontSize: 14, color: '#676b5f', lineHeight: 1.7, marginBottom: 8 }}>Hi there,</p>
+              <p style={{ fontSize: 14, color: '#676b5f', lineHeight: 1.7, marginBottom: 16 }}>
+                It's been a week since you chose <strong style={{ color: '#1e2330' }}>{winnerName || 'your winning name'}</strong>{contestTitle ? ` for ${contestTitle}` : ''}. Now that you've lived with it for a few days:
               </p>
-              <p style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 4 }}>How do you feel about the name?</p>
-              <p style={{ fontSize: 12, color: '#7a7a7a', marginBottom: 20 }}>Click one of the options below to see what happens next.</p>
+              <p style={{ fontSize: 16, fontWeight: 700, color: '#1e2330', marginBottom: 4 }}>How do you feel about the name?</p>
+              <p style={{ fontSize: 12, color: '#8a8a82', marginBottom: 20 }}>Click one of the options below to see what happens next.</p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
                 {[
-                  { key: 'confident', label: "✓  Yes, we're confident in this name", color: '#10B981', bg: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.3)' },
-                  { key: 'secondthoughts', label: "↩  We're having second thoughts", color: '#eaef09', bg: 'rgba(234,239,9,0.06)', border: '1px solid rgba(234,239,9,0.2)' },
-                  { key: 'unsure', label: "?  We're still not sure", color: '#8B5CF6', bg: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.2)' },
+                  { key: 'confident', label: "✓  Yes, we're confident in this name", color: tc.primary, bg: `rgba(${tc.primaryRgb},0.06)`, border: `1px solid rgba(${tc.primaryRgb},0.3)` },
+                  { key: 'secondthoughts', label: "↩  We're having second thoughts", color: tc.primary, bg: `rgba(${tc.primaryRgb},0.06)`, border: `1px solid rgba(${tc.primaryRgb},0.2)` },
+                  { key: 'unsure', label: "?  We're still not sure", color: tc.primary, bg: `rgba(${tc.primaryRgb},0.06)`, border: `1px solid rgba(${tc.primaryRgb},0.2)` },
                 ].map(opt => (
-                  <button key={opt.key} onClick={() => setResponse(opt.key)} style={{ padding: '14px 20px', background: opt.bg, border: opt.border, borderRadius: 10, color: opt.color, fontSize: 14, fontWeight: 600, cursor: 'pointer', textAlign: 'left', fontFamily: 'Inter, sans-serif' }}>
+                  <button key={opt.key} onClick={() => setResponse(opt.key)} style={{ padding: '14px 20px', background: opt.bg, border: opt.border, borderRadius: 10, color: opt.color, fontSize: 14, fontWeight: 600, cursor: 'pointer', textAlign: 'left', fontFamily: "'Inter', sans-serif" }}>
                     {opt.label}
                   </button>
                 ))}
               </div>
 
-              <p style={{ fontSize: 12, color: '#4a4a4a', lineHeight: 1.6 }}>
+              <p style={{ fontSize: 12, color: '#8a8a82', lineHeight: 1.6 }}>
                 Regardless of your answer, we'll follow up with guidance.<br />
-                — The Namico.com Team · Powered by Catchword, the #1 Ranked Naming Agency Worldwide
+                — The NamingContest.com Team · Powered by Catchword, the #1 Ranked Naming Agency Worldwide
               </p>
             </>
           ) : (
             <>
-              <div style={{ padding: '4px 10px', background: `rgba(${tc.rgb},0.1)`, border: `0.5px solid rgba(${tc.rgb},0.3)`, borderRadius: 6, fontSize: 11, fontWeight: 700, color: tc.color, textTransform: 'uppercase', letterSpacing: '0.06em', display: 'inline-block', marginBottom: 16 }}>
+              <div style={{ padding: '4px 10px', background: `rgba(${tc.primaryRgb},0.1)`, border: `0.5px solid rgba(${tc.primaryRgb},0.3)`, borderRadius: 6, fontSize: 11, fontWeight: 700, color: tc.primary, textTransform: 'uppercase', letterSpacing: '0.06em', display: 'inline-block', marginBottom: 16 }}>
                 Response received — here's what to do next
               </div>
-              <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: 20, color: '#fff', marginBottom: 12, lineHeight: 1.3 }}>{chosen.headline}</h3>
-              <p style={{ fontSize: 14, color: '#a1a1a1', lineHeight: 1.6, marginBottom: 20 }}>{chosen.body}</p>
+              <h3 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 20, color: '#1e2330', marginBottom: 12, lineHeight: 1.3 }}>{chosen.headline}</h3>
+              <p style={{ fontSize: 14, color: '#676b5f', lineHeight: 1.6, marginBottom: 20 }}>{chosen.body}</p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
                 {chosen.items.map((item, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 14px', background: '#1a1a1a', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: 10 }}>
+                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 14px', background: '#f8f8f5', border: '1px solid rgba(30,35,48,0.08)', borderRadius: 10 }}>
                     <span style={{ fontSize: 18, flexShrink: 0 }}>{item.icon}</span>
                     <div>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', marginBottom: 3 }}>{item.label}</div>
-                      <div style={{ fontSize: 12, color: '#7a7a7a', lineHeight: 1.5 }}>{item.sub}</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: '#1e2330', marginBottom: 3 }}>{item.label}</div>
+                      <div style={{ fontSize: 12, color: '#8a8a82', lineHeight: 1.5 }}>{item.sub}</div>
                     </div>
                   </div>
                 ))}
               </div>
 
               {chosen.cta && (
-                <div style={{ padding: '16px 20px', background: `rgba(${tc.rgb},0.06)`, border: `1px solid rgba(${tc.rgb},0.2)`, borderRadius: 10, marginBottom: 20 }}>
-                  <button style={{ width: '100%', padding: '12px', border: `1.5px solid ${tc.color}`, borderRadius: 8, background: `rgba(${tc.rgb},0.1)`, color: tc.color, fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
+                <div style={{ padding: '16px 20px', background: `rgba(${tc.primaryRgb},0.06)`, border: `1px solid rgba(${tc.primaryRgb},0.2)`, borderRadius: 10, marginBottom: 20 }}>
+                  <button style={{ width: '100%', padding: '12px', border: `1.5px solid ${tc.primary}`, borderRadius: 8, background: `rgba(${tc.primaryRgb},0.1)`, color: tc.primary, fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
                     {chosen.cta}
                   </button>
-                  {chosen.ctaNote && <p style={{ fontSize: 12, color: '#7a7a7a', marginTop: 8, textAlign: 'center', lineHeight: 1.5 }}>{chosen.ctaNote}</p>}
+                  {chosen.ctaNote && <p style={{ fontSize: 12, color: '#8a8a82', marginTop: 8, textAlign: 'center', lineHeight: 1.5 }}>{chosen.ctaNote}</p>}
                 </div>
               )}
 
               {/* Catchword Professional Services upsell — business only, unhappy responses */}
               {isBusiness && (response === 'secondthoughts' || response === 'unsure') && (
-                <div style={{ padding: '20px 24px', background: 'rgba(234,239,9,0.04)', border: '1.5px solid rgba(234,239,9,0.25)', borderRadius: 12, marginBottom: 20 }}>
+                <div style={{ padding: '20px 24px', background: `rgba(${tc.primaryRgb},0.04)`, border: `1.5px solid rgba(${tc.primaryRgb},0.25)`, borderRadius: 12, marginBottom: 20 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#eaef09' }} />
-                    <span style={{ fontSize: 10, fontWeight: 700, color: '#eaef09', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Catchword Professional Services</span>
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: tc.primary }} />
+                    <span style={{ fontSize: 10, fontWeight: 700, color: tc.primary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Catchword Professional Services</span>
                   </div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 6 }}>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: '#1e2330', marginBottom: 6 }}>
                     Need expert help? Let Catchword name it for you.
                   </div>
-                  <div style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.65, marginBottom: 16 }}>
+                  <div style={{ fontSize: 13, color: '#676b5f', lineHeight: 1.65, marginBottom: 16 }}>
                     Your contest data — brief, submissions, votes — becomes the starting point for Catchword's professional naming team. 25+ years of experience, 3,000+ brands named.
                   </div>
-                  <button style={{ height: 40, padding: '0 20px', border: '1.5px solid #eaef09', borderRadius: 8, background: 'rgba(234,239,9,0.1)', color: '#eaef09', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <button style={{ height: 40, padding: '0 20px', border: `1.5px solid ${tc.primary}`, borderRadius: 8, background: `rgba(${tc.primaryRgb},0.1)`, color: tc.primary, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'Inter', sans-serif", display: 'flex', alignItems: 'center', gap: 6 }}>
                     Explore Catchword Services <ArrowRight size={14} />
                   </button>
                 </div>
               )}
 
-              <button onClick={() => setResponse(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#4a4a4a', fontSize: 12, padding: 0 }}>
+              <button onClick={() => setResponse(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#8a8a82', fontSize: 12, padding: 0 }}>
                 ← Change my response
               </button>
             </>

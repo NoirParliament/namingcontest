@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { X, Check } from '@phosphor-icons/react';
 
 const TIER = {
-  business: { color: '#eaef09', rgb: '234,239,9', textColor: '#000' },
-  team: { color: '#8B5CF6', rgb: '139,92,246', textColor: '#fff' },
-  personal: { color: '#10B981', rgb: '16,185,129', textColor: '#fff' },
+  business: { color: '#d2e823', rgb: '253,199,0', textColor: '#442204' },
+  team: { color: '#d2e823', rgb: '253,199,0', textColor: '#442204' },
+  personal: { color: '#d2e823', rgb: '253,199,0', textColor: '#442204' },
 };
 
 const TRIGGER_MESSAGES = {

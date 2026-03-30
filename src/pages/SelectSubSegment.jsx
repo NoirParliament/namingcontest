@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import namicoIcon from '../assets/namico-icon.svg';
 import { ArrowLeft, ArrowRight, CheckCircle } from '@phosphor-icons/react';
 import { segments } from '../data/segments';
+import { getGroupTheme, LIGHT_THEME } from '../data/themeConfig';
 
 export default function SelectSubSegment() {
   const { group } = useParams();
@@ -11,26 +12,20 @@ export default function SelectSubSegment() {
 
   const segmentData = segments[group];
 
-  // Colors for each tier
-  const tierConfig = {
-    business: { color: '#eaef09', colorRgb: '234,239,9', label: 'Business' },
-    team: { color: '#8B5CF6', colorRgb: '139,92,246', label: 'Team' },
-    personal: { color: '#10B981', colorRgb: '16,185,129', label: 'Personal' },
-  };
-  const tc = tierConfig[group] || tierConfig.business;
+  const tc = getGroupTheme(group);
 
   if (!segmentData) {
     return (
       <div style={{
-        minHeight: '100vh', background: '#0a0a0a',
+        minHeight: '100vh', background: '#fafaf5',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         fontFamily: 'Inter, sans-serif',
       }}>
         <div style={{ textAlign: 'center' }}>
-          <p style={{ color: '#a1a1a1', marginBottom: 16 }}>Group "{group}" not found.</p>
+          <p style={{ color: '#676b5f', marginBottom: 16 }}>Group "{group}" not found.</p>
           <button onClick={() => navigate('/select')} style={{
-            background: 'transparent', border: '1px solid rgba(255,255,255,0.2)',
-            color: '#fff', borderRadius: 8, padding: '8px 16px', cursor: 'pointer',
+            background: 'transparent', border: '1px solid rgba(30,35,48,0.2)',
+            color: '#1e2330', borderRadius: 8, padding: '8px 16px', cursor: 'pointer',
             fontFamily: 'Inter, sans-serif',
           }}>
             ← Back to Select
@@ -50,7 +45,7 @@ export default function SelectSubSegment() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#0a0a0a',
+      background: '#fafaf5',
       fontFamily: 'Inter, sans-serif',
       display: 'flex',
       flexDirection: 'column',
@@ -61,18 +56,19 @@ export default function SelectSubSegment() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        borderBottom: '0.5px solid rgba(255,255,255,0.06)',
+        borderBottom: '0.5px solid rgba(30,35,48,0.08)',
+        background: '#ffffff',
       }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
           <div style={{
             width: 28, height: 28,
-            background: '#eaef09',
+            background: tc.primary,
             borderRadius: 6,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <img src={namicoIcon} alt="Namico" style={{ width: 20, height: 20, display: 'block' }} />
+            <img src={namicoIcon} alt="Naming Contest" style={{ width: 20, height: 20, display: 'block', filter: 'brightness(0) invert(1)' }} />
           </div>
-          <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>Namico</span>
+          <span style={{ fontSize: 15, fontWeight: 700, color: '#1e2330' }}>NamingContest</span>
         </Link>
 
         {/* Steps */}
@@ -82,22 +78,22 @@ export default function SelectSubSegment() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                 <div style={{
                   width: 20, height: 20, borderRadius: '50%',
-                  background: i <= 2 ? tc.color : 'rgba(255,255,255,0.06)',
+                  background: i <= 2 ? tc.primary : 'rgba(30,35,48,0.1)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 9, fontWeight: 700,
-                  color: i <= 2 ? '#000' : '#7a7a7a',
+                  color: i <= 2 ? '#fff' : '#8a8a82',
                 }}>
                   {i < 2 ? <CheckCircle size={11} weight="fill" /> : i + 1}
                 </div>
                 <span style={{
                   fontSize: 11,
-                  color: i === 2 ? '#fff' : i < 2 ? tc.color : '#7a7a7a',
+                  color: i === 2 ? '#1e2330' : i < 2 ? tc.primary : '#8a8a82',
                   fontWeight: i <= 2 ? 600 : 400,
                 }}>
                   {step}
                 </span>
               </div>
-              {i < 3 && <div style={{ width: 20, height: 1, background: 'rgba(255,255,255,0.08)' }} />}
+              {i < 3 && <div style={{ width: 20, height: 1, background: 'rgba(30,35,48,0.08)' }} />}
             </div>
           ))}
         </div>
@@ -119,13 +115,13 @@ export default function SelectSubSegment() {
           style={{
             display: 'flex', alignItems: 'center', gap: 6,
             background: 'none', border: 'none',
-            color: '#7a7a7a', fontSize: 13, cursor: 'pointer',
+            color: '#8a8a82', fontSize: 13, cursor: 'pointer',
             fontFamily: 'Inter, sans-serif',
             marginBottom: 32,
             padding: 0,
           }}
-          onMouseEnter={e => e.currentTarget.style.color = '#fff'}
-          onMouseLeave={e => e.currentTarget.style.color = '#7a7a7a'}
+          onMouseEnter={e => e.currentTarget.style.color = '#1e2330'}
+          onMouseLeave={e => e.currentTarget.style.color = '#8a8a82'}
         >
           <ArrowLeft size={14} weight="bold" />
           Back to segment types
@@ -135,11 +131,11 @@ export default function SelectSubSegment() {
         <div style={{ marginBottom: 40 }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center',
-            background: `rgba(${tc.colorRgb},0.1)`,
-            border: `0.5px solid rgba(${tc.colorRgb},0.25)`,
+            background: `rgba(${tc.primaryRgb},0.1)`,
+            border: `0.5px solid rgba(${tc.primaryRgb},0.25)`,
             borderRadius: 9999,
             padding: '3px 12px',
-            fontSize: 11, fontWeight: 600, color: tc.color,
+            fontSize: 11, fontWeight: 600, color: tc.primary,
             textTransform: 'uppercase', letterSpacing: '0.08em',
             marginBottom: 16,
           }}>
@@ -147,15 +143,15 @@ export default function SelectSubSegment() {
           </div>
 
           <h1 style={{
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
             fontSize: 'clamp(28px, 4vw, 44px)',
             fontWeight: 800,
-            color: '#fff',
+            color: '#1e2330',
             marginBottom: 10,
           }}>
             What specifically are you naming?
           </h1>
-          <p style={{ fontSize: 15, color: '#a1a1a1', lineHeight: 1.5 }}>
+          <p style={{ fontSize: 15, color: '#676b5f', lineHeight: 1.5 }}>
             {segmentData.description}
           </p>
         </div>
@@ -183,10 +179,10 @@ export default function SelectSubSegment() {
           style={{
             width: '100%',
             height: 52,
-            background: selected ? tc.color : 'rgba(255,255,255,0.05)',
+            background: selected ? tc.primary : 'rgba(30,35,48,0.1)',
             border: 'none',
             borderRadius: 12,
-            color: selected ? (group === 'business' ? '#000' : '#fff') : '#7a7a7a',
+            color: selected ? '#ffffff' : '#8a8a82',
             fontSize: 15, fontWeight: 700,
             cursor: selected ? 'pointer' : 'not-allowed',
             fontFamily: 'Inter, sans-serif',
@@ -201,10 +197,10 @@ export default function SelectSubSegment() {
 
         {selected && (
           <p style={{
-            textAlign: 'center', fontSize: 12, color: '#7a7a7a',
+            textAlign: 'center', fontSize: 12, color: '#8a8a82',
             marginTop: 12,
           }}>
-            You selected: <strong style={{ color: '#a1a1a1' }}>
+            You selected: <strong style={{ color: '#676b5f' }}>
               {segmentData.subSegments.find(s => s.id === selected)?.name}
             </strong>
           </p>
@@ -225,11 +221,11 @@ function SubSegmentCard({ sub, isSelected, onClick, tc }) {
       onClick={onClick}
       style={{
         background: isSelected
-          ? `rgba(${tc.colorRgb},0.08)`
-          : hovered ? '#1e1e1e' : '#1a1a1a',
+          ? `rgba(${tc.primaryRgb},0.06)`
+          : hovered ? 'rgba(30,35,48,0.03)' : '#ffffff',
         border: `0.5px solid ${isSelected
-          ? `rgba(${tc.colorRgb},0.5)`
-          : hovered ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.07)'}`,
+          ? `rgba(${tc.primaryRgb},0.5)`
+          : hovered ? 'rgba(30,35,48,0.15)' : 'rgba(30,35,48,0.1)'}`,
         borderRadius: 12,
         padding: '16px 20px',
         cursor: 'pointer',
@@ -243,7 +239,7 @@ function SubSegmentCard({ sub, isSelected, onClick, tc }) {
       <div style={{
         width: 20, height: 20,
         borderRadius: '50%',
-        border: `2px solid ${isSelected ? tc.color : 'rgba(255,255,255,0.2)'}`,
+        border: `2px solid ${isSelected ? tc.primary : 'rgba(30,35,48,0.2)'}`,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         flexShrink: 0,
         transition: 'all 0.2s',
@@ -252,7 +248,7 @@ function SubSegmentCard({ sub, isSelected, onClick, tc }) {
           <div style={{
             width: 8, height: 8,
             borderRadius: '50%',
-            background: tc.color,
+            background: tc.primary,
           }} />
         )}
       </div>
@@ -264,26 +260,26 @@ function SubSegmentCard({ sub, isSelected, onClick, tc }) {
         }}>
           <span style={{
             fontSize: 11, fontWeight: 700,
-            color: isSelected ? tc.color : '#4a4a4a',
+            color: isSelected ? tc.primary : '#8a8a82',
             textTransform: 'uppercase', letterSpacing: '0.06em',
           }}>
             {sub.code}
           </span>
           <span style={{
             fontSize: 15, fontWeight: 600,
-            color: isSelected ? '#fff' : '#d1d1d1',
+            color: isSelected ? '#1e2330' : '#1e2330',
           }}>
             {sub.name}
           </span>
         </div>
-        <div style={{ fontSize: 13, color: '#7a7a7a', lineHeight: 1.4 }}>
+        <div style={{ fontSize: 13, color: '#8a8a82', lineHeight: 1.4 }}>
           {sub.description}
         </div>
       </div>
 
       {/* Selected check */}
       {isSelected && (
-        <CheckCircle size={20} weight="fill" color={tc.color} style={{ flexShrink: 0 }} />
+        <CheckCircle size={20} weight="fill" color={tc.primary} style={{ flexShrink: 0 }} />
       )}
     </div>
   );

@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { X, Check } from '@phosphor-icons/react';
 
 const TIER = {
-  business: { color: '#eaef09', rgb: '234,239,9' },
-  team: { color: '#8B5CF6', rgb: '139,92,246' },
-  personal: { color: '#10B981', rgb: '16,185,129' },
+  business: { color: '#d2e823', rgb: '253,199,0' },
+  team: { color: '#d2e823', rgb: '253,199,0' },
+  personal: { color: '#d2e823', rgb: '253,199,0' },
 };
 
 function DomainChecker() {
@@ -24,7 +24,7 @@ function DomainChecker() {
         <button onClick={check} style={{ height: 34, padding: '0 14px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 7, background: 'transparent', color: '#fff', fontSize: 12, cursor: 'pointer' }}>Check</button>
       </div>
       {result && (
-        <div style={{ fontSize: 13, color: result.available ? '#10B981' : '#ef4444', fontWeight: 600 }}>
+        <div style={{ fontSize: 13, color: result.available ? '#d2e823' : '#ef4444', fontWeight: 600 }}>
           {result.available
             ? `✓ ${result.domain}.com is Available!`
             : `✗ Taken — consider .co, adding a word, or a different name`}
@@ -37,7 +37,7 @@ function DomainChecker() {
 function SocialChecker({ platform }) {
   const [state, setState] = useState(null);
   return (
-    <button onClick={() => setState(Math.random() > 0.5 ? 'available' : 'taken')} style={{ height: 32, padding: '0 12px', border: `1px solid ${state === 'available' ? '#10B981' : state === 'taken' ? '#ef4444' : 'rgba(255,255,255,0.15)'}`, borderRadius: 6, background: 'transparent', color: state === 'available' ? '#10B981' : state === 'taken' ? '#ef4444' : '#a1a1a1', fontSize: 12, cursor: 'pointer' }}>
+    <button onClick={() => setState(Math.random() > 0.5 ? 'available' : 'taken')} style={{ height: 32, padding: '0 12px', border: `1px solid ${state === 'available' ? '#d2e823' : state === 'taken' ? '#ef4444' : 'rgba(255,255,255,0.15)'}`, borderRadius: 6, background: 'transparent', color: state === 'available' ? '#d2e823' : state === 'taken' ? '#ef4444' : '#a1a1a1', fontSize: 12, cursor: 'pointer' }}>
       {state === 'available' ? `✓ Available on ${platform}` : state === 'taken' ? `✗ Taken on ${platform}` : `Check ${platform}`}
     </button>
   );
@@ -75,17 +75,17 @@ export default function PrePublishNudge({ isOpen, onClose, winnerName, currentGr
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
           {/* Check 1: Trademark */}
-          <div style={{ padding: '16px', background: '#141414', border: `0.5px solid ${checks.trademark ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 10 }}>
+          <div style={{ padding: '16px', background: '#141414', border: `0.5px solid ${checks.trademark ? 'rgba(253,199,0,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 10 }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 12 }}>
-              <div onClick={() => toggleCheck('trademark')} style={{ width: 20, height: 20, borderRadius: 4, border: `2px solid ${checks.trademark ? '#10B981' : '#444'}`, background: checks.trademark ? '#10B981' : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
-                {checks.trademark && <Check size={12} weight="bold" color="#000" />}
+              <div onClick={() => toggleCheck('trademark')} style={{ width: 20, height: 20, borderRadius: 4, border: `2px solid ${checks.trademark ? '#d2e823' : '#444'}`, background: checks.trademark ? '#d2e823' : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
+                {checks.trademark && <Check size={12} weight="bold" color="#442204" />}
               </div>
               <div>
                 <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 4 }}>Trademark availability</div>
                 <div style={{ fontSize: 12, color: '#a1a1a1', marginBottom: 10, lineHeight: 1.5 }}>
                   Have you done a basic trademark search? Go to USPTO.gov → Trademark Search.
                   <br />
-                  <span style={{ color: '#10B981' }}>Green:</span> No matches · <span style={{ color: '#eaef09' }}>Yellow:</span> Similar names · <span style={{ color: '#ef4444' }}>Red:</span> Exact match — don't use it
+                  <span style={{ color: '#d2e823' }}>Green:</span> No matches · <span style={{ color: '#d2e823' }}>Yellow:</span> Similar names · <span style={{ color: '#ef4444' }}>Red:</span> Exact match — don't use it
                 </div>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   <button onClick={() => window.open('https://www.uspto.gov/trademarks/search', '_blank')} style={{ height: 32, padding: '0 14px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 7, background: 'transparent', color: '#fff', fontSize: 12, cursor: 'pointer' }}>
@@ -100,9 +100,9 @@ export default function PrePublishNudge({ isOpen, onClose, winnerName, currentGr
           </div>
 
           {/* Check 2: Domain */}
-          <div style={{ padding: '16px', background: '#141414', border: `0.5px solid ${checks.domain ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 10 }}>
+          <div style={{ padding: '16px', background: '#141414', border: `0.5px solid ${checks.domain ? 'rgba(253,199,0,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 10 }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-              <div onClick={() => toggleCheck('domain')} style={{ width: 20, height: 20, borderRadius: 4, border: `2px solid ${checks.domain ? '#10B981' : '#444'}`, background: checks.domain ? '#10B981' : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
+              <div onClick={() => toggleCheck('domain')} style={{ width: 20, height: 20, borderRadius: 4, border: `2px solid ${checks.domain ? '#d2e823' : '#444'}`, background: checks.domain ? '#d2e823' : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
                 {checks.domain && <Check size={12} weight="bold" color="#000" />}
               </div>
               <div style={{ flex: 1 }}>
@@ -114,9 +114,9 @@ export default function PrePublishNudge({ isOpen, onClose, winnerName, currentGr
           </div>
 
           {/* Check 3: Social handles */}
-          <div style={{ padding: '16px', background: '#141414', border: `0.5px solid ${checks.social ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 10 }}>
+          <div style={{ padding: '16px', background: '#141414', border: `0.5px solid ${checks.social ? 'rgba(253,199,0,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 10 }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-              <div onClick={() => toggleCheck('social')} style={{ width: 20, height: 20, borderRadius: 4, border: `2px solid ${checks.social ? '#10B981' : '#444'}`, background: checks.social ? '#10B981' : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
+              <div onClick={() => toggleCheck('social')} style={{ width: 20, height: 20, borderRadius: 4, border: `2px solid ${checks.social ? '#d2e823' : '#444'}`, background: checks.social ? '#d2e823' : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
                 {checks.social && <Check size={12} weight="bold" color="#000" />}
               </div>
               <div>

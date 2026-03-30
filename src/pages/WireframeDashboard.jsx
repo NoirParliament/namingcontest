@@ -7,7 +7,7 @@ import { Trophy, ArrowRight, Briefcase, Users, Heart, Eye, ChartBar, Gear, Play,
 
 const JOURNEYS = [
   {
-    id: 'business', label: 'Business', color: '#eaef09', textColor: '#000',
+    id: 'business', label: 'Business', color: '#d2e823', textColor: '#442204',
     icon: <Briefcase size={16} weight="bold" />,
     subSegments: [
       { id: 'company-name', label: 'B1 — Company/Startup Name' },
@@ -23,7 +23,7 @@ const JOURNEYS = [
     ],
   },
   {
-    id: 'team', label: 'Team', color: '#8B5CF6', textColor: '#fff',
+    id: 'team', label: 'Team', color: '#d2e823', textColor: '#442204',
     icon: <Users size={16} weight="bold" />,
     subSegments: [
       { id: 'sports-team', label: 'T1 — Sports Team' },
@@ -40,7 +40,7 @@ const JOURNEYS = [
     ],
   },
   {
-    id: 'personal', label: 'Personal', color: '#10B981', textColor: '#fff',
+    id: 'personal', label: 'Personal', color: '#d2e823', textColor: '#442204',
     icon: <Heart size={16} weight="bold" />,
     subSegments: [
       { id: 'baby-name', label: 'P1 — Baby Name' },
@@ -60,48 +60,48 @@ const JOURNEYS = [
 
 const ALL_SECTIONS = [
   {
-    title: 'Landing & Onboarding', icon: <Trophy size={18} />, color: '#eaef09',
+    title: 'Landing & Onboarding', icon: <Trophy size={18} />, color: '#d2e823',
     routes: [
-      { path: '/', label: 'Landing Page', description: 'Hero, testimonials, FAQ', dot: '#eaef09' },
-      { path: '/select', label: 'Select Segment', description: 'Choose Business, Team, or Personal', dot: '#eaef09' },
-      { path: '/select/business', label: 'Select Sub-Segment (Business)', description: '5 business sub-types', dot: '#eaef09' },
-      { path: '/select/team', label: 'Select Sub-Segment (Team)', description: '6 team sub-types', dot: '#8B5CF6' },
-      { path: '/select/personal', label: 'Select Sub-Segment (Personal)', description: '4 personal sub-types', dot: '#10B981' },
-      { path: '/contest-type/business/company-name', label: 'Contest Type Selection (B1)', description: 'Open Contest / Voting Only / Internal Brainstorm', dot: '#eaef09', badge: 'NEW' },
-      { path: '/contest-type/team/sports-team', label: 'Contest Type Selection (T1)', description: 'Contest type + voting permissions (Team)', dot: '#8B5CF6', badge: 'NEW' },
-      { path: '/contest-type/personal/baby-name', label: 'Contest Type Selection (P1)', description: 'Contest type + voting permissions (Personal)', dot: '#10B981', badge: 'NEW' },
+      { path: '/', label: 'Landing Page', description: 'Hero, testimonials, FAQ', dot: '#d2e823' },
+      { path: '/select', label: 'Select Segment', description: 'Choose Business, Team, or Personal', dot: '#d2e823' },
+      { path: '/select/business', label: 'Select Sub-Segment (Business)', description: '5 business sub-types', dot: '#d2e823' },
+      { path: '/select/team', label: 'Select Sub-Segment (Team)', description: '6 team sub-types', dot: '#d2e823' },
+      { path: '/select/personal', label: 'Select Sub-Segment (Personal)', description: '4 personal sub-types', dot: '#d2e823' },
+      { path: '/contest-type/business/company-name', label: 'Contest Type Selection (B1)', description: 'Open Contest / Voting Only / Internal Brainstorm', dot: '#d2e823', badge: 'NEW' },
+      { path: '/contest-type/team/sports-team', label: 'Contest Type Selection (T1)', description: 'Contest type + voting permissions (Team)', dot: '#d2e823', badge: 'NEW' },
+      { path: '/contest-type/personal/baby-name', label: 'Contest Type Selection (P1)', description: 'Contest type + voting permissions (Personal)', dot: '#d2e823', badge: 'NEW' },
       { path: '/upload-names', label: 'Upload Names (Voting Only)', description: 'Add name candidates + voting method', dot: '#ffffff', badge: 'NEW' },
       { path: '/auth', label: 'Auth Page', description: 'Account creation gate', dot: '#ffffff' },
     ],
   },
   {
-    title: 'Business Flows', icon: <Briefcase size={18} />, color: '#eaef09',
+    title: 'Business Flows', icon: <Briefcase size={18} />, color: '#d2e823',
     routes: [
-      { path: '/brief/business/company-name', label: 'Brief — Company/Startup Name (B1)', description: 'Brief builder for company naming', dot: '#eaef09' },
-      { path: '/brief/business/product-name', label: 'Brief — Product/Service Name (B2)', description: 'Brief builder for product naming', dot: '#eaef09' },
-      { path: '/brief/business/project-name', label: 'Brief — Project/Initiative Name (B3)', description: 'Brief builder for project naming', dot: '#eaef09' },
-      { path: '/brief/business/rebrand', label: 'Brief — Rebrand (B4)', description: 'Brief builder for rebranding', dot: '#eaef09' },
-      { path: '/brief/business/other-business', label: 'Brief — Other Business (B5)', description: 'General business brief builder', dot: '#eaef09' },
+      { path: '/brief/business/company-name', label: 'Brief — Company/Startup Name (B1)', description: 'Brief builder for company naming', dot: '#d2e823' },
+      { path: '/brief/business/product-name', label: 'Brief — Product/Service Name (B2)', description: 'Brief builder for product naming', dot: '#d2e823' },
+      { path: '/brief/business/project-name', label: 'Brief — Project/Initiative Name (B3)', description: 'Brief builder for project naming', dot: '#d2e823' },
+      { path: '/brief/business/rebrand', label: 'Brief — Rebrand (B4)', description: 'Brief builder for rebranding', dot: '#d2e823' },
+      { path: '/brief/business/other-business', label: 'Brief — Other Business (B5)', description: 'General business brief builder', dot: '#d2e823' },
     ],
   },
   {
-    title: 'Team Flows', icon: <Users size={18} />, color: '#8B5CF6',
+    title: 'Team Flows', icon: <Users size={18} />, color: '#d2e823',
     routes: [
-      { path: '/brief/team/sports-team', label: 'Brief — Sports Team (T1)', description: 'Brief builder for sports teams', dot: '#8B5CF6' },
-      { path: '/brief/team/band-music', label: 'Brief — Band / Music Group (T2)', description: 'Brief builder for bands', dot: '#8B5CF6' },
-      { path: '/brief/team/podcast-channel', label: 'Brief — Podcast / Channel (T3)', description: 'Brief builder for podcasts', dot: '#8B5CF6' },
-      { path: '/brief/team/civic-school-nonprofit', label: 'Brief — Civic / School / Nonprofit (T4)', description: 'Brief builder for organizations', dot: '#8B5CF6' },
-      { path: '/brief/team/gaming-group', label: 'Brief — Gaming Group (T5)', description: 'Brief builder for gaming teams', dot: '#8B5CF6' },
-      { path: '/brief/team/other-team', label: 'Brief — Other Team (T6)', description: 'General team brief builder', dot: '#8B5CF6' },
+      { path: '/brief/team/sports-team', label: 'Brief — Sports Team (T1)', description: 'Brief builder for sports teams', dot: '#d2e823' },
+      { path: '/brief/team/band-music', label: 'Brief — Band / Music Group (T2)', description: 'Brief builder for bands', dot: '#d2e823' },
+      { path: '/brief/team/podcast-channel', label: 'Brief — Podcast / Channel (T3)', description: 'Brief builder for podcasts', dot: '#d2e823' },
+      { path: '/brief/team/civic-school-nonprofit', label: 'Brief — Civic / School / Nonprofit (T4)', description: 'Brief builder for organizations', dot: '#d2e823' },
+      { path: '/brief/team/gaming-group', label: 'Brief — Gaming Group (T5)', description: 'Brief builder for gaming teams', dot: '#d2e823' },
+      { path: '/brief/team/other-team', label: 'Brief — Other Team (T6)', description: 'General team brief builder', dot: '#d2e823' },
     ],
   },
   {
-    title: 'Personal Flows', icon: <Heart size={18} />, color: '#10B981',
+    title: 'Personal Flows', icon: <Heart size={18} />, color: '#d2e823',
     routes: [
-      { path: '/brief/personal/baby-name', label: 'Brief — Baby Name (P1)', description: 'Brief builder for baby names', dot: '#10B981' },
-      { path: '/brief/personal/pet-name', label: 'Brief — Pet Name (P2)', description: 'Brief builder for pet names', dot: '#10B981' },
-      { path: '/brief/personal/home-property-fun', label: 'Brief — Home / Property / Fun (P3)', description: 'Brief builder for home/fun projects', dot: '#10B981' },
-      { path: '/brief/personal/other-personal', label: 'Brief — Other Personal (P4)', description: 'General personal brief builder', dot: '#10B981' },
+      { path: '/brief/personal/baby-name', label: 'Brief — Baby Name (P1)', description: 'Brief builder for baby names', dot: '#d2e823' },
+      { path: '/brief/personal/pet-name', label: 'Brief — Pet Name (P2)', description: 'Brief builder for pet names', dot: '#d2e823' },
+      { path: '/brief/personal/home-property-fun', label: 'Brief — Home / Property / Fun (P3)', description: 'Brief builder for home/fun projects', dot: '#d2e823' },
+      { path: '/brief/personal/other-personal', label: 'Brief — Other Personal (P4)', description: 'General personal brief builder', dot: '#d2e823' },
     ],
   },
   {
@@ -117,20 +117,20 @@ const ALL_SECTIONS = [
     ],
   },
   {
-    title: 'Results', icon: <ChartBar size={18} />, color: '#10B981',
+    title: 'Results', icon: <ChartBar size={18} />, color: '#d2e823',
     routes: [
-      { path: '/results/demo-1', label: 'Results — Business Contest', description: 'Full results with analytics and certificate', dot: '#10B981' },
-      { path: '/results/demo-5', label: 'Results — Band Contest (Completed)', description: 'Completed contest results view', dot: '#8B5CF6' },
-      { path: '/results/demo-8', label: 'Results — Personal Contest', description: 'Personal contest results', dot: '#10B981' },
+      { path: '/results/demo-1', label: 'Results — Business Contest', description: 'Full results with analytics and certificate', dot: '#d2e823' },
+      { path: '/results/demo-5', label: 'Results — Band Contest (Completed)', description: 'Completed contest results view', dot: '#d2e823' },
+      { path: '/results/demo-8', label: 'Results — Personal Contest', description: 'Personal contest results', dot: '#d2e823' },
     ],
   },
   {
-    title: 'Organizer Dashboard', icon: <Gear size={18} />, color: '#eaef09',
+    title: 'Organizer Dashboard', icon: <Gear size={18} />, color: '#d2e823',
     routes: [
-      { path: '/dashboard', label: 'Dashboard', description: 'All contests overview', dot: '#eaef09' },
-      { path: '/contest-detail/demo-1', label: 'Contest Detail — Business (demo-1)', description: 'Deep-dive view with phase management + email flows', dot: '#eaef09' },
-      { path: '/contest-detail/demo-2', label: 'Contest Detail — Team (demo-2)', description: 'Team contest detail view', dot: '#8B5CF6' },
-      { path: '/contest-detail/demo-3', label: 'Contest Detail — Personal (demo-3)', description: 'Personal contest detail view', dot: '#10B981' },
+      { path: '/dashboard', label: 'Dashboard', description: 'All contests overview', dot: '#d2e823' },
+      { path: '/contest-detail/demo-1', label: 'Contest Detail — Business (demo-1)', description: 'Deep-dive view with phase management + email flows', dot: '#d2e823' },
+      { path: '/contest-detail/demo-2', label: 'Contest Detail — Team (demo-2)', description: 'Team contest detail view', dot: '#d2e823' },
+      { path: '/contest-detail/demo-3', label: 'Contest Detail — Personal (demo-3)', description: 'Personal contest detail view', dot: '#d2e823' },
     ],
   },
 ];
@@ -138,9 +138,9 @@ const ALL_SECTIONS = [
 // ─── Flow builder ─────────────────────────────────────────────────────────────
 
 const PHASE_COLORS = {
-  setup: '#eaef09', outreach: '#8B5CF6', submission: '#10B981',
+  setup: '#d2e823', outreach: '#d2e823', submission: '#d2e823',
   curation: '#f97316', ballot: '#f97316', voting: '#3b82f6',
-  results: '#ec4899', manage: '#eaef09',
+  results: '#ec4899', manage: '#d2e823',
 };
 const PHASE_LABELS = {
   setup: 'Setup', outreach: 'Outreach', submission: 'Submission',
@@ -300,8 +300,8 @@ function JourneySwimlane({ journey }) {
           <button onClick={runFullFlow} style={{
             display: 'flex', alignItems: 'center', gap: 4,
             padding: '3px 11px', borderRadius: 5,
-            background: 'rgba(16,185,129,0.12)', border: '0.5px solid rgba(16,185,129,0.28)',
-            color: '#10B981', fontSize: 11, fontWeight: 700, cursor: 'pointer',
+            background: 'rgba(253,199,0,0.12)', border: '0.5px solid rgba(253,199,0,0.28)',
+            color: '#d2e823', fontSize: 11, fontWeight: 700, cursor: 'pointer',
           }}>
             <Play size={9} weight="fill" /> Run Full Flow
           </button>
@@ -405,10 +405,10 @@ function RouteCard({ route }) {
             {route.badge && (
               <span style={{
                 padding: '1px 5px',
-                background: route.badge === 'UPDATED' ? 'rgba(59,130,246,0.15)' : 'rgba(16,185,129,0.12)',
-                border: `0.5px solid ${route.badge === 'UPDATED' ? 'rgba(59,130,246,0.35)' : 'rgba(16,185,129,0.35)'}`,
+                background: route.badge === 'UPDATED' ? 'rgba(59,130,246,0.15)' : 'rgba(253,199,0,0.12)',
+                border: `0.5px solid ${route.badge === 'UPDATED' ? 'rgba(59,130,246,0.35)' : 'rgba(253,199,0,0.35)'}`,
                 borderRadius: 4, fontSize: 8, fontWeight: 700,
-                color: route.badge === 'UPDATED' ? '#93c5fd' : '#10B981',
+                color: route.badge === 'UPDATED' ? '#93c5fd' : '#d2e823',
                 textTransform: 'uppercase', letterSpacing: '0.06em',
               }}>{route.badge}</span>
             )}
@@ -435,24 +435,24 @@ export default function WireframeDashboard() {
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 44 }}>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 11, marginBottom: 14 }}>
-            <div style={{ width: 38, height: 38, background: '#eaef09', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <img src={namicoIcon} alt="Namico" style={{ width: 26, height: 26, display: 'block' }} />
+            <div style={{ width: 38, height: 38, background: '#d2e823', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <img src={namicoIcon} alt="Naming Contest" style={{ width: 26, height: 26, display: 'block' }} />
             </div>
             <h1 style={{ fontSize: 26, fontWeight: 800, color: '#fff' }}>
-              Namico.com — Wireframe Testing Hub
+              NamingContest.com — Wireframe Testing Hub
             </h1>
           </div>
           <p style={{ fontSize: 14, color: '#6a6a6a', marginBottom: 28 }}>
-            Click any node to jump to that screen. Use <strong style={{ color: '#10B981' }}>Run Full Flow</strong> to walk the entire journey with a progress tracker.
+            Click any node to jump to that screen. Use <strong style={{ color: '#d2e823' }}>Run Full Flow</strong> to walk the entire journey with a progress tracker.
           </p>
           <div style={{
             display: 'inline-flex', gap: 44, background: '#141414',
             border: '0.5px solid rgba(255,255,255,0.09)', borderRadius: 12, padding: '14px 36px',
           }}>
             {[
-              { value: '3', label: 'Segments', color: '#eaef09' },
-              { value: '15', label: 'Sub-types', color: '#8B5CF6' },
-              { value: '3', label: 'Contest Types', color: '#10B981' },
+              { value: '3', label: 'Segments', color: '#d2e823' },
+              { value: '15', label: 'Sub-types', color: '#d2e823' },
+              { value: '3', label: 'Contest Types', color: '#d2e823' },
               { value: totalRoutes + '+', label: 'Routes', color: '#fff' },
             ].map(s => (
               <div key={s.label} style={{ textAlign: 'center' }}>
@@ -495,11 +495,11 @@ export default function WireframeDashboard() {
               borderRadius: 10, padding: '12px 18px', marginBottom: 22,
               display: 'flex', gap: 10, alignItems: 'flex-start',
             }}>
-              <Lightbulb size={16} color="#eaef09" weight="duotone" style={{ flexShrink: 0 }} />
+              <Lightbulb size={16} color="#d2e823" weight="duotone" style={{ flexShrink: 0 }} />
               <div style={{ fontSize: 12, color: '#7a7a7a', lineHeight: 1.6 }}>
                 Switch <strong style={{ color: '#a1a1a1' }}>Contest Type</strong> to see how the flow changes.
                 Switch <strong style={{ color: '#a1a1a1' }}>Sub-type</strong> to update brief builder links.
-                Click any <strong style={{ color: '#a1a1a1' }}>node</strong> to jump to that screen — a <strong style={{ color: '#eaef09' }}>Journey Tracker</strong> appears bottom-right so you always know your position and can step forward/back.
+                Click any <strong style={{ color: '#a1a1a1' }}>node</strong> to jump to that screen — a <strong style={{ color: '#d2e823' }}>Journey Tracker</strong> appears bottom-right so you always know your position and can step forward/back.
                 <span style={{ color: '#93c5fd' }}> 👤 blue</span> nodes are participant-facing screens.
                 The <strong style={{ color: '#f97316' }}>Confirm Ballot</strong> step is where you review curated names and lock the voting list.
               </div>

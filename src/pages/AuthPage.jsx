@@ -2,12 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import namicoIcon from '../assets/namico-icon.svg';
 import { Eye, EyeSlash, ArrowRight, UserCircle } from '@phosphor-icons/react';
-
-const TIER_CONFIG = {
-  business: { color: '#eaef09', colorRgb: '234,239,9', textColor: '#000', label: 'Business' },
-  team: { color: '#8B5CF6', colorRgb: '139,92,246', textColor: '#fff', label: 'Team' },
-  personal: { color: '#10B981', colorRgb: '16,185,129', textColor: '#fff', label: 'Personal' },
-};
+import { getGroupTheme, LIGHT_THEME } from '../data/themeConfig';
 
 export default function AuthPage() {
   const navigate = useNavigate();
@@ -19,7 +14,7 @@ export default function AuthPage() {
 
   const selectedGroup = localStorage.getItem('selectedGroup') || 'business';
   const selectedSubSegment = localStorage.getItem('selectedSubSegment') || 'company-name';
-  const tc = TIER_CONFIG[selectedGroup] || TIER_CONFIG.business;
+  const tc = getGroupTheme(selectedGroup);
 
   const contestType = localStorage.getItem('contestType') || 'submission_voting';
 
@@ -44,8 +39,8 @@ export default function AuthPage() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#0a0a0a',
-      fontFamily: 'Inter, sans-serif',
+      background: '#fafaf5',
+      fontFamily: "'Inter', sans-serif",
       display: 'flex',
       flexDirection: 'column',
     }}>
@@ -55,18 +50,19 @@ export default function AuthPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        borderBottom: '0.5px solid rgba(255,255,255,0.06)',
+        background: '#ffffff',
+        borderBottom: '0.5px solid rgba(30,35,48,0.08)',
       }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
           <div style={{
             width: 28, height: 28,
-            background: '#eaef09',
+            background: tc.primary,
             borderRadius: 6,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <img src={namicoIcon} alt="Namico" style={{ width: 20, height: 20, display: 'block' }} />
+            <img src={namicoIcon} alt="NamingContest" style={{ width: 20, height: 20, display: 'block', filter: 'brightness(0) invert(1)' }} />
           </div>
-          <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>Namico</span>
+          <span style={{ fontSize: 15, fontWeight: 700, color: '#1e2330' }}>NamingContest</span>
         </Link>
 
         {/* Steps */}
@@ -76,22 +72,22 @@ export default function AuthPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                 <div style={{
                   width: 20, height: 20, borderRadius: '50%',
-                  background: i <= 1 ? tc.color : 'rgba(255,255,255,0.06)',
+                  background: i <= 1 ? tc.primary : 'rgba(30,35,48,0.1)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 9, fontWeight: 700,
-                  color: i <= 1 ? (selectedGroup === 'business' ? '#000' : '#fff') : '#7a7a7a',
+                  color: i <= 1 ? tc.btnText : '#8a8a82',
                 }}>
                   {i < 1 ? '✓' : i + 1}
                 </div>
                 <span style={{
                   fontSize: 11,
-                  color: i === 1 ? '#fff' : i < 1 ? tc.color : '#7a7a7a',
+                  color: i === 1 ? '#1e2330' : i < 1 ? tc.primary : '#8a8a82',
                   fontWeight: i <= 1 ? 600 : 400,
                 }}>
                   {step}
                 </span>
               </div>
-              {i < 3 && <div style={{ width: 20, height: 1, background: 'rgba(255,255,255,0.08)' }} />}
+              {i < 3 && <div style={{ width: 20, height: 1, background: 'rgba(30,35,48,0.08)' }} />}
             </div>
           ))}
         </div>
@@ -117,11 +113,11 @@ export default function AuthPage() {
           }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: `rgba(${tc.colorRgb},0.1)`,
-              border: `0.5px solid rgba(${tc.colorRgb},0.25)`,
+              background: `rgba(${tc.primaryRgb},0.08)`,
+              border: `0.5px solid rgba(${tc.primaryRgb},0.2)`,
               borderRadius: 9999,
               padding: '4px 14px',
-              fontSize: 12, fontWeight: 600, color: tc.color,
+              fontSize: 12, fontWeight: 600, color: tc.primary,
               textTransform: 'uppercase', letterSpacing: '0.07em',
             }}>
               {tc.label} Contest
@@ -131,14 +127,14 @@ export default function AuthPage() {
           {/* Heading */}
           <div style={{ textAlign: 'center', marginBottom: 32 }}>
             <h1 style={{
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
               fontSize: 34, fontWeight: 800,
-              color: '#fff',
+              color: '#1e2330',
               marginBottom: 8,
             }}>
               {mode === 'signup' ? 'Create your account' : 'Welcome back'}
             </h1>
-            <p style={{ fontSize: 14, color: '#a1a1a1', lineHeight: 1.5 }}>
+            <p style={{ fontSize: 14, color: '#676b5f', lineHeight: 1.5 }}>
               {mode === 'signup'
                 ? 'One account to launch unlimited contests and track results'
                 : 'Sign in to access your contests and continue'}
@@ -147,18 +143,19 @@ export default function AuthPage() {
 
           {/* Form card */}
           <div style={{
-            background: '#1a1a1a',
-            border: `0.5px solid rgba(${tc.colorRgb},0.2)`,
+            background: '#ffffff',
+            border: '0.5px solid rgba(30,35,48,0.1)',
             borderRadius: 16,
             padding: 28,
             marginBottom: 16,
+            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
           }}>
             <form onSubmit={handleSubmit}>
               {/* Email */}
               <div style={{ marginBottom: 16 }}>
                 <label style={{
                   display: 'block', fontSize: 12, fontWeight: 600,
-                  color: '#a1a1a1', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em',
+                  color: '#676b5f', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em',
                 }}>
                   Email Address
                 </label>
@@ -170,20 +167,20 @@ export default function AuthPage() {
                   required
                   style={{
                     width: '100%',
-                    background: '#141414',
-                    border: '0.5px solid rgba(255,255,255,0.12)',
+                    background: '#ffffff',
+                    border: '0.5px solid rgba(30,35,48,0.15)',
                     borderRadius: 10,
                     height: 48,
                     padding: '0 16px',
-                    color: '#fff',
+                    color: '#1e2330',
                     fontSize: 14,
-                    fontFamily: 'Inter, sans-serif',
+                    fontFamily: "'Inter', sans-serif",
                     outline: 'none',
                     transition: 'border-color 0.2s',
                     boxSizing: 'border-box',
                   }}
-                  onFocus={e => e.target.style.borderColor = `rgba(${tc.colorRgb},0.5)`}
-                  onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.12)'}
+                  onFocus={e => e.target.style.borderColor = `rgba(${tc.primaryRgb},0.5)`}
+                  onBlur={e => e.target.style.borderColor = 'rgba(30,35,48,0.15)'}
                 />
               </div>
 
@@ -191,7 +188,7 @@ export default function AuthPage() {
               <div style={{ marginBottom: 24 }}>
                 <label style={{
                   display: 'block', fontSize: 12, fontWeight: 600,
-                  color: '#a1a1a1', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em',
+                  color: '#676b5f', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em',
                 }}>
                   Password
                 </label>
@@ -205,20 +202,20 @@ export default function AuthPage() {
                     minLength={8}
                     style={{
                       width: '100%',
-                      background: '#141414',
-                      border: '0.5px solid rgba(255,255,255,0.12)',
+                      background: '#ffffff',
+                      border: '0.5px solid rgba(30,35,48,0.15)',
                       borderRadius: 10,
                       height: 48,
                       padding: '0 44px 0 16px',
-                      color: '#fff',
+                      color: '#1e2330',
                       fontSize: 14,
-                      fontFamily: 'Inter, sans-serif',
+                      fontFamily: "'Inter', sans-serif",
                       outline: 'none',
                       transition: 'border-color 0.2s',
                       boxSizing: 'border-box',
                     }}
-                    onFocus={e => e.target.style.borderColor = `rgba(${tc.colorRgb},0.5)`}
-                    onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.12)'}
+                    onFocus={e => e.target.style.borderColor = `rgba(${tc.primaryRgb},0.5)`}
+                    onBlur={e => e.target.style.borderColor = 'rgba(30,35,48,0.15)'}
                   />
                   <button
                     type="button"
@@ -226,7 +223,7 @@ export default function AuthPage() {
                     style={{
                       position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
                       background: 'none', border: 'none', cursor: 'pointer',
-                      color: '#7a7a7a', padding: 0,
+                      color: '#8a8a82', padding: 0,
                       display: 'flex', alignItems: 'center',
                     }}
                   >
@@ -234,7 +231,7 @@ export default function AuthPage() {
                   </button>
                 </div>
                 {mode === 'signup' && (
-                  <div style={{ fontSize: 11, color: '#7a7a7a', marginTop: 6 }}>
+                  <div style={{ fontSize: 11, color: '#8a8a82', marginTop: 6 }}>
                     Minimum 8 characters
                   </div>
                 )}
@@ -247,13 +244,13 @@ export default function AuthPage() {
                 style={{
                   width: '100%',
                   height: 52,
-                  background: tc.color,
+                  background: tc.primary,
                   border: 'none',
                   borderRadius: 12,
-                  color: tc.textColor,
+                  color: tc.btnText,
                   fontSize: 15, fontWeight: 700,
                   cursor: loading ? 'not-allowed' : 'pointer',
-                  fontFamily: 'Inter, sans-serif',
+                  fontFamily: "'Inter', sans-serif",
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                   transition: 'all 0.2s',
                   opacity: loading ? 0.7 : 1,
@@ -264,7 +261,7 @@ export default function AuthPage() {
                     <div style={{
                       width: 16, height: 16,
                       border: '2px solid rgba(0,0,0,0.3)',
-                      borderTopColor: tc.textColor,
+                      borderTopColor: tc.btnText,
                       borderRadius: '50%',
                       animation: 'spin 0.7s linear infinite',
                     }} />
@@ -284,9 +281,9 @@ export default function AuthPage() {
               display: 'flex', alignItems: 'center', gap: 12,
               margin: '20px 0',
             }}>
-              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
-              <span style={{ fontSize: 12, color: '#7a7a7a' }}>or</span>
-              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+              <div style={{ flex: 1, height: 1, background: 'rgba(30,35,48,0.08)' }} />
+              <span style={{ fontSize: 12, color: '#8a8a82' }}>or</span>
+              <div style={{ flex: 1, height: 1, background: 'rgba(30,35,48,0.08)' }} />
             </div>
 
             {/* Guest option */}
@@ -296,29 +293,29 @@ export default function AuthPage() {
                 width: '100%',
                 height: 44,
                 background: 'transparent',
-                border: '0.5px solid rgba(255,255,255,0.12)',
+                border: '0.5px solid rgba(30,35,48,0.15)',
                 borderRadius: 10,
-                color: '#a1a1a1',
+                color: '#676b5f',
                 fontSize: 13, fontWeight: 500,
                 cursor: 'pointer',
-                fontFamily: 'Inter, sans-serif',
+                fontFamily: "'Inter', sans-serif",
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 transition: 'all 0.2s',
               }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.color = '#fff'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.color = '#a1a1a1'; }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(30,35,48,0.25)'; e.currentTarget.style.color = '#1e2330'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(30,35,48,0.15)'; e.currentTarget.style.color = '#676b5f'; }}
             >
               <UserCircle size={16} />
               Continue as Guest
             </button>
 
-            <p style={{ fontSize: 11, color: '#7a7a7a', textAlign: 'center', marginTop: 10, lineHeight: 1.4 }}>
+            <p style={{ fontSize: 11, color: '#8a8a82', textAlign: 'center', marginTop: 10, lineHeight: 1.4 }}>
               Guest mode: limited to 1 contest, 5 participants. No saved history.
             </p>
           </div>
 
           {/* Toggle signup/signin */}
-          <p style={{ textAlign: 'center', fontSize: 13, color: '#7a7a7a' }}>
+          <p style={{ textAlign: 'center', fontSize: 13, color: '#8a8a82' }}>
             {mode === 'signup'
               ? 'Already have an account?'
               : "Don't have an account?"}
@@ -327,9 +324,9 @@ export default function AuthPage() {
               onClick={() => setMode(mode === 'signup' ? 'signin' : 'signup')}
               style={{
                 background: 'none', border: 'none',
-                color: tc.color, fontSize: 13, fontWeight: 600,
+                color: tc.primary, fontSize: 13, fontWeight: 600,
                 cursor: 'pointer', padding: 0,
-                fontFamily: 'Inter, sans-serif',
+                fontFamily: "'Inter', sans-serif",
               }}
             >
               {mode === 'signup' ? 'Sign In' : 'Create Account'}

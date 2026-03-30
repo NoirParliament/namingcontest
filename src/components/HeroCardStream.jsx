@@ -9,17 +9,17 @@ const FADE_ZONE = 50;
 
 const SEGMENTS = [
   {
-    group: 'business', color: '#eaef09', rgb: '234,239,9',
+    group: 'business', color: '#d2e823', rgb: '253,199,0',
     title: 'Business Names',
     tags: ['Company', 'Product', 'Project', 'Rebrand'],
   },
   {
-    group: 'team', color: '#8B5CF6', rgb: '139,92,246',
+    group: 'team', color: '#d2e823', rgb: '253,199,0',
     title: 'Group Names',
     tags: ['Sports Team', 'Band', 'Podcast', 'Gaming'],
   },
   {
-    group: 'personal', color: '#10B981', rgb: '16,185,129',
+    group: 'personal', color: '#d2e823', rgb: '253,199,0',
     title: 'Personal Names',
     tags: ['Baby Name', 'Pet Name', 'Home', 'Something Fun'],
   },

@@ -1,6 +1,6 @@
 /**
  * Segment Configuration — NamingContest.com
- * CORRECT COLORS: business=#eaef09, team=#8B5CF6, personal=#10B981
+ * UNIFIED COLOR: all segments use supernova #d2e823
  * 3 main groups, 15 sub-segments total
  */
 
@@ -15,7 +15,7 @@ export const segments = {
     id: 'business',
     name: 'Business or Product',
     icon: '🏢',
-    color: '#eaef09',
+    color: '#254f1a',
     colorName: 'business',
     description: 'Name your company, product, project, or rebrand',
     tagline: 'Name something that means business',
@@ -73,7 +73,7 @@ export const segments = {
     id: 'team',
     name: 'Team or Group',
     icon: '👥',
-    color: '#8B5CF6',
+    color: '#780016',
     colorName: 'team',
     description: 'Name your sports team, band, podcast, club, or group',
     tagline: 'Give your whole group a voice',
@@ -140,7 +140,7 @@ export const segments = {
     id: 'personal',
     name: 'Something Personal',
     icon: '✨',
-    color: '#10B981',
+    color: '#2665d6',
     colorName: 'personal',
     description: 'Name your baby, pet, home, or something fun',
     tagline: 'Let everyone weigh in. Make it official.',
@@ -211,13 +211,13 @@ export const getAllSegments = () => {
 
 /**
  * Get tier color for a group
- * CORRECT: business=yellow, team=purple, personal=green
+ * Unified supernova gold for all segments
  */
 export const getSegmentColor = (groupId) => {
   const colorMap = {
-    business: '#eaef09',
-    team: '#8B5CF6',
-    personal: '#10B981',
+    business: '#254f1a',
+    team: '#780016',
+    personal: '#2665d6',
   };
   return colorMap[groupId] || '#ffffff';
 };

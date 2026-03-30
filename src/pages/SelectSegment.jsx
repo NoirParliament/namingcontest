@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { GROUP_THEME, LIGHT_THEME, getGroupTheme } from '../data/themeConfig';
 import namicoIcon from '../assets/namico-icon.svg';
 import { Buildings, Users, Baby, ArrowRight, CheckCircle, X } from '@phosphor-icons/react';
 
@@ -7,9 +8,9 @@ const SEGMENT_CONFIG = [
   {
     group: 'personal',
     label: 'Personal',
-    icon: <Baby size={28} weight="duotone" color="#10B981" />,
-    color: '#10B981',
-    colorRgb: '16,185,129',
+    icon: <Baby size={28} weight="duotone" color="#2665d6" />,
+    color: '#2665d6',
+    colorRgb: '38,101,214',
     title: 'No opinions are too many',
     subtitle: 'Invite the people whose opinion matters',
     tags: ['Baby Name', 'Pet Name', 'Home', 'Something Fun'],
@@ -30,9 +31,9 @@ const SEGMENT_CONFIG = [
   {
     group: 'team',
     label: 'Group',
-    icon: <Users size={28} weight="duotone" color="#8B5CF6" />,
-    color: '#8B5CF6',
-    colorRgb: '139,92,246',
+    icon: <Users size={28} weight="duotone" color="#780016" />,
+    color: '#780016',
+    colorRgb: '120,0,22',
     title: 'Let the squad decide',
     subtitle: 'From group chat chaos to a name everyone reps',
     tags: ['Sports Team', 'Band', 'Podcast', 'Gaming Group'],
@@ -53,9 +54,9 @@ const SEGMENT_CONFIG = [
   {
     group: 'business',
     label: 'Business',
-    icon: <Buildings size={28} weight="duotone" color="#eaef09" />,
-    color: '#eaef09',
-    colorRgb: '234,239,9',
+    icon: <Buildings size={28} weight="duotone" color="#254f1a" />,
+    color: '#254f1a',
+    colorRgb: '37,79,26',
     title: 'Naming is a business decision',
     subtitle: 'Structured naming with real methodology',
     tags: ['Company', 'Product', 'Project', 'Rebrand'],
@@ -82,7 +83,7 @@ export default function SelectSegment() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#0a0a0a',
+      background: '#fafaf5',
       fontFamily: 'Inter, sans-serif',
       display: 'flex',
       flexDirection: 'column',
@@ -93,18 +94,19 @@ export default function SelectSegment() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        borderBottom: '0.5px solid rgba(255,255,255,0.06)',
+        background: '#ffffff',
+        borderBottom: '0.5px solid rgba(30,35,48,0.08)',
       }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
           <div style={{
             width: 28, height: 28,
-            background: '#eaef09',
+            background: '#d2e823',
             borderRadius: 6,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <img src={namicoIcon} alt="Namico" style={{ width: 20, height: 20, display: 'block' }} />
+            <img src={namicoIcon} alt="NamingContest" style={{ width: 20, height: 20, display: 'block' }} />
           </div>
-          <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>Namico</span>
+          <span style={{ fontSize: 15, fontWeight: 700, color: '#1e2330' }}>NamingContest</span>
         </Link>
 
         {/* Steps */}
@@ -114,18 +116,18 @@ export default function SelectSegment() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                 <div style={{
                   width: 20, height: 20, borderRadius: '50%',
-                  background: i === 0 ? '#fff' : 'rgba(255,255,255,0.06)',
+                  background: i === 0 ? '#1e2330' : 'rgba(30,35,48,0.1)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 9, fontWeight: 700,
-                  color: i === 0 ? '#000' : '#7a7a7a',
+                  color: i === 0 ? '#ffffff' : '#8a8a82',
                 }}>
                   {i + 1}
                 </div>
-                <span style={{ fontSize: 11, color: i === 0 ? '#fff' : '#7a7a7a', fontWeight: i === 0 ? 600 : 400 }}>
+                <span style={{ fontSize: 11, color: i === 0 ? '#1e2330' : '#8a8a82', fontWeight: i === 0 ? 600 : 400 }}>
                   {step}
                 </span>
               </div>
-              {i < 3 && <div style={{ width: 20, height: 1, background: 'rgba(255,255,255,0.08)' }} />}
+              {i < 3 && <div style={{ width: 20, height: 1, background: 'rgba(30,35,48,0.08)' }} />}
             </div>
           ))}
         </div>
@@ -147,20 +149,20 @@ export default function SelectSegment() {
           <div style={{
             fontSize: 10, fontWeight: 600,
             textTransform: 'uppercase', letterSpacing: '0.1em',
-            color: '#7a7a7a', marginBottom: 10,
+            color: '#8a8a82', marginBottom: 10,
           }}>
             Step 1 of 4
           </div>
           <h1 style={{
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
             fontSize: 'clamp(32px, 5vw, 52px)',
             fontWeight: 800,
-            color: '#fff',
+            color: '#1e2330',
             marginBottom: 12,
           }}>
             What are you naming?
           </h1>
-          <p style={{ fontSize: 15, color: '#a1a1a1', maxWidth: 440, margin: '0 auto', lineHeight: 1.65 }}>
+          <p style={{ fontSize: 15, color: '#676b5f', maxWidth: 440, margin: '0 auto', lineHeight: 1.65 }}>
             Choose your category — then tell us if you're organizing a contest or joining one as a participant
           </p>
         </div>
@@ -201,8 +203,8 @@ function SegmentCard({ seg, isHovered, onHover, onLeave, onClick }) {
       onMouseLeave={onLeave}
       onClick={onClick}
       style={{
-        background: '#1a1a1a',
-        border: `0.5px solid ${isHovered ? `rgba(${seg.colorRgb},0.4)` : 'rgba(255,255,255,0.1)'}`,
+        background: '#ffffff',
+        border: `0.5px solid ${isHovered ? `rgba(${seg.colorRgb},0.4)` : 'rgba(30,35,48,0.1)'}`,
         borderRadius: 16,
         padding: 28,
         cursor: 'pointer',
@@ -232,12 +234,12 @@ function SegmentCard({ seg, isHovered, onHover, onLeave, onClick }) {
       </div>
 
       {/* Title */}
-      <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: 20, fontWeight: 700, color: '#fff', lineHeight: 1.2, margin: 0 }}>
+      <h3 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 20, fontWeight: 700, color: '#1e2330', lineHeight: 1.2, margin: 0 }}>
         {seg.title}
       </h3>
 
       {/* Subtitle */}
-      <p style={{ fontSize: 13, color: '#a1a1a1', lineHeight: 1.5, margin: 0 }}>{seg.subtitle}</p>
+      <p style={{ fontSize: 13, color: '#676b5f', lineHeight: 1.5, margin: 0 }}>{seg.subtitle}</p>
 
       {/* Tags */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, maxWidth: '75%' }}>
@@ -249,21 +251,21 @@ function SegmentCard({ seg, isHovered, onHover, onLeave, onClick }) {
       </div>
 
       {/* Divider */}
-      <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '4px 0' }} />
+      <div style={{ height: 1, background: 'rgba(30,35,48,0.07)', margin: '4px 0' }} />
 
       {/* Price */}
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
-        <span style={{ fontSize: 28, fontWeight: 800, color: '#fff', lineHeight: 1 }}>{seg.price}</span>
-        <span style={{ fontSize: 11, color: '#7a7a7a' }}>{seg.priceSub}</span>
+        <span style={{ fontSize: 28, fontWeight: 800, color: '#1e2330', lineHeight: 1 }}>{seg.price}</span>
+        <span style={{ fontSize: 11, color: '#8a8a82' }}>{seg.priceSub}</span>
       </div>
 
       {/* Features */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         {seg.features.map(f => (
-          <div key={f.label} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: f.included ? '#a1a1a1' : '#3a3a3a' }}>
+          <div key={f.label} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: f.included ? '#676b5f' : '#c0c0b8' }}>
             {f.included
               ? <CheckCircle size={14} weight="fill" color={seg.color} />
-              : <X size={14} color="#3a3a3a" />
+              : <X size={14} color="#c0c0b8" />
             }
             <span style={{ textDecoration: f.included ? 'none' : 'line-through' }}>{f.label}</span>
           </div>
@@ -273,8 +275,8 @@ function SegmentCard({ seg, isHovered, onHover, onLeave, onClick }) {
       {/* CTA */}
       <button style={{
         marginTop: 4, width: '100%', height: 42, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-        border: `1.5px solid ${seg.color}`, borderRadius: 10,
-        background: `rgba(${seg.colorRgb},0.08)`, color: seg.color,
+        border: 'none', borderRadius: 10,
+        background: seg.color, color: '#ffffff',
         fontSize: 13, fontWeight: 700, cursor: 'pointer',
       }}>
         {seg.cta} <ArrowRight size={14} weight="bold" />
