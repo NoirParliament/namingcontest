@@ -107,7 +107,7 @@ function FloatingNav() {
   }, []);
 
   // ── Hide on hub pages ─────────────────────────────────────────────────────
-  if (path === '/wireframe') return null;
+  if (path === '/wireframe' || path === '/') return null;
 
   // ── Fresh meta (read after URL extraction effects have fired) ────────────
   const meta  = getJourneyMeta();

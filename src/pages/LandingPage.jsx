@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import personalDog from '../assets/personal-dog.png';
 import teamPlayers from '../assets/team-players.png';
 import businessWoman from '../assets/business-woman.png';
+import sarahChen from '../assets/sarah-chen.png';
+import marcusRodriguez from '../assets/marcus-rodriguez.png';
+import lindaMorrison from '../assets/linda-morrison.png';
 import '../styles/landing-v3.css';
 
 /* ========== ICONS ========== */
@@ -111,7 +114,7 @@ function Offerings({ onStart }) {
       <div className="offerings">
         {tiers.map(t => (
           <article key={t.tier} className="offering" data-tier={t.tier}>
-            <div className="body">
+            <div className="offer-body">
               <h3>{t.title}</h3>
               <p className="tagline">{t.tagline}</p>
               <div className="meta-row">
@@ -259,12 +262,13 @@ function SharedAccountability() {
 
   return (
     <section className="section">
+      <div className="section-head">
+        <p className="eyebrow">Shared accountability</p>
+        <h2 className="h-display h2">Both sides do the work. <span className="italic">Both sides get the credit.</span></h2>
+        <p className="lede">A 100-point Contest Quality Score — split 50/50 between creator and participants.</p>
+      </div>
       <div className="shared-panel">
         <div className="shared">
-          <p className="eyebrow">Shared accountability</p>
-          <h3>Both sides do the work. <span className="it">Both sides get the credit.</span></h3>
-          <p className="shared-sub">A 100-point Contest Quality Score — split 50/50 between creator and participants.</p>
-
           <div className="score-row">
             <span className="label-l"><b>Creator</b> · 38/50</span>
             <span className="score-chip"><span className="dot"></span>Strong · 78/100</span>
@@ -328,9 +332,9 @@ function SharedAccountability() {
 /* ========== TESTIMONIALS ========== */
 function Testimonials() {
   const list = [
-    { cat: 'business', quote: '47 name ideas, zero consensus. Three days after launching a contest, we had a winner with 89% approval.', winner: 'Vanta Pay', name: 'Sarah Chen', initials: 'SC', label: 'Business' },
-    { cat: 'team', quote: 'Six members, six strong opinions, zero agreement for six months. We ran a contest and landed on a name we all own.', winner: 'Hollow Signal', name: 'Marcus Rodriguez', initials: 'MR', label: 'Team' },
-    { cat: 'personal', quote: '23 family members across three countries voted on our daughter’s name. Clara was chosen by the people who matter most.', winner: 'Clara', name: 'James & Linda Morrison', initials: 'JM', label: 'Personal' },
+    { cat: 'business', quote: '47 name ideas, zero consensus. Three days after launching a contest, we had a winner with 89% approval.', winner: 'Vanta Pay', name: 'Sarah Chen', initials: 'SC', label: 'Business', photo: sarahChen },
+    { cat: 'team', quote: 'Six members, six strong opinions, zero agreement for six months. We ran a contest and landed on a name we all own.', winner: 'Hollow Signal', name: 'Marcus Rodriguez', initials: 'MR', label: 'Team', photo: marcusRodriguez },
+    { cat: 'personal', quote: '23 family members across three countries voted on our daughter’s name. Clara was chosen by the people who matter most.', winner: 'Clara', name: 'James & Linda Morrison', initials: 'JM', label: 'Personal', photo: lindaMorrison },
   ];
   return (
     <section className="section">
@@ -341,20 +345,24 @@ function Testimonials() {
       <div className="testimonials">
         {list.map((t, i) => (
           <article key={i} className="tmonial" data-cat={t.cat}>
+            <div className="who-row">
+              <span className="avatar">
+                {t.photo
+                  ? <img src={t.photo} alt={t.name} />
+                  : t.initials}
+              </span>
+              <div className="who-info">
+                <div className="tname">{t.name}</div>
+                <span className={`cat-tag ${t.cat}`}><span className="dot"></span>{t.label}</span>
+              </div>
+            </div>
             <div className="stars" aria-label="5 out of 5">
               {[0, 1, 2, 3, 4].map(s => <Star key={s} />)}
             </div>
-            <blockquote>{t.quote}</blockquote>
+            <p className="quote-body">{t.quote}</p>
             <div className="winner-row">
               <span className="wlabel">Winner</span>
               <span className="name-win">{t.winner}</span>
-            </div>
-            <div className="who-row">
-              <span className="avatar">{t.initials}</span>
-              <div>
-                <div className="tname">{t.name}</div>
-                <div className="tmeta"><span className={`cat-tag ${t.cat}`}><span className="dot"></span>{t.label}</span></div>
-              </div>
             </div>
           </article>
         ))}
@@ -510,8 +518,8 @@ export default function LandingPage() {
           <Testimonials />
           <FAQ />
           <ClosingCTA onStart={handleStart} />
-          <Footer />
         </div>
+        <Footer />
       </div>
     </div>
   );
