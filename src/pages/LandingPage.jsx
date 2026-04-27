@@ -1,1618 +1,518 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import namicoIcon from '../assets/namico-icon.svg';
-import Footer from '../components/layout/Footer';
-import {
-  Trophy, Users, Lightbulb, CheckCircle, ArrowRight,
-  Target, Envelope, Star, Plus, Minus, Buildings,
-  MusicNote, Baby, House, ChartBar, Certificate,
-  Confetti, WarningCircle, ShieldCheck, Shuffle,
-  ClipboardText, SpeakerSlash, Ruler, Scales, X, Sparkle,
-} from '@phosphor-icons/react';
-import { platformStats, testimonials, faqData, howItWorksSteps, almostNames, methodologyItems } from '../data/mockData';
-import personalIllustration from '../assets/personal-illustration.png';
-import teamIllustration from '../assets/team-illustration.png';
-import businessIllustration from '../assets/business-illustration.png';
+import { useNavigate } from 'react-router-dom';
+import personalDog from '../assets/personal-dog.png';
+import teamPlayers from '../assets/team-players.png';
+import businessWoman from '../assets/business-woman.png';
+import '../styles/landing-v3.css';
 
-/* ── Typewriter Word Animation ── */
-function RotatingWord({ words }) {
-  const [wordIdx, setWordIdx] = useState(0);
-  const [text, setText] = useState(words[0]);
-  const [isDeleting, setIsDeleting] = useState(false);
+/* ========== ICONS ========== */
+const Star = () => <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.2 4.5 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7L8 1z"/></svg>;
+const Check = () => <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M3 8.5l3 3 7-7.5"/></svg>;
 
+/* ========== NAV ========== */
+function Nav() {
+  const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    const current = words[wordIdx];
-
-    if (!isDeleting && text === current) {
-      // Pause before deleting
-      const t = setTimeout(() => setIsDeleting(true), 1800);
-      return () => clearTimeout(t);
-    }
-    if (isDeleting && text === '') {
-      // Move to next word, start typing
-      setIsDeleting(false);
-      setWordIdx((wordIdx + 1) % words.length);
-      return;
-    }
-
-    const speed = isDeleting ? 60 : 100;
-    const t = setTimeout(() => {
-      setText(isDeleting
-        ? current.slice(0, text.length - 1)
-        : current.slice(0, text.length + 1)
-      );
-    }, speed);
-    return () => clearTimeout(t);
-  }, [text, isDeleting, wordIdx, words]);
-
-  return (
-    <span style={{ color: '#254f1a', fontWeight: 800 }}>
-      {text}
-      <span style={{
-        display: 'inline-block',
-        width: 2,
-        height: '0.85em',
-        background: '#254f1a',
-        marginLeft: 1,
-        marginRight: -2,
-        verticalAlign: 'baseline',
-        animation: 'blink 0.8s step-end infinite',
-      }} />
-    </span>
-  );
-}
-
-/* ── Glassmorphism Navbar ── */
-function Navbar() {
-  const navigate = useNavigate();
-  const [visible, setVisible] = useState(true);
-  const lastY = useRef(0);
-
-  useEffect(() => {
-    const onScroll = () => {
-      const y = window.scrollY;
-      if (y < 80) { setVisible(true); }
-      else if (y > lastY.current + 6) { setVisible(false); }
-      else if (y < lastY.current - 6) { setVisible(true); }
-      lastY.current = y;
-    };
+    const onScroll = () => setScrolled(window.scrollY > 16);
     window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
-
   return (
-    <div style={{
-      position: 'fixed', top: 0, left: 0, right: 0,
-      zIndex: 1000, padding: '16px 24px',
-      transform: visible ? 'translateY(0)' : 'translateY(-120%)',
-      transition: 'transform 0.35s cubic-bezier(0.4,0,0.2,1)',
-    }}>
-      <div style={{ maxWidth: 1504, margin: '0 auto' }}>
-      <nav style={{
-        background: 'rgba(239,240,236,0.92)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        borderRadius: 999,
-        padding: '10px 10px 10px 28px',
-        boxShadow: '0 2px 16px rgba(30,35,48,0.08)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}>
-        {/* Logo */}
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-          <div style={{
-            width: 32, height: 32,
-            background: '#d2e823',
-            borderRadius: 8,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <img src={namicoIcon} alt="Naming Contest" style={{ width: 24, height: 24, display: 'block' }} />
-          </div>
-          <span style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontWeight: 700, fontSize: 18, color: '#1e2330' }}>
-            NamingContest
-          </span>
-        </Link>
-
-        {/* Nav Links */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
-          {[{ label: 'How It Works', href: '#shared-accountability' }, { label: 'Examples', href: '#examples' }, { label: 'Pricing', href: '#pricing' }].map(link => (
-            <a key={link.label} href={link.href}
-              style={{ color: '#1e2330', fontSize: 16, fontWeight: 500, textDecoration: 'none', transition: 'color 0.2s' }}
-              onMouseEnter={e => e.target.style.color = '#254f1a'}
-              onMouseLeave={e => e.target.style.color = '#1e2330'}
-            >
-              {link.label}
-            </a>
-          ))}
+    <div className="nav-row">
+      <nav className={`nav-pill${scrolled ? ' is-scrolled' : ''}`} aria-label="Primary">
+        <a href="#" className="brand-mark">
+          <span className="brand-dot" aria-hidden="true"></span>
+          <span>NamingContest</span>
+        </a>
+        <div className="links">
+          <a href="#how">How It Works</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#examples">Examples</a>
         </div>
-
-        {/* Right Side */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button onClick={() => navigate('/wireframe')} style={{ display: 'none' }}>
-            Wireframe Flow Testing
-          </button>
-          <button onClick={() => navigate('/dashboard')} style={{
-            background: 'none', border: 'none', color: '#1e2330',
-            fontSize: 16, fontWeight: 500, cursor: 'pointer', padding: '14px 20px',
-          }}>
-            Sign In
-          </button>
-          <button onClick={() => navigate('/select')} style={{
-            background: '#1e2330', border: 'none', borderRadius: 999, color: '#fff',
-            fontSize: 16, fontWeight: 500, cursor: 'pointer', padding: '14px 28px',
-            transition: 'opacity 0.2s',
-          }}
-            onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-            onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-          >
-            Get Started
-          </button>
-        </div>
+        <a href="#signin" className="signin">Sign In</a>
+        <a href="#start" className="cta">Start a Contest</a>
       </nav>
-      </div>
     </div>
   );
 }
 
-/* ── Social Proof Marquee ── */
-const CATCHWORD_CLIENTS = [
-  'The North Face', 'Adobe Photoshop', 'Volkswagen', 'TikTok',
-  'Starbucks', 'Asana', 'Upwork',
-];
-
-function SocialProofSection() {
+/* ========== HERO ========== */
+function Hero({ onStart }) {
   return (
-    <section style={{ background: '#f3f3f1', padding: '48px 0', overflow: 'hidden' }}>
-
-      {/* Marquee */}
-      <div style={{ position: 'relative' }}>
-        {/* Left fade */}
-        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 120, background: 'linear-gradient(90deg, #f3f3f1, transparent)', zIndex: 2, pointerEvents: 'none' }} />
-        {/* Right fade */}
-        <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 120, background: 'linear-gradient(270deg, #f3f3f1, transparent)', zIndex: 2, pointerEvents: 'none' }} />
-
-        <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
-          {[0, 1].map(copy => (
-            <div
-              key={copy}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 64,
-                paddingRight: 64,
-                animation: 'marqueeScroll 20s linear infinite',
-              }}
-            >
-              {CATCHWORD_CLIENTS.map((name, i) => (
-                <span
-                  key={i}
-                  style={{
-                    fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
-                    fontSize: 28,
-                    fontWeight: 700,
-                    color: '#1e2330',
-                    opacity: 0.45,
-                    letterSpacing: '-0.01em',
-                  }}
-                >
-                  {name}
-                </span>
-              ))}
-            </div>
-          ))}
+    <header className="hero">
+      <span className="confetti c1"></span>
+      <span className="confetti c2"></span>
+      <span className="confetti c3"></span>
+      <span className="confetti c4"></span>
+      <span className="confetti c5"></span>
+      <span className="confetti c6"></span>
+      <div className="hero-inner">
+        <h1 className="h-display">
+          The best names are <span className="em">chosen,</span><br />
+          not assigned.
+        </h1>
+        <p className="sub">
+          Invite anyone. Collect ideas anonymously. Vote with five structured methods. Pick a winner the whole room actually believes in.
+        </p>
+        <div className="cta-row">
+          <a href="#start" onClick={(e) => { e.preventDefault(); onStart(); }} className="btn btn-primary btn-lg">
+            Start a naming contest <span className="arrow">→</span>
+          </a>
+          <span className="cta-meta">Free tier · No credit card required</span>
         </div>
       </div>
-
-      <style>{`
-        @keyframes marqueeScroll {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-      `}</style>
-    </section>
+    </header>
   );
 }
 
-/* ── Accordion ── */
-function Accordion({ items }) {
-  const [open, setOpen] = useState(null);
-  return (
-    <div>
-      {items.map(item => (
-        <div key={item.id} style={{ borderBottom: '0.5px solid rgba(30,35,48,0.12)' }}>
-          <button
-            onClick={() => setOpen(open === item.id ? null : item.id)}
-            style={{
-              width: '100%', background: 'none', border: 'none',
-              padding: '20px 0',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              color: '#1e2330', fontSize: 18, fontWeight: 600,
-              fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", cursor: 'pointer', textAlign: 'left',
-              gap: 16,
-            }}
-          >
-            <span>{item.question}</span>
-            {open === item.id
-              ? <Minus size={18} weight="bold" style={{ color: '#254f1a', flexShrink: 0 }} />
-              : <Plus size={18} weight="bold" style={{ color: '#254f1a', flexShrink: 0 }} />
-            }
-          </button>
-          <div style={{
-            overflow: 'hidden',
-            maxHeight: open === item.id ? 300 : 0,
-            transition: 'max-height 0.35s ease',
-            paddingBottom: open === item.id ? 20 : 0,
-          }}>
-            <p style={{ fontSize: 16, color: 'rgba(30,35,48,0.7)', lineHeight: 1.7 }}>{item.answer}</p>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/* ── Flip Card ── */
-function FlipCard({ item }) {
-  return (
-    <div style={{
-      width: '100%', height: 140,
-      perspective: 1000,
-      cursor: 'pointer',
-    }}
-      className="flip-card"
-    >
-      <div className="flip-card-inner" style={{ position: 'relative', width: '100%', height: '100%', transformStyle: 'preserve-3d', transition: 'transform 0.6s' }}>
-        {/* Front */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: '#fff',
-          border: '0.5px solid rgba(0,0,0,0.1)',
-          borderRadius: 12,
-          display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center',
-          backfaceVisibility: 'hidden',
-          WebkitBackfaceVisibility: 'hidden',
-          padding: 16,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-        }}>
-          <div style={{
-            fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
-            fontSize: 26, fontWeight: 700, color: '#0a0a0a',
-            marginBottom: 8, textAlign: 'center',
-          }}>
-            {item.brand}
-          </div>
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 4,
-            background: 'rgba(210,232,35,0.15)',
-            border: '0.5px solid rgba(210,232,35,0.4)',
-            borderRadius: 9999,
-            padding: '2px 10px',
-            fontSize: 15, color: '#254f1a',
-          }}>
-            <CheckCircle size={10} weight="fill" /> Winner
-          </div>
-        </div>
-
-        {/* Back */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: '#e8efd6',
-          border: '0.5px solid rgba(0,0,0,0.08)',
-          borderRadius: 12,
-          backfaceVisibility: 'hidden',
-          WebkitBackfaceVisibility: 'hidden',
-          transform: 'rotateY(180deg)',
-          padding: 14,
-          overflow: 'hidden',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-        }}>
-          <div style={{ fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#1e2330', marginBottom: 6 }}>
-            Almost named...
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            {item.rejected.slice(0, 3).map(r => (
-              <div key={r} style={{ fontSize: 14, color: '#1e2330', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
-                <X size={10} weight="bold" style={{ flexShrink: 0, opacity: 0.4 }} /> {r}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <style>{`.flip-card:hover .flip-card-inner { transform: rotateY(180deg); }`}</style>
-    </div>
-  );
-}
-
-/* ── Pricing Feature Table ── */
-function PricingFeatureTable() {
-  const cols = [
-    { label: 'Free',     color: '#1e2330' },
-    { label: 'Personal', color: '#2665d6' },
-    { label: 'Team',     color: '#780016' },
-    { label: 'Business', color: '#254f1a' },
-  ];
-
-  const sections = [
+/* ========== OFFERINGS ========== */
+function Offerings({ onStart }) {
+  const tiers = [
     {
-      label: 'Participants',
-      rows: [
-        { feature: 'Participant cap', free: '5', personal: 'Up to 15', team: 'Up to 60', business: 'Up to 240' },
-        { feature: 'Participant invite flow', free: '✓', personal: '✓', team: '✓', business: '✓' },
-        { feature: 'Anonymous submissions', free: '✓', personal: '✓', team: '✓', business: '✓' },
-      ],
-    },
-    {
-      label: 'Methodology & Quality',
-      rows: [
-        { feature: 'Naming methodology articles', free: '—', personal: '✓', team: '✓', business: '✓' },
-        { feature: 'Article quizzes', free: '—', personal: '✓', team: '✓', business: '✓' },
-        { feature: 'Interactive exploration mind map', free: '—', personal: '✓', team: '✓', business: '✓' },
-        { feature: 'Contest quality score (0–100)', free: '—', personal: '✓', team: '✓', business: '✓' },
-        { feature: 'Submission quality breakdown', free: '—', personal: '✓', team: '✓', business: '✓' },
-      ],
-    },
-    {
-      label: 'Automation & Branding',
-      rows: [
-        { feature: 'Automated deadline reminders', free: '—', personal: '✓', team: '✓', business: '✓' },
-        { feature: 'Voting open notification', free: '—', personal: '✓', team: '✓', business: '✓' },
-        { feature: 'White-label output (no platform branding)', free: '—', personal: '—', team: '✓', business: '✓' },
-      ],
-    },
-    {
-      label: 'Results & Reports',
-      rows: [
-        { feature: 'Live results dashboard', free: '✓', personal: '✓', team: '✓', business: '✓' },
-        { feature: 'Retroactive PDF unlock (post-contest)', free: '—', personal: '—', team: '✓', business: '✓' },
-        { feature: 'Full PDF results report', free: '—', personal: '—', team: '—', business: '✓' },
-      ],
-    },
-    {
-      label: 'Submissions',
-      rows: [
-        { feature: 'Voting-only mode (you pre-load names)', free: '✓', personal: '✓', team: '✓', business: '✓' },
-        { feature: 'Open submissions (group suggests names)', free: '—', personal: '✓', team: '✓', business: '✓' },
-        { feature: 'Submission limit per participant', free: '✓', personal: '✓', team: '✓', business: '✓' },
-      ],
-    },
-    {
-      label: 'Voting Methods',
-      rows: [
-        { feature: 'Simple majority', free: '✓', personal: '✓', team: '✓', business: '✓' },
-        { feature: 'Ranked-choice voting', free: '—', personal: '✓', team: '✓', business: '✓' },
-        { feature: 'Pairwise comparison', free: '—', personal: '✓', team: '✓', business: '✓' },
-        { feature: 'Multi-criteria scoring', free: '—', personal: '✓', team: '✓', business: '✓' },
-        { feature: 'Weighted voting', free: '—', personal: '✓', team: '✓', business: '✓' },
-        { feature: 'Manual or auto voting transition', free: '✓', personal: '✓', team: '✓', business: '✓' },
-      ],
-    },
-  ];
-
-  return (
-    <div style={{ borderRadius: 16, overflow: 'hidden', border: '0.5px solid rgba(0,0,0,0.08)' }}>
-      {/* Header row */}
-      <div style={{ display: 'grid', gridTemplateColumns: '200px repeat(4, 1fr)', background: '#fff', borderBottom: '0.5px solid rgba(0,0,0,0.08)' }}>
-        <div style={{ padding: '12px 16px', fontSize: 14, color: '#1e2330', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em' }}>Feature</div>
-        {cols.map((c, i) => (
-          <div key={i} style={{ padding: '12px 8px', textAlign: 'center', fontSize: 15, fontWeight: 800, color: c.color, borderLeft: '0.5px solid rgba(0,0,0,0.05)', letterSpacing: '0.03em' }}>
-            {c.label}
-          </div>
-        ))}
-      </div>
-
-      {sections.map((section, si) => (
-        <div key={si} style={{ borderBottom: '0.5px solid rgba(0,0,0,0.06)' }}>
-          {/* Section label */}
-          <div style={{ padding: '10px 16px', background: 'rgba(0,0,0,0.03)', fontSize: 14, fontWeight: 700, color: '#1e2330', borderBottom: '0.5px solid rgba(0,0,0,0.05)' }}>
-            {section.label}
-          </div>
-          {section.rows.map((row, ri) => {
-            const vals = [row.free, row.personal, row.team, row.business];
-            return (
-              <div key={ri} style={{ display: 'grid', gridTemplateColumns: '200px repeat(4, 1fr)', background: ri % 2 === 1 ? 'rgba(0,0,0,0.02)' : '#fff' }}>
-                <div style={{ padding: '9px 16px 9px 24px', fontSize: 14, color: '#1e2330', display: 'flex', alignItems: 'center' }}>{row.feature}</div>
-                {vals.map((v, vi) => (
-                  <div key={vi} style={{ padding: '9px 8px', textAlign: 'center', fontSize: 14, borderLeft: '0.5px solid rgba(0,0,0,0.04)', fontWeight: v === '—' ? 400 : 600, color: v === '✓' ? cols[vi].color : v === '—' ? '#ccc' : '#4a4a4a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {v}
-                  </div>
-                ))}
-              </div>
-            );
-          })}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/* ── Main Landing Page ── */
-export default function LandingPage() {
-  const navigate = useNavigate();
-
-  /* ── Cursor letter trail (hero only) ── */
-  const heroRef = useRef(null);
-  useEffect(() => {
-    const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    let lastX = 0, lastY = 0;
-
-    const onMove = (e) => {
-      const hero = heroRef.current;
-      if (!hero) return;
-      const rect = hero.getBoundingClientRect();
-      // Only active inside the hero section
-      if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) return;
-
-      const dx = e.clientX - lastX;
-      const dy = e.clientY - lastY;
-      if (dx * dx + dy * dy < 400) return;
-      lastX = e.clientX;
-      lastY = e.clientY;
-
-      const el = document.createElement('span');
-      el.textContent = CHARS[Math.floor(Math.random() * CHARS.length)];
-      const size = Math.random() * 18 + 12;
-      const angle = (Math.random() - 0.5) * 40;
-      const drift = (Math.random() - 0.5) * 40;
-      const drop = 80 + Math.random() * 60;
-      const dur = 700 + Math.random() * 500;
-
-      Object.assign(el.style, {
-        position: 'fixed',
-        left: e.clientX + 'px',
-        top: e.clientY + 'px',
-        fontSize: size + 'px',
-        fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
-        fontWeight: '800',
-        color: 'rgb(30,35,48)',
-        pointerEvents: 'none',
-        zIndex: '99999',
-        userSelect: 'none',
-        lineHeight: '1',
-        transformOrigin: 'center',
-      });
-      document.body.appendChild(el);
-
-      el.animate([
-        { transform: `translate(-50%, -50%) rotate(${angle}deg) scale(1)`, opacity: 0.85 },
-        { transform: `translate(calc(-50% + ${drift}px), calc(-50% + ${drop}px)) rotate(${angle + 25}deg) scale(0.4)`, opacity: 0 },
-      ], { duration: dur, easing: 'cubic-bezier(0.25,0.46,0.45,0.94)', fill: 'forwards' })
-        .finished.then(() => el.remove());
-    };
-
-    window.addEventListener('mousemove', onMove);
-    return () => window.removeEventListener('mousemove', onMove);
-  }, []);
-
-  const segmentCards = [
-    {
-      group: 'personal',
-      label: 'Personal',
-      icon: <Baby size={28} weight="duotone" color="#d2e823" />,
-      title: 'No opinions are too many',
-      subtitle: "Invite the people who matter",
-      color: '#d2e823',
-      colorRgb: '210,232,35',
-      tags: ['Baby Name', 'Pet Name', 'Home', 'Something Fun'],
-      cta: 'Start Personal Contest',
+      tier: 'personal',
+      title: 'Personal',
+      tagline: 'Baby names, pet names, the wedding hashtag, the family Wi-Fi.',
+      cap: 'Up to 15 participants',
       price: '$9',
-      priceSub: 'per contest',
-      features: [
-        { label: 'Up to 15 participants', included: true },
-        { label: 'Open submissions', included: true },
-        { label: 'All voting methods', included: true },
-        { label: 'Naming methodology', included: true },
-        { label: 'Automated reminders', included: true },
-        { label: 'Contest quality score', included: true },
-        { label: 'White-label output', included: false },
-        { label: 'Full PDF report', included: false },
-      ],
+      img: personalDog,
+      pillA: { text: '#ChenForever', meta: '3 votes', color: '#b25620', icon: <path d="M8 14s-5-3.2-5-7a3 3 0 0 1 5-2 3 3 0 0 1 5 2c0 3.8-5 7-5 7z" /> },
+      pillB: { text: '12 joined', color: '#b25620', icon: <><circle cx="5" cy="6" r="2" /><circle cx="11" cy="6" r="2" /><path d="M2 13c0-2 1.5-3 3-3s3 1 3 3M8 13c0-2 1.5-3 3-3s3 1 3 3" /></> },
     },
     {
-      group: 'team',
-      label: 'Group',
-      icon: <Users size={28} weight="duotone" color="#e9c0e9" />,
-      title: 'Let the squad decide',
-      subtitle: "One name the whole squad stands behind",
-      color: '#d2e823',
-      colorRgb: '210,232,35',
-      tags: ['Sports Team', 'Band', 'Podcast', 'Gaming Group'],
-      cta: 'Start Team Contest',
+      tier: 'team',
+      title: 'Team',
+      tagline: 'Bands, podcasts, sports squads, gaming groups, side projects.',
+      cap: 'Up to 60 participants',
       price: '$29',
-      priceSub: 'per contest',
-      features: [
-        { label: 'Up to 60 participants', included: true },
-        { label: 'Open submissions', included: true },
-        { label: 'All voting methods', included: true },
-        { label: 'Naming methodology', included: true },
-        { label: 'Automated reminders', included: true },
-        { label: 'Contest quality score', included: true },
-        { label: 'White-label output', included: true },
-        { label: 'Full PDF report', included: false },
-      ],
+      img: teamPlayers,
+      pillA: { text: 'Round 2', meta: '6 left', color: '#4b68c3', icon: <><circle cx="8" cy="8" r="6" /><path d="M8 4v4l2.5 1.5" /></> },
+      pillB: { text: 'Quiet Static', meta: '9', color: '#4b68c3', icon: <><path d="M3 12V5l5-2 5 2v7" /><path d="M3 12h10" /></> },
     },
     {
-      group: 'business',
-      label: 'Business',
-      icon: <Buildings size={28} weight="duotone" color="#254f1a" />,
-      title: 'Naming is a business decision',
-      subtitle: 'Naming with structure behind it',
-      color: '#d2e823',
-      colorRgb: '210,232,35',
-      tags: ['Company', 'Product', 'Project', 'Rebrand'],
-      cta: 'Start Business Contest',
+      tier: 'business',
+      title: 'Business',
+      tagline: 'Company names, product launches, rebrands, internal initiatives.',
+      cap: 'Up to 240 participants',
       price: '$89',
-      priceSub: 'per contest',
-      features: [
-        { label: 'Up to 240 participants', included: true },
-        { label: 'Open submissions', included: true },
-        { label: 'All voting methods', included: true },
-        { label: 'Naming methodology', included: true },
-        { label: 'Automated reminders', included: true },
-        { label: 'Contest quality score', included: true },
-        { label: 'White-label output', included: true },
-        { label: 'Full PDF report', included: true },
-      ],
+      img: businessWoman,
+      pillA: { text: 'Winner', meta: 'Lumira', dot: true },
+      pillB: { text: '47% of 84 votes', color: '#3f8850', icon: <path d="M2 8h12M9 4l4 4-4 4" /> },
     },
-  ];
-
-  const stepIcons = [
-    <Target size={28} weight="light" color="#57534E" />,
-    <ClipboardText size={28} weight="light" color="#57534E" />,
-    <Envelope size={28} weight="light" color="#57534E" />,
-    <Lightbulb size={28} weight="light" color="#57534E" />,
-    <CheckCircle size={28} weight="light" color="#57534E" />,
-  ];
-
-  const methodIcons = [
-    <SpeakerSlash size={28} weight="duotone" color="#d2e823" />,
-    <Ruler size={28} weight="duotone" color="#d2e823" />,
-    <Scales size={28} weight="duotone" color="#d2e823" />,
   ];
 
   return (
-    <div style={{ background: '#f3f3f1', minHeight: '100vh' }}>
-      <Navbar />
-
-      {/* ── Hero Section ── */}
-      <section ref={heroRef} style={{
-        position: 'relative',
-        background: '#d2e823',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-      }}>
-        <div style={{ maxWidth: 1504, width: '100%', margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 1, textAlign: 'center' }}>
-          {/* H1 */}
-          <h1 style={{
-            fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
-            fontSize: 'clamp(40px, 6vw, 80px)',
-            fontWeight: 800,
-            color: '#254f1a',
-            lineHeight: 1.07,
-            maxWidth: 'none',
-            margin: '0 auto 24px',
-          }}>
-            New band, brand, or a baby?<br />
-            <span style={{ color: '#1e2330' }}>Run a naming contest, maybe?</span>
-          </h1>
-
-          {/* Subheadline */}
-          <p style={{
-            fontSize: 20,
-            color: '#254f1a',
-            maxWidth: 520,
-            margin: '0 auto 40px',
-            lineHeight: 1.5,
-          }}>
-            No spreadsheets. No group chat debates. Just invite people, collect real ideas, vote, and crown a winner.
-          </p>
-
-          {/* CTA Button */}
-          <div>
-            <button
-              onClick={() => navigate('/select')}
-              style={{
-                background: '#254f1a', border: 'none', borderRadius: 999,
-                color: '#fff', fontSize: 18, fontWeight: 600, cursor: 'pointer',
-                padding: '16px 40px', display: 'inline-flex', alignItems: 'center', gap: 8,
-                transition: 'opacity 0.2s',
-              }}
-              onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-            >
-              Launch a naming contest
-              <ArrowRight size={16} weight="bold" />
-            </button>
-          </div>
-        </div>
-
-      </section>
-
-      {/* ── Segment Blocks (Linktree-style alternating) ── */}
-      <div id="pricing">
-        {segmentCards.map((card, i) => (
-          <SegmentBlock key={card.group} card={card} navigate={navigate} index={i} />
+    <section className="section" id="pricing">
+      <div className="section-head">
+        <p className="eyebrow">Three ways to run a contest</p>
+        <h2 className="h-display h2">One platform. Three scales.</h2>
+        <p className="lede">Same structured process — sized to fit a kitchen-table decision, a six-person band, or a global product launch.</p>
+      </div>
+      <div className="offerings">
+        {tiers.map(t => (
+          <article key={t.tier} className="offering" data-tier={t.tier}>
+            <div className="body">
+              <h3>{t.title}</h3>
+              <p className="tagline">{t.tagline}</p>
+              <div className="meta-row">
+                <span className="cap">{t.cap}</span>
+                <span className="price">{t.price}<small>/contest</small></span>
+              </div>
+              <a href={`#start-${t.tier}`} onClick={(e) => { e.preventDefault(); onStart(t.tier); }} className="start">
+                Get started <span className="arrow">→</span>
+              </a>
+            </div>
+            <div className="scene" aria-hidden="true">
+              <div className="photo has-img" style={{ backgroundImage: `url(${t.img})` }}></div>
+              <div className="float-pill pill-a">
+                {t.pillA.dot ? <span className="dot"></span> : (
+                  <span className="ic"><svg viewBox="0 0 16 16" fill="none" stroke={t.pillA.color} strokeWidth="1.6" strokeLinecap="round">{t.pillA.icon}</svg></span>
+                )}
+                {t.pillA.text} {t.pillA.meta && <span className="v">{t.pillA.meta}</span>}
+              </div>
+              <div className="float-pill pill-b">
+                <span className="ic"><svg viewBox="0 0 16 16" fill="none" stroke={t.pillB.color} strokeWidth="1.6" strokeLinecap="round">{t.pillB.icon}</svg></span>
+                {t.pillB.text} {t.pillB.meta && <span className="v">{t.pillB.meta}</span>}
+              </div>
+            </div>
+          </article>
         ))}
       </div>
+    </section>
+  );
+}
 
-      {/* ── Success Stories ── */}
-      <section style={{ background: '#f3f3f1', padding: '80px 0' }} id="examples">
-        <div style={{ maxWidth: 1504, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <div style={{
-              fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em',
-              color: '#1e2330', marginBottom: 12,
-            }}>
-              Real Results
-            </div>
-            <h2 style={{
-              fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
-              fontSize: 'clamp(28px, 4vw, 42px)',
-              fontWeight: 800,
-              color: '#1e2330',
-              marginBottom: 12,
-              lineHeight: 1.15,
-            }}>
-              Names chosen together,<br />owned by everyone
-            </h2>
+/* ========== HOW IT WORKS (4 cards with artifacts) ========== */
+function HowItWorks() {
+  return (
+    <section className="section" id="how">
+      <div className="section-head">
+        <p className="eyebrow">How it works</p>
+        <h2 className="h-display h2">Four steps to a name <span className="italic">everyone</span> agrees on.</h2>
+        <p className="lede">Pick a path, invite the room, vote with structure, ship the winner.</p>
+      </div>
+
+      <div className="why">
+        {/* 01 BRIEF */}
+        <div className="why-item" data-tone="butter">
+          <div className="why-text">
+            <div className="step-mark"><span className="step-num">01</span><span className="step-label">Brief</span></div>
+            <h3>Build Your <span className="em-word">Brief.</span></h3>
+            <p>Pick your contest type, answer a few key questions. Our framework handles the rest.</p>
           </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
-            {testimonials.map(t => (
-              <TestimonialCard key={t.id} testimonial={t} />
-            ))}
+          <div className="why-art">
+            <div className="artifact art-brief">
+              <div className="a-head">New Contest · Brief</div>
+              <div className="row"><span className="lbl">Brand</span><span className="val">Northbound Co.</span></div>
+              <div className="row"><span className="lbl">Audience</span><span className="chip-row"><span className="mini-chip">B2B SaaS</span><span className="mini-chip">Founders</span></span></div>
+              <div className="row"><span className="lbl">Tone</span><span className="chip-row"><span className="mini-chip">Bold</span><span className="mini-chip">Warm</span><span className="mini-chip">Modern</span></span></div>
+              <div className="row"><span className="lbl">Avoid</span><span className="input-line"></span></div>
+            </div>
           </div>
         </div>
-      </section>
 
-      {/* ── How It Works ── */}
-      <section style={{ background: '#254f1a', padding: '80px 0' }} id="how-it-works">
-        <div style={{ maxWidth: 1504, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(210,232,35,0.65)', marginBottom: 12 }}>
-              How It Works
-            </div>
-            <h2 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 'clamp(32px, 5vw, 56px)', fontWeight: 700, color: '#d2e823', lineHeight: 1.15 }}>
-              Five steps to the perfect name
-            </h2>
+        {/* 02 INVITE */}
+        <div className="why-item" data-tone="periwinkle">
+          <div className="why-text">
+            <div className="step-mark"><span className="step-num">02</span><span className="step-label">Invite</span></div>
+            <h3>Invite Your <span className="em-word">People.</span></h3>
+            <p>Share a link. No signup needed. They join instantly.</p>
           </div>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(5, 1fr)',
-            gap: 16,
-            position: 'relative',
-          }}>
-            {howItWorksSteps.map((step, i) => (
-              <div key={i} style={{ textAlign: 'center', position: 'relative' }}>
-                {i < 4 && (
-                  <div style={{
-                    position: 'absolute',
-                    top: 24, left: '60%',
-                    width: '80%', height: 1,
-                    borderTop: '1px dashed rgba(255,255,255,0.2)',
-                    zIndex: 0,
-                  }} />
-                )}
-                <div style={{
-                  width: 48, height: 48,
-                  background: '#d2e823',
-                  borderRadius: '50%',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  margin: '0 auto 16px',
-                  fontSize: 15, fontWeight: 700, color: '#000',
-                  position: 'relative', zIndex: 1,
-                }}>
-                  {step.number}
+          <div className="why-art">
+            <div className="artifact art-invite">
+              <div className="url-row">
+                <span>namingcontest.com/c/8f3a</span>
+                <span className="copy" aria-hidden="true">⧉</span>
+              </div>
+              <div className="avatars">
+                <span className="av">A</span>
+                <span className="av">M</span>
+                <span className="av">K</span>
+                <span className="av">L</span>
+                <span className="av-more">+12 joined</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 03 SUBMIT & VOTE */}
+        <div className="why-item" data-tone="mint">
+          <div className="why-text">
+            <div className="step-mark"><span className="step-num">03</span><span className="step-label">Submit &amp; Vote</span></div>
+            <h3>Submit &amp; <span className="em-word">Vote.</span></h3>
+            <p>Everyone suggests names anonymously, then votes using structured methods. No bias.</p>
+          </div>
+          <div className="why-art">
+            <div className="artifact art-vote">
+              <div className="a-head">Round 2 · Ranked vote</div>
+              <div className="v-block" data-leader="true">
+                <div className="v-row"><span className="name">Northbound</span><span className="meta">19 votes</span></div>
+                <div className="bar-wrap"><div className="bar-track"><div className="bar-fill" style={{ width: '76%' }}></div></div></div>
+              </div>
+              <div className="v-block">
+                <div className="v-row"><span className="name">Lumira</span><span className="meta">14 votes</span></div>
+                <div className="bar-wrap"><div className="bar-track"><div className="bar-fill" style={{ width: '56%', background: 'var(--fg)', opacity: .35 }}></div></div></div>
+              </div>
+              <div className="v-block">
+                <div className="v-row"><span className="name">Quiltwork</span><span className="meta">9 votes</span></div>
+                <div className="bar-wrap"><div className="bar-track"><div className="bar-fill" style={{ width: '36%', background: 'var(--fg)', opacity: .25 }}></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 04 RESULT */}
+        <div className="why-item" data-tone="blush">
+          <div className="why-text">
+            <div className="step-mark"><span className="step-num">04</span><span className="step-label">Result</span></div>
+            <h3>Get Your <span className="em-word">Winner.</span></h3>
+            <p>A clear result with full analytics and voting breakdown. Done.</p>
+          </div>
+          <div className="why-art">
+            <div className="artifact art-winner">
+              <span className="winner-tag"><span className="dot"></span>Winner</span>
+              <div className="wname">Northbound</div>
+              <div className="sub">47% of votes · 19 of 42</div>
+              <div className="bars" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ========== SHARED ACCOUNTABILITY ========== */
+function SharedAccountability() {
+  const creatorTasks = [
+    { icon: <><rect x="6" y="3" width="12" height="18" rx="2" /><path d="M9 3v2h6V3" /><path d="M9 10h6M9 14h6M9 18h3" /></>, t: 'Complete brief fields', pts: '+15' },
+    { icon: <><path d="M3 5a2 2 0 012-2h6v17H5a2 2 0 01-2-2V5z" /><path d="M21 5a2 2 0 00-2-2h-6v17h6a2 2 0 002-2V5z" /><path d="M11 3v17M13 3v17" /></>, t: 'Read the naming primer', pts: '+10' },
+    { icon: <><circle cx="12" cy="13" r="7" /><path d="M12 9v4l2.5 2" /><path d="M9 2h6M12 6V4" /></>, t: 'Set rules & deadline', pts: '+13' },
+  ];
+  const participantTasks = [
+    { icon: <><path d="M4 4h6a3 3 0 013 3v13a2 2 0 00-2-2H4V4z" /><path d="M20 4h-6a3 3 0 00-3 3v13a2 2 0 012-2h7V4z" /></>, t: 'Read methodology articles', pts: '+10' },
+    { icon: <><path d="M9 18h6" /><path d="M10 21h4" /><path d="M12 3a6 6 0 00-4 10.5c.7.7 1 1.6 1 2.5v.5h6V16c0-.9.3-1.8 1-2.5A6 6 0 0012 3z" /></>, t: 'Submit quality name ideas', pts: '+15' },
+    { icon: <><path d="M21 12a8 8 0 01-11.5 7.2L4 21l1.8-5.5A8 8 0 1121 12z" /><path d="M9 11h.01M12 11h.01M15 11h.01" /></>, t: 'Earn points through feedback', pts: '+15' },
+  ];
+
+  return (
+    <section className="section">
+      <div className="shared-panel">
+        <div className="shared">
+          <p className="eyebrow">Shared accountability</p>
+          <h3>Both sides do the work. <span className="it">Both sides get the credit.</span></h3>
+          <p className="shared-sub">A 100-point Contest Quality Score — split 50/50 between creator and participants.</p>
+
+          <div className="score-row">
+            <span className="label-l"><b>Creator</b> · 38/50</span>
+            <span className="score-chip"><span className="dot"></span>Strong · 78/100</span>
+            <span className="label-r"><b>Participants</b> · 40/50</span>
+          </div>
+          <div className="score-bar-slim" aria-hidden="true">
+            <div className="fill-creator"></div>
+            <div className="fill-participant"></div>
+            <div className="mid"></div>
+          </div>
+
+          <div className="task-grid">
+            <div className="task-col" data-side="creator">
+              <div className="col-head">
+                <span className="col-dot"><Check /></span>
+                <div>
+                  <div className="col-title">Creator</div>
+                  <div className="col-meta">0–50 pts · Before contest</div>
                 </div>
-                <h3 style={{ fontSize: 18, fontWeight: 700, color: '#ffffff', marginBottom: 8 }}>
-                  {step.title}
-                </h3>
-                <p style={{ fontSize: 15, color: 'rgba(210,232,35,0.8)', lineHeight: 1.6 }}>
-                  {step.description}
-                </p>
               </div>
-            ))}
-          </div>
-          <div style={{ textAlign: 'center', marginTop: 48 }}>
-            <button
-              onClick={() => navigate('/select')}
-              style={{
-                background: '#d2e823', border: 'none', borderRadius: 999,
-                color: '#254f1a', fontSize: 18, fontWeight: 600, cursor: 'pointer',
-                padding: '16px 40px', display: 'inline-flex', alignItems: 'center', gap: 8,
-                transition: 'opacity 0.2s',
-              }}
-              onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-            >
-              Start your contest
-              <ArrowRight size={16} weight="bold" />
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Contest Quality System ── */}
-      <section id="shared-accountability" style={{ background: '#e8efd6', padding: '80px 0' }}>
-        <div style={{ maxWidth: 1504, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <div style={{
-              fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em',
-              color: '#1e2330', marginBottom: 12,
-            }}>
-              Shared Accountability
+              {creatorTasks.map((task, i) => (
+                <div key={i} className="task-card">
+                  <span className="icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{task.icon}</svg>
+                  </span>
+                  <span className="t">{task.t}</span>
+                  <span className="pts">{task.pts}</span>
+                </div>
+              ))}
             </div>
-            <h2 style={{
-              fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
-              fontSize: 'clamp(28px, 4vw, 42px)',
-              fontWeight: 800,
-              color: '#254f1a',
-              marginBottom: 16,
-              lineHeight: 1.15,
-            }}>
-              Both sides do the work.
-              <br />
-              <span style={{ color: '#1e2330' }}>Both sides get the credit.</span>
-            </h2>
-            <p style={{ fontSize: 18, color: '#1e2330', maxWidth: 520, margin: '0 auto', lineHeight: 1.7, opacity: 0.75 }}>
-              A 100-point score split between creator and participants.
-            </p>
-          </div>
-
-          {/* Visual quality bar demo */}
-          <div style={{
-            maxWidth: 1504,
-            margin: '0 auto',
-            background: '#ffffff',
-            border: '0.5px solid rgba(68,34,4,0.1)',
-            borderRadius: 20,
-            padding: '36px 40px',
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#1e2330', letterSpacing: '0.04em' }}>
-                Contest Quality Score
+            <div className="gutter" aria-hidden="true"></div>
+            <div className="task-col" data-side="participant">
+              <div className="col-head">
+                <span className="col-dot"><Check /></span>
+                <div>
+                  <div className="col-title">Participants</div>
+                  <div className="col-meta">0–50 pts · During contest</div>
+                </div>
               </div>
-              <div style={{
-                fontSize: 14, fontWeight: 600,
-                background: '#d2e823',
-                borderRadius: 99, padding: '4px 14px',
-                color: '#000',
-              }}>
-                Strong · 78/100
-              </div>
-            </div>
-
-            {/* The split bar */}
-            <div style={{ position: 'relative', height: 12, borderRadius: 6, background: 'rgba(30,35,48,0.12)', marginBottom: 10 }}>
-              {/* Creator fill - 38/50 */}
-              <div style={{
-                position: 'absolute', left: 0, top: 0, bottom: 0,
-                width: '38%',
-                background: 'linear-gradient(90deg, rgba(210,232,35,0.6), #d2e823)',
-                borderRadius: '6px 0 0 6px',
-              }} />
-              {/* Participant fill - 40/50, starts at midpoint */}
-              <div style={{
-                position: 'absolute', left: '50%', top: 0, bottom: 0,
-                width: '40%',
-                background: 'linear-gradient(90deg, rgba(68,34,4,0.25), rgba(68,34,4,0.55))',
-                borderRadius: '0 6px 6px 0',
-              }} />
-              {/* Midpoint divider */}
-              <div style={{
-                position: 'absolute', left: '50%', top: -3, bottom: -3,
-                width: 2, background: 'rgba(255,255,255,0.25)',
-                transform: 'translateX(-50%)',
-                borderRadius: 1,
-              }} />
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 15, color: '#1e2330', marginBottom: 28 }}>
-              <span style={{ color: '#254f1a', fontWeight: 600 }}>◀ Creator's half · 38/50</span>
-              <span style={{ color: '#1e2330', fontWeight: 600 }}>Participants' half · 40/50 ▶</span>
-            </div>
-
-            {/* Two-column explanation */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-              {[
-                {
-                  color: '#254f1a',
-                  label: 'Creator (0–50)',
-                  items: ['Complete all brief fields', 'Read the naming primer', 'Set submission rules & deadline'],
-                  note: 'Done before anyone else joins.',
-                },
-                {
-                  color: '#1e2330',
-                  label: 'Participants (0–50)',
-                  items: ['Read naming methodology articles', 'Submit quality name ideas', 'Earn naming points through feedback'],
-                  note: 'Crowd effort, tracked live.',
-                },
-              ].map((col, i) => (
-                <div key={i} style={{
-                  background: '#ffffff',
-                  border: `0.5px solid ${col.color}22`,
-                  borderRadius: 12,
-                  padding: '18px 20px',
-                }}>
-                  <div style={{
-                    fontSize: 13, fontWeight: 700, textTransform: 'uppercase',
-                    letterSpacing: '0.1em', color: col.color, marginBottom: 14,
-                  }}>
-                    {col.label}
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
-                    {col.items.map((item, j) => (
-                      <div key={j} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                        <div style={{
-                          width: 5, height: 5, borderRadius: '50%',
-                          background: col.color, opacity: 0.6,
-                          marginTop: 5, flexShrink: 0,
-                        }} />
-                        <span style={{ fontSize: 15, color: '#1e2330', lineHeight: 1.5 }}>{item}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div style={{
-                    fontSize: 14, color: '#1e2330',
-                    borderTop: '0.5px solid rgba(30,35,48,0.08)',
-                    paddingTop: 10,
-                  }}>
-                    {col.note}
-                  </div>
+              {participantTasks.map((task, i) => (
+                <div key={i} className="task-card">
+                  <span className="icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{task.icon}</svg>
+                  </span>
+                  <span className="t">{task.t}</span>
+                  <span className="pts">{task.pts}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div style={{ textAlign: 'center', marginTop: 48 }}>
-            <button
-              onClick={() => navigate('/select')}
-              style={{
-                background: '#254f1a', border: 'none', borderRadius: 999,
-                color: '#fff', fontSize: 18, fontWeight: 600, cursor: 'pointer',
-                padding: '16px 40px', display: 'inline-flex', alignItems: 'center', gap: 8,
-                transition: 'opacity 0.2s',
-              }}
-              onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-            >
-              See it in action
-              <ArrowRight size={16} weight="bold" />
-            </button>
+          <div className="shared-cta">
+            <a href="#examples" className="btn btn-secondary">See it in action <span className="arrow">→</span></a>
           </div>
-
         </div>
-      </section>
-
-
-
-      {/* ── FAQ ── */}
-      <section style={{ background: '#f3f3f1', padding: '80px 0' }}>
-        <div style={{ maxWidth: 860, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <h2 style={{
-              fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
-              fontSize: 'clamp(26px, 4vw, 40px)',
-              fontWeight: 800,
-              color: '#1e2330',
-            }}>
-              Frequently asked questions
-            </h2>
-          </div>
-          <Accordion items={faqData} />
-        </div>
-      </section>
-
-      {/* ── Newsletter ── */}
-      <NewsletterSection />
-
-      {/* ── Footer ── */}
-      <Footer />
-
-      <style>{`
-        @keyframes blink {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0; }
-        }
-      `}</style>
-    </div>
-  );
-}
-
-/* ── Newsletter Section ── */
-function NewsletterSection() {
-  const [email, setEmail] = useState('');
-  const [status, setStatus] = useState('idle'); // idle | loading | success | error
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!email.includes('@')) { setStatus('error'); return; }
-    setStatus('loading');
-    setTimeout(() => setStatus('success'), 800);
-  };
-
-  return (
-    <section style={{
-      background: '#d2e823',
-      padding: '100px 0',
-      textAlign: 'center',
-    }}>
-      <div style={{ maxWidth: 720, margin: '0 auto', padding: '0 24px' }}>
-
-        {/* Eyebrow */}
-        <div style={{
-          fontSize: 13, fontWeight: 700, textTransform: 'uppercase',
-          letterSpacing: '0.14em', color: 'rgba(37,79,26,0.6)', marginBottom: 20,
-        }}>
-          Stay in the loop
-        </div>
-
-        {/* Heading */}
-        <h2 style={{
-          fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
-          fontSize: 'clamp(24px, 3vw, 34px)',
-          fontWeight: 800, color: '#254f1a',
-          marginBottom: 12, lineHeight: 1.15,
-          whiteSpace: 'nowrap',
-        }}>
-          Naming <RotatingWord words={['tips', 'hacks', 'guides', 'gems']} /> straight to your inbox
-        </h2>
-
-        <p style={{ fontSize: 18, color: '#254f1a', marginBottom: 8, lineHeight: 1.6, opacity: 0.8 }}>
-          Updates, tips, and real contest stories.
-        </p>
-
-        {/* Social proof */}
-        <p style={{ fontSize: 14, color: 'rgba(37,79,26,0.55)', marginBottom: 36 }}>
-          2,400+ subscribers
-        </p>
-
-        {status === 'success' ? (
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 10,
-            background: 'rgba(210,232,35,0.15)',
-            border: '0.5px solid rgba(210,232,35,0.4)',
-            borderRadius: 12, padding: '16px 28px',
-            fontSize: 18, fontWeight: 600, color: '#254f1a',
-          }}>
-            <CheckCircle size={20} weight="fill" />
-            You're on the list. Talk soon.
-          </div>
-        ) : (
-          <>
-            <form onSubmit={handleSubmit} style={{
-              display: 'flex', gap: 8, maxWidth: 480, margin: '0 auto',
-            }}>
-              <input
-                type="email"
-                value={email}
-                onChange={e => { setEmail(e.target.value); setStatus('idle'); }}
-                placeholder="your@email.com"
-                required
-                style={{
-                  flex: 1, height: 48,
-                  background: '#ffffff',
-                  border: `0.5px solid ${status === 'error' ? 'rgba(239,68,68,0.6)' : 'rgba(0,0,0,0.12)'}`,
-                  borderRadius: 10, padding: '0 16px',
-                  color: '#1e2330', fontSize: 14,
-                  fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
-                  outline: 'none',
-                  transition: 'border-color 0.2s',
-                }}
-                onFocus={e => e.target.style.borderColor = 'rgba(210,232,35,0.6)'}
-                onBlur={e => e.target.style.borderColor = status === 'error' ? 'rgba(239,68,68,0.6)' : 'rgba(0,0,0,0.12)'}
-                disabled={status === 'loading'}
-              />
-              <button
-                type="submit"
-                className={`btn-primary btn-business${status === 'loading' ? ' btn-disabled' : ''}`}
-                style={{
-                  background: '#254f1a',
-                  height: 48, padding: '0 24px',
-                  flexShrink: 0,
-                  borderRadius: 999,
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
-              >
-                {status === 'loading' ? (
-                  <div style={{
-                    width: 14, height: 14,
-                    border: '2px solid rgba(0,0,0,0.2)',
-                    borderTopColor: '#000',
-                    borderRadius: '50%',
-                    animation: 'spin 0.7s linear infinite',
-                    position: 'relative', zIndex: 1,
-                  }} />
-                ) : (
-                  <>
-                    <span style={{ color: '#ffffff' }}>Subscribe</span>
-                    <ArrowRight size={14} weight="bold" style={{ color: '#ffffff', position: 'relative', zIndex: 1 }} />
-                  </>
-                )}
-              </button>
-            </form>
-
-            <p style={{
-              fontSize: 14, marginTop: 8,
-              color: status === 'error' ? '#ef4444' : 'transparent',
-              transition: 'color 0.2s',
-            }}>
-              Please enter a valid email address.
-            </p>
-
-          </>
-        )}
       </div>
     </section>
   );
 }
 
-/* ── Feature Breakdown (expandable) ── */
-function FeatureBreakdown() {
-  const [open, setOpen] = useState(false);
-
+/* ========== TESTIMONIALS ========== */
+function Testimonials() {
+  const list = [
+    { cat: 'business', quote: '47 name ideas, zero consensus. Three days after launching a contest, we had a winner with 89% approval.', winner: 'Vanta Pay', name: 'Sarah Chen', initials: 'SC', label: 'Business' },
+    { cat: 'team', quote: 'Six members, six strong opinions, zero agreement for six months. We ran a contest and landed on a name we all own.', winner: 'Hollow Signal', name: 'Marcus Rodriguez', initials: 'MR', label: 'Team' },
+    { cat: 'personal', quote: '23 family members across three countries voted on our daughter’s name. Clara was chosen by the people who matter most.', winner: 'Clara', name: 'James & Linda Morrison', initials: 'JM', label: 'Personal' },
+  ];
   return (
-    <div style={{ marginTop: 56 }}>
-      {/* Toggle button */}
-      <div style={{ textAlign: 'center' }}>
-        <button
-          onClick={() => setOpen(v => !v)}
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: 'none',
-            border: '1px solid rgba(0,0,0,0.12)',
-            borderRadius: 10,
-            padding: '12px 24px',
-            fontSize: 15, fontWeight: 600, color: '#1e2330',
-            cursor: 'pointer',
-            fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
-            transition: 'all 0.2s',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.3)'; e.currentTarget.style.color = '#1C1917'; }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.15)'; e.currentTarget.style.color = '#4a4a4a'; }}
-        >
-          {open ? <Minus size={14} weight="bold" /> : <Plus size={14} weight="bold" />}
-          {open ? 'Hide full feature breakdown' : 'See full feature breakdown'}
-        </button>
+    <section className="section">
+      <div className="section-head">
+        <p className="eyebrow">From real contests</p>
+        <h2 className="h-display h2">Three rooms. Three winners.<br /><span className="italic">Zero arguments left over.</span></h2>
       </div>
-
-      {/* Table — animated expand */}
-      <div style={{
-        overflow: 'hidden',
-        maxHeight: open ? 2000 : 0,
-        opacity: open ? 1 : 0,
-        transition: 'max-height 0.45s ease, opacity 0.3s ease',
-        marginTop: open ? 24 : 0,
-      }}>
-        <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <h3 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 20, fontWeight: 700, color: '#1e2330', margin: 0 }}>
-            Everything included, plan by plan
-          </h3>
-        </div>
-        <PricingFeatureTable />
-      </div>
-    </div>
-  );
-}
-
-/* ── Segment Block (Linktree-style alternating full-width) ── */
-function SegmentBlock({ card, navigate, index }) {
-  const CONFIGS = {
-    personal: {
-      bg: '#2665d6',
-      eyebrow: 'rgba(210,232,35,0.65)',
-      heading: '#d2e823',
-      body: 'rgba(255,255,255,0.9)',
-      tagBg: 'rgba(210,232,35,0.12)',
-      tagBorder: 'rgba(210,232,35,0.3)',
-      tagText: '#d2e823',
-      priceColor: '#ffffff',
-      priceSubColor: 'rgba(255,255,255,0.65)',
-      featureOn: '#d2e823',
-      featureOff: 'rgba(255,255,255,0.2)',
-      featureOnText: 'rgba(255,255,255,0.9)',
-      featureOffText: 'rgba(255,255,255,0.3)',
-      divider: 'rgba(255,255,255,0.12)',
-      btnBg: '#d2e823',
-      btnText: '#000000',
-      tryFree: 'rgba(210,232,35,0.45)',
-      visualBg: 'rgba(255,255,255,0.04)',
-      visualBorder: 'rgba(210,232,35,0.25)',
-      visualIcon: '#d2e823',
-    },
-    team: {
-      bg: '#780016',
-      eyebrow: 'rgba(233,192,233,0.65)',
-      heading: '#e9c0e9',
-      body: 'rgba(255,255,255,0.9)',
-      tagBg: 'rgba(233,192,233,0.12)',
-      tagBorder: 'rgba(233,192,233,0.3)',
-      tagText: '#e9c0e9',
-      priceColor: '#ffffff',
-      priceSubColor: 'rgba(255,255,255,0.65)',
-      featureOn: '#e9c0e9',
-      featureOff: 'rgba(255,255,255,0.2)',
-      featureOnText: 'rgba(255,255,255,0.9)',
-      featureOffText: 'rgba(255,255,255,0.3)',
-      divider: 'rgba(255,255,255,0.12)',
-      btnBg: '#e9c0e9',
-      btnText: '#000000',
-      tryFree: 'rgba(233,192,233,0.45)',
-      visualBg: 'rgba(255,255,255,0.04)',
-      visualBorder: 'rgba(233,192,233,0.25)',
-      visualIcon: '#e9c0e9',
-    },
-    business: {
-      bg: '#e8efd6',
-      eyebrow: '#1e2330',
-      heading: '#254f1a',
-      body: '#1e2330',
-      tagBg: 'rgba(37,79,26,0.08)',
-      tagBorder: 'rgba(37,79,26,0.2)',
-      tagText: '#254f1a',
-      priceColor: '#254f1a',
-      priceSubColor: '#1e2330',
-      featureOn: '#254f1a',
-      featureOff: 'rgba(30,35,48,0.2)',
-      featureOnText: '#1e2330',
-      featureOffText: 'rgba(30,35,48,0.3)',
-      divider: 'rgba(30,35,48,0.1)',
-      btnBg: '#1e2330',
-      btnText: '#ffffff',
-      tryFree: '#1e2330',
-      visualBg: 'rgba(255,255,255,0.5)',
-      visualBorder: 'rgba(37,79,26,0.2)',
-      visualIcon: '#254f1a',
-    },
-  };
-
-  const c = CONFIGS[card.group] || CONFIGS.personal;
-  const isEven = index % 2 === 1; // Team (index 1) → text left, visual right
-
-  const illustrationMap = { personal: personalIllustration, team: teamIllustration, business: businessIllustration };
-  const illustration = illustrationMap[card.group];
-
-  const tiltAngles = { personal: -2, team: 2.5, business: -1.5 };
-  const baseTilt = tiltAngles[card.group] || 0;
-
-  const VisualArea = () => illustration ? (
-    <div
-      onMouseMove={(e) => {
-        const r = e.currentTarget.getBoundingClientRect();
-        const x = (e.clientX - r.left) / r.width - 0.5;
-        const y = (e.clientY - r.top) / r.height - 0.5;
-        e.currentTarget.style.transform = `perspective(900px) rotateY(${x * 18}deg) rotateX(${-y * 14}deg) rotate(${baseTilt}deg) scale(1.03)`;
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = `rotate(${baseTilt}deg)`;
-      }}
-      style={{
-        borderRadius: 20,
-        minHeight: 460,
-        overflow: 'hidden',
-        position: 'relative',
-        transition: 'transform 0.25s ease-out',
-        willChange: 'transform',
-        transform: `rotate(${baseTilt}deg)`,
-        boxShadow: '10px 10px 0px rgba(0,0,0,0.07)',
-      }}
-    >
-      <img
-        src={illustration}
-        alt="Illustration"
-        style={{
-          position: 'absolute', inset: 0,
-          width: '100%', height: '100%',
-          objectFit: 'cover', objectPosition: 'center top',
-          display: 'block',
-        }}
-      />
-    </div>
-  ) : (
-    <div style={{
-      borderRadius: 20,
-      minHeight: 460,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      flexDirection: 'column',
-      gap: 12,
-      background: c.visualBg,
-      boxShadow: '10px 10px 0px rgba(0,0,0,0.07)',
-    }}>
-      <Sparkle size={52} color={c.visualIcon} style={{ opacity: 0.25 }} />
-      <span style={{ fontSize: 13, color: c.visualIcon, opacity: 0.3, fontWeight: 500, letterSpacing: '0.04em' }}>
-        Illustration coming soon
-      </span>
-    </div>
-  );
-
-
-  const TextArea = () => (
-    <div>
-      {/* Eyebrow */}
-      <div style={{
-        fontSize: 13, fontWeight: 700, textTransform: 'uppercase',
-        letterSpacing: '0.14em', color: c.eyebrow, marginBottom: 18,
-      }}>
-        {card.label}
-      </div>
-
-      {/* Heading */}
-      <h2 style={{
-        fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
-        fontSize: 'clamp(30px, 3.2vw, 50px)',
-        fontWeight: 800,
-        color: c.heading,
-        lineHeight: 1.1,
-        letterSpacing: '-0.02em',
-        marginBottom: 20,
-      }}>
-        {card.title}
-      </h2>
-
-      {/* Subtitle */}
-      <p style={{ fontSize: 18, color: c.body, lineHeight: 1.65, marginBottom: 28, maxWidth: 420 }}>
-        {card.subtitle}
-      </p>
-
-      {/* Tags */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 32 }}>
-        {card.tags.map(tag => (
-          <span key={tag} style={{
-            background: c.tagBg,
-            border: `0.5px solid ${c.tagBorder}`,
-            borderRadius: 999, padding: '5px 14px',
-            fontSize: 14, fontWeight: 500, color: c.tagText,
-          }}>
-            {tag}
-          </span>
-        ))}
-      </div>
-
-      {/* Divider */}
-      <div style={{ height: 1, background: c.divider, marginBottom: 28 }} />
-
-      {/* Price */}
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 24 }}>
-        <span style={{ fontSize: 42, fontWeight: 800, color: c.priceColor, lineHeight: 1 }}>
-          {card.price}
-        </span>
-        <span style={{ fontSize: 16, color: c.priceSubColor }}>{card.priceSub}</span>
-      </div>
-
-      {/* Features */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 36 }}>
-        {card.features.map((f, fi) => (
-          <div key={fi} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <CheckCircle
-              size={16}
-              weight={f.included ? 'fill' : 'regular'}
-              color={f.included ? c.featureOn : c.featureOff}
-              style={{ flexShrink: 0 }}
-            />
-            <span style={{
-              fontSize: 15,
-              color: f.included ? c.featureOnText : c.featureOffText,
-              textDecoration: f.included ? 'none' : 'line-through',
-            }}>
-              {f.label}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      {/* CTA */}
-      <button
-        onClick={() => {
-          localStorage.setItem('selectedGroup', card.group);
-          localStorage.removeItem('selectedSubSegment');
-          navigate('/auth');
-        }}
-        style={{
-          background: c.btnBg, color: c.btnText,
-          border: 'none', borderRadius: 999,
-          padding: '16px 36px', fontSize: 16, fontWeight: 700,
-          cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8,
-          transition: 'opacity 0.2s',
-        }}
-        onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-        onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-      >
-        {card.cta}
-        <ArrowRight size={16} weight="bold" />
-      </button>
-      <div style={{ marginTop: 12, fontSize: 13, color: c.priceSubColor }}>
-        Free preview available · 5 participants
-      </div>
-    </div>
-  );
-
-  return (
-    <section style={{ background: c.bg, padding: '100px 0' }}>
-      <div style={{
-        maxWidth: 1280, margin: '0 auto', padding: '0 64px',
-        display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center',
-      }}>
-        {isEven ? (
-          <><TextArea /><VisualArea /></>
-        ) : (
-          <><VisualArea /><TextArea /></>
-        )}
-      </div>
-    </section>
-  );
-}
-
-/* ── Segment Entry Card ── */
-function SegmentCard({ card, navigate, delay }) {
-  const [hovered, setHovered] = useState(false);
-
-  return (
-    <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onClick={() => {
-        localStorage.setItem('selectedGroup', card.group);
-        localStorage.removeItem('selectedSubSegment');
-        navigate('/auth');
-      }}
-      style={{
-        background: '#ffffff',
-        border: `0.5px solid ${hovered ? `rgba(${card.colorRgb},0.4)` : `rgba(${card.colorRgb},0.15)`}`,
-        borderRadius: 16,
-        padding: 28,
-        cursor: 'pointer',
-        transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
-        transform: hovered ? 'translateY(-6px)' : 'translateY(0)',
-        boxShadow: hovered ? `0 16px 48px rgba(${card.colorRgb},0.15)` : 'none',
-        textAlign: 'left',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 12,
-        animationDelay: `${0.4 + delay}s`,
-      }}
-    >
-      {/* Icon + label row */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{
-          width: 48, height: 48,
-          background: `rgba(${card.colorRgb},0.12)`,
-          border: `0.5px solid rgba(${card.colorRgb},0.2)`,
-          borderRadius: 10,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          {card.icon}
-        </div>
-        <span style={{
-          fontSize: 14, fontWeight: 700,
-          textTransform: 'uppercase', letterSpacing: '0.1em',
-          color: card.color,
-          background: `rgba(${card.colorRgb},0.1)`,
-          border: `0.5px solid rgba(${card.colorRgb},0.25)`,
-          borderRadius: 9999,
-          padding: '3px 10px',
-        }}>
-          {card.label}
-        </span>
-      </div>
-
-      {/* Title */}
-      <h3 style={{
-        fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
-        fontSize: 20, fontWeight: 700, color: '#1e2330',
-        lineHeight: 1.2,
-      }}>
-        {card.title}
-      </h3>
-
-      {/* Subtitle */}
-      <p style={{ fontSize: 15, color: '#1e2330', lineHeight: 1.5 }}>
-        {card.subtitle}
-      </p>
-
-      {/* Tags */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, maxWidth: '75%' }}>
-        {card.tags.map(tag => (
-          <span key={tag} style={{
-            fontSize: 15, fontWeight: 500,
-            background: `rgba(${card.colorRgb},0.08)`,
-            color: card.color,
-            border: `0.5px solid rgba(${card.colorRgb},0.2)`,
-            borderRadius: 9999,
-            padding: '2px 8px',
-          }}>
-            {tag}
-          </span>
-        ))}
-      </div>
-
-      {/* Divider */}
-      <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '4px 0' }} />
-
-      {/* Price */}
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
-        <span style={{ fontSize: 28, fontWeight: 800, color: '#1e2330', lineHeight: 1 }}>
-          {card.price}
-        </span>
-        {card.priceSub && (
-          <span style={{ fontSize: 15, color: '#1e2330' }}>{card.priceSub}</span>
-        )}
-      </div>
-
-      {/* Free preview note */}
-      <div style={{ fontSize: 15, color: '#8a8a82', lineHeight: 1.4 }}>
-        Free preview available · 5 participants
-      </div>
-
-      {/* Feature list */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        {card.features.map((f, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{
-              width: 14, height: 14, borderRadius: '50%', flexShrink: 0,
-              background: f.included ? `rgba(${card.colorRgb},0.15)` : 'rgba(255,255,255,0.05)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <div style={{
-                width: 5, height: 5, borderRadius: '50%',
-                background: f.included ? card.color : '#333',
-              }} />
+      <div className="testimonials">
+        {list.map((t, i) => (
+          <article key={i} className="tmonial" data-cat={t.cat}>
+            <div className="stars" aria-label="5 out of 5">
+              {[0, 1, 2, 3, 4].map(s => <Star key={s} />)}
             </div>
-            <span style={{
-              fontSize: 14,
-              color: f.included ? '#a1a1a1' : '#3a3a3a',
-              textDecoration: f.included ? 'none' : 'line-through',
-            }}>
-              {f.label}
-            </span>
-          </div>
+            <blockquote>{t.quote}</blockquote>
+            <div className="winner-row">
+              <span className="wlabel">Winner</span>
+              <span className="name-win">{t.winner}</span>
+            </div>
+            <div className="who-row">
+              <span className="avatar">{t.initials}</span>
+              <div>
+                <div className="tname">{t.name}</div>
+                <div className="tmeta"><span className={`cat-tag ${t.cat}`}><span className="dot"></span>{t.label}</span></div>
+              </div>
+            </div>
+          </article>
         ))}
       </div>
-
-      {/* CTA */}
-      <button style={{
-        marginTop: 4,
-        width: '100%',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-        height: 44,
-        borderRadius: 999,
-        background: '#1e2330',
-        color: '#fff',
-        border: 'none',
-        fontSize: 15, fontWeight: 600,
-        cursor: 'pointer',
-        transition: 'opacity 0.2s',
-      }}
-        onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-        onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-      >
-        <span>{card.cta}</span>
-        <ArrowRight size={14} weight="bold" />
-      </button>
-
-      {/* Ghost try free CTA */}
-      <button
-        onClick={e => { e.stopPropagation(); localStorage.setItem('selectedGroup', card.group); localStorage.removeItem('selectedSubSegment'); navigate('/auth'); }}
-        style={{
-          background: 'none', border: 'none', cursor: 'pointer',
-          fontSize: 14, color: '#1e2330',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
-          padding: '2px 0',
-          fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
-          transition: 'color 0.2s',
-        }}
-        onMouseEnter={e => e.currentTarget.style.color = '#7a7a7a'}
-        onMouseLeave={e => e.currentTarget.style.color = '#4a4a4a'}
-      >
-        or try free
-        <ArrowRight size={11} weight="bold" />
-      </button>
-    </div>
+    </section>
   );
 }
 
-/* ── Testimonial Card ── */
-function TestimonialCard({ testimonial }) {
-  const [hovered, setHovered] = useState(false);
-  const tierColors = {
-    personal: { color: '#2665d6', rgb: '38,101,214',  label: 'Personal' },
-    team:     { color: '#780016', rgb: '120,0,22',    label: 'Team'     },
-    business: { color: '#254f1a', rgb: '37,79,26',    label: 'Business' },
-  };
-  const tc = tierColors[testimonial.tier];
-
+/* ========== FAQ ========== */
+function FAQ() {
+  const [openIdx, setOpenIdx] = useState(0);
+  const items = [
+    {
+      q: 'Do participants need to create an account?',
+      a: <p className="faq-a"><strong>No.</strong> Participants join via a unique link you share — no signup, no download, no friction. They can submit names and vote immediately. Only the contest organizer needs an account.</p>
+    },
+    {
+      q: 'Can I run a free contest?',
+      a: <p className="faq-a"><strong>Yes.</strong> The free tier supports one active contest with up to 5 participants and voting only. Paid plans — Personal&nbsp;($9), Team&nbsp;($29), and Business&nbsp;($89) — unlock more participants, all five voting methods, open submissions, naming methodology, and more.</p>
+    },
+    {
+      q: "What's the Catchword Branding connection?",
+      a: <p className="faq-a">NamingContest.com is powered by <strong>Catchword Branding</strong>, the #1 ranked naming agency worldwide with 25+ years of experience. The platform uses Catchword's methodology — including their 10-criteria evaluation framework — built into every contest.</p>
+    },
+    {
+      q: 'What does it cost?',
+      a: <p className="faq-a">Three paid tiers: <strong>Personal ($9/contest)</strong> for up to 15 participants — great for baby names, pets, and personal decisions. <strong>Team ($29/contest)</strong> for up to 60 participants with white-label output — ideal for bands, sports teams, and groups. <strong>Business ($89/contest)</strong> for up to 240 participants with full PDF reports — built for companies, products, and rebrands. All paid plans include every voting method, naming methodology, and automated reminders.</p>
+    },
+    {
+      q: 'What voting methods are available?',
+      a: <div className="faq-a">Five methods, included on every paid plan:<ol><li><strong>Simple Poll</strong> — one vote per person.</li><li><strong>Ranked Choice</strong> — rank all options in order.</li><li><strong>Multi-Criteria Scoring</strong> — rate names across multiple dimensions.</li><li><strong>Pairwise Comparison</strong> — choose between two at a time.</li><li><strong>Weighted Voting</strong> — different voters carry different vote weights.</li></ol></div>
+    },
+  ];
   return (
-    <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        background: 'transparent',
-        border: '1px solid rgba(0,0,0,0.12)',
-        borderRadius: 16,
-        padding: 28,
-        transition: 'all 0.25s',
-        transform: hovered ? 'translateY(-4px)' : 'translateY(0)',
-        boxShadow: hovered ? '0 16px 40px rgba(0,0,0,0.12)' : 'none',
-      }}
-    >
-      {/* Tier badge */}
-      <div style={{
-        display: 'inline-flex', alignItems: 'center',
-        background: `rgba(${tc.rgb},0.12)`,
-        border: `0.5px solid rgba(${tc.rgb},0.3)`,
-        borderRadius: 9999,
-        padding: '3px 10px',
-        fontSize: 15, fontWeight: 600, color: '#1e2330',
-        marginBottom: 16,
-      }}>
-        {tc.label}
+    <section className="section" id="faq">
+      <div className="section-head">
+        <p className="eyebrow">Frequently asked</p>
+        <h2 className="h-display h2">Questions, answered.</h2>
       </div>
-
-      {/* Stars */}
-      <div style={{ display: 'flex', gap: 2, marginBottom: 16 }}>
-        {[1,2,3,4,5].map(s => (
-          <Star key={s} size={14} weight="fill" color={tc.color} />
+      <div className="faq">
+        {items.map((it, i) => (
+          <div key={i} className={`faq-item${openIdx === i ? ' is-open' : ''}`}>
+            <button
+              type="button"
+              className="faq-q"
+              onClick={() => setOpenIdx(openIdx === i ? -1 : i)}
+              aria-expanded={openIdx === i}
+            >
+              {it.q}
+              <span className="toggle" aria-hidden="true">+</span>
+            </button>
+            {openIdx === i && it.a}
+          </div>
         ))}
       </div>
+    </section>
+  );
+}
 
-      {/* Quote */}
-      <p style={{
-        fontSize: 18, color: '#1e2330', lineHeight: 1.65,
-        marginBottom: 20, fontStyle: 'italic',
-      }}>
-        "{testimonial.quote}"
-      </p>
-
-      {/* Result callout */}
-      <div style={{
-        background: `rgba(${tc.rgb},0.08)`,
-        border: `0.5px solid rgba(${tc.rgb},0.2)`,
-        borderRadius: 8,
-        padding: '8px 12px',
-        fontSize: 14, color: '#1e2330', fontWeight: 600,
-        marginBottom: 16,
-      }}>
-        {testimonial.result}
+/* ========== CLOSING CTA ========== */
+function ClosingCTA({ onStart }) {
+  return (
+    <section className="section">
+      <div className="closing">
+        <h2 className="h-display">Your name is out there.<br /><span className="em">Let's find it together.</span></h2>
+        <div className="closing-cta">
+          <a href="#start" onClick={(e) => { e.preventDefault(); onStart(); }} className="btn btn-primary btn-lg">
+            Start your free contest <span className="arrow">→</span>
+          </a>
+        </div>
+        <p className="cmeta">No credit card required.</p>
       </div>
+    </section>
+  );
+}
 
-      {/* Author */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div style={{
-          width: 36, height: 36,
-          background: `rgba(${tc.rgb},0.15)`,
-          borderRadius: '50%',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 14, fontWeight: 700, color: '#1e2330',
-        }}>
-          {testimonial.avatar}
+/* ========== FOOTER ========== */
+function Footer() {
+  return (
+    <footer className="footer">
+      <div className="footer-grid">
+        <div className="brand-block">
+          <a href="#" className="brand-mark">
+            <span className="brand-dot" aria-hidden="true"></span>
+            <span>NamingContest</span>
+          </a>
+          <p>Powered by Catchword, the #1 ranked naming agency worldwide.</p>
+          <div className="socials" aria-label="Social links">
+            <a href="#" aria-label="Twitter / X">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M9.5 7.2L14.7 1h-1.3L9 6.4 5.4 1H1l5.4 8.1L1 15h1.3l4.7-5.7L10.6 15H15L9.5 7.2zm-1.7 2L7.2 8.4 2.7 2h2l3.6 5.2.6.9 4.5 6.5h-2L7.8 9.2z"/></svg>
+            </a>
+            <a href="#" aria-label="LinkedIn">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.6 2.5a1.6 1.6 0 1 1 0 3.2 1.6 1.6 0 0 1 0-3.2zM2.2 6.5h2.8V14H2.2zM6.8 6.5h2.7V8c.4-.7 1.3-1.6 2.8-1.6 3 0 3.5 2 3.5 4.5V14h-2.8v-2.6c0-.6 0-1.4-.9-1.4s-1 .7-1 1.4V14H6.8z"/></svg>
+            </a>
+            <a href="#" aria-label="Instagram">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4"><rect x="2" y="2" width="12" height="12" rx="3.5"/><circle cx="8" cy="8" r="3"/><circle cx="11.6" cy="4.4" r=".8" fill="currentColor" stroke="none"/></svg>
+            </a>
+          </div>
         </div>
         <div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#1e2330' }}>{testimonial.name}</div>
-          <div style={{ fontSize: 15, color: '#1e2330' }}>{testimonial.role}</div>
+          <h6>Product</h6>
+          <ul>
+            <li><a href="#how">How It Works</a></li>
+            <li><a href="#examples">Examples</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+          </ul>
+        </div>
+        <div>
+          <h6>Powered by</h6>
+          <ul>
+            <li><a href="#">Catchword Branding</a></li>
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+        <div>
+          <h6>Legal</h6>
+          <ul>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Cookie Policy</a></li>
+          </ul>
         </div>
       </div>
-    </div>
+      <div className="footer-bottom">
+        <span>© 2026 NamingContest.com · A Catchword Branding company</span>
+        <span>Made for the people who can't pick a name.</span>
+      </div>
+    </footer>
   );
 }
 
-/* ── CTA Button ── */
-function CtaButton({ btn, navigate }) {
+/* ========== PAGE ========== */
+export default function LandingPage() {
+  const navigate = useNavigate();
+  const handleStart = (tier) => {
+    if (tier) {
+      navigate(`/brief?group=${tier}`);
+    } else {
+      navigate('/brief');
+    }
+  };
+
   return (
-    <button
-      onClick={() => navigate(`/select/${btn.group}`)}
-      className={`btn-primary btn-${btn.group} btn-xl`}
-      style={{ color: btn.color }}
-    >
-      <span>{btn.label}</span>
-      <ArrowRight size={16} weight="bold" style={{ position: 'relative', zIndex: 1 }} />
-    </button>
+    <div className="lp-v3">
+      <div className="frame">
+        <div className="wrap">
+          <Nav />
+          <Hero onStart={handleStart} />
+          <Offerings onStart={handleStart} />
+          <HowItWorks />
+          <SharedAccountability />
+          <Testimonials />
+          <FAQ />
+          <ClosingCTA onStart={handleStart} />
+          <Footer />
+        </div>
+      </div>
+    </div>
   );
 }
