@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import namicoIcon from '../assets/namico-icon.svg';
 import { ArrowRight, ArrowLeft, Plus, Trash, CheckCircle, WarningCircle } from '@phosphor-icons/react';
 import { getGroupTheme, LIGHT_THEME } from '../data/themeConfig';
+import { UPLOAD_NAMES_ACTIONS, saveCreatorQuality } from '../utils/quality';
 
 const VOTING_METHODS = [
   { id: 'simple_poll', label: 'Simple Poll', desc: 'One vote per person. Fast and clear.', best: 'Quick decisions, small groups' },
@@ -28,6 +29,7 @@ export default function UploadNames() {
   const [tab, setTab] = useState('paste'); // 'paste' | 'type'
 
   const voterCount = voterEmailsStored.split('\n').filter(e => e.trim()).length;
+
 
   const parsedNames = nameInput
     .split('\n')
@@ -60,6 +62,16 @@ export default function UploadNames() {
 
   const isReady = candidates.length >= 2;
   const isIdeal = candidates.length >= 5 && candidates.length <= 20;
+
+  // ── Quality score (creator side, 0–50) ──────────────────────────────────────
+  const descCount = candidates.filter(c => c.description.trim()).length;
+  const namesScore = Math.min(6, candidates.length) * UPLOAD_NAMES_ACTIONS.nameUploaded;
+  const descsScore = Math.min(4, descCount) * UPLOAD_NAMES_ACTIONS.nameDescribed;
+  const methodScore = isReady ? UPLOAD_NAMES_ACTIONS.votingMethod : 0;
+  const durationScore = isReady ? UPLOAD_NAMES_ACTIONS.votingDuration : 0;
+  const creatorScore = Math.min(50, namesScore + descsScore + methodScore + durationScore);
+
+  useEffect(() => { saveCreatorQuality(group, creatorScore); }, [creatorScore, group]);
 
   const handleLaunch = () => {
     localStorage.setItem('uploadedNames', JSON.stringify(candidates));
@@ -240,6 +252,37 @@ export default function UploadNames() {
               <button onClick={() => navigate(`/contest-type/${group}/${subSegment}`)} style={{ fontSize: 12, color: tc.primary, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
                 Edit voter list
               </button>
+            </div>
+
+            {/* Contest Quality Bar */}
+            <div style={{ background: '#ffffff', border: '0.5px solid rgba(30,35,48,0.1)', borderRadius: 12, padding: '16px 20px', marginBottom: 24 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#676b5f' }}>
+                  Your setup quality: <span style={{ color: tc.primary, fontWeight: 800 }}>{creatorScore}/50</span>
+                </div>
+                <div style={{ fontSize: 11, color: '#c8c8c0' }}>Voter score: 0/50</div>
+              </div>
+              <div style={{ height: 6, background: '#f0f0ec', borderRadius: 3, overflow: 'hidden', marginBottom: 10 }}>
+                <div style={{ height: '100%', width: `${(creatorScore / 50) * 100}%`, background: tc.primary, borderRadius: 3, transition: 'width 0.3s' }} />
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                {[
+                  { label: `Names (${Math.min(6, candidates.length)}/6)`, pts: namesScore, done: candidates.length >= 6 },
+                  { label: `Descriptions (${Math.min(4, descCount)}/4)`, pts: descsScore, done: descCount >= 4 },
+                  { label: 'Voting method', pts: UPLOAD_NAMES_ACTIONS.votingMethod, done: true },
+                  { label: 'Duration set', pts: UPLOAD_NAMES_ACTIONS.votingDuration, done: true },
+                ].map(({ label, pts, done }) => (
+                  <span key={label} style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 3,
+                    padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 600,
+                    background: done && pts > 0 ? `rgba(${tc.primaryRgb},0.1)` : 'rgba(30,35,48,0.04)',
+                    border: `0.5px solid ${done && pts > 0 ? `rgba(${tc.primaryRgb},0.25)` : 'rgba(30,35,48,0.1)'}`,
+                    color: done && pts > 0 ? tc.primary : '#a1a1a1', transition: 'all 0.2s',
+                  }}>
+                    {done && pts > 0 ? '✓' : '○'} {label} <span style={{ opacity: 0.55, marginLeft: 2 }}>+{pts}</span>
+                  </span>
+                ))}
+              </div>
             </div>
 
             {/* Launch button */}

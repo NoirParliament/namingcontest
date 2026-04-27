@@ -24,6 +24,28 @@ export const PARTICIPANT_ACTIONS = {
   articleRead: 5,   // mark an article as read
   articleQuiz: 10,  // complete an article quiz (perfect score; partial = proportional)
   tip:         5,   // collect a fun fact / tip card
+  submitNames: 20,  // submit at least one name — ensures all segments can reach 50
+};
+
+/**
+ * Quality points for Voting Only creator (UploadNames page).
+ * Up to 6 names × 5 = 30 + up to 4 descriptions × 3 = 12 + method 5 + duration 3 = 50.
+ */
+export const UPLOAD_NAMES_ACTIONS = {
+  nameUploaded:  5,  // per name uploaded, capped at 6 (= 30 pts max)
+  nameDescribed: 3,  // per description added, capped at 4 (= 12 pts max)
+  votingMethod:  5,  // configured a voting method
+  votingDuration: 3, // set a voting duration
+};
+
+/**
+ * Quality points for voters (VotingInterface — Voting Only & Internal Brainstorm).
+ * 10 + 30 + 10 = 50.
+ */
+export const VOTER_ACTIONS = {
+  reviewBallot: 10, // opened the ballot and reviewed the names
+  castVote:     30, // cast a vote
+  leaveComment: 10, // left a note or comment for the contest creator
 };
 
 // ── Required brief field keys per group/subSegment ───────────────────────────

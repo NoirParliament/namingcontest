@@ -599,7 +599,7 @@ export default function LandingPage() {
             margin: '0 auto 24px',
           }}>
             New band, brand, or a baby?<br />
-            <span style={{ color: '#1e2330' }}>Run a naming contest maybe?</span>
+            <span style={{ color: '#1e2330' }}>Run a naming contest, maybe?</span>
           </h1>
 
           {/* Subheadline */}

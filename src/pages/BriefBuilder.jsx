@@ -133,8 +133,20 @@ function getPrimerTitle(subSegment) {
 }
 
 // ── Tip expandable component ──
+const TIP_LABELS = [
+  '💡 Naming insight',
+  '💡 Pro tip',
+  '💡 Good to know',
+  '💡 Expert take',
+  '💡 Quick tip',
+  '💡 Why it matters',
+  '💡 Strategy note',
+  '💡 Behind the name',
+];
+let tipLabelCounter = 0;
 function TipRow({ tipContent, color = '#7a7a7a', rgb = '122,122,122' }) {
   const [open, setOpen] = useState(false);
+  const [label] = useState(() => TIP_LABELS[tipLabelCounter++ % TIP_LABELS.length]);
   return (
     <div style={{ marginBottom: 4 }}>
       <button
@@ -142,7 +154,7 @@ function TipRow({ tipContent, color = '#7a7a7a', rgb = '122,122,122' }) {
         style={{ background: `rgba(${rgb},0.06)`, border: `1px solid rgba(${rgb},0.18)`, borderRadius: 8, padding: '8px 12px', cursor: 'pointer', fontSize: 12, color: color, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}
       >
         <span style={{ fontSize: 10 }}>{open ? '▼' : '▶'}</span>
-        💡 Why does this matter?
+        {label}
       </button>
       {open && (
         <div style={{ marginTop: 8, padding: '12px 14px', background: `rgba(${rgb},0.06)`, border: `0.5px solid rgba(${rgb},0.25)`, borderRadius: 8, fontSize: 13, color: '#676b5f', lineHeight: 1.65 }}>
@@ -2210,6 +2222,22 @@ export default function BriefBuilder() {
           <PrizeField data={briefData} setData={setBriefData} tc={tc} />
 
 
+          {/* Affiliate: Brief Builder placements */}
+          {group === 'business' && (
+            <div style={{ marginTop: 24, padding: '18px 20px', background: '#ffffff', border: `0.5px solid rgba(${tc.rgb},0.25)`, borderRadius: 12, position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: tc.color }} />
+              <div style={{ fontSize: 9, fontWeight: 800, color: tc.color, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>
+                Resource · Amazon · Sponsored
+              </div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#1e2330', marginBottom: 6 }}>Name it right the first time.</div>
+              <div style={{ fontSize: 13, color: '#8a8a82', marginBottom: 14, lineHeight: 1.5 }}>
+                Learn proven naming strategies from industry experts before you write your brief. Better input leads to better results.
+              </div>
+              <a href="#" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 18px', borderRadius: 8, background: tc.color, color: tc.btnText, fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
+                Browse naming books →
+              </a>
+            </div>
+          )}
           {subSegment === 'baby-name' && (
             <div style={{ marginTop: 24, padding: '18px 20px', background: '#ffffff', border: `0.5px solid rgba(${tc.rgb},0.25)`, borderRadius: 12, position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: tc.color }} />

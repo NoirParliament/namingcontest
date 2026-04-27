@@ -470,6 +470,7 @@ export default function ResultsPage() {
           const isSports = sub === 'sports-team';
           const isBaby = sub === 'baby-name';
           const isPet = sub === 'pet-name';
+          const isHome = sub === 'home-property-fun';
           const winName = winner?.name || 'your name';
 
           const AffCard = ({ badge, title, body, cta, href, sub: subText }) => (
@@ -551,19 +552,19 @@ export default function ResultsPage() {
                 {isBand && (
                   <>
                     <AffCard
+                      badge="Band Merch · Printful"
+                      title={`Launch ${winName} merch`}
+                      body="T-shirts, posters, and hoodies with your band name. Print-on-demand, no minimums, no inventory risk."
+                      subText="~15% per order · Ships in 3–5 days"
+                      cta="Design band merch →"
+                      href="#"
+                    />
+                    <AffCard
                       badge="Music Distribution · DistroKid"
                       title={`Get ${winName} on Spotify`}
                       body="Your band has a name — now get on every streaming platform. Unlimited uploads, keep 100% of royalties."
                       subText="~$17/yr per signup · Highest expected conversion"
                       cta="Distribute on DistroKid →"
-                      href="#"
-                    />
-                    <AffCard
-                      badge="Trademark · LegalZoom"
-                      title="Protect the band name"
-                      body="Register your band name as a trademark in Class 41 (entertainment). Prevent another act from using it."
-                      subText="~$199 full search · 30-day cookie"
-                      cta="Trademark via LegalZoom →"
                       href="#"
                     />
                     <AffCard
@@ -589,11 +590,11 @@ export default function ResultsPage() {
                 {isPodcast && (
                   <>
                     <AffCard
-                      badge="Domain · Namecheap"
-                      title="Claim your podcast domain"
-                      body={`A matching domain builds credibility with listeners and guests. Check ${winName.toLowerCase().replace(/\s+/g,'')}.com now.`}
-                      subText="20–30% off first purchase"
-                      cta="Check on Namecheap →"
+                      badge="Podcast Hosting · Buzzsprout"
+                      title={`Launch ${winName}`}
+                      body="Reliable podcast hosting with built-in analytics. Distribute to Apple Podcasts, Spotify, and everywhere else."
+                      subText="Free tier available · $18/mo pro · 25% commission"
+                      cta="Start hosting on Buzzsprout →"
                       href="#"
                     />
                     <AffCard
@@ -602,6 +603,14 @@ export default function ResultsPage() {
                       body="Podcast cover art is your first impression. 3000×3000px required. Looka generates one in minutes."
                       subText="~$20 one-time · 25–35% commission"
                       cta="Create Cover Art →"
+                      href="#"
+                    />
+                    <AffCard
+                      badge="Domain · Namecheap"
+                      title="Claim your podcast domain"
+                      body={`A matching domain builds credibility with listeners and guests. Check ${winName.toLowerCase().replace(/\s+/g,'')}.com now.`}
+                      subText="20–30% off first purchase"
+                      cta="Check on Namecheap →"
                       href="#"
                     />
                   </>
@@ -619,16 +628,24 @@ export default function ResultsPage() {
                       href="#"
                     />
                     <AffCard
-                      badge="Merchandise · Custom Ink"
-                      title="Bulk team uniforms"
-                      body="Custom Ink specialises in team orders — jerseys, warm-ups, gear. Group pricing available."
-                      subText="~15% per order"
-                      cta="Quote on Custom Ink →"
+                      badge="Logo · 99designs / Looka"
+                      title={`Design the ${winName} logo`}
+                      body="Every team needs a crest. Custom/premium (99designs), AI-fast (Looka), or budget (Fiverr)."
+                      subText="$40–$299"
+                      cta="Create on Looka →"
+                      href="#"
+                    />
+                    <AffCard
+                      badge="Website · Squarespace"
+                      title={`Build the ${winName} website`}
+                      body="Schedules, roster, news, and results. No coding required. Looks great on every device."
+                      subText="From $16/mo · 14-day free trial"
+                      cta="Build your team site →"
                       href="#"
                     />
                     <AffCard
                       badge="Domain · Namecheap"
-                      title="Claim your team website"
+                      title="Claim your team domain"
                       body="Even a one-page site builds team identity. Grab the domain while it's available."
                       subText="From $10/yr · 20–30% off first purchase"
                       cta="Check on Namecheap →"
@@ -722,6 +739,16 @@ export default function ResultsPage() {
                 {/* Personal fallback (home, other-personal — not biz/team sub-types) */}
                 {!isBiz && !isTeam && !isBaby && !isPet && (
                   <>
+                    {isHome && (
+                      <AffCard
+                        badge="Custom Sign · Etsy"
+                        title={`Get a "${winName}" sign`}
+                        body="Handmade wooden or metal signs engraved with your property name. Perfect for the entrance or garden."
+                        subText="Handmade · Ships worldwide"
+                        cta="Shop custom signs →"
+                        href="#"
+                      />
+                    )}
                     <AffCard
                       badge="Personalised Gifts · Etsy"
                       title={`Celebrate "${winName}".`}
@@ -730,14 +757,16 @@ export default function ResultsPage() {
                       cta="Shop personalised gifts →"
                       href="#"
                     />
-                    <AffCard
-                      badge="Domain · Namecheap"
-                      title="Claim the name online"
-                      body="If you plan to create any presence around this name, grab the domain while it's available."
-                      subText="From $10/yr · 20–30% off first purchase"
-                      cta="Check on Namecheap →"
-                      href="#"
-                    />
+                    {isHome && (
+                      <AffCard
+                        badge="Domain · Namecheap"
+                        title="Claim the name online"
+                        body="If you plan to create any presence around this name, grab the domain while it's available."
+                        subText="From $10/yr · 20–30% off first purchase"
+                        cta="Check on Namecheap →"
+                        href="#"
+                      />
+                    )}
                   </>
                 )}
               </div>

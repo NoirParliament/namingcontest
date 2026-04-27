@@ -1,40 +1,92 @@
 import { useState } from 'react';
 import { AFFILIATE_MOMENTS, AFFILIATE_PLAN_LABEL } from '../utils/affiliateMoments';
 import { getGroupTheme, LIGHT_THEME } from '../data/themeConfig';
+import { SUB_LABELS } from '../utils/journey';
 
-// All affiliate cards that appear in the Results Page per segment
-const RESULTS_PAGE_AFFILIATES = {
+const SUB_SEGMENTS = {
   business: [
-    { emoji: '*', partner: 'Namecheap', tag: 'Domain Registrar', headline: 'Claim your .com', body: 'Check availability now. .io, .co, .ai, and .net also checked automatically.', cta: 'Check on Namecheap →', accent: '#d2e823', accentText: '#000' },
-    { emoji: '*', partner: 'USPTO (Free)', tag: 'Trademark Search', headline: 'Free trademark search', body: 'Search the USPTO database before you invest further. Free, takes 10 minutes.', cta: 'Search TESS (Free) →', accent: '#3b82f6', accentText: '#fff' },
-    { emoji: '*', partner: 'LegalZoom', tag: 'Trademark Search', headline: 'Full clearance search', body: 'Professional search catches phonetic matches and design marks the free search misses.', cta: 'Full Search via LegalZoom →', accent: '#d2e823', accentText: '#fff' },
-    { emoji: '*', partner: 'LegalZoom', tag: 'LLC Formation', headline: 'Make it a legal entity', body: 'File your LLC before someone else registers it. Handles paperwork in all 50 states.', cta: 'Form Your LLC →', accent: '#f97316', accentText: '#fff' },
-    { emoji: '*', partner: 'Looka / 99designs', tag: 'Logo Design', headline: 'Get a logo to match', body: 'AI-fast (Looka), custom/premium (99designs), or budget (Fiverr). Coverage at every price point.', cta: 'Create on Looka →', accent: '#ec4899', accentText: '#fff' },
+    { id: 'company-name', label: 'Company' },
+    { id: 'product-name', label: 'Product' },
+    { id: 'project-name', label: 'Project' },
+    { id: 'rebrand', label: 'Rebrand' },
+    { id: 'other-business', label: 'Other' },
   ],
   team: [
-    { emoji: '*', partner: 'Printful', tag: 'Custom Merchandise', headline: 'Make it official with merch.', body: 'Custom jerseys, hats, hoodies. No minimums. Ships in 3–5 days.', cta: 'Design team merch →', accent: '#d2e823', accentText: '#fff' },
-    { emoji: '*', partner: '99designs', tag: 'Brand Design', headline: 'Every great team name needs a great logo.', body: 'Multiple concepts, unlimited revisions. Work with a dedicated designer.', cta: 'Get a team logo →', accent: '#ec4899', accentText: '#fff' },
-    { emoji: '*', partner: 'Squarespace', tag: 'Website Builder', headline: "Claim your team's home online.", body: 'Schedules, roster, news. No coding required. Looks great on every device.', cta: 'Build your team site →', accent: '#3b82f6', accentText: '#fff' },
-    { emoji: '*', partner: 'Namecheap', tag: 'Domain Registrar', headline: 'Secure your domain.', body: 'Lock in the domain for your new team name before someone else does.', cta: 'Check domain →', accent: '#d2e823', accentText: '#fff' },
+    { id: 'sports-team', label: 'Sports' },
+    { id: 'band-music', label: 'Band' },
+    { id: 'podcast-channel', label: 'Podcast' },
+    { id: 'civic-school-nonprofit', label: 'Civic' },
+    { id: 'gaming-group', label: 'Gaming' },
+    { id: 'other-team', label: 'Other' },
   ],
   personal: [
-    { emoji: '*', partner: 'Artifact Uprising', tag: 'Custom Cards & Prints', headline: 'Share the name with the world.', body: 'Premium birth announcement cards, printed and shipped. The name you chose together, beautifully presented.', cta: 'Design announcements →', accent: '#d2e823', accentText: '#fff' },
-    { emoji: '*', partner: 'Etsy', tag: 'Personalised Gifts', headline: 'Celebrate the name.', body: 'Personalised gifts featuring the chosen name — perfect for new babies, pets, or homes.', cta: 'Shop personalised gifts →', accent: '#f59e0b', accentText: '#fff' },
-    { emoji: '*', partner: 'Chewy', tag: 'Pet Accessories', headline: 'Make it official for your pet.', body: 'Custom ID tags and personalised accessories engraved with your pet\'s new name. Fast shipping.', cta: 'Get a custom ID tag →', accent: '#d2e823', accentText: '#fff' },
-    { emoji: '*', partner: 'Namecheap', tag: 'Domain Registrar', headline: 'Claim the name online.', body: 'If you plan to create any presence around this name, grab the domain while it\'s available.', cta: 'Check on Namecheap →', accent: '#d2e823', accentText: '#fff' },
+    { id: 'baby-name', label: 'Baby' },
+    { id: 'pet-name', label: 'Pet' },
+    { id: 'home-property-fun', label: 'Home' },
   ],
 };
+
+// All affiliate cards — `subs` array filters by sub-segment (omit = show for all in group)
+const RESULTS_PAGE_AFFILIATES = {
+  business: [
+    { partner: 'Namecheap', tag: 'Domain Registrar', headline: 'Claim your .com', body: 'Check availability now. .io, .co, .ai, and .net also checked automatically.', cta: 'Check on Namecheap →', accent: '#d2e823', accentText: '#000' },
+    { partner: 'USPTO (Free)', tag: 'Trademark Search', headline: 'Free trademark search', body: 'Search the USPTO database before you invest further. Free, takes 10 minutes.', cta: 'Search TESS (Free) →', accent: '#3b82f6', accentText: '#fff', subs: ['company-name', 'product-name', 'rebrand'] },
+    { partner: 'LegalZoom', tag: 'Trademark Search', headline: 'Full clearance search', body: 'Professional search catches phonetic matches and design marks the free search misses.', cta: 'Full Search via LegalZoom →', accent: '#d2e823', accentText: '#fff', subs: ['company-name', 'product-name', 'rebrand'] },
+    { partner: 'LegalZoom', tag: 'LLC Formation', headline: 'Make it a legal entity', body: 'File your LLC before someone else registers it. Handles paperwork in all 50 states.', cta: 'Form Your LLC →', accent: '#f97316', accentText: '#fff', subs: ['company-name', 'rebrand'] },
+    { partner: 'Looka / 99designs', tag: 'Logo Design', headline: 'Get a logo to match', body: 'AI-fast (Looka), custom/premium (99designs), or budget (Fiverr). Coverage at every price point.', cta: 'Create on Looka →', accent: '#ec4899', accentText: '#fff' },
+    { partner: 'Notion', tag: 'Project Hub', headline: 'Build the project hub', body: 'Create a branded workspace for your project — docs, timelines, and stakeholder updates in one place.', cta: 'Set up workspace →', accent: '#000', accentText: '#fff', subs: ['project-name'] },
+  ],
+  team: [
+    { partner: 'Printful', tag: 'Custom Jerseys', headline: 'Print your team name on jerseys.', body: 'Custom jerseys, shorts, and training gear. No minimums. Ships in 3–5 days.', cta: 'Design jerseys →', accent: '#d2e823', accentText: '#fff', subs: ['sports-team'] },
+    { partner: 'Printful', tag: 'Band Merch', headline: 'Launch your band merch.', body: 'T-shirts, hoodies, posters with your band name. No minimums, print-on-demand.', cta: 'Design merch →', accent: '#d2e823', accentText: '#fff', subs: ['band-music'] },
+    { partner: 'Printful', tag: 'Custom Merch', headline: 'Make it official with merch.', body: 'Custom hats, hoodies, and gear with your new name. No minimums.', cta: 'Design merch →', accent: '#d2e823', accentText: '#fff', subs: ['podcast-channel', 'civic-school-nonprofit', 'gaming-group', 'other-team'] },
+    { partner: '99designs', tag: 'Brand Design', headline: 'Every great name needs a great logo.', body: 'Multiple concepts, unlimited revisions. Work with a dedicated designer.', cta: 'Get a logo →', accent: '#ec4899', accentText: '#fff' },
+    { partner: 'Squarespace', tag: 'Website Builder', headline: "Claim your team's home online.", body: 'Schedules, roster, news. No coding required. Looks great on every device.', cta: 'Build your site →', accent: '#3b82f6', accentText: '#fff', subs: ['sports-team', 'civic-school-nonprofit', 'other-team'] },
+    { partner: 'Buzzsprout', tag: 'Podcast Hosting', headline: 'Launch your show.', body: 'Reliable podcast hosting with built-in analytics. Distribute to Apple, Spotify, and everywhere else.', cta: 'Start hosting →', accent: '#f97316', accentText: '#fff', subs: ['podcast-channel'] },
+    { partner: 'DistroKid', tag: 'Music Distribution', headline: 'Get your music everywhere.', body: 'Distribute to Spotify, Apple Music, and 150+ platforms. Keep 100% of your royalties.', cta: 'Distribute music →', accent: '#8b5cf6', accentText: '#fff', subs: ['band-music'] },
+    { partner: 'Namecheap', tag: 'Domain Registrar', headline: 'Secure your domain.', body: 'Lock in the domain for your new name before someone else does.', cta: 'Check domain →', accent: '#d2e823', accentText: '#fff' },
+  ],
+  personal: [
+    { partner: 'Artifact Uprising', tag: 'Birth Announcements', headline: 'Share the name with the world.', body: 'Premium birth announcement cards, printed and shipped. The name you chose together, beautifully presented.', cta: 'Design announcements →', accent: '#d2e823', accentText: '#fff', subs: ['baby-name'] },
+    { partner: 'Etsy', tag: 'Personalised Gifts', headline: 'Celebrate the name.', body: 'Personalised gifts featuring the chosen name — perfect for new babies, pets, or homes.', cta: 'Shop personalised gifts →', accent: '#f59e0b', accentText: '#fff' },
+    { partner: 'Chewy', tag: 'Pet Accessories', headline: 'Make it official for your pet.', body: 'Custom ID tags and personalised accessories engraved with your pet\'s new name. Fast shipping.', cta: 'Get a custom ID tag →', accent: '#d2e823', accentText: '#fff', subs: ['pet-name'] },
+    { partner: 'Namecheap', tag: 'Domain Registrar', headline: 'Claim the name online.', body: 'If you plan to create any presence around this name, grab the domain while it\'s available.', cta: 'Check on Namecheap →', accent: '#d2e823', accentText: '#fff' },
+    { partner: 'Etsy', tag: 'Custom Sign', headline: 'Get a custom name sign.', body: 'Handmade wooden or metal signs engraved with your property name. Perfect for the entrance.', cta: 'Shop custom signs →', accent: '#16a34a', accentText: '#fff', subs: ['home-property-fun'] },
+  ],
+};
+
+// Filter cards by sub-segment
+function getResultsCards(group, sub) {
+  return (RESULTS_PAGE_AFFILIATES[group] || []).filter(c => !c.subs || c.subs.includes(sub));
+}
 
 const breadcrumb = {
   fontSize: 10, color: '#8a8a82', fontWeight: 600, textTransform: 'uppercase',
   letterSpacing: '0.07em', marginBottom: 14,
 };
 
+const SAMPLE_NAMES = {
+  'company-name':           ['nova', 'creo', 'vela', 'kova'],
+  'product-name':           ['pulse', 'vanta', 'bloom', 'nexis'],
+  'project-name':           ['phoenix', 'summit', 'atlas', 'forge'],
+  'rebrand':                ['evolve', 'pivot', 'ascend', 'shift'],
+  'other-business':         ['nova', 'creo', 'vela', 'kova'],
+  'sports-team':            ['vipers', 'thunder', 'rapids', 'blaze'],
+  'band-music':             ['hollow', 'drift', 'velvet', 'ember'],
+  'podcast-channel':        ['signals', 'layers', 'uncut', 'fathom'],
+  'civic-school-nonprofit': ['haven', 'bridge', 'roots', 'commons'],
+  'gaming-group':           ['phantom', 'nexus', 'void', 'apex'],
+  'other-team':             ['spark', 'unity', 'fleet', 'edge'],
+  'baby-name':              ['oliver', 'luna', 'felix', 'iris'],
+  'pet-name':               ['mochi', 'pepper', 'ziggy', 'biscuit'],
+  'home-property-fun':      ['willowbrook', 'suncrest', 'foxhollow', 'stoneridge'],
+};
+
 // ── Mockups ────────────────────────────────────────────────────────────────────
 
-function DomainCheckMockup({ moment, group }) {
+function DomainCheckMockup({ moment, group, subSegment }) {
   const { primary: color, primaryRgb: rgb } = getGroupTheme(group || 'business');
-  const names = ['nova', 'creo', 'vela', 'kova'];
+  const names = SAMPLE_NAMES[subSegment] || ['nova', 'creo', 'vela', 'kova'];
   const avail = [true, false, true, false];
   return (
     <div>
@@ -58,7 +110,7 @@ function DomainCheckMockup({ moment, group }) {
   );
 }
 
-function TrademarkMockup({ moment, group }) {
+function TrademarkMockup({ moment, group, subSegment }) {
   const { primary: color, primaryRgb: rgb } = getGroupTheme(group || 'business');
   return (
     <div>
@@ -72,7 +124,7 @@ function TrademarkMockup({ moment, group }) {
           </div>
         </div>
         <div style={{ marginTop: 12, padding: '8px 12px', background: '#f5f5f0', border: `0.5px solid rgba(${rgb},0.15)`, borderRadius: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 11, color: '#a1a1a1', flex: 1 }}>Search "nova"…</span>
+          <span style={{ fontSize: 11, color: '#a1a1a1', flex: 1 }}>Search "{(SAMPLE_NAMES[subSegment] || ['nova'])[0]}"…</span>
           <span style={{ fontSize: 10, fontWeight: 700, color, background: `rgba(${rgb},0.12)`, padding: '3px 8px', borderRadius: 4 }}>Search →</span>
         </div>
         <div style={{ fontSize: 9, color: '#a1a1a1', marginTop: 8 }}>Powered by {moment.partner} · Sponsored</div>
@@ -175,9 +227,9 @@ function AffiliateCard({ moment, group }) {
 }
 
 // ── Results Page All-Cards Mockup ─────────────────────────────────────────────
-function ResultsPageAllCards({ group }) {
+function ResultsPageAllCards({ group, cards: filteredCards }) {
   const { primary: color, primaryRgb: rgb } = getGroupTheme(group || 'business');
-  const cards = RESULTS_PAGE_AFFILIATES[group] || [];
+  const cards = filteredCards || [];
   const [clicked, setClicked] = useState(null);
 
   return (
@@ -195,16 +247,16 @@ function ResultsPageAllCards({ group }) {
       {/* All affiliate cards grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 4 }}>
         {cards.map((card, i) => (
-          <div key={i} style={{ background: '#fff', border: `1px solid rgba(${tc.primaryRgb},0.18)`, borderRadius: 12, padding: '14px 16px', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: tc.primary }} />
-            <div style={{ fontSize: 8, fontWeight: 800, color: tc.primary, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+          <div key={i} style={{ background: '#fff', border: `1px solid rgba(${rgb},0.18)`, borderRadius: 12, padding: '14px 16px', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: color }} />
+            <div style={{ fontSize: 8, fontWeight: 800, color, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
               {card.tag} · {card.partner}
             </div>
             <div style={{ fontSize: 12, fontWeight: 700, color: '#1e2330', marginBottom: 4, lineHeight: 1.35 }}>{card.headline}</div>
             <div style={{ fontSize: 10, color: '#676b5f', lineHeight: 1.45, marginBottom: 10 }}>{card.body}</div>
             <button
               onClick={() => setClicked(clicked === i ? null : i)}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 6, border: 'none', background: clicked === i ? `rgba(${tc.primaryRgb},0.15)` : tc.primary, color: '#ffffff', fontSize: 10, fontWeight: 700, cursor: 'pointer' }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 6, border: 'none', background: clicked === i ? `rgba(${rgb},0.15)` : color, color: '#ffffff', fontSize: 10, fontWeight: 700, cursor: 'pointer' }}
             >
               {clicked === i ? '✓ Simulated click' : card.cta}
             </button>
@@ -223,8 +275,11 @@ function ResultsPageAllCards({ group }) {
 export default function AffiliateSimulator({ group, onClose }) {
   const [selected, setSelected] = useState(0);
   const [activeGroup, setActiveGroup] = useState(group || 'business');
+  const [activeSub, setActiveSub] = useState(SUB_SEGMENTS[group || 'business'][0].id);
   const tc = getGroupTheme(activeGroup);
-  const moments = AFFILIATE_MOMENTS[activeGroup] || AFFILIATE_MOMENTS.business;
+  const allMoments = AFFILIATE_MOMENTS[activeGroup] || AFFILIATE_MOMENTS.business;
+  const moments = allMoments.filter(m => !m.subs || m.subs.includes(activeSub));
+  const resultsCards = getResultsCards(activeGroup, activeSub);
   const isResultsAll = selected === 'results-all';
   const moment  = isResultsAll ? null : moments[selected];
   const color   = tc.primary;
@@ -235,8 +290,8 @@ export default function AffiliateSimulator({ group, onClose }) {
 
   function renderMockup() {
     switch (moment.type) {
-      case 'domain-check': return <DomainCheckMockup moment={moment} group={activeGroup} />;
-      case 'trademark':    return <TrademarkMockup moment={moment} group={activeGroup} />;
+      case 'domain-check': return <DomainCheckMockup moment={moment} group={activeGroup} subSegment={activeSub} />;
+      case 'trademark':    return <TrademarkMockup moment={moment} group={activeGroup} subSegment={activeSub} />;
       case 'logo':         return <LogoMockup moment={moment} group={activeGroup} />;
       default:             return <GenericAffiliateMockup moment={moment} group={activeGroup} />;
     }
@@ -266,7 +321,7 @@ export default function AffiliateSimulator({ group, onClose }) {
             🔗 Affiliate Simulation
           </div>
           <div style={{ fontSize: 12, color: '#676b5f' }}>
-            {label} · {moments.length} placement spots · {RESULTS_PAGE_AFFILIATES[activeGroup]?.length || 0} results page cards
+            {SUB_LABELS[activeSub] || label} · {moments.length} placement spots · {resultsCards.length} results page cards
           </div>
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 3 }}>
             {[
@@ -274,7 +329,7 @@ export default function AffiliateSimulator({ group, onClose }) {
               { id: 'team', label: 'Group', c: '#780016' },
               { id: 'business', label: 'Business', c: '#254f1a' },
             ].map(seg => (
-              <button key={seg.id} onClick={() => { setActiveGroup(seg.id); setSelected(0); }} style={{
+              <button key={seg.id} onClick={() => { setActiveGroup(seg.id); setActiveSub(SUB_SEGMENTS[seg.id][0].id); setSelected(0); }} style={{
                 padding: '4px 10px', borderRadius: 4, border: 'none',
                 background: activeGroup === seg.id ? seg.c : 'rgba(30,35,48,0.05)',
                 color: activeGroup === seg.id ? '#fff' : '#676b5f',
@@ -287,6 +342,21 @@ export default function AffiliateSimulator({ group, onClose }) {
           <button onClick={onClose} style={{ width: 26, height: 26, borderRadius: 5, border: 'none', background: 'rgba(30,35,48,0.06)', color: '#676b5f', fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             ✕
           </button>
+        </div>
+
+        {/* Sub-segment selector */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 18px', background: '#f5f5f0', borderBottom: '0.5px solid rgba(30,35,48,0.07)', flexShrink: 0 }}>
+          <span style={{ fontSize: 9, color: '#8a8a82', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginRight: 4 }}>Segment:</span>
+          {SUB_SEGMENTS[activeGroup].map(s => (
+            <button key={s.id} onClick={() => { setActiveSub(s.id); setSelected(0); }} style={{
+              padding: '2px 8px', borderRadius: 3, border: 'none',
+              background: activeSub === s.id ? `rgba(${rgb},0.15)` : 'transparent',
+              color: activeSub === s.id ? color : '#8a8a82',
+              fontSize: 10, fontWeight: activeSub === s.id ? 700 : 500, cursor: 'pointer',
+            }}>
+              {s.label}
+            </button>
+          ))}
         </div>
 
         {/* Body */}
@@ -334,7 +404,7 @@ export default function AffiliateSimulator({ group, onClose }) {
                 </span>
                 <span style={{ fontSize: 11, fontWeight: 700, color: isResultsAll ? '#1e2330' : color + '90' }}>View All Results Cards</span>
               </div>
-              <div style={{ fontSize: 9, color: '#a1a1a1', paddingLeft: 24 }}>{RESULTS_PAGE_AFFILIATES[activeGroup]?.length || 0} cards · full grid</div>
+              <div style={{ fontSize: 9, color: '#a1a1a1', paddingLeft: 24 }}>{resultsCards.length} cards · full grid</div>
             </button>
           </div>
 
@@ -343,16 +413,16 @@ export default function AffiliateSimulator({ group, onClose }) {
             {isResultsAll ? (
               <>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 10, color: '#8a8a82', marginBottom: 18 }}>
-                  <span>{label}</span><span>›</span>
+                  <span>{SUB_LABELS[activeSub] || label}</span><span>›</span>
                   <span>Results Page</span><span>›</span>
-                  <span style={{ color }}>"You have a name. Now make it real." — all {RESULTS_PAGE_AFFILIATES[activeGroup]?.length} cards</span>
+                  <span style={{ color }}>"You have a name. Now make it real." — all {resultsCards.length} cards</span>
                 </div>
-                <ResultsPageAllCards group={activeGroup} />
+                <ResultsPageAllCards group={activeGroup} cards={resultsCards} />
               </>
             ) : (
               <>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 10, color: '#8a8a82', marginBottom: 18 }}>
-                  <span>{label}</span><span>›</span>
+                  <span>{SUB_LABELS[activeSub] || label}</span><span>›</span>
                   <span>{moment.where}</span><span>›</span>
                   <span style={{ color: '#676b5f' }}>{moment.trigger}</span>
                 </div>

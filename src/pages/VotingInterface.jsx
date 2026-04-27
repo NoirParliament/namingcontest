@@ -8,6 +8,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 import { getJourneyMeta } from '../utils/journey';
 import { getGroupTheme, LIGHT_THEME } from '../data/themeConfig';
+import { VOTER_ACTIONS, saveParticipantQuality } from '../utils/quality';
 
 // ── SortableItem for Ranked Choice ──
 function SortableItem({ id, name, rationale, index, tc }) {
@@ -324,6 +325,15 @@ export default function VotingInterface() {
   const method = methodParam || methodMap[contestId] || 'simple';
 
   const [voted, setVoted] = useState(false);
+  const [comment, setComment] = useState('');
+
+  // ── Voter quality score (0–50) ───────────────────────────────────────────────
+  const voterScore = Math.min(50,
+    VOTER_ACTIONS.reviewBallot +
+    (voted ? VOTER_ACTIONS.castVote : 0) +
+    (comment.trim() ? VOTER_ACTIONS.leaveComment : 0)
+  );
+  useEffect(() => { saveParticipantQuality(group, voterScore); }, [voterScore, group]);
 
   const methodLabels = {
     simple: 'Simple Poll',
@@ -366,13 +376,57 @@ export default function VotingInterface() {
 
       <div style={{ display: 'flex', minHeight: 'calc(100vh - 56px)' }}>
         {/* Sidebar */}
-        <div style={{ width: 220, background: '#f8f8f5', borderRight: '1px solid rgba(30,35,48,0.08)', padding: '24px 16px', flexShrink: 0 }}>
+        <div style={{ width: 220, background: '#f8f8f5', borderRight: '1px solid rgba(30,35,48,0.08)', padding: '24px 16px', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: '#8a8a82', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>Shortlisted Names</div>
           {candidates.map((c, i) => (
             <div key={i} style={{ padding: '8px 10px', borderRadius: 7, marginBottom: 4, fontSize: 14, fontFamily: "'Inter', sans-serif", color: '#676b5f' }}>
               {c.name}
             </div>
           ))}
+
+          {/* Voter Quality */}
+          <div style={{ marginTop: 24, paddingTop: 20, borderTop: '0.5px solid rgba(30,35,48,0.08)' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#8a8a82', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Your quality</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#676b5f', marginBottom: 5 }}>
+              Score: <span style={{ color: tc.primary, fontWeight: 800 }}>{voterScore}/50</span>
+            </div>
+            <div style={{ height: 5, background: '#e8e8e4', borderRadius: 3, overflow: 'hidden', marginBottom: 10 }}>
+              <div style={{ height: '100%', width: `${(voterScore / 50) * 100}%`, background: tc.primary, borderRadius: 3, transition: 'width 0.3s' }} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+              {[
+                { label: 'Reviewed ballot', pts: VOTER_ACTIONS.reviewBallot, done: true },
+                { label: 'Cast vote', pts: VOTER_ACTIONS.castVote, done: voted },
+                { label: 'Left a note', pts: VOTER_ACTIONS.leaveComment, done: comment.trim().length > 0 },
+              ].map(({ label, pts, done }) => (
+                <span key={label} style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 3,
+                  padding: '2px 7px', borderRadius: 4, fontSize: 10, fontWeight: 600,
+                  background: done ? `rgba(${tc.primaryRgb},0.1)` : 'rgba(30,35,48,0.04)',
+                  border: `0.5px solid ${done ? `rgba(${tc.primaryRgb},0.25)` : 'rgba(30,35,48,0.1)'}`,
+                  color: done ? tc.primary : '#a1a1a1', transition: 'all 0.2s',
+                }}>
+                  {done ? '✓' : '○'} {label} <span style={{ opacity: 0.55, marginLeft: 2 }}>+{pts}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Optional note */}
+          <div style={{ marginTop: 14 }}>
+            <textarea
+              value={comment}
+              onChange={e => setComment(e.target.value)}
+              placeholder="Leave a note for the creator (optional · +10 pts)"
+              rows={3}
+              style={{
+                width: '100%', background: '#ffffff', resize: 'none', boxSizing: 'border-box',
+                border: `0.5px solid ${comment.trim() ? `rgba(${tc.primaryRgb},0.3)` : 'rgba(30,35,48,0.12)'}`,
+                borderRadius: 8, padding: '8px 10px', fontSize: 11, color: '#676b5f',
+                fontFamily: 'Inter, sans-serif', lineHeight: 1.5, outline: 'none',
+              }}
+            />
+          </div>
         </div>
 
         {/* Main */}

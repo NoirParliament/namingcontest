@@ -1,6 +1,30 @@
 import { useState } from 'react';
 import { PAYWALL_MOMENTS, PLAN_LABEL } from '../utils/paywallMoments';
 import { getGroupTheme, LIGHT_THEME } from '../data/themeConfig';
+import { SUB_LABELS } from '../utils/journey';
+
+const SUB_SEGMENTS = {
+  business: [
+    { id: 'company-name', label: 'Company' },
+    { id: 'product-name', label: 'Product' },
+    { id: 'project-name', label: 'Project' },
+    { id: 'rebrand', label: 'Rebrand' },
+    { id: 'other-business', label: 'Other' },
+  ],
+  team: [
+    { id: 'sports-team', label: 'Sports' },
+    { id: 'band-music', label: 'Band' },
+    { id: 'podcast-channel', label: 'Podcast' },
+    { id: 'civic-school-nonprofit', label: 'Civic' },
+    { id: 'gaming-group', label: 'Gaming' },
+    { id: 'other-team', label: 'Other' },
+  ],
+  personal: [
+    { id: 'baby-name', label: 'Baby' },
+    { id: 'pet-name', label: 'Pet' },
+    { id: 'home-property-fun', label: 'Home' },
+  ],
+};
 
 // ── Upgrade Card ──────────────────────────────────────────────────────────────
 function UpgradeCard({ moment, group }) {
@@ -293,6 +317,7 @@ const breadcrumb = {
 export default function PaywallSimulator({ group, onClose }) {
   const [selected, setSelected] = useState(0);
   const [activeGroup, setActiveGroup] = useState(group || 'business');
+  const [activeSub, setActiveSub] = useState(SUB_SEGMENTS[group || 'business'][0].id);
   const tc = getGroupTheme(activeGroup);
   const moments = PAYWALL_MOMENTS[activeGroup] || PAYWALL_MOMENTS.business;
   const moment  = moments[selected];
@@ -336,7 +361,7 @@ export default function PaywallSimulator({ group, onClose }) {
             * Paywall Simulation
           </div>
           <div style={{ fontSize: 12, color: '#676b5f' }}>
-            {label} · {moments.length} upgrade moments
+            {SUB_LABELS[activeSub] || label} · {moments.length} upgrade moments
           </div>
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 3 }}>
             {[
@@ -344,7 +369,7 @@ export default function PaywallSimulator({ group, onClose }) {
               { id: 'team', label: 'Group', c: '#780016' },
               { id: 'business', label: 'Business', c: '#254f1a' },
             ].map(seg => (
-              <button key={seg.id} onClick={() => { setActiveGroup(seg.id); setSelected(0); }} style={{
+              <button key={seg.id} onClick={() => { setActiveGroup(seg.id); setActiveSub(SUB_SEGMENTS[seg.id][0].id); setSelected(0); }} style={{
                 padding: '4px 10px', borderRadius: 4, border: 'none',
                 background: activeGroup === seg.id ? seg.c : 'rgba(30,35,48,0.05)',
                 color: activeGroup === seg.id ? '#fff' : '#676b5f',
@@ -357,6 +382,21 @@ export default function PaywallSimulator({ group, onClose }) {
           <button onClick={onClose} style={{ width: 26, height: 26, borderRadius: 5, border: 'none', background: 'rgba(30,35,48,0.06)', color: '#676b5f', fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             ✕
           </button>
+        </div>
+
+        {/* Sub-segment selector */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 18px', background: '#f5f5f0', borderBottom: '0.5px solid rgba(30,35,48,0.07)', flexShrink: 0 }}>
+          <span style={{ fontSize: 9, color: '#8a8a82', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginRight: 4 }}>Segment:</span>
+          {SUB_SEGMENTS[activeGroup].map(s => (
+            <button key={s.id} onClick={() => setActiveSub(s.id)} style={{
+              padding: '2px 8px', borderRadius: 3, border: 'none',
+              background: activeSub === s.id ? `rgba(${rgb},0.15)` : 'transparent',
+              color: activeSub === s.id ? color : '#8a8a82',
+              fontSize: 10, fontWeight: activeSub === s.id ? 700 : 500, cursor: 'pointer',
+            }}>
+              {s.label}
+            </button>
+          ))}
         </div>
 
         {/* Body */}
@@ -388,7 +428,7 @@ export default function PaywallSimulator({ group, onClose }) {
           <div style={{ flex: 1, overflowY: 'auto', padding: '22px 24px' }}>
             {/* Context */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 10, color: '#8a8a82', marginBottom: 18 }}>
-              <span>{label}</span><span>›</span>
+              <span>{SUB_LABELS[activeSub] || label}</span><span>›</span>
               <span>{moment.where}</span><span>›</span>
               <span style={{ color: '#676b5f' }}>{moment.trigger}</span>
             </div>

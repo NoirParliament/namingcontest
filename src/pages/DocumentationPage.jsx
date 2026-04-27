@@ -445,12 +445,12 @@ export default function DocumentationPage() {
           { name: 'Select Sub-type', path: '/select/:group', role: 'Creator', desc: 'Pick the specific naming need within your segment. Business has 5 options (company, product, project, rebrand, other). Team has 6 (sports, band, podcast, civic, gaming, other). Personal has 4 (baby, pet, home, other).' },
           { name: 'Contest Type', path: '/contest-type/:group/:sub', role: 'Creator', desc: 'Choose between Open Contest (participants submit + vote), Voting Only (creator pre-loads names), or Internal Brainstorm (separate submitter and voter groups). Also select the voting method.' },
           { name: 'Brief Builder', path: '/brief/:group/:sub', role: 'Creator', desc: 'Multi-step form that adapts to the sub-type. Starts with a naming primer (methodology introduction), then context-specific fields (1-8 required depending on sub-type), voting configuration, optional prizes, and deadline. Each completed field contributes to the Creator Quality Score.' },
-          { name: 'Upload Names', path: '/upload-names', role: 'Creator', desc: 'For Voting Only contests: creator pre-loads the candidate names that participants will vote on. Skips the submission phase entirely.' },
+          { name: 'Upload Names', path: '/upload-names', role: 'Creator', desc: 'For Voting Only contests: creator pre-loads the candidate names that participants will vote on. Earns creator quality points for names uploaded (5 each, max 6), descriptions added (3 each, max 4), voting method (5), and duration (3) — totaling up to 50.' },
           { name: 'Invite Participants', path: '/invite/:contestId', role: 'Creator', desc: 'Share the contest link, manage voter/submitter email list, send invitations. Shows participant count against the segment limit (5 free, 15/60/240 paid).' },
           { name: 'Contest Overview', path: '/contest-detail/:contestId', role: 'Creator', desc: 'Single-contest dashboard: phase tracker, submissions list with vote counts, participation stats, quality score widget, quick actions (remind, extend deadline, export). Shows real-time progress.' },
-          { name: 'Submission Phase', path: '/contest/:contestId', role: 'Participant', desc: 'Submit name ideas with optional rationale. View education content (Catchword naming methodology articles). Earn naming points that contribute to the Participant Quality Score.' },
+          { name: 'Submission Phase', path: '/contest/:contestId', role: 'Participant', desc: 'Submit name ideas with optional rationale. Complete education actions (brief immersion, mind map, scratch pad, articles/tips) that each award fixed points toward the Participant Quality Score (max 50).' },
           { name: 'Curate Shortlist', path: '(within Contest Overview)', role: 'Creator', desc: 'Review all submissions and select finalists for the voting round. Only appears when manual transition mode is selected. Creator sees vote counts, rationale, and can shortlist the strongest candidates.' },
-          { name: 'Voting Phase', path: '/vote/:contestId', role: 'Participant', desc: 'Vote on shortlisted names using the selected voting method (simple poll, ranked choice, pairwise comparison, multi-criteria, or weighted voting). Anonymous by default.' },
+          { name: 'Voting Phase', path: '/vote/:contestId', role: 'Participant', desc: 'Vote on shortlisted names using the selected voting method (simple poll, ranked choice, pairwise comparison, multi-criteria, or weighted voting). Anonymous by default. Earns voter quality points: review ballot (10), cast vote (30), leave a note (10) — totaling up to 50.' },
           { name: 'Results Page', path: '/results/:contestId', role: 'Both', desc: 'Winner announcement with particle animation and countdown reveal. Vote breakdown, sentiment analysis, affiliate recommendations, official naming certificate with branding toggle (Catchword vs white-label), social sharing, and post-vote reflection with second-round discount option.' },
           { name: 'Dashboard', path: '/dashboard', role: 'Creator', desc: 'Multi-contest management: active contests with progress bars, completed contests with winners, account overview (total contests, participants reached, participation rate), and subscription status.' },
         ].map((screen, i) => (
@@ -542,8 +542,10 @@ export default function DocumentationPage() {
               <span style={{ fontSize: 13, color: '#1e2330', fontWeight: 600 }}>0-50 points</span>
             </div>
             <div style={{ fontSize: 13, color: '#676b5f', lineHeight: 1.65 }}>
-              <div style={{ marginBottom: 8 }}><strong style={{ color: '#1e2330' }}>Articles read (25 pts):</strong> Based on completion percentage of Catchword naming methodology articles.</div>
-              <div><strong style={{ color: '#1e2330' }}>Naming points earned (25 pts):</strong> Based on participation activity — submissions, votes, quality of rationale.</div>
+              <div style={{ marginBottom: 6 }}><strong style={{ color: '#1e2330' }}>Fixed points per action:</strong> Brief immersion (5), mind map (5), scratch pad (5), article read (5 each), article quiz (10 each), tip card (5 each), submit names (20). Capped at 50.</div>
+              <div style={{ marginBottom: 6 }}><strong style={{ color: '#1e2330' }}>Personal/Gaming segments:</strong> Brief + mind map + scratch pad + 3 tips + submit = 50.</div>
+              <div style={{ marginBottom: 6 }}><strong style={{ color: '#1e2330' }}>Team single-article segments:</strong> Brief + mind map + scratch pad + article read + quiz + submit = 50.</div>
+              <div><strong style={{ color: '#1e2330' }}>Business (3 articles):</strong> Exceeds 50 raw — capped at 50.</div>
             </div>
           </Card>
         </div>
@@ -562,7 +564,7 @@ export default function DocumentationPage() {
         />
 
         <Paragraph>
-          The score is visible to both sides during the contest. Creators can see which brief fields are boosting their score. Participants see their education progress and naming points. This transparency motivates both sides to invest effort — because they can see it matters.
+          The score is visible to both sides during the contest. Creators see which brief fields are boosting their score. Participants see pill badges for each action (brief, mind map, scratch pad, articles/tips, submit) with real-time point tracking. Every segment is designed so completing all available actions reaches exactly 50 points.
         </Paragraph>
 
         <Divider />

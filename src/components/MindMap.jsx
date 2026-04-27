@@ -73,12 +73,12 @@ export default function MindMap({ tc, onPoints, qualityPct, subSegment }) {
 
   const userNodeCount = nodes.length - 5; // root + 4 seeds
 
-  useEffect(() => {
-    if (userNodeCount >= 1 && !pointsAwarded) {
+  const awardExplorePoints = useCallback(() => {
+    if (!pointsAwarded) {
       setPointsAwarded(true);
       onPoints(5);
     }
-  }, [userNodeCount, pointsAwarded, onPoints]);
+  }, [pointsAwarded, onPoints]);
 
   /* ── coordinate helpers ── */
   const screenToSvg = useCallback((clientX, clientY) => {
@@ -92,6 +92,7 @@ export default function MindMap({ tc, onPoints, qualityPct, subSegment }) {
 
   /* ── add child node ── */
   const addChild = useCallback((parentId) => {
+    awardExplorePoints();
     const parent = nodes.find(n => n.id === parentId);
     if (!parent) return;
     const siblings = nodes.filter(n => n.parentId === parentId);
@@ -180,12 +181,13 @@ export default function MindMap({ tc, onPoints, qualityPct, subSegment }) {
   const startDrag = useCallback((e, id) => {
     if (editingId) return;
     e.stopPropagation();
+    awardExplorePoints();
     const pos = screenToSvg(e.clientX, e.clientY);
     const node = nodes.find(n => n.id === id);
     if (!node) return;
     dragOffset.current = { x: pos.x - node.x, y: pos.y - node.y };
     setDraggingId(id);
-  }, [editingId, screenToSvg, nodes]);
+  }, [editingId, screenToSvg, nodes, awardExplorePoints]);
 
   /* ── attach wheel listener (passive: false) ── */
   useEffect(() => {

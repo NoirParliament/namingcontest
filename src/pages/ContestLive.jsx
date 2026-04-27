@@ -21,16 +21,16 @@ function Quiz({ questions, onComplete, points, tc, qualityPct }) {
   const handleSubmit = () => {
     let correct = 0;
     questions.forEach((q, i) => { if (answers[i] === q.correct) correct++; });
-    const earned = Math.round((correct / questions.length) * points);
-    setScore(earned);
+    setScore(correct);
     setSubmitted(true);
-    setTimeout(() => onComplete(earned), 1400);
+    // Award full points for completing the quiz — partial scoring prevents reaching 50
+    setTimeout(() => onComplete(points), 1400);
   };
 
   if (submitted) return (
     <div style={{ textAlign: 'center', padding: '24px', background: `rgba(${tc.primaryRgb},0.06)`, border: `1px solid rgba(${tc.primaryRgb},0.2)`, borderRadius: 10 }}>
       <Confetti size={28} color={tc.primary} weight="duotone" />
-      <div style={{ fontFamily: LIGHT_THEME.fontDisplay, fontSize: 22, color: LIGHT_THEME.textPrimary, marginTop: 8 }}>+{Math.round(score)} pts</div>
+      <div style={{ fontFamily: LIGHT_THEME.fontDisplay, fontSize: 22, color: LIGHT_THEME.textPrimary, marginTop: 8 }}>+{points} pts</div>
       <div style={{ fontSize: 13, color: LIGHT_THEME.textSecondary, marginTop: 4 }}>Article & quiz complete</div>
     </div>
   );
@@ -599,24 +599,36 @@ function BriefImmersionCard({ contest, tc, onPoints, qualityPct }) {
 }
 
 /* ─── Scratch Pad ─── */
-function ScratchPad({ tc, onPoints, qualityPct }) {
+const SCRATCH_PROMPTS = {
+  'company-name':           ['What feeling should the company name evoke?', 'List 5 words that capture your brand personality:', 'What company names do you already admire?', 'What should the name NOT sound like?'],
+  'product-name':           ['What problem does this product solve?', 'List 5 words your ideal customer would use:', 'What product names inspire you?', 'What names would feel too generic or forgettable?'],
+  'project-name':           ['What emotion should this project name create in the team?', 'List 5 words that capture the project mission:', 'What internal project names have worked well before?', 'What codenames are too overused? (Phoenix, Titan, etc.)'],
+  'rebrand':                ['Why is the current name no longer working?', 'What should the new name preserve from the old brand?', 'List 5 words that capture where the brand is going:', 'What names would confuse existing customers?'],
+  'other-business':         ['What should this name communicate instantly?', 'List 5 words you associate with this business:', 'What names are you already considering?', 'What should the name NOT sound like?'],
+  'sports-team':            ['What feeling should the team name create in opponents?', 'List 5 words that capture your team spirit:', 'What team names would sound great chanted from the sideline?', 'What names are too cliché? (Eagles, Warriors, etc.)'],
+  'band-music':             ['What mood should the band name set before anyone hears a note?', 'List 5 words that capture your sound and aesthetic:', 'What band names have the right vibe for your genre?', 'What names would be impossible to Google?'],
+  'podcast-channel':        ['What should listeners expect from the show name alone?', 'List 5 words that capture your show tone:', 'What podcast names make you want to click play?', 'What names sound too generic for your niche?'],
+  'civic-school-nonprofit': ['What should this name signal to the community?', 'List 5 words that capture the organization mission:', 'What organization names convey trust and longevity?', 'What names would feel too corporate for a civic org?'],
+  'gaming-group':           ['What impression should the crew name make in-game?', 'List 5 words that capture your play style:', 'What gaming tags or crew names have the right energy?', 'What names would be hard to use as a tag or handle?'],
+  'other-team':             ['What should this name make members feel?', 'List 5 words that capture the group identity:', 'What group names have you seen that you admire?', 'What should the name NOT sound like?'],
+  'baby-name':              ['What feeling should the name give when you say it aloud?', 'List 5 names you keep coming back to:', 'Are there family or cultural names you want to honor?', 'What names are on your "absolutely not" list?'],
+  'pet-name':               ['What is your pet\'s personality in 3 words?', 'List 5 names that match their look or energy:', 'What names would be easy to call out at the park?', 'What names sound too similar to commands? (Kit → Sit)'],
+  'home-property-fun':      ['What feeling should the property name create for visitors?', 'List 5 words that capture the character of this place:', 'What property names have you seen that feel right?', 'What names would look wrong on a sign at the entrance?'],
+};
+
+function ScratchPad({ tc, onPoints, qualityPct, subSegment }) {
   const [notes, setNotes] = useState('');
   const [pointsAwarded, setPointsAwarded] = useState(false);
 
   const handleNotes = (val) => {
     setNotes(val);
-    if (!pointsAwarded && val.length > 30) {
+    if (!pointsAwarded && val.length > 20) {
       setPointsAwarded(true);
       onPoints(5);
     }
   };
 
-  const prompts = [
-    'What imagery or feelings should the name evoke?',
-    'List 5 words you associate with this brand/team/concept:',
-    'What names are you already considering? (brainstorm freely)',
-    'What should the name NOT sound like?',
-  ];
+  const prompts = SCRATCH_PROMPTS[subSegment] || SCRATCH_PROMPTS['other-business'];
 
   return (
     <div style={{ marginBottom: 28, padding: 20, background: LIGHT_THEME.cardBg, border: `1px solid ${LIGHT_THEME.cardBorder}`, borderRadius: 12, boxShadow: LIGHT_THEME.cardShadow }}>
@@ -629,7 +641,7 @@ function ScratchPad({ tc, onPoints, qualityPct }) {
           <div style={{ fontSize: 11, color: LIGHT_THEME.textMuted }}>Brainstorm freely — your notes are private</div>
         </div>
         <div style={{ marginLeft: 'auto', fontSize: 11, color: pointsAwarded ? tc.primary : LIGHT_THEME.textMuted, fontWeight: 600 }}>
-          {pointsAwarded ? `✓ +${qualityPct}% quality` : `+${qualityPct}% quality for using`}
+          {pointsAwarded ? `✓ +${qualityPct} pts` : `+${qualityPct} pts · jot a few thoughts`}
         </div>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 12 }}>
@@ -732,7 +744,7 @@ function getOverallTier(total, tc) {
   return { label: 'Low', color: '#8a8a82' };
 }
 
-function ContextStats({ submittedNames, totalPoints, maxPoints, tc, group, participantQuality, creatorQuality }) {
+function ContextStats({ submittedNames, totalPoints, tc, group, participantQuality, creatorQuality }) {
   const totalSubs = 47 + submittedNames.length;
   const totalParticipants = 18;
   const totalQuality = (creatorQuality || 0) + participantQuality;
@@ -884,6 +896,7 @@ export default function ContestLive() {
     if (valid.length === 0) return;
     setSubmittedNames(valid);
     setSubmitted(true);
+    if (!submitted) addPoints(PARTICIPANT_ACTIONS.submitNames);
   };
 
   const personalTips = getPersonalTips(contest?.subSegment);
@@ -977,6 +990,7 @@ export default function ContestLive() {
                     { label: 'Mind map', pts: PARTICIPANT_ACTIONS.mindmap },
                     { label: 'Scratchpad', pts: PARTICIPANT_ACTIONS.scratchpad },
                     { label: 'Each tip card', pts: PARTICIPANT_ACTIONS.tip },
+                    { label: 'Submit names', pts: PARTICIPANT_ACTIONS.submitNames },
                   ]
                 : [
                     { label: 'Brief', pts: PARTICIPANT_ACTIONS.brief },
@@ -984,6 +998,7 @@ export default function ContestLive() {
                     { label: 'Scratchpad', pts: PARTICIPANT_ACTIONS.scratchpad },
                     { label: 'Article read', pts: PARTICIPANT_ACTIONS.articleRead },
                     { label: 'Article quiz', pts: PARTICIPANT_ACTIONS.articleQuiz },
+                    { label: 'Submit names', pts: PARTICIPANT_ACTIONS.submitNames },
                   ]
               ).map(({ label, pts }) => (
                 <span key={label} style={{
@@ -1021,7 +1036,7 @@ export default function ContestLive() {
               <p style={{ color: LIGHT_THEME.textSecondary, fontSize: 13, marginBottom: 28 }}>
                 {(isPersonalContest || isGamingContest)
                   ? 'No articles needed — just read these tips and jump in.'
-                  : `Complete all ${articles.length} articles to boost your quality score. Then submit your names.`}
+                  : `Complete ${articles.length === 1 ? 'the article' : `all ${articles.length} articles`} to boost your quality score. Then submit your names.`}
               </p>
 
               {/* Brief Immersion Card */}
@@ -1029,6 +1044,9 @@ export default function ContestLive() {
 
               {/* Mind Map */}
               <MindMap tc={tc} onPoints={addPoints} qualityPct={smallQualityPct} subSegment={contest?.subSegment || meta.sub} />
+
+              {/* Scratch Pad — all segments */}
+              <ScratchPad tc={tc} onPoints={addPoints} qualityPct={PARTICIPANT_ACTIONS.scratchpad} subSegment={contest?.subSegment || meta.sub} />
 
               {/* Tip Cards (personal / gaming) */}
               {(isPersonalContest || isGamingContest) && (
@@ -1059,7 +1077,7 @@ export default function ContestLive() {
                             <div style={{ fontSize: 14, color: LIGHT_THEME.textSecondary, lineHeight: 1.65 }}>{tip.text}</div>
                           </div>
                           <div style={{ fontSize: 11, color: tipsCollected[`tip-${i}`] ? tc.primary : LIGHT_THEME.textMuted, fontWeight: 600, minWidth: 60, textAlign: 'right' }}>
-                            {tipsCollected[`tip-${i}`] ? `✓ +${smallQualityPct}%` : `+${smallQualityPct}% quality`}
+                            {tipsCollected[`tip-${i}`] ? `✓ +${smallQualityPct} pts` : `+${smallQualityPct} pts`}
                           </div>
                         </div>
                       </div>
@@ -1183,7 +1201,7 @@ export default function ContestLive() {
                   )}
 
                   {/* Context stats */}
-                  <ContextStats submittedNames={submittedNames} totalPoints={totalPoints} maxPoints={maxPoints} tc={tc} group={contest?.group} participantQuality={participantQuality} creatorQuality={creatorQuality} />
+                  <ContextStats submittedNames={submittedNames} totalPoints={totalPoints} tc={tc} group={contest?.group} participantQuality={participantQuality} creatorQuality={creatorQuality} />
 
                   {meta.transitionMode === 'manual' ? (
                     <div style={{ marginTop: 24, padding: '24px 20px', background: LIGHT_THEME.sidebarBg, border: `1px solid ${LIGHT_THEME.cardBorder}`, borderRadius: 12, textAlign: 'center' }}>
