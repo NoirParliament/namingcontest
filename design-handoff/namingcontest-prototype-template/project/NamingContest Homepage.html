@@ -1,0 +1,1663 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NamingContest — The best names are chosen, not assigned.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --bg-page:        #fcf9f7;
+  --bg-card:        #ffffff;
+  --bg-inset:       #f4f1ef;
+  --bg-ink:         #030302;
+  --bg-overlay:     #0303020a;
+  --fg:             #030302;
+  --fg-muted:       #03030280;
+  --fg-faint:       #03030299;
+  --fg-on-ink:      #ffffff;
+  --fg-on-ink-muted:#ffffffb3;
+  --border:         #03030217;
+  --ring:           #0303021f;
+
+  --panel-periwinkle:#b3c4f0;
+  --panel-mint:      #a6dcb3;
+  --panel-butter:    #fceebc;
+  --panel-sky:       #c4dffb;
+  --panel-blush:     #fadecc;
+
+  --accent-red:    #bb433a;
+  --accent-orange: #b25620;
+  --accent-yellow: #987e1b;
+  --accent-green:  #3f8850;
+  --accent-blue:   #427e8a;
+  --accent-purple: #4b68c3;
+  --accent-pink:   #a549ab;
+
+  --hero-sky-top:    #93cfed;
+  --hero-sky-bottom: #c4e5f6;
+
+  --r-xs:6px; --r-sm:10px; --r-md:12px; --r-lg:16px; --r-xl:24px; --r-2xl:32px; --r-pill:9999px;
+
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:20px; --s-6:24px;
+  --s-8:32px; --s-10:40px; --s-12:48px; --s-16:64px; --s-20:80px; --s-30:120px;
+
+  --w-page:1280px;
+
+  --shadow-block:
+    0 50px 40px 0 rgba(0,0,0,.01),
+    0 50px 40px 0 rgba(0,0,0,.02),
+    0 20px 40px 0 rgba(0,0,0,.05),
+    0  3px 10px 0 rgba(0,0,0,.08);
+  --shadow-card:
+    0 1px 2px rgba(0,0,0,.04),
+    0 8px 24px rgba(0,0,0,.06);
+  --shadow-pill:
+    0 1px 2px rgba(0,0,0,.06),
+    0 4px 14px rgba(0,0,0,.08);
+
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-text:    "Inter", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+
+  --tr-tight:-0.025em; --tr-wider:0.05em; --tr-widest:0.10em;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg-page);
+  color: var(--fg);
+  font-family: var(--font-text);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* layout helpers */
+.frame { padding: 20px; }
+.wrap  { max-width: var(--w-page); margin: 0 auto; padding: 0 var(--s-6); }
+
+.eyebrow {
+  font-family: var(--font-text);
+  font-size: 12px; font-weight: 600;
+  letter-spacing: var(--tr-widest); text-transform: uppercase;
+  color: var(--fg-muted);
+  margin: 0;
+}
+
+.h-display { font-family: var(--font-display); font-weight: 400; letter-spacing: var(--tr-tight); line-height: 1.05; color: var(--fg); margin: 0; }
+.h1 { font-size: 76px; }
+.h2 { font-size: 48px; }
+.h3 { font-size: 28px; }
+.italic { font-style: italic; }
+
+.lede { font-family: var(--font-text); font-size: 18px; color: var(--fg-muted); line-height: 1.55; margin: 0; }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; gap: var(--s-2); font-family: var(--font-text); font-weight: 500; font-size: 14px; border-radius: var(--r-pill); padding: 12px 20px; border: 1px solid transparent; cursor: pointer; transition: transform .12s ease, background .12s ease, box-shadow .12s ease; white-space: nowrap; text-decoration: none; }
+.btn-primary { background: var(--bg-ink); color: var(--fg-on-ink); box-shadow: var(--shadow-pill); }
+.btn-primary:hover { transform: translateY(-1px); }
+.btn-secondary { background: #fff; color: var(--fg); border-color: var(--border); box-shadow: var(--shadow-pill); }
+.btn-on-panel { background: #ffffff; color: var(--fg); }
+.btn-ghost { background: transparent; color: var(--fg); }
+.btn-lg { padding: 16px 28px; font-size: 15px; }
+
+.btn .arrow { display:inline-block; transition: transform .15s ease; }
+.btn:hover .arrow { transform: translateX(2px); }
+
+/* ============ NAV ============ */
+.nav-row {
+  position: sticky;
+  top: 12px;
+  display: flex; justify-content: center;
+  padding: 12px var(--s-6) 0;
+  z-index: 50;
+  pointer-events: none;
+}
+.nav-pill {
+  pointer-events: auto;
+  display: inline-flex; align-items: center; gap: 28px;
+  background: rgba(255, 255, 255, 0.55);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  backdrop-filter: saturate(180%) blur(18px);
+  border: 1px solid rgba(3, 3, 2, 0.06);
+  color: var(--fg);
+  border-radius: var(--r-pill);
+  padding: 8px 8px 8px 24px;
+  font-family: var(--font-text); font-size: 14px; font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  transition: background .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.nav-pill.is-scrolled {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(3, 3, 2, 0.08);
+  box-shadow: 0 1px 2px rgba(0,0,0,.05), 0 8px 28px rgba(0,0,0,.08);
+}
+.nav-pill .brand-mark {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-display); font-weight: 600;
+  letter-spacing: -0.01em; font-size: 18px;
+  text-decoration: none; color: var(--fg);
+}
+.nav-pill .brand-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--panel-mint);
+  display: inline-block;
+  box-shadow: inset 0 0 0 2px var(--bg-ink);
+}
+.nav-pill .links { display: inline-flex; gap: 22px; }
+.nav-pill .links a { color: var(--fg-muted); text-decoration: none; }
+.nav-pill .links a:hover { color: var(--fg); }
+.nav-pill .signin { color: var(--fg-muted); text-decoration: none; padding-left: 8px; padding-right: 4px; }
+.nav-pill .signin:hover { color: var(--fg); }
+.nav-pill .cta {
+  background: var(--bg-ink); color: var(--fg-on-ink);
+  padding: 10px 18px; border-radius: var(--r-pill);
+  font-weight: 600; font-size: 13px;
+  text-decoration: none;
+  box-shadow: var(--shadow-pill);
+}
+.nav-pill .cta:hover { background: #1a1a18; }
+
+/* ============ HERO ============ */
+.hero {
+  position: relative;
+  margin-top: 28px;
+  border-radius: var(--r-2xl);
+  overflow: hidden;
+  background:
+    radial-gradient(80% 60% at 50% 0%, var(--panel-blush) 0%, var(--panel-butter) 50%, #fff5e0 100%);
+  box-shadow: var(--shadow-block);
+}
+.hero-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 120px var(--s-8) 140px;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 84px;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  margin: 0;
+  text-wrap: balance;
+}
+.hero h1 .em { font-style: italic; font-weight: 500; }
+.hero p.sub {
+  font-family: var(--font-text);
+  font-size: 19px;
+  line-height: 1.5;
+  color: rgba(0,0,0,.7);
+  max-width: 60ch;
+  margin: 28px auto 0;
+}
+.hero .cta-row {
+  margin-top: 40px;
+  display: inline-flex; gap: 12px;
+  align-items: center;
+}
+.hero .cta-meta {
+  margin-left: 16px;
+  font-size: 13px;
+  color: rgba(0,0,0,.55);
+}
+
+/* decorative torn-paper shapes */
+.confetti {
+  position: absolute; pointer-events: none;
+  border-radius: 4px;
+}
+.c1 { top: 80px;  left: 8%;   width: 70px;  height: 30px; background: var(--panel-mint);    transform: rotate(-14deg); border-radius: 4px 18px 4px 14px; }
+.c2 { top: 60px;  right: 10%; width: 56px;  height: 24px; background: var(--panel-periwinkle); transform: rotate(11deg);  border-radius: 14px 4px 16px 4px; }
+.c3 { bottom: 70px; left: 12%; width: 48px;  height: 22px; background: var(--accent-purple);  opacity: .7; transform: rotate(8deg); border-radius: 18px 4px 14px 4px; }
+.c4 { bottom: 100px; right: 14%; width: 80px; height: 28px; background: var(--panel-sky);   transform: rotate(-9deg); border-radius: 4px 16px 4px 18px; }
+.c5 { top: 200px; right: 6%; width: 32px; height: 32px; background: var(--accent-pink); opacity: .55; border-radius: 50%; }
+.c6 { top: 240px; left: 4%; width: 24px; height: 24px; background: var(--accent-green); opacity: .5; border-radius: 50%; }
+
+/* ============ section base ============ */
+.section { margin-top: var(--s-30); }
+
+.section-head { text-align: center; max-width: 720px; margin: 0 auto var(--s-12); }
+.section-head .eyebrow { margin-bottom: var(--s-3); }
+.section-head .lede { margin: var(--s-4) auto 0; max-width: 56ch; }
+
+/* ============ OFFERINGS ============ */
+.offerings {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.offering {
+  background: #ffffff;
+  border-radius: var(--r-xl);
+  position: relative;
+  display: flex; flex-direction: column;
+  min-height: 520px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.offering .body { padding: 36px 32px 24px; display: flex; flex-direction: column; }
+
+/* Photo scene — a tinted background panel with an organically-shaped photo blob and floating pills */
+.offering .scene {
+  margin-top: auto;
+  position: relative;
+  height: 240px;
+  padding: 20px 24px;
+}
+/* Soft vertical gradient inside scene panel: white fades into the tier tint
+   so there's no hard horizontal seam between card body and photo area. */
+.offering[data-tier="personal"] .scene {
+  background: linear-gradient(to bottom, #fff 0%, var(--panel-blush) 55%, var(--panel-blush) 100%);
+}
+.offering[data-tier="team"] .scene {
+  background: linear-gradient(to bottom, #fff 0%, var(--panel-periwinkle) 55%, var(--panel-periwinkle) 100%);
+}
+.offering[data-tier="business"] .scene {
+  background: linear-gradient(to bottom, #fff 0%, var(--panel-mint) 55%, var(--panel-mint) 100%);
+}
+
+/* Photo blob: organic asymmetric border-radius, anchored bottom-right */
+.offering .photo {
+  position: absolute;
+  right: -20px;
+  bottom: -20px;
+  width: 78%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-color: rgba(0,0,0,.06); /* placeholder tint */
+  display: flex; align-items: flex-end; justify-content: flex-end;
+  padding: 12px 18px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  color: rgba(0,0,0,.35);
+}
+.offering[data-tier="personal"] .photo { border-radius: 64% 36% 58% 42% / 70% 60% 40% 30%; }
+.offering[data-tier="team"]     .photo { border-radius: 50% 50% 42% 58% / 64% 50% 50% 36%; }
+.offering[data-tier="business"] .photo { border-radius: 58% 42% 50% 50% / 60% 56% 44% 40%; right: auto; left: -20px; }
+
+/* Real-image override: when .photo carries data-img, drop the blob mask
+   (the PNG already has its own organic transparent cutout) and let it sit naturally. */
+.offering .photo[data-img] {
+  border-radius: 0 !important;
+  background-color: transparent;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: bottom right;
+  width: 100%;
+  height: 115%;
+  right: -10px;
+  bottom: -10px;
+  padding: 0;
+  color: transparent;
+}
+
+/* Floating pill (Beem-style): white rounded chip straddling the photo edge */
+.offering .float-pill {
+  position: absolute;
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #fff;
+  border-radius: 999px;
+  padding: 8px 14px 8px 10px;
+  box-shadow: 0 10px 24px -12px rgba(0,0,0,.25), 0 2px 4px rgba(0,0,0,.05);
+  font-family: var(--font-text);
+  font-size: 13px; font-weight: 500;
+  white-space: nowrap;
+  z-index: 2;
+}
+.offering .float-pill .ic {
+  width: 22px; height: 22px; border-radius: 6px;
+  background: var(--bg-inset);
+  display: inline-flex; align-items: center; justify-content: center;
+  flex: none;
+}
+.offering .float-pill .ic svg { width: 12px; height: 12px; }
+.offering .float-pill .v {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px; color: var(--fg-muted); margin-left: 2px;
+}
+.offering .float-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent-green); margin-right: 2px; }
+
+/* Per-tier pill placement */
+.offering[data-tier="personal"] .pill-a { left: 18px; top: 32px; }
+.offering[data-tier="personal"] .pill-b { left: 8px; top: 110px; }
+.offering[data-tier="team"]     .pill-a { left: 18px; top: 28px; }
+.offering[data-tier="team"]     .pill-b { left: 6px;  top: 116px; }
+.offering[data-tier="business"] .pill-a { right: 18px; top: 32px; }
+.offering[data-tier="business"] .pill-b { right: 8px;  top: 116px; }
+
+.offering h3 {
+  font-family: var(--font-display); font-weight: 400;
+  font-size: 32px; letter-spacing: -0.025em; line-height: 1.05;
+  margin: 0 0 8px;
+}
+.offering .tagline {
+  font-family: var(--font-text); font-size: 14px; color: var(--fg-muted);
+  margin: 0 0 24px; max-width: 30ch;
+}
+.offering .meta-row {
+  border-top: 1px solid var(--border);
+  margin-top: auto;
+  padding-top: 20px;
+  display: flex; justify-content: space-between; align-items: baseline;
+  gap: 12px;
+}
+.offering .meta-row .cap { font-size: 12px; color: var(--fg-muted); letter-spacing: .04em; text-transform: uppercase; font-weight: 600; }
+.offering .meta-row .price { font-family: var(--font-display); font-size: 28px; line-height: 1; }
+.offering .meta-row .price small { font-family: var(--font-text); font-size: 12px; color: var(--fg-muted); margin-left: 4px; font-weight: 500;}
+.offering .start {
+  margin-top: 18px;
+  font-family: var(--font-text); font-size: 14px; font-weight: 500;
+  color: #fff;
+  background: var(--fg);
+  text-decoration: none;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  align-self: flex-start;
+  transition: transform .15s ease, background .15s ease;
+}
+.offering .start:hover { background: #000; transform: translateY(-1px); }
+.offering .start .arrow { transition: transform .15s ease; }
+.offering .start:hover .arrow { transform: translateX(3px); }
+
+/* ============ HOW IT WORKS (compact, light) ============ */
+.howit {
+  padding: 0;
+}
+.howit .section-head { margin-bottom: 56px; }
+.howit .section-head h2 { font-size: 44px; }
+
+/* Step strip */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  position: relative;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+.steps::before {
+  content: "";
+  position: absolute;
+  top: 18px;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border) 8%, var(--border) 92%, transparent);
+  z-index: 0;
+}
+.step {
+  position: relative;
+  z-index: 1;
+  padding: 0 12px;
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center;
+}
+.step .num-circle {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--panel-mint);
+  color: var(--accent-green);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-text); font-size: 12px; font-weight: 700;
+  letter-spacing: .04em;
+  box-shadow: 0 0 0 6px var(--bg-page);
+}
+.step .step-title {
+  margin-top: 16px;
+  font-family: var(--font-text); font-weight: 600; font-size: 15px;
+  color: var(--fg);
+}
+.step .step-desc {
+  margin-top: 6px;
+  font-family: var(--font-text); font-size: 13px; line-height: 1.45;
+  color: var(--fg-muted);
+  max-width: 22ch;
+}
+
+/* Shared accountability panel wrapper */
+.shared-panel {
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
+  border-radius: var(--r-2xl);
+  padding: 72px 56px;
+  box-shadow: var(--shadow-block);
+}
+.shared-panel .shared { margin-top: 0; }
+
+.shared-panel .score-bar-slim {
+  background: rgba(0,0,0,.07);
+}
+.shared-panel .shared-col h6 { color: var(--fg-muted); }
+.shared-panel .divider { background: var(--border); }
+.shared-panel .score-chip {
+  background: #ffffff;
+  box-shadow: var(--shadow-pill);
+}
+
+/* Symmetric two-column task grid */
+.task-grid {
+  margin-top: 56px;
+  margin-bottom: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  gap: 0 48px;
+  align-items: stretch;
+}
+.task-grid .gutter {
+  background: var(--border);
+  width: 1px;
+}
+.task-col { display: flex; flex-direction: column; gap: 14px; position: relative; }
+.task-col .col-head {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 6px;
+}
+.task-col .col-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex: none;
+}
+.task-col[data-side="creator"] .col-dot { background: var(--panel-mint); color: #1f5430; }
+.task-col[data-side="participant"] .col-dot { background: var(--panel-periwinkle); color: #28366f; }
+.task-col .col-dot svg { width: 14px; height: 14px; }
+.task-col .col-title {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 400;
+  letter-spacing: -0.02em; color: var(--fg);
+  line-height: 1.1;
+}
+.task-col .col-meta {
+  font-family: var(--font-text); font-size: 12px;
+  color: var(--fg-muted); margin-top: 2px;
+  line-height: 1.3;
+}
+.task-col { gap: 0; align-items: stretch; padding: 12px 4px 16px; }
+.task-col .col-head { margin-bottom: 36px; position: relative; z-index: 5; min-height: 56px; }
+.task-card {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 16px 18px;
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 8px 24px -10px rgba(0,0,0,.18), 0 2px 6px rgba(0,0,0,.06);
+  transition: transform .25s ease, box-shadow .25s ease, z-index 0s;
+  transform-origin: center;
+  width: 88%;
+  position: relative;
+}
+/* Fanned-stack feel — overlap, alternating align, ascending z so bottom sits on top */
+.task-col .task-card:nth-of-type(1) { z-index: 1; margin-top: 0; }
+.task-col .task-card:nth-of-type(2) { z-index: 2; margin-top: -22px; }
+.task-col .task-card:nth-of-type(3) { z-index: 3; margin-top: -22px; }
+
+.task-col[data-side="creator"]    .task-card:nth-of-type(1) { margin-left: 0;    transform: rotate(-1.6deg); }
+.task-col[data-side="creator"]    .task-card:nth-of-type(2) { margin-left: 12%;  transform: rotate(1.2deg); }
+.task-col[data-side="creator"]    .task-card:nth-of-type(3) { margin-left: 4%;   transform: rotate(-0.7deg); }
+.task-col[data-side="participant"] .task-card:nth-of-type(1) { margin-left: 12%;  transform: rotate(1.6deg); }
+.task-col[data-side="participant"] .task-card:nth-of-type(2) { margin-left: 0;    transform: rotate(-1.2deg); }
+.task-col[data-side="participant"] .task-card:nth-of-type(3) { margin-left: 8%;   transform: rotate(0.7deg); }
+.task-card:hover {
+  transform: rotate(0) translateY(-4px) !important;
+  box-shadow: 0 18px 36px -12px rgba(0,0,0,.25), 0 4px 10px rgba(0,0,0,.08);
+  z-index: 10;
+}
+
+/* Per-task icon pill */
+.task-card .icon {
+  width: 32px; height: 32px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex: none;
+}
+.task-card .icon svg { width: 16px; height: 16px; }
+.task-col[data-side="creator"]    .task-card .icon { background: var(--panel-mint); color: #1f5430; }
+.task-col[data-side="participant"] .task-card .icon { background: var(--panel-periwinkle); color: #28366f; }
+.task-card:hover { transform: rotate(0) translate(0,-3px) !important; box-shadow: var(--shadow-block); }
+.task-card .check {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.task-card .check svg { width: 12px; height: 12px; }
+.task-col[data-side="creator"] .task-card .check { background: var(--panel-mint); color: #1f5430; }
+.task-col[data-side="participant"] .task-card .check { background: var(--panel-periwinkle); color: #28366f; }
+.task-card .t { font-family: var(--font-text); font-size: 14px; font-weight: 500; color: var(--fg); line-height: 1.3; }
+.task-card .pts { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--fg-muted); }
+
+@media (max-width: 860px) {
+  .task-grid { grid-template-columns: 1fr; gap: 32px; }
+  .task-grid .gutter { display: none; }
+  .task-card { transform: none !important; width: 100% !important; margin-left: 0 !important; margin-top: 0 !important; }
+  .task-col { gap: 12px; }
+}
+
+/* Shared accountability — slim */
+.shared {
+  margin-top: 80px;
+  max-width: 760px;
+  margin-left: auto; margin-right: auto;
+  text-align: center;
+}
+.shared .eyebrow { margin-bottom: 12px; }
+.shared h3 {
+  font-family: var(--font-display); font-weight: 400;
+  font-size: 36px; letter-spacing: -0.025em; line-height: 1.1;
+  margin: 0;
+  text-wrap: balance;
+}
+.shared h3 .it { font-style: italic; }
+.shared .shared-sub {
+  margin: 14px auto 32px;
+  font-size: 15px; color: var(--fg-muted);
+  max-width: 56ch;
+  line-height: 1.55;
+}
+
+.score-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 10px;
+}
+.score-row .label-l, .score-row .label-r {
+  font-size: 12px; color: var(--fg-muted);
+  letter-spacing: .04em;
+  font-weight: 500;
+}
+.score-row .label-l b, .score-row .label-r b { color: var(--fg); font-weight: 600; }
+.score-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--panel-mint);
+  color: var(--fg);
+  padding: 4px 12px;
+  border-radius: var(--r-pill);
+  font-size: 12px; font-weight: 600;
+  letter-spacing: .02em;
+}
+.score-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-green); }
+
+.score-bar-slim {
+  position: relative;
+  height: 8px;
+  border-radius: var(--r-pill);
+  background: var(--bg-inset);
+  overflow: hidden;
+}
+.score-bar-slim .fill-creator {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 38%;
+  background: var(--panel-mint);
+}
+.score-bar-slim .fill-participant {
+  position: absolute;
+  left: 50%; top: 0; bottom: 0;
+  width: 40%;
+  background: var(--panel-periwinkle);
+}
+.score-bar-slim .mid {
+  position: absolute;
+  left: 50%; top: -3px; bottom: -3px;
+  width: 1px;
+  background: rgba(0,0,0,.2);
+}
+
+.shared-cols {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  gap: 32px;
+  text-align: left;
+}
+.shared-cols .divider { background: var(--border); }
+.shared-col h6 {
+  font-family: var(--font-text); font-size: 11px; font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--fg-muted);
+  margin: 0 0 14px;
+}
+.shared-col ul {
+  list-style: none; padding: 0; margin: 0;
+  display: grid; gap: 8px;
+}
+.shared-col ul li {
+  position: relative;
+  padding-left: 16px;
+  font-size: 14px; color: var(--fg);
+  line-height: 1.5;
+}
+.shared-col ul li::before {
+  content: "·";
+  position: absolute; left: 4px; top: -2px;
+  color: var(--fg-muted);
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.shared-cta {
+  margin-top: 40px;
+  text-align: center;
+}
+
+/* ============ WHY NAMINGCONTEST ============ */
+.why {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+.why-item {
+  background: var(--bg-card);
+  border-radius: var(--r-xl);
+  padding: 36px 0 36px 32px;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: 16px;
+  align-items: stretch;
+  overflow: hidden;
+  min-height: 260px;
+  transition: transform .15s ease;
+}
+.why-item:hover { transform: translateY(-2px); }
+.why-item .why-text { display: flex; flex-direction: column; justify-content: flex-start; padding-right: 8px; }
+.why-item .why-art {
+  position: relative;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 12px 0;
+  overflow: visible;
+}
+.why-item .num {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px; color: var(--fg-muted);
+  letter-spacing: .12em; text-transform: uppercase;
+}
+.why-item h3 {
+  font-family: var(--font-display); font-weight: 400;
+  font-size: 28px; line-height: 1.05; letter-spacing: -0.025em;
+  margin: 0 0 12px;
+  text-wrap: balance;
+  max-width: 18ch;
+}
+.why-item p {
+  font-family: var(--font-text);
+  font-size: 14px; line-height: 1.55;
+  color: rgba(0,0,0,.72);
+  margin: 0;
+  max-width: 32ch;
+}
+.why-item .em-word { font-style: italic; }
+
+.why-item[data-tone="butter"] { background: var(--panel-butter); }
+.why-item[data-tone="mint"]   { background: var(--panel-mint);   }
+.why-item[data-tone="periwinkle"] { background: var(--panel-periwinkle); }
+.why-item[data-tone="blush"]  { background: var(--panel-blush);  }
+
+/* Big step numerals — magazine chapter mark */
+.why-item .step-mark {
+  display: flex; align-items: baseline; gap: 14px;
+  margin-bottom: 18px;
+}
+.why-item .step-mark .step-num {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 64px;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  color: var(--fg);
+  font-variant-numeric: lining-nums;
+}
+.why-item .step-mark .step-label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--fg);
+  padding-bottom: 10px;
+  border-bottom: 1.5px solid currentColor;
+  align-self: flex-end;
+}
+
+/* ===== Artifacts inside the four-step cards ===== */
+.artifact {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 12px 28px -14px rgba(0,0,0,.22), 0 2px 6px rgba(0,0,0,.06);
+  font-family: var(--font-text);
+  color: var(--fg);
+}
+.artifact .a-head {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--fg-muted);
+  padding: 12px 14px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* 01 / Brief — form card with input rows */
+.art-brief {
+  width: 280px; max-width: 100%;
+  transform: rotate(-2deg) translateX(28px);
+}
+.art-brief .row {
+  padding: 10px 14px;
+  display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.art-brief .row:last-child { border-bottom: 0; }
+.art-brief .lbl { color: var(--fg-muted); width: 70px; flex: none; font-size: 11px; }
+.art-brief .val { color: var(--fg); font-weight: 500; }
+.art-brief .chip-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.art-brief .mini-chip {
+  font-size: 11px; padding: 3px 9px; border-radius: 999px;
+  background: var(--bg-inset); color: var(--fg);
+  border: 1px solid var(--border);
+}
+.art-brief .input-line {
+  flex: 1; height: 14px; border-radius: 4px;
+  background: var(--bg-inset);
+}
+
+/* 02 / Invite — link + avatars */
+.art-invite {
+  width: 280px; max-width: 100%;
+  transform: rotate(1.6deg) translateX(28px);
+  padding: 14px;
+}
+.art-invite .url-row {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.art-invite .url-row .copy {
+  margin-left: auto;
+  width: 22px; height: 22px; border-radius: 6px;
+  background: var(--fg); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+}
+.art-invite .avatars {
+  margin-top: 12px;
+  display: flex; align-items: center;
+}
+.art-invite .av {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 2px solid #fff;
+  margin-right: -8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 600; color: var(--fg);
+}
+.art-invite .av:nth-child(1) { background: var(--panel-mint); }
+.art-invite .av:nth-child(2) { background: var(--panel-blush); }
+.art-invite .av:nth-child(3) { background: var(--panel-butter); }
+.art-invite .av:nth-child(4) { background: var(--panel-sky); }
+.art-invite .av-more {
+  margin-left: 12px;
+  background: var(--fg); color: #fff;
+  font-size: 11px; font-weight: 600;
+  padding: 4px 10px; border-radius: 999px;
+}
+
+/* 03 / Submit & Vote — ranked list */
+.art-vote {
+  width: 280px; max-width: 100%;
+  transform: rotate(-1.4deg) translateX(28px);
+  padding: 14px;
+}
+.art-vote .v-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0 4px;
+  border-bottom: 1px solid var(--border);
+}
+.art-vote .v-row:last-child { border-bottom: 0; }
+.art-vote .v-row .name { font-family: var(--font-display); font-size: 16px; font-weight: 400; }
+.art-vote .v-row .meta { font-size: 11px; color: var(--fg-muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.art-vote .bar-wrap { padding: 0 0 8px; }
+.art-vote .bar-track {
+  height: 4px; border-radius: 2px;
+  background: var(--bg-inset);
+  overflow: hidden;
+}
+.art-vote .bar-fill { height: 100%; background: var(--accent-green); border-radius: 2px; }
+.art-vote .v-block:last-child .bar-wrap { padding-bottom: 0; }
+.art-vote .v-block { border-bottom: 1px solid var(--border); }
+.art-vote .v-block:last-child { border-bottom: 0; }
+.art-vote .v-block .v-row { border-bottom: 0; padding: 8px 0 4px; }
+.art-vote .v-block[data-leader="true"] .name { font-weight: 500; }
+.art-vote .v-block[data-leader="true"] .meta { color: var(--fg); }
+
+/* 04 / Result — winner card */
+.art-winner {
+  width: 270px; max-width: 100%;
+  transform: rotate(1.2deg) translateX(28px);
+  padding: 16px;
+  text-align: left;
+}
+.art-winner .winner-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  background: var(--accent-orange); color: #fff;
+  padding: 4px 10px; border-radius: 999px;
+  margin-bottom: 10px;
+}
+.art-winner .winner-tag .dot { width: 6px; height: 6px; background: #fff; border-radius: 50%; }
+.art-winner .name {
+  font-family: var(--font-display); font-weight: 400;
+  font-size: 30px; letter-spacing: -0.02em; line-height: 1.05;
+  margin-bottom: 4px;
+}
+.art-winner .sub { font-size: 12px; color: var(--fg-muted); margin-bottom: 12px; }
+.art-winner .bars { display: flex; align-items: flex-end; gap: 6px; height: 40px; }
+.art-winner .bars span {
+  flex: 1; background: var(--bg-inset); border-radius: 3px 3px 0 0;
+}
+.art-winner .bars span:nth-child(1) { height: 100%; background: var(--accent-orange); }
+.art-winner .bars span:nth-child(2) { height: 60%; }
+.art-winner .bars span:nth-child(3) { height: 45%; }
+.art-winner .bars span:nth-child(4) { height: 30%; }
+.art-winner .bars span:nth-child(5) { height: 22%; }
+
+/* Tone-matched accents per card */
+/* Brief (butter) — yellow accent on the "Brand" value chip area */
+.why-item[data-tone="butter"] .art-brief .a-head { color: var(--accent-orange); }
+.why-item[data-tone="butter"] .art-brief .row .val { color: var(--accent-orange); font-weight: 600; }
+
+/* Invite (periwinkle) — purple accent on copy + +12 chip */
+.why-item[data-tone="periwinkle"] .art-invite .copy { background: var(--accent-purple); }
+.why-item[data-tone="periwinkle"] .art-invite .av-more { background: var(--accent-purple); }
+
+/* Vote (mint) — green stays (already matches) */
+
+/* Result (blush) — orange accent on winner tag + leading bar (already set) */
+
+@media (max-width: 860px) {
+  .why-item {
+    grid-template-columns: 1fr;
+    padding: 32px 28px;
+    min-height: 0;
+  }
+  .why-item .why-art { padding: 0; justify-content: flex-start; }
+  .artifact { transform: none !important; width: 100%; max-width: 360px; }
+}
+
+/* ============ TESTIMONIALS ============ */
+.testimonials {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+.tmonial {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  padding: 32px;
+  display: flex; flex-direction: column;
+  box-shadow: var(--shadow-card);
+}
+.tmonial .stars {
+  display: inline-flex; gap: 3px; margin-bottom: 20px;
+  color: #d99e2b;
+}
+.tmonial .stars svg { width: 16px; height: 16px; }
+.tmonial blockquote {
+  font-family: var(--font-display); font-weight: 400;
+  font-size: 22px; line-height: 1.35; letter-spacing: -0.015em;
+  margin: 0 0 28px;
+  color: var(--fg);
+  text-wrap: pretty;
+}
+.tmonial blockquote::before { content: "\201C"; }
+.tmonial blockquote::after  { content: "\201D"; }
+
+.tmonial .who-row {
+  margin-top: auto;
+  display: flex; align-items: center; gap: 14px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.tmonial .avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 16px; font-weight: 500;
+  color: var(--fg);
+  flex: none;
+}
+.tmonial[data-cat="business"] .avatar { background: var(--panel-mint); }
+.tmonial[data-cat="team"]     .avatar { background: var(--panel-periwinkle); }
+.tmonial[data-cat="personal"] .avatar { background: var(--panel-blush); }
+
+.tmonial .name { font-size: 14px; font-weight: 600; color: var(--fg); }
+.tmonial .meta { font-size: 13px; color: var(--fg-muted); margin-top: 2px; }
+
+.tmonial .winner-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 18px;
+  padding: 12px 16px;
+  background: var(--bg-inset);
+  border-radius: var(--r-md);
+  font-size: 13px;
+}
+.tmonial .winner-row .label { color: var(--fg-muted); letter-spacing: .04em; text-transform: uppercase; font-size: 11px; font-weight: 600; }
+.tmonial .winner-row .name-win { font-family: var(--font-display); font-size: 18px; letter-spacing: -0.02em; }
+
+.cat-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  padding: 4px 10px;
+  font-size: 11px; font-weight: 600;
+  color: var(--fg);
+  letter-spacing: .04em; text-transform: uppercase;
+}
+.cat-tag .dot { width: 6px; height: 6px; border-radius: 50%; }
+.cat-tag[data-cat="business"] .dot { background: var(--accent-green); }
+.cat-tag[data-cat="team"]     .dot { background: var(--accent-purple); }
+.cat-tag[data-cat="personal"] .dot { background: var(--accent-orange); }
+
+/* ============ FAQ ============ */
+.faq {
+  max-width: 880px; margin: 0 auto;
+}
+.faq-item {
+  border-top: 1px solid var(--border);
+  padding: 28px 0;
+}
+.faq-item:last-child { border-bottom: 1px solid var(--border); }
+.faq-q {
+  display: flex; justify-content: space-between; align-items: center;
+  width: 100%;
+  background: none; border: 0;
+  text-align: left;
+  font-family: var(--font-display); font-weight: 400;
+  font-size: 26px; letter-spacing: -0.02em;
+  color: var(--fg);
+  cursor: pointer;
+  padding: 0; gap: 24px;
+  line-height: 1.2;
+}
+.faq-q .toggle {
+  flex: none; width: 36px; height: 36px;
+  border-radius: 50%; border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-text); font-size: 18px;
+  color: var(--fg);
+  transition: transform .2s ease, background .2s ease;
+  background: #fff;
+}
+.faq-item[open] .faq-q .toggle { background: var(--bg-ink); color: var(--fg-on-ink); transform: rotate(45deg); }
+.faq-a {
+  margin: 18px 0 0;
+  max-width: 70ch;
+  color: var(--fg-muted);
+  font-size: 16px;
+  line-height: 1.65;
+}
+.faq-a strong { color: var(--fg); font-weight: 600; }
+.faq-a ol { padding-left: 0; list-style: none; counter-reset: item; margin: 16px 0 0; display: grid; gap: 10px; }
+.faq-a ol li {
+  counter-increment: item;
+  padding-left: 36px; position: relative;
+}
+.faq-a ol li::before {
+  content: counter(item);
+  position: absolute; left: 0; top: 1px;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--bg-ink); color: var(--fg-on-ink);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-family: var(--font-text); font-weight: 600;
+}
+
+/* ============ CLOSING CTA ============ */
+.closing {
+  background: var(--panel-mint);
+  border-radius: var(--r-2xl);
+  padding: 120px 56px;
+  text-align: center;
+  position: relative; overflow: hidden;
+  box-shadow: var(--shadow-block);
+}
+.closing::after {
+  content: ""; position: absolute; inset: 0;
+  background: repeating-linear-gradient(115deg, rgba(255,255,255,0) 0 22px, rgba(255,255,255,.18) 22px 23px);
+  pointer-events: none; mix-blend-mode: soft-light;
+}
+.closing > * { position: relative; z-index: 1; }
+.closing h2 {
+  font-family: var(--font-display); font-weight: 400;
+  font-size: 64px; letter-spacing: -0.03em; line-height: 1.05;
+  margin: 0 auto;
+  max-width: 18ch;
+  text-wrap: balance;
+}
+.closing h2 .em { font-style: italic; }
+.closing .closing-cta { margin-top: 36px; }
+.closing .meta {
+  margin-top: 18px;
+  font-size: 14px; color: rgba(0,0,0,.6);
+}
+
+/* ============ FOOTER ============ */
+.footer {
+  background: var(--bg-ink); color: var(--fg-on-ink);
+  border-radius: var(--r-2xl);
+  padding: 64px 56px 40px;
+  margin-top: var(--s-30);
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2.2fr 1fr 1fr 1fr;
+  gap: 48px;
+}
+.footer .brand-block .brand-mark {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--font-display); font-weight: 600;
+  font-size: 22px; letter-spacing: -0.02em;
+  color: var(--fg-on-ink); text-decoration: none;
+  margin-bottom: 20px;
+}
+.footer .brand-block .brand-dot {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--panel-mint);
+  box-shadow: inset 0 0 0 2px var(--bg-ink);
+}
+.footer .brand-block p {
+  font-size: 14px; line-height: 1.55;
+  color: var(--fg-on-ink-muted);
+  max-width: 38ch;
+  margin: 0 0 28px;
+}
+.footer h6 {
+  font-family: var(--font-text); font-size: 11px; font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--fg-on-ink-muted);
+  margin: 0 0 18px;
+}
+.footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+.footer a { color: var(--fg-on-ink); opacity: .85; text-decoration: none; font-size: 14px; }
+.footer a:hover { opacity: 1; }
+.footer .socials { display: flex; gap: 10px; }
+.footer .socials a {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,.08);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 1;
+}
+.footer .socials a:hover { background: rgba(255,255,255,.15); }
+.footer .socials svg { width: 16px; height: 16px; }
+
+.footer-bottom {
+  margin-top: 56px;
+  padding-top: 28px;
+  border-top: 1px solid rgba(255,255,255,.1);
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12px; color: var(--fg-on-ink-muted);
+}
+
+/* responsive */
+@media (max-width: 980px) {
+  .offerings, .testimonials, .why, .howit-cols, .footer-grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 56px; }
+  .hero-inner { padding: 80px var(--s-5) 100px; }
+  .howit { padding: 64px 28px; }
+  .howit .section-head h2 { font-size: 40px; }
+  .closing { padding: 80px 28px; }
+  .closing h2 { font-size: 44px; }
+  .nav-pill .links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="frame">
+  <div class="wrap">
+
+    <!-- ===================== NAV ===================== -->
+    <div class="nav-row">
+      <nav class="nav-pill" aria-label="Primary">
+        <a href="#" class="brand-mark">
+          <span class="brand-dot" aria-hidden="true"></span>
+          <span>NamingContest</span>
+        </a>
+        <div class="links">
+          <a href="#how">How It Works</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#examples">Examples</a>
+        </div>
+        <a href="#signin" class="signin">Sign In</a>
+        <a href="#start" class="cta">Start a Contest</a>
+      </nav>
+    </div>
+
+    <!-- ===================== HERO ===================== -->
+    <header class="hero" data-screen-label="01 Hero">
+      <span class="confetti c1"></span>
+      <span class="confetti c2"></span>
+      <span class="confetti c3"></span>
+      <span class="confetti c4"></span>
+      <span class="confetti c5"></span>
+      <span class="confetti c6"></span>
+
+      <div class="hero-inner">
+        <h1 class="h-display">
+          The best names are <span class="em">chosen,</span><br />
+          not assigned.
+        </h1>
+        <p class="sub">
+          Invite anyone. Collect ideas anonymously. Vote with five structured methods. Pick a winner the whole room actually believes in.
+        </p>
+        <div class="cta-row">
+          <a href="#start" class="btn btn-primary btn-lg">Start a naming contest <span class="arrow">→</span></a>
+          <span class="cta-meta">Free tier · No credit card required</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===================== OFFERINGS ===================== -->
+    <section class="section" id="pricing" data-screen-label="02 Offerings">
+      <div class="section-head">
+        <p class="eyebrow">Three ways to run a contest</p>
+        <h2 class="h-display h2">One platform. Three scales.</h2>
+        <p class="lede">Same structured process — sized to fit a kitchen-table decision, a six-person band, or a global product launch.</p>
+      </div>
+
+      <div class="offerings">
+        <!-- PERSONAL -->
+        <article class="offering" data-tier="personal">
+          <div class="body">
+            <h3>Personal</h3>
+            <p class="tagline">Baby names, pet names, the wedding hashtag, the family Wi-Fi.</p>
+            <div class="meta-row">
+              <span class="cap">Up to 15 participants</span>
+              <span class="price">$9<small>/contest</small></span>
+            </div>
+            <a href="#start-personal" class="start">Get started <span class="arrow">→</span></a>
+          </div>
+          <div class="scene" aria-hidden="true">
+            <div class="photo" data-img style="background-image: url('assets/personal-dog.png?v=3');"></div>
+            <div class="float-pill pill-a">
+              <span class="ic"><svg viewBox="0 0 16 16" fill="none" stroke="#b25620" stroke-width="1.6" stroke-linecap="round"><path d="M8 14s-5-3.2-5-7a3 3 0 0 1 5-2 3 3 0 0 1 5 2c0 3.8-5 7-5 7z"/></svg></span>
+              #ChenForever <span class="v">3 votes</span>
+            </div>
+            <div class="float-pill pill-b">
+              <span class="ic"><svg viewBox="0 0 16 16" fill="none" stroke="#b25620" stroke-width="1.6" stroke-linecap="round"><circle cx="5" cy="6" r="2"/><circle cx="11" cy="6" r="2"/><path d="M2 13c0-2 1.5-3 3-3s3 1 3 3M8 13c0-2 1.5-3 3-3s3 1 3 3"/></svg></span>
+              12 joined
+            </div>
+          </div>
+        </article>
+
+        <!-- TEAM -->
+        <article class="offering" data-tier="team">
+          <div class="body">
+            <h3>Team</h3>
+            <p class="tagline">Bands, podcasts, sports squads, gaming groups, side projects.</p>
+            <div class="meta-row">
+              <span class="cap">Up to 60 participants</span>
+              <span class="price">$29<small>/contest</small></span>
+            </div>
+            <a href="#start-team" class="start">Get started <span class="arrow">→</span></a>
+          </div>
+          <div class="scene" aria-hidden="true">
+            <div class="photo" data-img style="background-image: url('assets/team-players.png?v=3');"></div>
+            <div class="float-pill pill-a">
+              <span class="ic"><svg viewBox="0 0 16 16" fill="none" stroke="#4b68c3" stroke-width="1.6" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l2.5 1.5"/></svg></span>
+              Round 2 <span class="v">6 left</span>
+            </div>
+            <div class="float-pill pill-b">
+              <span class="ic"><svg viewBox="0 0 16 16" fill="none" stroke="#4b68c3" stroke-width="1.6" stroke-linecap="round"><path d="M3 12V5l5-2 5 2v7"/><path d="M3 12h10"/></svg></span>
+              Quiet Static <span class="v">9</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- BUSINESS -->
+        <article class="offering" data-tier="business">
+          <div class="body">
+            <h3>Business</h3>
+            <p class="tagline">Company names, product launches, rebrands, internal initiatives.</p>
+            <div class="meta-row">
+              <span class="cap">Up to 240 participants</span>
+              <span class="price">$89<small>/contest</small></span>
+            </div>
+            <a href="#start-business" class="start">Get started <span class="arrow">→</span></a>
+          </div>
+          <div class="scene" aria-hidden="true">
+            <div class="photo" data-img style="background-image: url('assets/business-woman.png?v=3');"></div>
+            <div class="float-pill pill-a">
+              <span class="dot"></span>
+              Winner <span class="v">Lumira</span>
+            </div>
+            <div class="float-pill pill-b">
+              <span class="ic"><svg viewBox="0 0 16 16" fill="none" stroke="#3f8850" stroke-width="1.6" stroke-linecap="round"><path d="M2 8h12M9 4l4 4-4 4"/></svg></span>
+              47% of 84 votes
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===================== HOW IT WORKS ===================== -->
+    <!-- ===================== HOW IT WORKS ===================== -->
+    <section class="section" id="how" data-screen-label="03 How It Works">
+      <div class="section-head">
+        <p class="eyebrow">How it works</p>
+        <h2 class="h-display h2">Four steps to a name <span class="italic">everyone</span> agrees on.</h2>
+        <p class="lede">Pick a path, invite the room, vote with structure, ship the winner.</p>
+      </div>
+
+      <div class="why">
+        <div class="why-item" data-tone="butter">
+          <div class="why-text">
+            <div class="step-mark"><span class="step-num">01</span><span class="step-label">Brief</span></div>
+            <h3>Build Your <span class="em-word">Brief.</span></h3>
+            <p>Pick your contest type, answer a few key questions. Our framework handles the rest.</p>
+          </div>
+          <div class="why-art">
+            <div class="artifact art-brief">
+              <div class="a-head">New Contest · Brief</div>
+              <div class="row"><span class="lbl">Brand</span><span class="val">Northbound Co.</span></div>
+              <div class="row"><span class="lbl">Audience</span><span class="chip-row"><span class="mini-chip">B2B SaaS</span><span class="mini-chip">Founders</span></span></div>
+              <div class="row"><span class="lbl">Tone</span><span class="chip-row"><span class="mini-chip">Bold</span><span class="mini-chip">Warm</span><span class="mini-chip">Modern</span></span></div>
+              <div class="row"><span class="lbl">Avoid</span><span class="input-line"></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="why-item" data-tone="periwinkle">
+          <div class="why-text">
+            <div class="step-mark"><span class="step-num">02</span><span class="step-label">Invite</span></div>
+            <h3>Invite Your <span class="em-word">People.</span></h3>
+            <p>Share a link. No signup needed. They join instantly.</p>
+          </div>
+          <div class="why-art">
+            <div class="artifact art-invite">
+              <div class="url-row">
+                <span>namingcontest.com/c/8f3a</span>
+                <span class="copy" aria-hidden="true">⧉</span>
+              </div>
+              <div class="avatars">
+                <span class="av">A</span>
+                <span class="av">M</span>
+                <span class="av">K</span>
+                <span class="av">L</span>
+                <span class="av-more">+12 joined</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="why-item" data-tone="mint">
+          <div class="why-text">
+            <div class="step-mark"><span class="step-num">03</span><span class="step-label">Submit &amp; Vote</span></div>
+            <h3>Submit &amp; <span class="em-word">Vote.</span></h3>
+            <p>Everyone suggests names anonymously, then votes using structured methods. No bias.</p>
+          </div>
+          <div class="why-art">
+            <div class="artifact art-vote">
+              <div class="a-head">Round 2 · Ranked vote</div>
+              <div class="v-block" data-leader="true">
+                <div class="v-row"><span class="name">Northbound</span><span class="meta">19 votes</span></div>
+                <div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width: 76%"></div></div></div>
+              </div>
+              <div class="v-block">
+                <div class="v-row"><span class="name">Lumira</span><span class="meta">14 votes</span></div>
+                <div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width: 56%; background: var(--fg); opacity:.35"></div></div></div>
+              </div>
+              <div class="v-block">
+                <div class="v-row"><span class="name">Quiltwork</span><span class="meta">9 votes</span></div>
+                <div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width: 36%; background: var(--fg); opacity:.25"></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="why-item" data-tone="blush">
+          <div class="why-text">
+            <div class="step-mark"><span class="step-num">04</span><span class="step-label">Result</span></div>
+            <h3>Get Your <span class="em-word">Winner.</span></h3>
+            <p>A clear result with full analytics and voting breakdown. Done.</p>
+          </div>
+          <div class="why-art">
+            <div class="artifact art-winner">
+              <span class="winner-tag"><span class="dot"></span>Winner</span>
+              <div class="name">Northbound</div>
+              <div class="sub">47% of votes · 19 of 42</div>
+              <div class="bars" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SHARED ACCOUNTABILITY ===================== -->
+    <section class="section" data-screen-label="04 Shared Accountability">
+      <div class="shared-panel">
+        <div class="shared">
+          <p class="eyebrow">Shared accountability</p>
+          <h3>Both sides do the work. <span class="it">Both sides get the credit.</span></h3>
+          <p class="shared-sub">A 100-point Contest Quality Score — split 50/50 between creator and participants.</p>
+
+          <div class="score-row">
+            <span class="label-l"><b>Creator</b> · 38/50</span>
+            <span class="score-chip"><span class="dot"></span>Strong · 78/100</span>
+            <span class="label-r"><b>Participants</b> · 40/50</span>
+          </div>
+          <div class="score-bar-slim" aria-hidden="true">
+            <div class="fill-creator"></div>
+            <div class="fill-participant"></div>
+            <div class="mid"></div>
+          </div>
+
+          <div class="task-grid">
+            <div class="task-col" data-side="creator">
+              <div class="col-head">
+                <span class="col-dot"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M3 8.5l3 3 7-7.5"/></svg></span>
+                <div>
+                  <div class="col-title">Creator</div>
+                  <div class="col-meta">0–50 pts · Before contest</div>
+                </div>
+              </div>
+              <div class="task-card">
+                <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 3v2h6V3"/><path d="M9 10h6M9 14h6M9 18h3"/></svg></span>
+                <span class="t">Complete brief fields</span>
+                <span class="pts">+15</span>
+              </div>
+              <div class="task-card">
+                <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5a2 2 0 012-2h6v17H5a2 2 0 01-2-2V5z"/><path d="M21 5a2 2 0 00-2-2h-6v17h6a2 2 0 002-2V5z"/><path d="M11 3v17M13 3v17"/></svg></span>
+                <span class="t">Read the naming primer</span>
+                <span class="pts">+10</span>
+              </div>
+              <div class="task-card">
+                <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="7"/><path d="M12 9v4l2.5 2"/><path d="M9 2h6M12 6V4"/></svg></span>
+                <span class="t">Set rules &amp; deadline</span>
+                <span class="pts">+13</span>
+              </div>
+            </div>
+            <div class="gutter" aria-hidden="true"></div>
+            <div class="task-col" data-side="participant">
+              <div class="col-head">
+                <span class="col-dot"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M3 8.5l3 3 7-7.5"/></svg></span>
+                <div>
+                  <div class="col-title">Participants</div>
+                  <div class="col-meta">0–50 pts · During contest</div>
+                </div>
+              </div>
+              <div class="task-card">
+                <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6a3 3 0 013 3v13a2 2 0 00-2-2H4V4z"/><path d="M20 4h-6a3 3 0 00-3 3v13a2 2 0 012-2h7V4z"/></svg></span>
+                <span class="t">Read methodology articles</span>
+                <span class="pts">+10</span>
+              </div>
+              <div class="task-card">
+                <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a6 6 0 00-4 10.5c.7.7 1 1.6 1 2.5v.5h6V16c0-.9.3-1.8 1-2.5A6 6 0 0012 3z"/></svg></span>
+                <span class="t">Submit quality name ideas</span>
+                <span class="pts">+15</span>
+              </div>
+              <div class="task-card">
+                <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 01-11.5 7.2L4 21l1.8-5.5A8 8 0 1121 12z"/><path d="M9 11h.01M12 11h.01M15 11h.01"/></svg></span>
+                <span class="t">Earn points through feedback</span>
+                <span class="pts">+15</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="shared-cta">
+            <a href="#examples" class="btn btn-secondary">See it in action <span class="arrow">→</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== TESTIMONIALS ===================== -->
+    <section class="section" data-screen-label="05 Testimonials">
+      <div class="section-head">
+        <p class="eyebrow">From real contests</p>
+        <h2 class="h-display h2">Three rooms. Three winners.<br /><span class="italic">Zero arguments left over.</span></h2>
+      </div>
+
+      <div class="testimonials">
+        <article class="tmonial" data-cat="business">
+          <div class="stars" aria-label="5 out of 5">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.2 4.5 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7L8 1z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.2 4.5 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7L8 1z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.2 4.5 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7L8 1z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.2 4.5 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7L8 1z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.2 4.5 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7L8 1z"/></svg>
+          </div>
+          <blockquote>47 name ideas, zero consensus. Three days after launching a contest, we had a winner with 89% approval.</blockquote>
+          <div class="winner-row">
+            <span class="label">Winner</span>
+            <span class="name-win">Vanta Pay</span>
+          </div>
+          <div class="who-row">
+            <span class="avatar">SC</span>
+            <div>
+              <div class="name">Sarah Chen</div>
+              <div class="meta"><span class="cat-tag" data-cat="business"><span class="dot"></span>Business</span></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="tmonial" data-cat="team">
+          <div class="stars" aria-label="5 out of 5">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.2 4.5 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7L8 1z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.2 4.5 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7L8 1z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.2 4.5 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7L8 1z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.2 4.5 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7L8 1z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.2 4.5 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7L8 1z"/></svg>
+          </div>
+          <blockquote>Six members, six strong opinions, zero agreement for six months. We ran a contest and landed on a name we all own.</blockquote>
+          <div class="winner-row">
+            <span class="label">Winner</span>
+            <span class="name-win">Hollow Signal</span>
+          </div>
+          <div class="who-row">
+            <span class="avatar">MR</span>
+            <div>
+              <div class="name">Marcus Rodriguez</div>
+              <div class="meta"><span class="cat-tag" data-cat="team"><span class="dot"></span>Team</span></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="tmonial" data-cat="personal">
+          <div class="stars" aria-label="5 out of 5">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.2 4.5 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7L8 1z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.2 4.5 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7L8 1z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.2 4.5 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7L8 1z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.2 4.5 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7L8 1z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.2 4.5 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7L8 1z"/></svg>
+          </div>
+          <blockquote>23 family members across three countries voted on our daughter's name. Clara was chosen by the people who matter most.</blockquote>
+          <div class="winner-row">
+            <span class="label">Winner</span>
+            <span class="name-win">Clara</span>
+          </div>
+          <div class="who-row">
+            <span class="avatar">JM</span>
+            <div>
+              <div class="name">James &amp; Linda Morrison</div>
+              <div class="meta"><span class="cat-tag" data-cat="personal"><span class="dot"></span>Personal</span></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===================== FAQ ===================== -->
+    <section class="section" id="faq" data-screen-label="06 FAQ">
+      <div class="section-head">
+        <p class="eyebrow">Frequently asked</p>
+        <h2 class="h-display h2">Questions, answered.</h2>
+      </div>
+
+      <div class="faq">
+        <details class="faq-item" open>
+          <summary class="faq-q">
+            Do participants need to create an account?
+            <span class="toggle" aria-hidden="true">+</span>
+          </summary>
+          <p class="faq-a">
+            <strong>No.</strong> Participants join via a unique link you share — no signup, no download, no friction. They can submit names and vote immediately. Only the contest organizer needs an account.
+          </p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Can I run a free contest?
+            <span class="toggle" aria-hidden="true">+</span>
+          </summary>
+          <p class="faq-a">
+            <strong>Yes.</strong> The free tier supports one active contest with up to 5 participants and voting only. Paid plans — Personal&nbsp;($9), Team&nbsp;($29), and Business&nbsp;($89) — unlock more participants, all five voting methods, open submissions, naming methodology, and more.
+          </p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            What's the Catchword Branding connection?
+            <span class="toggle" aria-hidden="true">+</span>
+          </summary>
+          <p class="faq-a">
+            NamingContest.com is powered by <strong>Catchword Branding</strong>, the #1 ranked naming agency worldwide with 25+ years of experience. The platform uses Catchword's methodology — including their 10-criteria evaluation framework — built into every contest.
+          </p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            What does it cost?
+            <span class="toggle" aria-hidden="true">+</span>
+          </summary>
+          <p class="faq-a">
+            Three paid tiers: <strong>Personal ($9/contest)</strong> for up to 15 participants — great for baby names, pets, and personal decisions. <strong>Team ($29/contest)</strong> for up to 60 participants with white-label output — ideal for bands, sports teams, and groups. <strong>Business ($89/contest)</strong> for up to 240 participants with full PDF reports — built for companies, products, and rebrands. All paid plans include every voting method, naming methodology, and automated reminders.
+          </p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            What voting methods are available?
+            <span class="toggle" aria-hidden="true">+</span>
+          </summary>
+          <div class="faq-a">
+            Five methods, included on every paid plan:
+            <ol>
+              <li><strong>Simple Poll</strong> — one vote per person.</li>
+              <li><strong>Ranked Choice</strong> — rank all options in order.</li>
+              <li><strong>Multi-Criteria Scoring</strong> — rate names across multiple dimensions.</li>
+              <li><strong>Pairwise Comparison</strong> — choose between two at a time.</li>
+              <li><strong>Weighted Voting</strong> — different voters carry different vote weights.</li>
+            </ol>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ===================== CLOSING CTA ===================== -->
+    <section class="section" data-screen-label="07 Closing CTA">
+      <div class="closing">
+        <h2 class="h-display">Your name is out there.<br /><span class="em">Let's find it together.</span></h2>
+        <div class="closing-cta">
+          <a href="#start" class="btn btn-primary btn-lg">Start your free contest <span class="arrow">→</span></a>
+        </div>
+        <p class="meta">No credit card required.</p>
+      </div>
+    </section>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="footer" data-screen-label="08 Footer">
+      <div class="footer-grid">
+        <div class="brand-block">
+          <a href="#" class="brand-mark">
+            <span class="brand-dot" aria-hidden="true"></span>
+            <span>NamingContest</span>
+          </a>
+          <p>Powered by Catchword, the #1 ranked naming agency worldwide.</p>
+          <div class="socials" aria-label="Social links">
+            <a href="#" aria-label="Twitter / X">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M9.5 7.2L14.7 1h-1.3L9 6.4 5.4 1H1l5.4 8.1L1 15h1.3l4.7-5.7L10.6 15H15L9.5 7.2zm-1.7 2L7.2 8.4 2.7 2h2l3.6 5.2.6.9 4.5 6.5h-2L7.8 9.2z"/></svg>
+            </a>
+            <a href="#" aria-label="LinkedIn">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.6 2.5a1.6 1.6 0 1 1 0 3.2 1.6 1.6 0 0 1 0-3.2zM2.2 6.5h2.8V14H2.2zM6.8 6.5h2.7V8c.4-.7 1.3-1.6 2.8-1.6 3 0 3.5 2 3.5 4.5V14h-2.8v-2.6c0-.6 0-1.4-.9-1.4s-1 .7-1 1.4V14H6.8z"/></svg>
+            </a>
+            <a href="#" aria-label="Instagram">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="12" height="12" rx="3.5"/><circle cx="8" cy="8" r="3"/><circle cx="11.6" cy="4.4" r=".8" fill="currentColor" stroke="none"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div>
+          <h6>Product</h6>
+          <ul>
+            <li><a href="#how">How It Works</a></li>
+            <li><a href="#examples">Examples</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h6>Powered by</h6>
+          <ul>
+            <li><a href="#">Catchword Branding</a></li>
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h6>Legal</h6>
+          <ul>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Cookie Policy</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>© 2026 NamingContest.com · A Catchword Branding company</span>
+        <span>Made for the people who can't pick a name.</span>
+      </div>
+    </footer>
+
+  </div>
+</div>
+
+<script>
+  // Sticky nav scroll state
+  const navPill = document.querySelector('.nav-pill');
+  const onScroll = () => {
+    if (window.scrollY > 16) navPill.classList.add('is-scrolled');
+    else navPill.classList.remove('is-scrolled');
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // Single-open accordion behavior
+  const items = document.querySelectorAll('.faq-item');
+  items.forEach(item => {
+    item.addEventListener('toggle', () => {
+      if (item.open) {
+        items.forEach(other => { if (other !== item) other.open = false; });
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

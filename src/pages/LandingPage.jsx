@@ -6,6 +6,13 @@ import businessWoman from '../assets/business-woman.png';
 import sarahChen from '../assets/sarah-chen.png';
 import marcusRodriguez from '../assets/marcus-rodriguez.png';
 import lindaMorrison from '../assets/linda-morrison.png';
+import heroProfile1 from '../assets/hero-profile-1.png';
+import heroProfile2 from '../assets/hero-profile-2.png';
+import heroProfile3 from '../assets/hero-profile-3.png';
+import heroProfile4 from '../assets/hero-profile-4.png';
+import heroProfile5 from '../assets/hero-profile-5.png';
+import heroProfile6 from '../assets/hero-profile-6.png';
+import namingContestLogo from '../assets/namingcontestlogo-cropped.svg';
 import '../styles/landing-v3.css';
 
 /* ========== ICONS ========== */
@@ -25,17 +32,258 @@ function Nav() {
     <div className="nav-row">
       <nav className={`nav-pill${scrolled ? ' is-scrolled' : ''}`} aria-label="Primary">
         <a href="#" className="brand-mark">
-          <span className="brand-dot" aria-hidden="true"></span>
-          <span>NamingContest</span>
+          <img src={namingContestLogo} alt="NamingContest" className="brand-logo" />
         </a>
         <div className="links">
+          <a href="#testimonials">Testimonials</a>
           <a href="#how">How It Works</a>
           <a href="#pricing">Pricing</a>
-          <a href="#examples">Examples</a>
         </div>
-        <a href="#signin" className="signin">Sign In</a>
-        <a href="#start" className="cta">Start a Contest</a>
+        <div className="nav-actions">
+          <a href="#signin" className="signin">Sign In</a>
+          <a href="#start" className="cta">Start a contest</a>
+        </div>
       </nav>
+    </div>
+  );
+}
+
+/* ========== HERO ANIMATION ========== */
+const HERO_NAMES = ['Northbound', 'Lumira', 'Quiet Static', 'Helix', 'Beacon', 'Hollow Signal', 'Vanta Pay', 'Clara'];
+
+const HERO_AVATARS = [
+  // Top-left
+  { id: 0, photo: heroProfile1, side: 'left',  top: '18%', x: '3%' },
+  // Top-right
+  { id: 1, photo: heroProfile3, side: 'right', top: '18%', x: '3%' },
+  // Mid-left edge
+  { id: 2, photo: heroProfile6, side: 'left',  top: '46%', x: '-32px' },
+  // Mid-right edge
+  { id: 3, photo: heroProfile2, side: 'right', top: '46%', x: '-32px' },
+  // Bottom-left
+  { id: 4, photo: heroProfile4, side: 'left',  top: '74%', x: '10%' },
+  // Bottom-right
+  { id: 5, photo: heroProfile5, side: 'right', top: '74%', x: '10%' },
+];
+
+function HeroAnimation() {
+  // round = { leftSugId, rightSugId, leftName, rightName, voters: [{id, target, vote, voted, dx, dy}], phase, winnerId }
+  const [round, setRound] = useState(null);
+  const avatarRefs = useRef({});
+
+  useEffect(() => {
+    let timeouts = [];
+    let cancelled = false;
+    let lastLeftId = -1, lastRightId = -1, lastLeftName = '', lastRightName = '';
+
+    const startRound = () => {
+      if (cancelled) return;
+
+      const leftAvs = HERO_AVATARS.filter(a => a.side === 'left');
+      const rightAvs = HERO_AVATARS.filter(a => a.side === 'right');
+
+      // Pick a left + right suggester (not the same as last round)
+      let leftSugId, rightSugId;
+      do { leftSugId = leftAvs[Math.floor(Math.random() * leftAvs.length)].id; } while (leftSugId === lastLeftId);
+      do { rightSugId = rightAvs[Math.floor(Math.random() * rightAvs.length)].id; } while (rightSugId === lastRightId);
+      lastLeftId = leftSugId; lastRightId = rightSugId;
+
+      // Pick two distinct names
+      let leftName, rightName;
+      do { leftName = HERO_NAMES[Math.floor(Math.random() * HERO_NAMES.length)]; } while (leftName === lastLeftName);
+      do { rightName = HERO_NAMES[Math.floor(Math.random() * HERO_NAMES.length)]; } while (rightName === leftName || rightName === lastRightName);
+      lastLeftName = leftName; lastRightName = rightName;
+
+      // Remaining 4 avatars vote — left-side voters vote left, right-side voters vote right
+      // (votes never cross the central text)
+      const voterIds = HERO_AVATARS.filter(a => a.id !== leftSugId && a.id !== rightSugId).map(a => a.id);
+      const voters = voterIds.map(id => {
+        const av = HERO_AVATARS.find(a => a.id === id);
+        return {
+          id,
+          target: av.side, // 'left' or 'right' — same side as the voter
+          vote: 1 + Math.floor(Math.random() * 3), // 1-3
+          voted: false,
+          counted: false,
+        };
+      });
+
+      // Compute winner up front (so we can also force a winner if it ties)
+      const leftTotal = voters.filter(v => v.target === 'left').reduce((s, v) => s + v.vote, 0);
+      const rightTotal = voters.filter(v => v.target === 'right').reduce((s, v) => s + v.vote, 0);
+      let winnerId;
+      if (leftTotal === rightTotal) {
+        // Force a winner: bump one voter's pick randomly
+        const bumpIdx = Math.floor(Math.random() * voters.length);
+        voters[bumpIdx].vote += 1;
+      }
+      const finalLeft = voters.filter(v => v.target === 'left').reduce((s, v) => s + v.vote, 0);
+      const finalRight = voters.filter(v => v.target === 'right').reduce((s, v) => s + v.vote, 0);
+      winnerId = finalLeft > finalRight ? leftSugId : rightSugId;
+
+      // Phase 1: typing dots on both suggesters
+      setRound({ leftSugId, rightSugId, leftName, rightName, voters, phase: 'typing', winnerId });
+
+      // Phase 2: name bubbles appear (after typing, with breathing room)
+      timeouts.push(setTimeout(() => {
+        if (cancelled) return;
+        setRound(prev => prev ? { ...prev, phase: 'name' } : null);
+      }, 1000));
+
+      // Phase 3: voters cast votes one-by-one — vote-fly leaves voter, lands on suggester
+      const voteStart = 2600;
+      const voteGap = 1100;
+      const voteFlightDuration = 1400; // matches CSS animation peak (vote arrives ~85% through 1.7s)
+      voters.forEach((v, idx) => {
+        // Vote leaves the voter (vote-fly starts traveling)
+        timeouts.push(setTimeout(() => {
+          if (cancelled) return;
+          setRound(prev => {
+            if (!prev) return null;
+            const voterEl = avatarRefs.current[v.id];
+            const targetId = v.target === 'left' ? prev.leftSugId : prev.rightSugId;
+            const targetEl = avatarRefs.current[targetId];
+            let dx = 0, dy = 0;
+            if (voterEl && targetEl) {
+              const vRect = voterEl.getBoundingClientRect();
+              const tRect = targetEl.getBoundingClientRect();
+              dx = (tRect.left + tRect.width / 2) - (vRect.left + vRect.width / 2);
+              dy = (tRect.top + tRect.height / 2) - (vRect.top + vRect.height / 2);
+            }
+            return {
+              ...prev,
+              phase: 'voting',
+              voters: prev.voters.map(x => x.id === v.id ? { ...x, voted: true, dx, dy } : x),
+            };
+          });
+        }, voteStart + idx * voteGap));
+
+        // Vote arrives at suggester → counter ticks up
+        timeouts.push(setTimeout(() => {
+          if (cancelled) return;
+          setRound(prev => {
+            if (!prev) return null;
+            return {
+              ...prev,
+              voters: prev.voters.map(x => x.id === v.id ? { ...x, counted: true } : x),
+            };
+          });
+        }, voteStart + idx * voteGap + voteFlightDuration));
+      });
+
+      // Phase 4: crown winner — wait for last vote to arrive + breathe before crown
+      const crownAt = voteStart + (voters.length - 1) * voteGap + voteFlightDuration + 1000;
+      timeouts.push(setTimeout(() => {
+        if (cancelled) return;
+        setRound(prev => prev ? { ...prev, phase: 'crowned' } : null);
+      }, crownAt));
+
+      // Phase 5: ending — loser fades while winner stays
+      const fadeAt = crownAt + 2200;
+      timeouts.push(setTimeout(() => {
+        if (cancelled) return;
+        setRound(prev => prev ? { ...prev, phase: 'ending' } : null);
+      }, fadeAt));
+
+      // Phase 6: clear + start next round
+      const endAt = fadeAt + 1300;
+      timeouts.push(setTimeout(() => {
+        if (cancelled) return;
+        setRound(null);
+        timeouts.push(setTimeout(startRound, 800));
+      }, endAt));
+    };
+
+    timeouts.push(setTimeout(startRound, 600));
+    return () => { cancelled = true; timeouts.forEach(clearTimeout); };
+  }, []);
+
+  // Running vote totals — only counts votes that have ARRIVED at the suggester
+  const totals = round
+    ? round.voters.reduce((a, v) => { if (v.counted) a[v.target] += v.vote; return a; }, { left: 0, right: 0 })
+    : { left: 0, right: 0 };
+
+  return (
+    <div className="hero-anim" aria-hidden="true">
+      {HERO_AVATARS.map(av => {
+        const isLeftSug = round?.leftSugId === av.id;
+        const isRightSug = round?.rightSugId === av.id;
+        const isSuggester = isLeftSug || isRightSug;
+        const team = isLeftSug ? 'left' : isRightSug ? 'right' : null;
+        const voter = round?.voters?.find(v => v.id === av.id);
+        const isWinner = isSuggester && round?.winnerId === av.id;
+        // Crown shows from 'crowned' phase onward
+        const showCrown = (round?.phase === 'crowned' || round?.phase === 'ending') && isWinner;
+        // Loser fades at the same time the crown appears
+        const isLoser = (round?.phase === 'crowned' || round?.phase === 'ending') && isSuggester && !isWinner;
+        const isActive = isSuggester || (voter && voter.voted);
+        const bubbleSide = av.side === 'left' ? 'right' : 'left';
+        const teamTotal = team === 'left' ? totals.left : team === 'right' ? totals.right : 0;
+
+        return (
+          <div
+            key={av.id}
+            ref={el => { avatarRefs.current[av.id] = el; }}
+            className={`hero-av hero-av-${av.id}${showCrown ? ' has-crown' : ''}${isActive ? ' is-active' : ''}${isLoser ? ' is-loser' : ''}`}
+            style={{ top: av.top, [av.side]: av.x }}
+          >
+            <div className="hero-av-circle" style={{ background: av.photo ? '#fff' : av.bg }}>
+              {av.photo ? <img src={av.photo} alt="" /> : <span>{av.initials}</span>}
+            </div>
+
+            {showCrown && (
+              <div className="hero-crown">
+                <span className="crown-icon">👑</span>
+                <span className="crown-spark s1">✦</span>
+                <span className="crown-spark s2">✦</span>
+                <span className="crown-spark s3">✦</span>
+              </div>
+            )}
+
+            {/* Suggester typing or name bubble */}
+            {isSuggester && round?.phase === 'typing' && (
+              <div className={`hero-bubble hero-bubble-${bubbleSide} is-typing`}>
+                <span className="dot"></span>
+                <span className="dot"></span>
+                <span className="dot"></span>
+              </div>
+            )}
+            {isSuggester && round && round.phase !== 'typing' && (
+              <div className={`hero-bubble hero-bubble-${bubbleSide}${isLoser ? ' is-loser' : ''}${showCrown ? ' is-winner' : ''}`}>
+                {team === 'left' ? round.leftName : round.rightName}
+                <span className="vote-chip" key={`chip-${teamTotal}`}>{teamTotal}</span>
+              </div>
+            )}
+
+            {/* Voter +N flies toward the suggester they voted for */}
+            {voter && voter.voted && (
+              <div
+                className="vote-fly"
+                style={{ '--dx': `${voter.dx || 0}px`, '--dy': `${voter.dy || 0}px` }}
+                key={`vote-${round?.leftSugId}-${round?.rightSugId}-${av.id}`}
+              >
+                +{voter.vote}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ========== HERO DECORATIONS ========== */
+function HeroDecor() {
+  return (
+    <div className="hero-decor" aria-hidden="true">
+      <span className="decor d1"></span>
+      <span className="decor d2"></span>
+      <span className="decor d3"></span>
+      <span className="decor d4"></span>
+      <span className="decor d5"></span>
+      <span className="decor d6"></span>
+      <span className="decor d7"></span>
+      <span className="decor d8"></span>
     </div>
   );
 }
@@ -44,12 +292,8 @@ function Nav() {
 function Hero({ onStart }) {
   return (
     <header className="hero">
-      <span className="confetti c1"></span>
-      <span className="confetti c2"></span>
-      <span className="confetti c3"></span>
-      <span className="confetti c4"></span>
-      <span className="confetti c5"></span>
-      <span className="confetti c6"></span>
+      <HeroDecor />
+      <HeroAnimation />
       <div className="hero-inner">
         <h1 className="h-display">
           The best names are <span className="em">chosen,</span><br />
@@ -62,7 +306,9 @@ function Hero({ onStart }) {
           <a href="#start" onClick={(e) => { e.preventDefault(); onStart(); }} className="btn btn-primary btn-lg">
             Start a naming contest <span className="arrow">→</span>
           </a>
-          <span className="cta-meta">Free tier · No credit card required</span>
+          <a href="#how" className="btn btn-secondary btn-lg">
+            See how it works
+          </a>
         </div>
       </div>
     </header>
@@ -321,7 +567,7 @@ function SharedAccountability() {
           </div>
 
           <div className="shared-cta">
-            <a href="#examples" className="btn btn-secondary">See it in action <span className="arrow">→</span></a>
+            <a href="#examples" className="btn btn-primary btn-lg">See it in action <span className="arrow">→</span></a>
           </div>
         </div>
       </div>
@@ -337,7 +583,7 @@ function Testimonials() {
     { cat: 'personal', quote: '23 family members across three countries voted on our daughter’s name. Clara was chosen by the people who matter most.', winner: 'Clara', name: 'James & Linda Morrison', initials: 'JM', label: 'Personal', photo: lindaMorrison },
   ];
   return (
-    <section className="section">
+    <section className="section" id="testimonials">
       <div className="section-head">
         <p className="eyebrow">From real contests</p>
         <h2 className="h-display h2">Three rooms. Three winners.<br /><span className="italic">Zero arguments left over.</span></h2>
@@ -414,7 +660,9 @@ function FAQ() {
               {it.q}
               <span className="toggle" aria-hidden="true">+</span>
             </button>
-            {openIdx === i && it.a}
+            <div className="faq-answer-wrapper">
+              <div className="faq-answer-inner">{it.a}</div>
+            </div>
           </div>
         ))}
       </div>
@@ -427,13 +675,27 @@ function ClosingCTA({ onStart }) {
   return (
     <section className="section">
       <div className="closing">
+        <div className="clouds" aria-hidden="true">
+          <div className="cloud x1"></div>
+          <div className="cloud x2"></div>
+          <div className="cloud x3"></div>
+          <div className="cloud x4"></div>
+          <div className="cloud x5"></div>
+        </div>
+        <span className="cdec cd1" aria-hidden="true"></span>
+        <span className="cdec cd2" aria-hidden="true"></span>
+        <span className="cdec cd3" aria-hidden="true"></span>
+        <span className="cdec cd4" aria-hidden="true"></span>
+        <span className="cdec cd5" aria-hidden="true"></span>
+        <span className="cdec cd6" aria-hidden="true"></span>
+        <span className="cdec cd7" aria-hidden="true"></span>
+        <span className="cdec cd8" aria-hidden="true"></span>
         <h2 className="h-display">Your name is out there.<br /><span className="em">Let's find it together.</span></h2>
         <div className="closing-cta">
           <a href="#start" onClick={(e) => { e.preventDefault(); onStart(); }} className="btn btn-primary btn-lg">
-            Start your free contest <span className="arrow">→</span>
+            Start your contest <span className="arrow">→</span>
           </a>
         </div>
-        <p className="cmeta">No credit card required.</p>
       </div>
     </section>
   );
@@ -446,8 +708,7 @@ function Footer() {
       <div className="footer-grid">
         <div className="brand-block">
           <a href="#" className="brand-mark">
-            <span className="brand-dot" aria-hidden="true"></span>
-            <span>NamingContest</span>
+            <img src={namingContestLogo} alt="NamingContest" className="brand-logo brand-logo-footer" />
           </a>
           <p>Powered by Catchword, the #1 ranked naming agency worldwide.</p>
           <div className="socials" aria-label="Social links">

@@ -1,0 +1,1173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Homepage Design System · Craft-inspired</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+/* =========================================================================
+   TOKENS
+   Sourced from a craft.do landing page DOM dump (CSS custom properties),
+   verified by direct pixel sampling of the screenshot.
+   ========================================================================= */
+:root {
+  /* —— Surfaces ——————————————————————————————————————————————— */
+  --bg-page:        #fcf9f7;   /* "beige" — body / section background */
+  --bg-card:        #ffffff;   /* white cards (pricing-free, integrations) */
+  --bg-inset:       #f4f1ef;   /* subtle inset / quote rule surface */
+  --bg-ink:         #030302;   /* near-black — pricing dark, footer, nav pill */
+  --bg-overlay:     #0303020a; /* 4% black — muted chip / divider fills */
+
+  /* —— Ink ————————————————————————————————————————————————————— */
+  --fg:             #030302;   /* primary text */
+  --fg-muted:       #03030280; /* 50% — body copy on light surfaces */
+  --fg-faint:       #03030299; /* secondary metadata */
+  --fg-on-ink:      #ffffff;   /* text on dark surfaces */
+  --fg-on-ink-muted:#ffffffb3; /* secondary on dark */
+
+  /* —— Lines ————————————————————————————————————————————————— */
+  --border:         #03030217; /* 9% — default 1px divider */
+  --ring:           #0303021f; /* 12% — focus / hairline on ink */
+
+  /* —— Brand pastels (panel backgrounds) ——————————————————————
+     Sampled directly from the screenshot. These are the soft "card panel"
+     fills behind the writing/imagine/planning sections. */
+  --panel-periwinkle:#b3c4f0;  /* "From first thought to final form" */
+  --panel-mint:      #a6dcb3;  /* "Imagine the possibilities" + CTA banner */
+  --panel-butter:    #fceebc;  /* "Planning that doesn't feel like work" */
+  --panel-sky:       #c4dffb;  /* secondary feature tint */
+  --panel-blush:     #fadecc;  /* warm small-card tint */
+
+  /* —— Accent solids (the "-4" family from Tailwind) ————————————
+     Used for category pills, small icons, brand chips. */
+  --accent-red:    #bb433a;
+  --accent-orange: #b25620;
+  --accent-yellow: #987e1b;
+  --accent-green:  #3f8850;
+  --accent-blue:   #427e8a;
+  --accent-purple: #4b68c3;
+  --accent-pink:   #a549ab;
+
+  /* —— Atmosphere ——————————————————————————————————————————— */
+  --hero-sky-top:    #93cfed;
+  --hero-sky-bottom: #c4e5f6;
+  --promo-banner:    #80c793; /* top "spring deal" stripe */
+
+  /* —— Radii ————————————————————————————————————————————————— */
+  --r-xs:   6px;
+  --r-sm:   10px;   /* --radius .625rem */
+  --r-md:   12px;
+  --r-lg:   16px;   /* --radius-2xl */
+  --r-xl:   24px;   /* --radius-3xl */
+  --r-2xl:  32px;   /* --radius-4xl */
+  --r-pill: 999px;
+
+  /* —— Spacing scale —— 4px base —————————————————————————————
+     Tailwind-style: 1=4 2=8 3=12 4=16 5=20 6=24 8=32 10=40 12=48 16=64 20=80 30=120 */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 20px; --s-6: 24px; --s-8: 32px; --s-10:40px;
+  --s-12:48px; --s-16:64px; --s-20:80px; --s-30:120px;
+
+  /* —— Container widths —————————————————————————————————————— */
+  --w-prose: 42rem;   /* 672 — body copy column */
+  --w-feature: 56rem; /* 896 — feature card max */
+  --w-page:  1280px;  /* visual content max-width */
+  --w-frame: 1880px;  /* outer frame max-width (lg:p-5 implies near-edge) */
+
+  /* —— Shadows ————————————————————————————————————————————————
+     "shadow-block" — the layered elevation behind the hero card and
+     every large rounded panel. Multi-layer to avoid one harsh blur. */
+  --shadow-block:
+    0 50px 40px 0 rgba(0,0,0,.01),
+    0 50px 40px 0 rgba(0,0,0,.02),
+    0 20px 40px 0 rgba(0,0,0,.05),
+    0  3px 10px 0 rgba(0,0,0,.08);
+  --shadow-card:
+    0 1px 2px rgba(0,0,0,.04),
+    0 8px 24px rgba(0,0,0,.06);
+  --shadow-pill:
+    0 1px 2px rgba(0,0,0,.06),
+    0 4px 14px rgba(0,0,0,.08);
+
+  /* —— Type ————————————————————————————————————————————————— */
+  --font-display: "Fraunces", "Times New Roman", ui-serif, Georgia, serif;
+  --font-text:    "Inter", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+
+  --tr-tight:   -0.025em;
+  --tr-normal:   0;
+  --tr-wide:     0.025em;
+  --tr-wider:    0.05em;
+  --tr-widest:   0.10em;
+
+  /* —— Decorative ——————————————————————————————————————————— */
+  --glass-nav:
+    linear-gradient(180deg, #ffffff99, #ffffff96 25%, #ffffff99 50%, #ffffffd6 75%);
+  --hero-bottom-blur:
+    linear-gradient(0deg, #0000004d 0%, #0000004d 20%, transparent 35%);
+}
+
+/* =========================================================================
+   PAGE CHROME — this document IS a spec sheet.
+   ========================================================================= */
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg-page);
+  color: var(--fg);
+  font-family: var(--font-text);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.page {
+  max-width: var(--w-page);
+  margin: 0 auto;
+  padding: var(--s-20) var(--s-8) var(--s-30);
+}
+
+.eyebrow {
+  font-family: var(--font-text);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: var(--tr-widest);
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+.h-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: var(--tr-tight);
+  line-height: 1.05;
+  color: var(--fg);
+  margin: 0;
+}
+.h1 { font-size: 56px; }
+.h2 { font-size: 40px; }
+.h3 { font-size: 28px; }
+
+.lede {
+  font-family: var(--font-text);
+  font-size: 18px;
+  color: var(--fg-muted);
+  max-width: 60ch;
+  line-height: 1.55;
+  margin: var(--s-3) 0 0;
+}
+
+.section { margin-top: var(--s-30); }
+.section + .section { margin-top: var(--s-30); }
+.section-head { margin-bottom: var(--s-10); }
+
+.grid { display: grid; gap: var(--s-5); }
+.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.cols-4 { grid-template-columns: repeat(4, 1fr); }
+.cols-6 { grid-template-columns: repeat(6, 1fr); }
+
+/* "Spec card" container — each token group gets one */
+.spec {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s-6);
+}
+.spec-title {
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+  letter-spacing: var(--tr-wide);
+  margin: 0 0 var(--s-1);
+}
+.spec-meta {
+  font-family: var(--font-text);
+  font-size: 12px;
+  color: var(--fg-muted);
+  margin: 0;
+}
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  color: var(--fg);
+  background: var(--bg-overlay);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* =========================================================================
+   HERO of the spec page — mirrors the homepage's own hero treatment.
+   ========================================================================= */
+.spec-hero {
+  position: relative;
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  background:
+    radial-gradient(120% 80% at 50% 0%, var(--hero-sky-top) 0%, var(--hero-sky-bottom) 55%, #e9f3fb 100%);
+  box-shadow: var(--shadow-block);
+  padding: var(--s-20) var(--s-12) var(--s-16);
+  text-align: center;
+}
+.spec-hero .promo {
+  position: absolute; inset: 0 0 auto 0;
+  height: 36px;
+  background: var(--promo-banner);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex; align-items: center; justify-content: center;
+  letter-spacing: var(--tr-wide);
+}
+.spec-hero h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 64px;
+  letter-spacing: var(--tr-tight);
+  line-height: 1.05;
+  margin: var(--s-12) 0 var(--s-3);
+}
+.spec-hero .lede { margin: 0 auto; }
+
+/* =========================================================================
+   COLOR SWATCHES
+   ========================================================================= */
+.swatch {
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  background: #fff;
+  display: flex; flex-direction: column;
+}
+.swatch .chip {
+  height: 96px;
+  display: flex; align-items: flex-end; justify-content: flex-start;
+  padding: var(--s-3);
+  font-family: var(--font-text); font-size: 11px; font-weight: 500;
+  letter-spacing: var(--tr-wider); text-transform: uppercase;
+}
+.swatch .body { padding: var(--s-3) var(--s-3) var(--s-4); }
+.swatch .name {
+  font-family: var(--font-text); font-size: 13px; font-weight: 600;
+  margin: 0 0 2px;
+}
+.swatch .vals {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  font-family: ui-monospace, monospace; font-size: 11px;
+  color: var(--fg-muted);
+}
+.swatch .vals code { background: var(--bg-overlay); padding: 1px 5px; border-radius: 3px; }
+.swatch.dark .chip { color: #fff; }
+.swatch.light .chip { color: var(--fg); }
+
+/* =========================================================================
+   TYPE SAMPLES
+   ========================================================================= */
+.type-row {
+  display: grid; grid-template-columns: 220px 1fr; gap: var(--s-8);
+  padding: var(--s-6) 0;
+  border-top: 1px solid var(--border);
+  align-items: baseline;
+}
+.type-row:first-of-type { border-top: 0; }
+.type-meta { color: var(--fg-muted); font-size: 12px; }
+.type-meta b { color: var(--fg); font-weight: 600; display: block; margin-bottom: 4px; font-size: 13px; }
+.type-meta code { display: inline-block; margin-top: 4px; font-family: ui-monospace, monospace; }
+.sample-display { font-family: var(--font-display); color: var(--fg); letter-spacing: var(--tr-tight); line-height: 1.05; font-weight: 400; }
+.sample-text    { font-family: var(--font-text); color: var(--fg); }
+.italic-display { font-style: italic; }
+
+/* =========================================================================
+   SPACING / RADII RULERS
+   ========================================================================= */
+.ruler {
+  display: grid; grid-template-columns: 80px 1fr 80px;
+  align-items: center; gap: var(--s-4);
+  padding: var(--s-2) 0; border-top: 1px solid var(--border);
+}
+.ruler:first-of-type { border-top: 0; }
+.ruler .lab { font-family: ui-monospace, monospace; font-size: 12px; color: var(--fg-muted); }
+.ruler .bar { height: 14px; background: var(--accent-blue); border-radius: 4px; opacity: .85; }
+.ruler .px  { font-family: var(--font-text); font-size: 12px; color: var(--fg-muted); text-align: right; }
+
+.radius-row {
+  display: flex; gap: var(--s-5); flex-wrap: wrap; align-items: flex-end;
+}
+.radius-tile {
+  width: 120px; height: 120px;
+  background: var(--bg-page);
+  border: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-family: var(--font-text); font-size: 12px; color: var(--fg-muted);
+}
+.radius-tile b { color: var(--fg); font-size: 13px; }
+
+/* =========================================================================
+   COMPONENT MOCKS — pills, buttons, panels
+   ========================================================================= */
+/* Pill nav (sampled from screenshot — dark, white text, rounded fully) */
+.nav-pill {
+  display: inline-flex; align-items: center; gap: var(--s-6);
+  background: var(--bg-ink);
+  color: var(--fg-on-ink);
+  border-radius: var(--r-pill);
+  padding: 8px 8px 8px 22px;
+  font-family: var(--font-text); font-size: 14px; font-weight: 500;
+}
+.nav-pill .brand {
+  font-family: var(--font-display); font-weight: 700; letter-spacing: var(--tr-wider);
+  text-transform: uppercase; font-size: 14px;
+}
+.nav-pill a { color: var(--fg-on-ink-muted); text-decoration: none; }
+.nav-pill a:hover { color: var(--fg-on-ink); }
+.nav-pill .cta {
+  background: #fff; color: var(--fg);
+  padding: 8px 16px; border-radius: var(--r-pill);
+  font-weight: 600; font-size: 13px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: var(--s-2);
+  font-family: var(--font-text); font-weight: 500; font-size: 14px;
+  border-radius: var(--r-pill);
+  padding: 10px 18px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
+  white-space: nowrap;
+}
+.btn-primary  { background: var(--bg-ink); color: var(--fg-on-ink); box-shadow: var(--shadow-pill); }
+.btn-primary:hover { transform: translateY(-1px); }
+.btn-secondary{ background: #fff; color: var(--fg); border-color: var(--border); box-shadow: var(--shadow-pill); }
+.btn-ghost    { background: transparent; color: var(--fg); }
+.btn-on-panel { background: #ffffff; color: var(--fg); }
+.btn-link {
+  background: none; border: 0; padding: 0; color: var(--fg);
+  font-family: var(--font-text); font-size: 14px; font-weight: 500;
+  text-decoration: underline; text-underline-offset: 4px;
+}
+
+/* Tag pill (small label inside cards) */
+.tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  padding: 6px 12px;
+  font-family: var(--font-text); font-size: 12px; font-weight: 500;
+  color: var(--fg);
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+}
+
+/* Inline filled tag (used inside rounded "Start Building" rows on green panel) */
+.tag-filled {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #ffffff;
+  border-radius: var(--r-pill);
+  padding: 10px 18px;
+  font-family: var(--font-text); font-size: 13px; font-weight: 500;
+  color: var(--fg);
+  box-shadow: var(--shadow-pill);
+}
+
+/* Feature panel (the colored rounded blocks) */
+.panel {
+  border-radius: var(--r-xl);
+  padding: var(--s-12);
+  position: relative;
+  box-shadow: var(--shadow-block);
+}
+.panel.periwinkle { background: var(--panel-periwinkle); }
+.panel.mint       { background: var(--panel-mint); }
+.panel.butter     { background: var(--panel-butter); }
+
+.panel .eyebrow { color: rgba(0,0,0,.55); }
+.panel-title {
+  font-family: var(--font-display); font-weight: 400;
+  font-size: 36px; letter-spacing: var(--tr-tight); line-height: 1.05;
+  margin: var(--s-3) 0 var(--s-4);
+}
+.panel-desc { color: rgba(0,0,0,.65); max-width: 38ch; margin: 0 0 var(--s-6); }
+
+/* Inner mini-card (sits on top of a colored panel) */
+.mini {
+  background: #ffffff;
+  border-radius: var(--r-lg);
+  padding: var(--s-5);
+  box-shadow: var(--shadow-card);
+}
+.mini-head {
+  display: flex; align-items: center; gap: var(--s-2);
+  font-family: var(--font-text); font-weight: 600; font-size: 14px;
+}
+.mini-head svg { width: 16px; height: 16px; }
+
+/* Pricing card */
+.price-card {
+  border-radius: var(--r-xl);
+  padding: var(--s-8);
+  display: flex; flex-direction: column; gap: var(--s-4);
+  min-height: 240px;
+}
+.price-card.free { background: #fff; color: var(--fg); border: 1px solid var(--border); box-shadow: var(--shadow-card); }
+.price-card.plus { background: var(--bg-ink); color: var(--fg-on-ink); }
+.price-name { font-family: var(--font-display); font-size: 32px; line-height: 1; }
+.price-amt  { font-family: var(--font-display); font-size: 40px; line-height: 1; }
+.price-amt small { font-family: var(--font-text); font-size: 14px; color: var(--fg-muted); margin-left: 6px; }
+.plus .price-amt small { color: var(--fg-on-ink-muted); }
+.strike { text-decoration: line-through; opacity: .55; font-family: var(--font-text); font-size: 14px; }
+
+/* Quote */
+.quote {
+  display: grid; grid-template-columns: auto 1fr auto;
+  align-items: center; gap: var(--s-5);
+}
+.quote .who { display: flex; align-items: center; gap: var(--s-2); font-family: var(--font-text); font-size: 13px; }
+.quote .avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--panel-butter); display:inline-block; }
+.quote .rule { height: 1px; background: var(--border); }
+.quote blockquote {
+  font-family: var(--font-display); font-style: italic; font-size: 22px;
+  line-height: 1.35; margin: 0; max-width: 36ch; color: var(--fg);
+}
+
+/* Eyebrow + section header pattern (centered) */
+.section-center { text-align: center; }
+.section-center .h2 { margin-top: var(--s-2); }
+
+/* CTA banner */
+.cta-banner {
+  background: var(--panel-mint);
+  border-radius: var(--r-xl);
+  padding: var(--s-10) var(--s-12);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--s-8);
+  box-shadow: var(--shadow-block);
+  position: relative; overflow: hidden;
+}
+.cta-banner::after {
+  /* diagonal stripe pattern that's visible in the screenshot */
+  content: ""; position: absolute; inset: 0;
+  background: repeating-linear-gradient(115deg, rgba(255,255,255,0) 0 18px, rgba(255,255,255,.18) 18px 19px);
+  pointer-events: none; mix-blend-mode: soft-light;
+}
+.cta-banner h3 {
+  font-family: var(--font-display); font-style: italic; font-weight: 400;
+  font-size: 32px; line-height: 1.1; margin: 0;
+  color: var(--fg);
+}
+.cta-banner p { color: rgba(0,0,0,.65); margin: 6px 0 0; font-size: 14px; }
+.cta-banner .actions { display: flex; gap: var(--s-3); }
+
+/* Footer */
+.footer {
+  background: var(--bg-ink);
+  color: var(--fg-on-ink);
+  border-radius: var(--r-xl);
+  padding: var(--s-12);
+}
+.footer-cols { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--s-6); }
+.footer h6 {
+  font-family: var(--font-text); font-size: 11px; font-weight: 600;
+  letter-spacing: var(--tr-widest); text-transform: uppercase;
+  color: var(--fg-on-ink-muted); margin: 0 0 var(--s-4);
+}
+.footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-2); }
+.footer a { color: var(--fg-on-ink); opacity: .85; text-decoration: none; font-size: 13px; }
+
+/* Anatomy callout grid */
+.anatomy {
+  display: grid; grid-template-columns: 1fr 320px; gap: var(--s-8);
+  align-items: center;
+}
+.anatomy .notes { display: grid; gap: var(--s-3); font-size: 13px; }
+.anatomy .notes b { font-family: var(--font-text); font-weight: 600; }
+.anatomy .notes p { margin: 0; color: var(--fg-muted); }
+.anatomy .notes .chip {
+  display: inline-block; font-family: ui-monospace, monospace;
+  font-size: 11px; padding: 2px 7px; border-radius: 4px;
+  background: var(--bg-overlay); color: var(--fg);
+}
+
+/* TOC */
+.toc {
+  position: sticky; top: 0;
+  background: var(--bg-page);
+  padding: var(--s-3) 0; margin-bottom: var(--s-12);
+  border-bottom: 1px solid var(--border);
+  z-index: 5;
+}
+.toc nav { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+.toc a {
+  font-family: var(--font-text); font-size: 12px; font-weight: 500;
+  color: var(--fg-muted); text-decoration: none;
+  padding: 6px 12px; border-radius: var(--r-pill);
+  border: 1px solid var(--border);
+  background: #fff;
+}
+.toc a:hover { color: var(--fg); }
+
+/* Token table */
+table.tokens { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tokens th, .tokens td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+.tokens th { font-weight: 600; color: var(--fg-muted); font-size: 11px; letter-spacing: var(--tr-wider); text-transform: uppercase; }
+.tokens td:first-child { font-family: ui-monospace, monospace; color: var(--fg); }
+.tokens td.val { color: var(--fg-muted); font-family: ui-monospace, monospace; }
+
+/* Small icon helpers (for component demos) */
+.ic { width: 16px; height: 16px; display: inline-block; vertical-align: middle; }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ===================== TITLE / HERO ====================== -->
+  <header class="spec-hero">
+    <div class="promo">Spring Deal — Get 40% off Plus and Family</div>
+    <p class="eyebrow" style="position: relative; margin-top: 8px;">Homepage Design System · v1.0</p>
+    <h1>Your space for notes,<br />tasks, and big ideas.</h1>
+    <p class="lede" style="font-size: 17px; max-width: 56ch; color: rgba(0,0,0,.62);">
+      A tokenised, screenshot-derived system for building a warm, paper-ish
+      productivity homepage. Pastel feature panels on a beige page, Fraunces
+      display + Inter body, pill-shaped controls, generous radii, and a hero
+      framed by a soft sky.
+    </p>
+    <div style="margin-top: var(--s-5); display: inline-flex; gap: 12px;">
+      <button class="btn btn-secondary">Try it Free</button>
+    </div>
+  </header>
+
+  <!-- ===================== TOC ====================== -->
+  <nav class="toc" aria-label="Sections">
+    <nav>
+      <a href="#foundations">Foundations</a>
+      <a href="#color">Color</a>
+      <a href="#type">Typography</a>
+      <a href="#spacing">Spacing</a>
+      <a href="#radii">Radii &amp; Shadows</a>
+      <a href="#components">Components</a>
+      <a href="#patterns">Patterns</a>
+      <a href="#tokens">Token Reference</a>
+    </nav>
+  </nav>
+
+  <!-- ===================== FOUNDATIONS ====================== -->
+  <section id="foundations" class="section">
+    <div class="section-head">
+      <p class="eyebrow">01 · Foundations</p>
+      <h2 class="h-display h2">A warm paper canvas, lifted by pastel cards.</h2>
+      <p class="lede">
+        Five principles drive every visual decision in the homepage. Read
+        these first — every component below is just an expression of them.
+      </p>
+    </div>
+
+    <div class="grid cols-3">
+      <div class="spec">
+        <p class="spec-title">1 · Beige base, never white</p>
+        <p class="spec-meta">
+          The page background is <span class="mono">#fcf9f7</span> — a soft
+          warm beige. White is reserved for cards, modals, and inset surfaces
+          so they pop forward instead of disappearing.
+        </p>
+      </div>
+      <div class="spec">
+        <p class="spec-title">2 · Big rounded panels</p>
+        <p class="spec-meta">
+          Major sections live inside <span class="mono">24–32px</span> radius
+          panels with a soft layered shadow. Think <em>oversized index cards</em>,
+          not flat hero strips.
+        </p>
+      </div>
+      <div class="spec">
+        <p class="spec-title">3 · Pastel categories</p>
+        <p class="spec-meta">
+          Each feature theme owns a tint: periwinkle = <em>write</em>,
+          mint = <em>imagine/connect</em>, butter = <em>plan</em>. Tints
+          repeat to teach the language; never invent a new one.
+        </p>
+      </div>
+      <div class="spec">
+        <p class="spec-title">4 · Pill everything interactive</p>
+        <p class="spec-meta">
+          Nav, primary CTAs, secondary buttons, tags, even mini-cards inside
+          panels — all use <span class="mono">border-radius: 9999px</span> for
+          touch targets. Edges are soft; nothing is sharp.
+        </p>
+      </div>
+      <div class="spec">
+        <p class="spec-title">5 · Serif headlines, sans body</p>
+        <p class="spec-meta">
+          Fraunces (display) carries every headline and every italic pull-quote.
+          Inter handles body copy, eyebrows, UI labels. The contrast IS the brand.
+        </p>
+      </div>
+      <div class="spec">
+        <p class="spec-title">6 · Paper collage atmosphere</p>
+        <p class="spec-meta">
+          The hero stages torn-paper shapes against a sky gradient. Decorative
+          elements should feel <em>cut and pasted</em> — not vector-clean.
+          Reserve for hero / between-section breaks.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== COLOR ====================== -->
+  <section id="color" class="section">
+    <div class="section-head">
+      <p class="eyebrow">02 · Color</p>
+      <h2 class="h-display h2">A beige page, pastel panels, ink for emphasis.</h2>
+      <p class="lede">All hex values are sampled directly from the reference screenshot, then cross-checked against the live CSS custom properties.</p>
+    </div>
+
+    <h3 class="h-display h3" style="margin: 32px 0 16px; font-size: 22px;">Surfaces &amp; Ink</h3>
+    <div class="grid cols-4">
+      <div class="swatch light"><div class="chip" style="background:#fcf9f7">--bg-page</div>
+        <div class="body"><p class="name">Page · Beige</p><div class="vals"><code>#FCF9F7</code><code>oklch 98.5 .005 70</code></div></div></div>
+      <div class="swatch light"><div class="chip" style="background:#fff;border-bottom:1px solid var(--border)">--bg-card</div>
+        <div class="body"><p class="name">Card · White</p><div class="vals"><code>#FFFFFF</code></div></div></div>
+      <div class="swatch light"><div class="chip" style="background:#f4f1ef">--bg-inset</div>
+        <div class="body"><p class="name">Inset</p><div class="vals"><code>#F4F1EF</code></div></div></div>
+      <div class="swatch dark"><div class="chip" style="background:#030302">--bg-ink</div>
+        <div class="body"><p class="name">Ink</p><div class="vals"><code>#030302</code></div></div></div>
+    </div>
+
+    <h3 class="h-display h3" style="margin: 32px 0 16px; font-size: 22px;">Pastel Panels — feature backgrounds</h3>
+    <div class="grid cols-5" style="grid-template-columns: repeat(5,1fr);">
+      <div class="swatch light"><div class="chip" style="background:#b3c4f0">Write</div>
+        <div class="body"><p class="name">Periwinkle</p><div class="vals"><code>#B3C4F0</code></div></div></div>
+      <div class="swatch light"><div class="chip" style="background:#a6dcb3">Imagine</div>
+        <div class="body"><p class="name">Mint</p><div class="vals"><code>#A6DCB3</code></div></div></div>
+      <div class="swatch light"><div class="chip" style="background:#fceebc">Plan</div>
+        <div class="body"><p class="name">Butter</p><div class="vals"><code>#FCEEBC</code></div></div></div>
+      <div class="swatch light"><div class="chip" style="background:#c4dffb">Sky</div>
+        <div class="body"><p class="name">Sky-tint</p><div class="vals"><code>#C4DFFB</code></div></div></div>
+      <div class="swatch light"><div class="chip" style="background:#fadecc">Warm</div>
+        <div class="body"><p class="name">Blush</p><div class="vals"><code>#FADECC</code></div></div></div>
+    </div>
+
+    <h3 class="h-display h3" style="margin: 32px 0 16px; font-size: 22px;">Accent solids — the “–4” family</h3>
+    <p class="spec-meta" style="max-width: 60ch; margin-bottom: var(--s-5);">
+      Saturated mid-tones for category chips, brand cards (Reddit/X/Slack/YouTube),
+      and small accent icons. Never use these as section backgrounds — they’re
+      too punchy. Pair with white or beige.
+    </p>
+    <div class="grid cols-6" style="grid-template-columns: repeat(7,1fr);">
+      <div class="swatch dark"><div class="chip" style="background:#bb433a">red</div><div class="body"><p class="name">Red 4</p><div class="vals"><code>#BB433A</code></div></div></div>
+      <div class="swatch dark"><div class="chip" style="background:#b25620">orange</div><div class="body"><p class="name">Orange 4</p><div class="vals"><code>#B25620</code></div></div></div>
+      <div class="swatch dark"><div class="chip" style="background:#987e1b">yellow</div><div class="body"><p class="name">Yellow 4</p><div class="vals"><code>#987E1B</code></div></div></div>
+      <div class="swatch dark"><div class="chip" style="background:#3f8850">green</div><div class="body"><p class="name">Green 4</p><div class="vals"><code>#3F8850</code></div></div></div>
+      <div class="swatch dark"><div class="chip" style="background:#427e8a">blue</div><div class="body"><p class="name">Blue 4</p><div class="vals"><code>#427E8A</code></div></div></div>
+      <div class="swatch dark"><div class="chip" style="background:#4b68c3">purple</div><div class="body"><p class="name">Purple 4</p><div class="vals"><code>#4B68C3</code></div></div></div>
+      <div class="swatch dark"><div class="chip" style="background:#a549ab">pink</div><div class="body"><p class="name">Pink 4</p><div class="vals"><code>#A549AB</code></div></div></div>
+    </div>
+
+    <h3 class="h-display h3" style="margin: 32px 0 16px; font-size: 22px;">Atmosphere</h3>
+    <div class="grid cols-3">
+      <div class="swatch light">
+        <div class="chip" style="background:linear-gradient(180deg,#93cfed 0%,#c4e5f6 60%,#e9f3fb 100%)">Hero sky</div>
+        <div class="body"><p class="name">Hero gradient</p><div class="vals"><code>#93CFED → #C4E5F6 → #E9F3FB</code></div></div>
+      </div>
+      <div class="swatch light">
+        <div class="chip" style="background:#80c793; color:#fff">Promo</div>
+        <div class="body"><p class="name">Promo banner</p><div class="vals"><code>#80C793</code></div></div>
+      </div>
+      <div class="swatch light">
+        <div class="chip" style="background:#03030217">9% black border</div>
+        <div class="body"><p class="name">Border</p><div class="vals"><code>rgba(3,3,2,0.09)</code></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TYPE ====================== -->
+  <section id="type" class="section">
+    <div class="section-head">
+      <p class="eyebrow">03 · Typography</p>
+      <h2 class="h-display h2">Fraunces speaks. Inter explains.</h2>
+      <p class="lede">
+        Display headlines and italic pull-quotes use <b>Fraunces</b> at
+        opsz <span class="mono">9..144</span>, weight 400. Body, eyebrows,
+        and any UI text use <b>Inter</b> 400/500/600.
+      </p>
+    </div>
+
+    <div class="spec" style="padding: var(--s-8);">
+      <div class="type-row">
+        <div class="type-meta">
+          <b>Display / H1</b>
+          Fraunces 400 · 64/68px<br />
+          Tracking <code>-0.025em</code><br />
+          <code>opsz 144 · italic optional</code>
+        </div>
+        <div class="sample-display" style="font-size: 64px;">Your space for notes, tasks, and big ideas.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <b>Display / H2 — section</b>
+          Fraunces 400 · 40/44px<br />
+          Tracking <code>-0.025em</code>
+        </div>
+        <div class="sample-display" style="font-size: 40px;">Structure that adapts<br />to your thinking.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <b>Display / H3 — panel</b>
+          Fraunces 400 · 28/32px<br />
+          Tracking <code>-0.025em</code>
+        </div>
+        <div class="sample-display" style="font-size: 28px;">Planning that doesn’t feel like work.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <b>Italic pullquote</b>
+          Fraunces 400 italic · 22/30px<br />
+          Inline-quote uses <code>“ … ”</code>
+        </div>
+        <div class="sample-display italic-display" style="font-size: 22px;">“Craft is way more functional than Apple Notes while easier to use than Notion.”</div>
+      </div>
+
+      <div class="type-row">
+        <div class="type-meta">
+          <b>Eyebrow / Kicker</b>
+          Inter 600 · 12px · uppercase<br />
+          Tracking <code>0.10em</code><br />
+          Color <code>--fg-muted</code>
+        </div>
+        <div class="sample-text eyebrow" style="font-size: 12px;">PLAN · ORGANIZE · CUSTOMIZATION · PRICING</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <b>Lede / Intro</b>
+          Inter 400 · 18/28px<br />
+          Color <code>--fg-muted</code><br />
+          Max-width 60ch
+        </div>
+        <div class="sample-text" style="font-size: 18px; color: var(--fg-muted); max-width: 60ch;">
+          Keep your ideas and tasks together where they belong. Craft embeds tasks directly in your documents, so your best thinking stays connected to what needs to get done.
+        </div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <b>Body</b>
+          Inter 400 · 16/24px<br />
+          Color <code>--fg</code>
+        </div>
+        <div class="sample-text" style="font-size: 16px;">Switch between work and personal mode. Classic structure for clear hierarchies. For structured tracking and rich data.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <b>UI label / Tag</b>
+          Inter 500 · 13px<br />
+          On pill background
+        </div>
+        <div>
+          <span class="tag">Reading list</span>
+          <span class="tag" style="background:#fdf6c8;border-color:#e8d97b">Cooking</span>
+          <span class="tag" style="background:#dfe7fb;border-color:#bccff3">Travel</span>
+          <span class="tag" style="background:#dff0e2;border-color:#a7d4b1">Inbox</span>
+        </div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <b>Caption / Footer</b>
+          Inter 400 · 13/18px<br />
+          Color <code>--fg-on-ink-muted</code>
+        </div>
+        <div class="sample-text" style="font-size: 13px; color: var(--fg-muted);">© 2026 Craft Docs Limited, Inc. All rights reserved.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SPACING ====================== -->
+  <section id="spacing" class="section">
+    <div class="section-head">
+      <p class="eyebrow">04 · Spacing</p>
+      <h2 class="h-display h2">A 4px base — section rhythm at 80–120px.</h2>
+      <p class="lede">Page padding is a uniform <span class="mono">16–20px</span> off the viewport edge; section-to-section gap is a generous <span class="mono">80–120px</span>. Components breathe at <span class="mono">24–48px</span>.</p>
+    </div>
+
+    <div class="grid cols-2">
+      <div class="spec">
+        <p class="spec-title">Scale (Tailwind-aligned)</p>
+        <p class="spec-meta" style="margin-bottom: var(--s-3)">Each step is <code class="mono">.25rem (4px)</code>. Bars below are to-scale.</p>
+        <div class="ruler"><span class="lab">--s-1</span><div class="bar" style="width:4px"></div><span class="px">4px</span></div>
+        <div class="ruler"><span class="lab">--s-2</span><div class="bar" style="width:8px"></div><span class="px">8px</span></div>
+        <div class="ruler"><span class="lab">--s-3</span><div class="bar" style="width:12px"></div><span class="px">12px</span></div>
+        <div class="ruler"><span class="lab">--s-4</span><div class="bar" style="width:16px"></div><span class="px">16px</span></div>
+        <div class="ruler"><span class="lab">--s-5</span><div class="bar" style="width:20px"></div><span class="px">20px</span></div>
+        <div class="ruler"><span class="lab">--s-6</span><div class="bar" style="width:24px"></div><span class="px">24px</span></div>
+        <div class="ruler"><span class="lab">--s-8</span><div class="bar" style="width:32px"></div><span class="px">32px</span></div>
+        <div class="ruler"><span class="lab">--s-10</span><div class="bar" style="width:40px"></div><span class="px">40px</span></div>
+        <div class="ruler"><span class="lab">--s-12</span><div class="bar" style="width:48px"></div><span class="px">48px</span></div>
+        <div class="ruler"><span class="lab">--s-16</span><div class="bar" style="width:64px"></div><span class="px">64px</span></div>
+        <div class="ruler"><span class="lab">--s-20</span><div class="bar" style="width:80px"></div><span class="px">80px</span></div>
+        <div class="ruler"><span class="lab">--s-30</span><div class="bar" style="width:120px"></div><span class="px">120px</span></div>
+      </div>
+
+      <div class="spec">
+        <p class="spec-title">Layout rhythm</p>
+        <table class="tokens" style="margin-top: var(--s-2);">
+          <tr><th>Token</th><th>Use</th><th>Value</th></tr>
+          <tr><td>page-pad-x</td><td>Frame inset (lg+)</td><td class="val">20px</td></tr>
+          <tr><td>page-pad-x-mobile</td><td>Frame inset (sm)</td><td class="val">16px</td></tr>
+          <tr><td>section-gap</td><td>Between major sections</td><td class="val">120px (80 mobile)</td></tr>
+          <tr><td>panel-pad</td><td>Inside colored panels</td><td class="val">48px</td></tr>
+          <tr><td>card-pad</td><td>Inside white cards</td><td class="val">20–32px</td></tr>
+          <tr><td>cta-pad-y</td><td>Hero, CTA banner</td><td class="val">64–96px</td></tr>
+          <tr><td>nav-pad-y</td><td>Pill nav</td><td class="val">8px</td></tr>
+          <tr><td>btn-pad</td><td>Primary buttons</td><td class="val">10px / 18px</td></tr>
+          <tr><td>w-prose</td><td>Body text column</td><td class="val">672px (42rem)</td></tr>
+          <tr><td>w-feature</td><td>Feature panel max</td><td class="val">896px (56rem)</td></tr>
+          <tr><td>w-page</td><td>Visible content max</td><td class="val">1280px</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== RADII / SHADOWS ====================== -->
+  <section id="radii" class="section">
+    <div class="section-head">
+      <p class="eyebrow">05 · Radii &amp; Shadows</p>
+      <h2 class="h-display h2">Soft corners. Layered, almost-imperceptible shadows.</h2>
+      <p class="lede">The system has only one sharp corner: the inside of a torn-paper element. Everything else rounds. The signature <span class="mono">shadow-block</span> is built from four stacked shadows so panels lift off the page without showing a visible drop.</p>
+    </div>
+
+    <div class="spec" style="padding: var(--s-8);">
+      <p class="spec-title" style="margin-bottom: var(--s-5);">Radius scale</p>
+      <div class="radius-row">
+        <div class="radius-tile" style="border-radius:6px"><b>6</b><span>--r-xs · inputs</span></div>
+        <div class="radius-tile" style="border-radius:10px"><b>10</b><span>--r-sm · chips</span></div>
+        <div class="radius-tile" style="border-radius:12px"><b>12</b><span>--r-md · tags</span></div>
+        <div class="radius-tile" style="border-radius:16px"><b>16</b><span>--r-lg · cards</span></div>
+        <div class="radius-tile" style="border-radius:24px"><b>24</b><span>--r-xl · panels</span></div>
+        <div class="radius-tile" style="border-radius:32px"><b>32</b><span>--r-2xl · hero</span></div>
+        <div class="radius-tile" style="border-radius:9999px"><b>∞</b><span>--r-pill · buttons</span></div>
+      </div>
+    </div>
+
+    <div class="grid cols-3" style="margin-top: var(--s-5)">
+      <div class="spec">
+        <p class="spec-title">shadow-pill</p>
+        <p class="spec-meta">For floating buttons, the nav, mini-cards.</p>
+        <div style="height:80px;background:#fff;border-radius:var(--r-pill);box-shadow:var(--shadow-pill);margin-top:16px"></div>
+        <code class="mono" style="display:block;margin-top:12px;line-height:1.6">0 1px 2px rgba(0,0,0,.06),<br />0 4px 14px rgba(0,0,0,.08)</code>
+      </div>
+      <div class="spec">
+        <p class="spec-title">shadow-card</p>
+        <p class="spec-meta">For mini-cards on top of colored panels.</p>
+        <div style="height:80px;background:#fff;border-radius:var(--r-lg);box-shadow:var(--shadow-card);margin-top:16px"></div>
+        <code class="mono" style="display:block;margin-top:12px;line-height:1.6">0 1px 2px rgba(0,0,0,.04),<br />0 8px 24px rgba(0,0,0,.06)</code>
+      </div>
+      <div class="spec">
+        <p class="spec-title">shadow-block</p>
+        <p class="spec-meta">Signature elevation for hero, feature panels, CTA, footer.</p>
+        <div style="height:80px;background:#fff;border-radius:var(--r-xl);box-shadow:var(--shadow-block);margin-top:16px"></div>
+        <code class="mono" style="display:block;margin-top:12px;line-height:1.5">0 50px 40px 0 #00000003,<br />0 50px 40px 0 #00000005,<br />0 20px 40px 0 #0000000d,<br />0 3px 10px 0 #00000014</code>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== COMPONENTS ====================== -->
+  <section id="components" class="section">
+    <div class="section-head">
+      <p class="eyebrow">06 · Components</p>
+      <h2 class="h-display h2">Pills, panels, mini-cards, quotes.</h2>
+      <p class="lede">Every interactive surface is a pill. Every content surface is a rounded panel. Mini-cards live on top of colored panels to break up density.</p>
+    </div>
+
+    <!-- Nav pill -->
+    <div class="spec" style="padding: var(--s-8);">
+      <p class="spec-title">Pill navigation</p>
+      <p class="spec-meta">Floating ink-on-white pill, centered above the hero. Ink background, 8px padding, 22px left padding for the wordmark.</p>
+      <div style="margin-top: 24px; padding: 24px; background: linear-gradient(180deg,#93cfed,#c4e5f6); border-radius: var(--r-xl); display: flex; justify-content: center;">
+        <div class="nav-pill">
+          <span class="brand">CRAFT</span>
+          <a>Product</a>
+          <a>Imagine</a>
+          <a>Community</a>
+          <a>Pricing</a>
+          <a>Learn</a>
+          <a>Download</a>
+          <a style="margin-left: 12px">Log in</a>
+          <span class="cta">Try Craft Free</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="spec" style="margin-top: var(--s-5); padding: var(--s-8);">
+      <p class="spec-title">Buttons</p>
+      <p class="spec-meta">All buttons are pills. Primary uses ink, secondary uses white-on-anything, ghost is text-only with a 4px underline offset.</p>
+
+      <div style="display: grid; grid-template-columns: repeat(2,1fr); gap: var(--s-6); margin-top: var(--s-5)">
+        <div>
+          <p class="eyebrow" style="margin-bottom: 12px;">On beige page</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap; padding: 24px; background: var(--bg-page); border-radius: var(--r-lg); border: 1px solid var(--border);">
+            <button class="btn btn-primary">Try Craft Free</button>
+            <button class="btn btn-secondary">Continue on web</button>
+            <button class="btn btn-ghost">Learn more →</button>
+            <button class="btn-link">Learn more about group discounts →</button>
+          </div>
+        </div>
+        <div>
+          <p class="eyebrow" style="margin-bottom: 12px;">On colored panel</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap; padding: 24px; background: var(--panel-mint); border-radius: var(--r-lg);">
+            <button class="btn btn-on-panel">Learn more</button>
+            <button class="btn btn-primary">Download on the App Store</button>
+          </div>
+        </div>
+      </div>
+
+      <table class="tokens" style="margin-top: var(--s-6);">
+        <tr><th>Variant</th><th>Bg</th><th>Fg</th><th>Padding</th><th>Radius</th><th>Shadow</th></tr>
+        <tr><td>btn-primary</td><td class="val">--bg-ink</td><td class="val">white</td><td class="val">10·18</td><td class="val">pill</td><td class="val">shadow-pill</td></tr>
+        <tr><td>btn-secondary</td><td class="val">white</td><td class="val">--fg</td><td class="val">10·18</td><td class="val">pill</td><td class="val">shadow-pill</td></tr>
+        <tr><td>btn-on-panel</td><td class="val">white</td><td class="val">--fg</td><td class="val">10·18</td><td class="val">pill</td><td class="val">none</td></tr>
+        <tr><td>btn-ghost</td><td class="val">transparent</td><td class="val">--fg</td><td class="val">10·18</td><td class="val">pill</td><td class="val">none</td></tr>
+      </table>
+    </div>
+
+    <!-- Tags / pills -->
+    <div class="spec" style="margin-top: var(--s-5); padding: var(--s-8);">
+      <p class="spec-title">Tags &amp; chip-rows</p>
+      <p class="spec-meta">Pills carrying meta-data inside cards. Two flavors: outlined-on-white and filled-on-panel.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:var(--s-5)">
+        <span class="tag">Reading list</span>
+        <span class="tag" style="background:#fdf6c8;border-color:#e8d97b">Cooking</span>
+        <span class="tag" style="background:#dfe7fb;border-color:#bccff3">Travel</span>
+        <span class="tag" style="background:#dff0e2;border-color:#a7d4b1">Inbox</span>
+        <span class="tag" style="background:#cee0f9;border-color:#a3c2e9;color:#1f3b6b">Today</span>
+      </div>
+      <div style="margin-top: var(--s-5); padding: 24px; background: var(--panel-mint); border-radius: var(--r-lg); display: flex; gap: 10px; flex-wrap: wrap;">
+        <span class="tag-filled">Blog Publisher</span>
+        <span class="tag-filled">Reading Tracker</span>
+        <span class="tag-filled">Plant Dashboard</span>
+        <span class="tag-filled">Dream Journal</span>
+      </div>
+    </div>
+
+    <!-- Mini cards -->
+    <div class="spec" style="margin-top: var(--s-5); padding: var(--s-8);">
+      <p class="spec-title">Mini-cards</p>
+      <p class="spec-meta">White cards floating inside colored panels. 16px radius, soft card shadow, 20px padding, header row with 16px icon + 14/600 label.</p>
+      <div style="margin-top:24px; padding:32px; background:var(--panel-butter); border-radius:var(--r-xl); display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+        <div class="mini">
+          <div class="mini-head">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6h12M5 1.5v3M11 1.5v3"/></svg>
+            Calendar
+          </div>
+          <div style="margin-top:16px; background: var(--panel-sky); border-radius: var(--r-md); padding: 12px;">
+            <div style="font-size:12px; color: var(--fg-muted)">27 Apr</div>
+            <div style="font-family: var(--font-display); font-size: 22px; line-height:1.1; margin-top:2px;">Today</div>
+            <div style="font-size:12px; color: var(--fg-muted); margin-top:2px">Monday</div>
+          </div>
+        </div>
+        <div class="mini">
+          <div class="mini-head">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5 8.2l2 2 4-4.2"/></svg>
+            Tasks
+          </div>
+          <ul style="list-style:none;padding:0;margin:14px 0 0;font-size:13px;display:grid;gap:8px">
+            <li><input type="checkbox" checked disabled> Pack bags <span class="tag" style="padding:2px 8px;font-size:11px">Inbox</span> <span class="tag" style="background:#cee0f9;border-color:#a3c2e9;color:#1f3b6b;padding:2px 8px;font-size:11px">Today</span></li>
+            <li><input type="checkbox" disabled> Print tickets <span class="tag" style="padding:2px 8px;font-size:11px">Inbox</span></li>
+            <li><input type="checkbox" disabled> Set vacation auto-reply</li>
+            <li style="color: var(--accent-blue); font-weight:500;">+ Add Task</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quote -->
+    <div class="spec" style="margin-top: var(--s-5); padding: var(--s-8);">
+      <p class="spec-title">Inline quote</p>
+      <p class="spec-meta">Avatar + name on one side, italic Fraunces quote on the other, separated by a hairline rule. Centered horizontally on the page.</p>
+      <div class="quote" style="margin-top:24px; padding: 24px 0;">
+        <div class="who">
+          <span class="avatar"></span>
+          <span>Tom</span>
+        </div>
+        <div class="rule"></div>
+        <blockquote>“Publishing directly from Craft just feels natural — it’s where I write, so it makes sense to share from there too.”</blockquote>
+      </div>
+    </div>
+
+    <!-- Pricing -->
+    <div class="spec" style="margin-top: var(--s-5); padding: var(--s-8);">
+      <p class="spec-title">Pricing pair</p>
+      <p class="spec-meta">Two cards, equal width: free (white) and Plus (ink). Numerals are Fraunces, body is Inter, CTAs are pills.</p>
+      <div style="display:grid;grid-template-columns: 1fr 1fr;gap:24px;margin-top:24px;max-width:720px;">
+        <div class="price-card free">
+          <div class="price-name">Free</div>
+          <p style="margin:0;color:var(--fg-muted);font-size:14px;max-width: 28ch;">Full access, great if you use it occasionally each week.</p>
+          <div style="flex:1"></div>
+          <div class="price-amt">€0<small>/month</small></div>
+          <button class="btn btn-primary" style="align-self:flex-start">Get Started</button>
+        </div>
+        <div class="price-card plus">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-family:var(--font-display);font-weight:700;letter-spacing:.05em;font-size:24px">CRAFT</span>
+            <span class="tag" style="background:transparent;border-color:#ffffff44;color:#fff;font-size:10px;letter-spacing:.1em;text-transform:uppercase">Plus</span>
+          </div>
+          <p style="margin:0;color:var(--fg-on-ink-muted);font-size:14px;max-width:32ch;">Designed to effortlessly fit into your everyday flow.</p>
+          <div style="flex:1"></div>
+          <div>
+            <div class="strike" style="color: var(--fg-on-ink-muted)">€8.0</div>
+            <div class="price-amt">€4.8<small>/month</small></div>
+          </div>
+          <button class="btn btn-secondary" style="align-self:flex-start">Upgrade to Plus</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA banner -->
+    <div class="spec" style="margin-top: var(--s-5); padding: var(--s-8);">
+      <p class="spec-title">CTA banner (mint, striped)</p>
+      <p class="spec-meta">Mint panel with subtle diagonal stripe overlay. Italic Fraunces headline left; pill action group right.</p>
+      <div class="cta-banner" style="margin-top:24px;">
+        <div>
+          <h3>Let’s get started</h3>
+          <p>Start for free. No credit card required.</p>
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary">Continue on web</button>
+          <button class="btn btn-primary">Download on the App Store</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="spec" style="margin-top: var(--s-5); padding: var(--s-8);">
+      <p class="spec-title">Footer</p>
+      <p class="spec-meta">Ink panel with full radius. Five columns of links, eyebrow-style headers, copyright + locale + social row at the bottom.</p>
+      <div class="footer" style="margin-top:24px;">
+        <div class="footer-cols">
+          <div><h6>Product</h6><ul><li><a>Product Releases</a></li><li><a>Features</a></li><li><a>Pricing</a></li></ul></div>
+          <div><h6>Community</h6><ul><li><a>Slack</a></li><li><a>Reddit Community</a></li><li><a>X / Twitter</a></li></ul></div>
+          <div><h6>Support</h6><ul><li><a>Help Center</a></li><li><a>Contact Support</a></li><li><a>Getting Started</a></li></ul></div>
+          <div><h6>Company</h6><ul><li><a>About us</a></li><li><a>Blog</a></li><li><a>Careers</a></li><li><a>Legal</a></li></ul></div>
+          <div><h6>Download</h6><ul><li><a>Craft for iPhone</a></li><li><a>Craft for iPad</a></li><li><a>Craft for Mac</a></li></ul></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PATTERNS ====================== -->
+  <section id="patterns" class="section">
+    <div class="section-head">
+      <p class="eyebrow">07 · Patterns</p>
+      <h2 class="h-display h2">How sections are built.</h2>
+      <p class="lede">Three repeating patterns. Mix to compose the homepage.</p>
+    </div>
+
+    <!-- Pattern A: Centered eyebrow + display + lede -->
+    <div class="spec" style="padding: var(--s-12); text-align: center;">
+      <p class="eyebrow">Pattern A · Section opener</p>
+      <p style="font-family:var(--font-display); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color:var(--fg-muted); margin: 0 0 var(--s-3); font-weight:600;">CUSTOMIZATION</p>
+      <h2 class="h-display" style="font-size: 44px; margin: 0;">Make it unmistakably yours</h2>
+      <p class="lede" style="margin: 12px auto 20px;">Choose any approach that fits your mind: organize with spaces, folders and tags, or build rich databases with collections.</p>
+      <button class="btn btn-secondary">Learn more</button>
+    </div>
+
+    <!-- Pattern B: Pastel panel with side label + mini cards -->
+    <div class="panel periwinkle" style="margin-top: var(--s-5); display: grid; grid-template-columns: 320px 1fr; gap: var(--s-8); align-items: stretch;">
+      <div>
+        <p class="eyebrow">WRITE</p>
+        <h3 class="panel-title">From first thought<br />to final form</h3>
+        <p class="panel-desc">In Craft, your writing moves with you — capture ideas instantly across all your devices, then refine them when you’re ready.</p>
+        <button class="btn btn-on-panel">Learn more</button>
+      </div>
+      <div class="mini" style="align-self: center; transform: rotate(-1.5deg);">
+        <div class="mini-head">My Sourdough Bread</div>
+        <ul style="list-style:none;padding:0;margin:14px 0 0;font-size:13px;display:grid;gap:8px;">
+          <li><input type="checkbox" disabled> 500g Bread Flour</li>
+          <li><input type="checkbox" disabled> 350g Lukewarm Water</li>
+          <li><input type="checkbox" disabled> 100g Active Sourdough Starter</li>
+          <li><input type="checkbox" disabled> 10g Of Salt</li>
+        </ul>
+        <p style="font-size:12px; color: var(--fg-muted); margin-top: 14px; line-height:1.55">Start in the morning. Grab a big bowl and toss in 500g of bread flour…</p>
+      </div>
+    </div>
+
+    <!-- Pattern C: Quote rule -->
+    <div class="spec" style="margin-top: var(--s-5); padding: var(--s-8);">
+      <p class="spec-title" style="margin-bottom: var(--s-5);">Pattern C · Quote rule between sections</p>
+      <div class="quote">
+        <div class="who">
+          <span class="avatar" style="background:var(--panel-blush)"></span>
+          <span>Amity Sensei</span>
+        </div>
+        <div class="rule"></div>
+        <blockquote>“I can make my notes not only functional but visually pleasing — which really motivates me to stay organized.”</blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TOKEN REFERENCE ====================== -->
+  <section id="tokens" class="section">
+    <div class="section-head">
+      <p class="eyebrow">08 · Token reference</p>
+      <h2 class="h-display h2">Copy-paste CSS variables.</h2>
+      <p class="lede">Drop these into <span class="mono">:root</span> and the rest of the system follows.</p>
+    </div>
+
+    <div class="spec" style="padding: var(--s-6);">
+      <pre style="margin:0;font-family:ui-monospace,monospace;font-size:12px;line-height:1.7;white-space:pre-wrap;color:var(--fg);">
+:root {
+  /* surfaces */
+  --bg-page:#fcf9f7; --bg-card:#ffffff; --bg-inset:#f4f1ef;
+  --bg-ink:#030302;  --bg-overlay:#0303020a;
+
+  /* ink */
+  --fg:#030302; --fg-muted:#03030280; --fg-faint:#03030299;
+  --fg-on-ink:#fff; --fg-on-ink-muted:#ffffffb3;
+
+  /* lines */
+  --border:#03030217; --ring:#0303021f;
+
+  /* pastel panels */
+  --panel-periwinkle:#b3c4f0; --panel-mint:#a6dcb3;
+  --panel-butter:#fceebc; --panel-sky:#c4dffb; --panel-blush:#fadecc;
+
+  /* accent solids (-4 family) */
+  --accent-red:#bb433a; --accent-orange:#b25620; --accent-yellow:#987e1b;
+  --accent-green:#3f8850; --accent-blue:#427e8a;
+  --accent-purple:#4b68c3; --accent-pink:#a549ab;
+
+  /* atmosphere */
+  --hero-sky-top:#93cfed; --hero-sky-bottom:#c4e5f6; --promo-banner:#80c793;
+
+  /* radii */
+  --r-xs:6px; --r-sm:10px; --r-md:12px; --r-lg:16px;
+  --r-xl:24px; --r-2xl:32px; --r-pill:9999px;
+
+  /* spacing (4px) */
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:20px;
+  --s-6:24px; --s-8:32px; --s-10:40px; --s-12:48px; --s-16:64px;
+  --s-20:80px; --s-30:120px;
+
+  /* type */
+  --font-display:"Fraunces",ui-serif,Georgia,serif;
+  --font-text:"Inter",system-ui,-apple-system,sans-serif;
+  --tr-tight:-.025em; --tr-wide:.025em; --tr-wider:.05em; --tr-widest:.10em;
+
+  /* shadows */
+  --shadow-block:
+    0 50px 40px 0 #00000003,
+    0 50px 40px 0 #00000005,
+    0 20px 40px 0 #0000000d,
+    0 3px 10px 0 #00000014;
+  --shadow-card: 0 1px 2px #0000000a, 0 8px 24px #0000000f;
+  --shadow-pill: 0 1px 2px #0000000f, 0 4px 14px #00000014;
+}
+</pre>
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>
