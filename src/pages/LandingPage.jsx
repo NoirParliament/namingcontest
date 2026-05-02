@@ -35,9 +35,9 @@ function Nav() {
           <img src={namingContestLogo} alt="NamingContest" className="brand-logo" />
         </a>
         <div className="links">
-          <a href="#testimonials">Testimonials</a>
-          <a href="#how">How It Works</a>
           <a href="#pricing">Pricing</a>
+          <a href="#how">How it works</a>
+          <a href="#testimonials">Testimonials</a>
         </div>
         <div className="nav-actions">
           <a href="#signin" className="signin">Sign In</a>
@@ -296,15 +296,14 @@ function Hero({ onStart }) {
       <HeroAnimation />
       <div className="hero-inner">
         <h1 className="h-display">
-          The best names are <span className="em">chosen,</span><br />
-          not assigned.
+          Run a naming contest for <span className="em">anything</span>
         </h1>
         <p className="sub">
-          Invite anyone. Collect ideas anonymously. Vote with five structured methods. Pick a winner the whole room actually believes in.
+          Whether you're naming a baby, a band, or a business, now it's so easy to land on the name everyone backs.
         </p>
         <div className="cta-row">
           <a href="#start" onClick={(e) => { e.preventDefault(); onStart(); }} className="btn btn-primary btn-lg">
-            Start a naming contest <span className="arrow">→</span>
+            Start a contest <span className="arrow">→</span>
           </a>
           <a href="#how" className="btn btn-secondary btn-lg">
             See how it works
@@ -321,41 +320,44 @@ function Offerings({ onStart }) {
     {
       tier: 'personal',
       title: 'Personal',
-      tagline: 'Baby names, pet names, the wedding hashtag, the family Wi-Fi.',
+      tagline: 'Babies, pets, holiday homes, the family Wi-Fi.',
       cap: 'Up to 15 participants',
       price: '$9',
+      cta: 'Start a personal contest',
       img: personalDog,
-      pillA: { text: '#ChenForever', meta: '3 votes', color: '#b25620', icon: <path d="M8 14s-5-3.2-5-7a3 3 0 0 1 5-2 3 3 0 0 1 5 2c0 3.8-5 7-5 7z" /> },
-      pillB: { text: '12 joined', color: '#b25620', icon: <><circle cx="5" cy="6" r="2" /><circle cx="11" cy="6" r="2" /><path d="M2 13c0-2 1.5-3 3-3s3 1 3 3M8 13c0-2 1.5-3 3-3s3 1 3 3" /></> },
+      pillA: { text: 'Olly', meta: '8 votes', color: '#b25620', icon: <path d="M8 14s-5-3.2-5-7a3 3 0 0 1 5-2 3 3 0 0 1 5 2c0 3.8-5 7-5 7z" /> },
+      pillB: { text: 'Closes Sunday', color: '#b25620', icon: <><circle cx="8" cy="8" r="6" /><path d="M8 4v4l2.5 1.5" /></> },
     },
     {
       tier: 'team',
-      title: 'Team',
-      tagline: 'Bands, podcasts, sports squads, gaming groups, side projects.',
+      title: 'Group',
+      tagline: 'Bands, podcasts, sports teams, gaming clans, civic groups.',
       cap: 'Up to 60 participants',
       price: '$29',
+      cta: 'Start a group contest',
       img: teamPlayers,
-      pillA: { text: 'Round 2', meta: '6 left', color: '#4b68c3', icon: <><circle cx="8" cy="8" r="6" /><path d="M8 4v4l2.5 1.5" /></> },
-      pillB: { text: 'Quiet Static', meta: '9', color: '#4b68c3', icon: <><path d="M3 12V5l5-2 5 2v7" /><path d="M3 12h10" /></> },
+      pillA: { text: '23 names in', color: '#4b68c3', icon: <><path d="M3 4h10M3 8h10M3 12h6" /></> },
+      pillB: { text: 'Riverside FC', meta: '49 voted', color: '#4b68c3', icon: <><path d="M3 12V5l5-2 5 2v7" /><path d="M3 12h10" /></> },
     },
     {
       tier: 'business',
       title: 'Business',
-      tagline: 'Company names, product launches, rebrands, internal initiatives.',
+      tagline: 'Company names, product launches, rebrands, internal projects.',
       cap: 'Up to 240 participants',
       price: '$89',
+      cta: 'Start a business contest',
       img: businessWoman,
-      pillA: { text: 'Winner', meta: 'Lumira', dot: true },
-      pillB: { text: '47% of 84 votes', color: '#3f8850', icon: <path d="M2 8h12M9 4l4 4-4 4" /> },
+      pillA: { text: 'Quality', meta: '92/100', color: '#3f8850', icon: <><circle cx="8" cy="8" r="6" /><path d="M5 8l2 2 4-4" /></> },
+      pillB: { text: 'Winner', meta: 'EvoPay', color: '#3f8850', icon: <><path d="M5 3h6v3a3 3 0 0 1-6 0V3z" /><path d="M3 4v1a2 2 0 0 0 2 2M13 4v1a2 2 0 0 1-2 2" /><path d="M8 9v3M5 12h6" /></> },
     },
   ];
 
   return (
     <section className="section" id="pricing">
       <div className="section-head">
-        <p className="eyebrow">Three ways to run a contest</p>
-        <h2 className="h-display h2">One platform. Three scales.</h2>
-        <p className="lede">Same structured process — sized to fit a kitchen-table decision, a six-person band, or a global product launch.</p>
+        <p className="eyebrow">Pick your path</p>
+        <h2 className="h-display h2">Your name starts here</h2>
+        <p className="lede">Family group chat or Fortune 500 product launch—your contest is shaped to your group, your stakes, and what you're naming.</p>
       </div>
       <div className="offerings">
         {tiers.map(t => (
@@ -368,7 +370,7 @@ function Offerings({ onStart }) {
                 <span className="price">{t.price}<small>/contest</small></span>
               </div>
               <a href={`#start-${t.tier}`} onClick={(e) => { e.preventDefault(); onStart(t.tier); }} className="start">
-                Get started <span className="arrow">→</span>
+                {t.cta} <span className="arrow">→</span>
               </a>
             </div>
             <div className="scene" aria-hidden="true">
@@ -380,7 +382,9 @@ function Offerings({ onStart }) {
                 {t.pillA.text} {t.pillA.meta && <span className="v">{t.pillA.meta}</span>}
               </div>
               <div className="float-pill pill-b">
-                <span className="ic"><svg viewBox="0 0 16 16" fill="none" stroke={t.pillB.color} strokeWidth="1.6" strokeLinecap="round">{t.pillB.icon}</svg></span>
+                {t.pillB.dot ? <span className="dot"></span> : (
+                  <span className="ic"><svg viewBox="0 0 16 16" fill="none" stroke={t.pillB.color} strokeWidth="1.6" strokeLinecap="round">{t.pillB.icon}</svg></span>
+                )}
                 {t.pillB.text} {t.pillB.meta && <span className="v">{t.pillB.meta}</span>}
               </div>
             </div>
@@ -396,9 +400,9 @@ function HowItWorks() {
   return (
     <section className="section" id="how">
       <div className="section-head">
-        <p className="eyebrow">How it works</p>
-        <h2 className="h-display h2">Four steps to a name <span className="italic">everyone</span> agrees on.</h2>
-        <p className="lede">Pick a path, invite the room, vote with structure, ship the winner.</p>
+        <p className="eyebrow">The four steps</p>
+        <h2 className="h-display h2">From brief to winner</h2>
+        <p className="lede">Swap Google Forms, Excel, and endless email threads for a platform actually meant for naming.</p>
       </div>
 
       <div className="why">
@@ -406,15 +410,15 @@ function HowItWorks() {
         <div className="why-item" data-tone="butter">
           <div className="why-text">
             <div className="step-mark"><span className="step-num">01</span><span className="step-label">Brief</span></div>
-            <h3>Build Your <span className="em-word">Brief.</span></h3>
-            <p>Pick your contest type, answer a few key questions. Our framework handles the rest.</p>
+            <h3>Build a brief</h3>
+            <p>Pick a type, answer a few questions, the brief writes itself.</p>
           </div>
           <div className="why-art">
             <div className="artifact art-brief">
               <div className="a-head">New Contest · Brief</div>
-              <div className="row"><span className="lbl">Brand</span><span className="val">Northbound Co.</span></div>
-              <div className="row"><span className="lbl">Audience</span><span className="chip-row"><span className="mini-chip">B2B SaaS</span><span className="mini-chip">Founders</span></span></div>
-              <div className="row"><span className="lbl">Tone</span><span className="chip-row"><span className="mini-chip">Bold</span><span className="mini-chip">Warm</span><span className="mini-chip">Modern</span></span></div>
+              <div className="row"><span className="lbl">Brand</span><span className="val">Specialty coffee</span></div>
+              <div className="row"><span className="lbl">Audience</span><span className="chip-row"><span className="mini-chip">Home brewers</span></span></div>
+              <div className="row"><span className="lbl">Tone</span><span className="chip-row"><span className="mini-chip">Honest</span><span className="mini-chip">Warm</span></span></div>
               <div className="row"><span className="lbl">Avoid</span><span className="input-line"></span></div>
             </div>
           </div>
@@ -424,8 +428,8 @@ function HowItWorks() {
         <div className="why-item" data-tone="periwinkle">
           <div className="why-text">
             <div className="step-mark"><span className="step-num">02</span><span className="step-label">Invite</span></div>
-            <h3>Invite Your <span className="em-word">People.</span></h3>
-            <p>Share a link. No signup needed. They join instantly.</p>
+            <h3>Invite your people</h3>
+            <p>Share a link, and they're in. No signup, no download.</p>
           </div>
           <div className="why-art">
             <div className="artifact art-invite">
@@ -447,23 +451,23 @@ function HowItWorks() {
         {/* 03 SUBMIT & VOTE */}
         <div className="why-item" data-tone="mint">
           <div className="why-text">
-            <div className="step-mark"><span className="step-num">03</span><span className="step-label">Submit &amp; Vote</span></div>
-            <h3>Submit &amp; <span className="em-word">Vote.</span></h3>
-            <p>Everyone suggests names anonymously, then votes using structured methods. No bias.</p>
+            <div className="step-mark"><span className="step-num">03</span><span className="step-label">Vote</span></div>
+            <h3>Submit and vote</h3>
+            <p>Names roll in, votes get counted, a winner rises to the top.</p>
           </div>
           <div className="why-art">
             <div className="artifact art-vote">
-              <div className="a-head">Round 2 · Ranked vote</div>
+              <div className="a-head">Live · Ranked vote</div>
               <div className="v-block" data-leader="true">
-                <div className="v-row"><span className="name">Northbound</span><span className="meta">19 votes</span></div>
+                <div className="v-row"><span className="name">Daily Bean</span><span className="meta">19 votes</span></div>
                 <div className="bar-wrap"><div className="bar-track"><div className="bar-fill" style={{ width: '76%' }}></div></div></div>
               </div>
               <div className="v-block">
-                <div className="v-row"><span className="name">Lumira</span><span className="meta">14 votes</span></div>
+                <div className="v-row"><span className="name">Kenna Coffee</span><span className="meta">14 votes</span></div>
                 <div className="bar-wrap"><div className="bar-track"><div className="bar-fill" style={{ width: '56%', background: 'var(--fg)', opacity: .35 }}></div></div></div>
               </div>
               <div className="v-block">
-                <div className="v-row"><span className="name">Quiltwork</span><span className="meta">9 votes</span></div>
+                <div className="v-row"><span className="name">Lixira</span><span className="meta">9 votes</span></div>
                 <div className="bar-wrap"><div className="bar-track"><div className="bar-fill" style={{ width: '36%', background: 'var(--fg)', opacity: .25 }}></div></div></div>
               </div>
             </div>
@@ -473,14 +477,14 @@ function HowItWorks() {
         {/* 04 RESULT */}
         <div className="why-item" data-tone="blush">
           <div className="why-text">
-            <div className="step-mark"><span className="step-num">04</span><span className="step-label">Result</span></div>
-            <h3>Get Your <span className="em-word">Winner.</span></h3>
-            <p>A clear result with full analytics and voting breakdown. Done.</p>
+            <div className="step-mark"><span className="step-num">04</span><span className="step-label">Reveal</span></div>
+            <h3>See the winner</h3>
+            <p>A clear result with the vote breakdown and a naming certificate to keep.</p>
           </div>
           <div className="why-art">
             <div className="artifact art-winner">
               <span className="winner-tag"><span className="dot"></span>Winner</span>
-              <div className="wname">Northbound</div>
+              <div className="wname">Daily Bean</div>
               <div className="sub">47% of votes · 19 of 42</div>
               <div className="bars" aria-hidden="true">
                 <span></span><span></span><span></span><span></span><span></span>
@@ -494,31 +498,31 @@ function HowItWorks() {
 }
 
 /* ========== SHARED ACCOUNTABILITY ========== */
-function SharedAccountability() {
+function SharedAccountability({ onStart }) {
   const creatorTasks = [
-    { icon: <><rect x="6" y="3" width="12" height="18" rx="2" /><path d="M9 3v2h6V3" /><path d="M9 10h6M9 14h6M9 18h3" /></>, t: 'Complete brief fields', pts: '+15' },
-    { icon: <><path d="M3 5a2 2 0 012-2h6v17H5a2 2 0 01-2-2V5z" /><path d="M21 5a2 2 0 00-2-2h-6v17h6a2 2 0 002-2V5z" /><path d="M11 3v17M13 3v17" /></>, t: 'Read the naming primer', pts: '+10' },
-    { icon: <><circle cx="12" cy="13" r="7" /><path d="M12 9v4l2.5 2" /><path d="M9 2h6M12 6V4" /></>, t: 'Set rules & deadline', pts: '+13' },
+    { icon: <><rect x="6" y="3" width="12" height="18" rx="2" /><path d="M9 3v2h6V3" /><path d="M9 10h6M9 14h6M9 18h3" /></>, t: 'Fill out the brief', pts: '+15' },
+    { icon: <><path d="M3 5a2 2 0 012-2h6v17H5a2 2 0 01-2-2V5z" /><path d="M21 5a2 2 0 00-2-2h-6v17h6a2 2 0 002-2V5z" /><path d="M11 3v17M13 3v17" /></>, t: 'Pick a voting method', pts: '+10' },
+    { icon: <><circle cx="12" cy="13" r="7" /><path d="M12 9v4l2.5 2" /><path d="M9 2h6M12 6V4" /></>, t: 'Set rules and deadline', pts: '+13' },
   ];
   const participantTasks = [
-    { icon: <><path d="M4 4h6a3 3 0 013 3v13a2 2 0 00-2-2H4V4z" /><path d="M20 4h-6a3 3 0 00-3 3v13a2 2 0 012-2h7V4z" /></>, t: 'Read methodology articles', pts: '+10' },
-    { icon: <><path d="M9 18h6" /><path d="M10 21h4" /><path d="M12 3a6 6 0 00-4 10.5c.7.7 1 1.6 1 2.5v.5h6V16c0-.9.3-1.8 1-2.5A6 6 0 0012 3z" /></>, t: 'Submit quality name ideas', pts: '+15' },
-    { icon: <><path d="M21 12a8 8 0 01-11.5 7.2L4 21l1.8-5.5A8 8 0 1121 12z" /><path d="M9 11h.01M12 11h.01M15 11h.01" /></>, t: 'Earn points through feedback', pts: '+15' },
+    { icon: <><path d="M4 4h6a3 3 0 013 3v13a2 2 0 00-2-2H4V4z" /><path d="M20 4h-6a3 3 0 00-3 3v13a2 2 0 012-2h7V4z" /></>, t: 'Learn the naming basics', pts: '+10' },
+    { icon: <><path d="M9 18h6" /><path d="M10 21h4" /><path d="M12 3a6 6 0 00-4 10.5c.7.7 1 1.6 1 2.5v.5h6V16c0-.9.3-1.8 1-2.5A6 6 0 0012 3z" /></>, t: 'Send in your best names', pts: '+15' },
+    { icon: <><path d="M21 12a8 8 0 01-11.5 7.2L4 21l1.8-5.5A8 8 0 1121 12z" /><path d="M9 11h.01M12 11h.01M15 11h.01" /></>, t: 'Share your feedback', pts: '+15' },
   ];
 
   return (
     <section className="section">
       <div className="section-head">
-        <p className="eyebrow">Shared accountability</p>
-        <h2 className="h-display h2">Both sides do the work. <span className="italic">Both sides get the credit.</span></h2>
-        <p className="lede">A 100-point Contest Quality Score — split 50/50 between creator and participants.</p>
+        <p className="eyebrow">Teamwork</p>
+        <h2 className="h-display h2">One contest, two sides</h2>
+        <p className="lede">The creator brings the brief, the participant brings the names. Each earns half of a 100-point Quality Score.</p>
       </div>
       <div className="shared-panel">
         <div className="shared">
           <div className="score-row">
             <span className="label-l"><b>Creator</b> · 38/50</span>
             <span className="score-chip"><span className="dot"></span>Strong · 78/100</span>
-            <span className="label-r"><b>Participants</b> · 40/50</span>
+            <span className="label-r"><b>Participant</b> · 40/50</span>
           </div>
           <div className="score-bar-slim" aria-hidden="true">
             <div className="fill-creator"></div>
@@ -532,7 +536,7 @@ function SharedAccountability() {
                 <span className="col-dot"><Check /></span>
                 <div>
                   <div className="col-title">Creator</div>
-                  <div className="col-meta">0–50 pts · Before contest</div>
+                  <div className="col-meta">You, the organizer</div>
                 </div>
               </div>
               {creatorTasks.map((task, i) => (
@@ -550,8 +554,8 @@ function SharedAccountability() {
               <div className="col-head">
                 <span className="col-dot"><Check /></span>
                 <div>
-                  <div className="col-title">Participants</div>
-                  <div className="col-meta">0–50 pts · During contest</div>
+                  <div className="col-title">Participant</div>
+                  <div className="col-meta">Anyone you invite</div>
                 </div>
               </div>
               {participantTasks.map((task, i) => (
@@ -567,7 +571,7 @@ function SharedAccountability() {
           </div>
 
           <div className="shared-cta">
-            <a href="#examples" className="btn btn-primary btn-lg">See it in action <span className="arrow">→</span></a>
+            <a href="#start" onClick={(e) => { e.preventDefault(); onStart(); }} className="btn btn-primary btn-lg">Start a contest <span className="arrow">→</span></a>
           </div>
         </div>
       </div>
@@ -578,15 +582,15 @@ function SharedAccountability() {
 /* ========== TESTIMONIALS ========== */
 function Testimonials() {
   const list = [
-    { cat: 'business', quote: '47 name ideas, zero consensus. Three days after launching a contest, we had a winner with 89% approval.', winner: 'Vanta Pay', name: 'Sarah Chen', initials: 'SC', label: 'Business', photo: sarahChen },
-    { cat: 'team', quote: 'Six members, six strong opinions, zero agreement for six months. We ran a contest and landed on a name we all own.', winner: 'Hollow Signal', name: 'Marcus Rodriguez', initials: 'MR', label: 'Team', photo: marcusRodriguez },
-    { cat: 'personal', quote: '23 family members across three countries voted on our daughter’s name. Clara was chosen by the people who matter most.', winner: 'Clara', name: 'James & Linda Morrison', initials: 'JM', label: 'Personal', photo: lindaMorrison },
+    { cat: 'personal', quote: 'We were stuck on a name for our rescue puppy. The family voted online, and Olly came out on top.', winner: 'Olly', name: 'James & Linda Morrison', initials: 'JM', label: 'Personal', photo: lindaMorrison },
+    { cat: 'team', quote: 'We started a Sunday-league football team and needed a name. The squad voted, and Riverside FC won out.', winner: 'Riverside FC', name: 'Marcus Rodriguez', initials: 'MR', label: 'Group', photo: marcusRodriguez },
+    { cat: 'business', quote: 'Our co-founders couldn’t agree on a name for our payment app. We opened it to 50 beta users, and EvoPay won.', winner: 'EvoPay', name: 'Sarah Chen', initials: 'SC', label: 'Business', photo: sarahChen },
   ];
   return (
     <section className="section" id="testimonials">
       <div className="section-head">
-        <p className="eyebrow">From real contests</p>
-        <h2 className="h-display h2">Three rooms. Three winners.<br /><span className="italic">Zero arguments left over.</span></h2>
+        <p className="eyebrow">Winners' stories</p>
+        <h2 className="h-display h2">Names that stuck</h2>
       </div>
       <div className="testimonials">
         {list.map((t, i) => (
@@ -622,31 +626,31 @@ function FAQ() {
   const [openIdx, setOpenIdx] = useState(0);
   const items = [
     {
-      q: 'Do participants need to create an account?',
-      a: <p className="faq-a"><strong>No.</strong> Participants join via a unique link you share — no signup, no download, no friction. They can submit names and vote immediately. Only the contest organizer needs an account.</p>
+      q: "Who's behind this?",
+      a: <p className="faq-a"><strong>We're Catchword Branding</strong>—a naming agency that's been at it for 25+ years and worked with brands like The North Face, Volkswagen, and Asana. This platform turns what we've learned into a naming contest anyone can run.</p>
     },
     {
-      q: 'Can I run a free contest?',
-      a: <p className="faq-a"><strong>Yes.</strong> The free tier supports one active contest with up to 5 participants and voting only. Paid plans — Personal&nbsp;($9), Team&nbsp;($29), and Business&nbsp;($89) — unlock more participants, all five voting methods, open submissions, naming methodology, and more.</p>
+      q: 'How long does a contest take?',
+      a: <p className="faq-a"><strong>You set the deadline,</strong> but most contests wrap up in under a week.</p>
     },
     {
-      q: "What's the Catchword Branding connection?",
-      a: <p className="faq-a">NamingContest.com is powered by <strong>Catchword Branding</strong>, the #1 ranked naming agency worldwide with 25+ years of experience. The platform uses Catchword's methodology — including their 10-criteria evaluation framework — built into every contest.</p>
+      q: 'Do my voters need an account?',
+      a: <p className="faq-a"><strong>No.</strong> They click your link and they're in. Only the organizer (you) needs an account.</p>
+    },
+    {
+      q: 'How does the voting work?',
+      a: <p className="faq-a"><strong>Five methods:</strong> Simple Poll, Ranked Choice, Multi-Criteria, Pairwise, and Weighted. The right one depends on your group size and how much depth you want.</p>
     },
     {
       q: 'What does it cost?',
-      a: <p className="faq-a">Three paid tiers: <strong>Personal ($9/contest)</strong> for up to 15 participants — great for baby names, pets, and personal decisions. <strong>Team ($29/contest)</strong> for up to 60 participants with white-label output — ideal for bands, sports teams, and groups. <strong>Business ($89/contest)</strong> for up to 240 participants with full PDF reports — built for companies, products, and rebrands. All paid plans include every voting method, naming methodology, and automated reminders.</p>
-    },
-    {
-      q: 'What voting methods are available?',
-      a: <div className="faq-a">Five methods, included on every paid plan:<ol><li><strong>Simple Poll</strong> — one vote per person.</li><li><strong>Ranked Choice</strong> — rank all options in order.</li><li><strong>Multi-Criteria Scoring</strong> — rate names across multiple dimensions.</li><li><strong>Pairwise Comparison</strong> — choose between two at a time.</li><li><strong>Weighted Voting</strong> — different voters carry different vote weights.</li></ol></div>
+      a: <p className="faq-a"><strong>Three tiers, paid per contest.</strong> Personal is $9 (up to 15 voters). Group is $29 (up to 60). Business is $89 (up to 240). All include every voting method and the full naming methodology.</p>
     },
   ];
   return (
     <section className="section" id="faq">
       <div className="section-head">
-        <p className="eyebrow">Frequently asked</p>
-        <h2 className="h-display h2">Questions, answered.</h2>
+        <p className="eyebrow">From the inbox</p>
+        <h2 className="h-display h2">Questions, answered</h2>
       </div>
       <div className="faq">
         {items.map((it, i) => (
@@ -690,10 +694,10 @@ function ClosingCTA({ onStart }) {
         <span className="cdec cd6" aria-hidden="true"></span>
         <span className="cdec cd7" aria-hidden="true"></span>
         <span className="cdec cd8" aria-hidden="true"></span>
-        <h2 className="h-display">Your name is out there.<br /><span className="em">Let's find it together.</span></h2>
+        <h2 className="h-display">Your name is one contest away</h2>
         <div className="closing-cta">
           <a href="#start" onClick={(e) => { e.preventDefault(); onStart(); }} className="btn btn-primary btn-lg">
-            Start your contest <span className="arrow">→</span>
+            Start a contest <span className="arrow">→</span>
           </a>
         </div>
       </div>
@@ -726,31 +730,30 @@ function Footer() {
         <div>
           <h6>Product</h6>
           <ul>
-            <li><a href="#how">How It Works</a></li>
-            <li><a href="#examples">Examples</a></li>
+            <li><a href="#how">How it works</a></li>
+            <li><a href="#testimonials">Testimonials</a></li>
             <li><a href="#pricing">Pricing</a></li>
           </ul>
         </div>
         <div>
-          <h6>Powered by</h6>
+          <h6>Resources</h6>
           <ul>
             <li><a href="#">Catchword Branding</a></li>
-            <li><a href="#">Help Center</a></li>
-            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Help center</a></li>
+            <li><a href="#">Contact us</a></li>
           </ul>
         </div>
         <div>
           <h6>Legal</h6>
           <ul>
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">Terms of Service</a></li>
-            <li><a href="#">Cookie Policy</a></li>
+            <li><a href="#">Privacy policy</a></li>
+            <li><a href="#">Terms of service</a></li>
+            <li><a href="#">Cookie policy</a></li>
           </ul>
         </div>
       </div>
       <div className="footer-bottom">
-        <span>© 2026 NamingContest.com · A Catchword Branding company</span>
-        <span>Made for the people who can't pick a name.</span>
+        <span>© 2026 NamingContest.com</span>
       </div>
     </footer>
   );
@@ -775,7 +778,7 @@ export default function LandingPage() {
           <Hero onStart={handleStart} />
           <Offerings onStart={handleStart} />
           <HowItWorks />
-          <SharedAccountability />
+          <SharedAccountability onStart={handleStart} />
           <Testimonials />
           <FAQ />
           <ClosingCTA onStart={handleStart} />
