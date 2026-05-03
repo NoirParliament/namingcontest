@@ -31,7 +31,7 @@ function Nav() {
   return (
     <div className="nav-row">
       <nav className={`nav-pill${scrolled ? ' is-scrolled' : ''}`} aria-label="Primary">
-        <a href="#" className="brand-mark">
+        <a href="#" onClick={(e) => e.preventDefault()} className="brand-mark">
           <img src={namingContestLogo} alt="NamingContest" className="brand-logo" />
         </a>
         <div className="links">
@@ -40,8 +40,8 @@ function Nav() {
           <a href="#testimonials">Testimonials</a>
         </div>
         <div className="nav-actions">
-          <a href="#signin" className="signin">Sign In</a>
-          <a href="#start" className="cta">Start a contest</a>
+          <a href="#signin" onClick={(e) => e.preventDefault()} className="signin">Sign In</a>
+          <a href="#start" onClick={(e) => e.preventDefault()} className="cta">Start a contest</a>
         </div>
       </nav>
     </div>
@@ -738,18 +738,18 @@ function Footer() {
     <footer className="footer">
       <div className="footer-grid">
         <div className="brand-block">
-          <a href="#" className="brand-mark">
+          <a href="#" onClick={(e) => e.preventDefault()} className="brand-mark">
             <img src={namingContestLogo} alt="NamingContest" className="brand-logo brand-logo-footer" />
           </a>
           <p>Powered by Catchword, the #1 ranked naming agency worldwide.</p>
           <div className="socials" aria-label="Social links">
-            <a href="#" aria-label="Twitter / X">
+            <a href="#" onClick={(e) => e.preventDefault()} aria-label="Twitter / X">
               <svg viewBox="0 0 16 16" fill="currentColor"><path d="M9.5 7.2L14.7 1h-1.3L9 6.4 5.4 1H1l5.4 8.1L1 15h1.3l4.7-5.7L10.6 15H15L9.5 7.2zm-1.7 2L7.2 8.4 2.7 2h2l3.6 5.2.6.9 4.5 6.5h-2L7.8 9.2z"/></svg>
             </a>
-            <a href="#" aria-label="LinkedIn">
+            <a href="#" onClick={(e) => e.preventDefault()} aria-label="LinkedIn">
               <svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.6 2.5a1.6 1.6 0 1 1 0 3.2 1.6 1.6 0 0 1 0-3.2zM2.2 6.5h2.8V14H2.2zM6.8 6.5h2.7V8c.4-.7 1.3-1.6 2.8-1.6 3 0 3.5 2 3.5 4.5V14h-2.8v-2.6c0-.6 0-1.4-.9-1.4s-1 .7-1 1.4V14H6.8z"/></svg>
             </a>
-            <a href="#" aria-label="Instagram">
+            <a href="#" onClick={(e) => e.preventDefault()} aria-label="Instagram">
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4"><rect x="2" y="2" width="12" height="12" rx="3.5"/><circle cx="8" cy="8" r="3"/><circle cx="11.6" cy="4.4" r=".8" fill="currentColor" stroke="none"/></svg>
             </a>
           </div>
@@ -765,17 +765,17 @@ function Footer() {
         <div>
           <h6>Resources</h6>
           <ul>
-            <li><a href="#">Catchword Branding</a></li>
-            <li><a href="#">Help center</a></li>
-            <li><a href="#">Contact us</a></li>
+            <li><a href="#" onClick={(e) => e.preventDefault()}>Catchword Branding</a></li>
+            <li><a href="#" onClick={(e) => e.preventDefault()}>Help center</a></li>
+            <li><a href="#" onClick={(e) => e.preventDefault()}>Contact us</a></li>
           </ul>
         </div>
         <div>
           <h6>Legal</h6>
           <ul>
-            <li><a href="#">Privacy policy</a></li>
-            <li><a href="#">Terms of service</a></li>
-            <li><a href="#">Cookie policy</a></li>
+            <li><a href="#" onClick={(e) => e.preventDefault()}>Privacy policy</a></li>
+            <li><a href="#" onClick={(e) => e.preventDefault()}>Terms of service</a></li>
+            <li><a href="#" onClick={(e) => e.preventDefault()}>Cookie policy</a></li>
           </ul>
         </div>
       </div>
@@ -789,13 +789,11 @@ function Footer() {
 /* ========== PAGE ========== */
 export default function LandingPage() {
   const navigate = useNavigate();
-  const handleStart = (tier) => {
-    if (tier) {
-      navigate(`/brief?group=${tier}`);
-    } else {
-      navigate('/brief');
-    }
-  };
+  // Preview mode: "Start a contest" CTAs retain hover/click animations but don't navigate
+  const handleStart = () => { /* no-op for preview */ };
+  // (Restore the original behavior by uncommenting the version below)
+  // const handleStart = (tier) => { tier ? navigate(`/brief?group=${tier}`) : navigate('/brief'); };
+  void navigate; // keep import alive
 
   return (
     <div className="lp-v3">

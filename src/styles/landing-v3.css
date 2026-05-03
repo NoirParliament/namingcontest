@@ -275,7 +275,7 @@
 }
 
 /* === Sections === */
-.lp-v3 .section{margin-top:var(--s-30);padding:0}
+.lp-v3 .section{margin-top:var(--s-30);padding:0;scroll-margin-top:140px}
 .lp-v3 .section-head{text-align:center;max-width:720px;margin:0 auto var(--s-12)}
 .lp-v3 .section-head .eyebrow{margin-bottom:var(--s-3)}
 .lp-v3 .section-head .lede{margin:var(--s-4) auto 0;max-width:56ch}
