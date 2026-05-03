@@ -31,7 +31,7 @@ function Nav() {
   return (
     <div className="nav-row">
       <nav className={`nav-pill${scrolled ? ' is-scrolled' : ''}`} aria-label="Primary">
-        <a href="#" onClick={(e) => e.preventDefault()} className="brand-mark">
+        <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="brand-mark">
           <img src={namingContestLogo} alt="NamingContest" className="brand-logo" />
         </a>
         <div className="links">
@@ -738,7 +738,7 @@ function Footer() {
     <footer className="footer">
       <div className="footer-grid">
         <div className="brand-block">
-          <a href="#" onClick={(e) => e.preventDefault()} className="brand-mark">
+          <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="brand-mark">
             <img src={namingContestLogo} alt="NamingContest" className="brand-logo brand-logo-footer" />
           </a>
           <p>Powered by Catchword, the #1 ranked naming agency worldwide.</p>
