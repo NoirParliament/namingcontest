@@ -507,13 +507,13 @@ function SharedAccountability({ onStart }) {
   const participantTasks = [
     { icon: <><path d="M4 4h6a3 3 0 013 3v13a2 2 0 00-2-2H4V4z" /><path d="M20 4h-6a3 3 0 00-3 3v13a2 2 0 012-2h7V4z" /></>, t: 'Learn the naming basics', pts: '+10' },
     { icon: <><path d="M9 18h6" /><path d="M10 21h4" /><path d="M12 3a6 6 0 00-4 10.5c.7.7 1 1.6 1 2.5v.5h6V16c0-.9.3-1.8 1-2.5A6 6 0 0012 3z" /></>, t: 'Send in your best names', pts: '+15' },
-    { icon: <><path d="M21 12a8 8 0 01-11.5 7.2L4 21l1.8-5.5A8 8 0 1121 12z" /><path d="M9 11h.01M12 11h.01M15 11h.01" /></>, t: 'Share your feedback', pts: '+15' },
+    { icon: <><path d="M21 12a8 8 0 01-11.5 7.2L4 21l1.8-5.5A8 8 0 1121 12z" /><path d="M9 11h.01M12 11h.01M15 11h.01" /></>, t: 'Share your votes', pts: '+15' },
   ];
 
   return (
     <section className="section">
       <div className="section-head">
-        <p className="eyebrow">Teamwork</p>
+        <p className="eyebrow">Powered by teamwork</p>
         <h2 className="h-display h2">One contest, two sides</h2>
         <p className="lede">The creator brings the brief, the participant brings the names. Each earns half of a 100-point Quality Score.</p>
       </div>
@@ -533,7 +533,7 @@ function SharedAccountability({ onStart }) {
           <div className="task-grid">
             <div className="task-col" data-side="creator">
               <div className="col-head">
-                <span className="col-dot"><Check /></span>
+                <span className="col-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="9" r="3.5" /><path d="M5 20a7 7 0 0 1 14 0" /></svg></span>
                 <div>
                   <div className="col-title">Creator</div>
                   <div className="col-meta">You, the organizer</div>
@@ -552,7 +552,7 @@ function SharedAccountability({ onStart }) {
             <div className="gutter" aria-hidden="true"></div>
             <div className="task-col" data-side="participant">
               <div className="col-head">
-                <span className="col-dot"><Check /></span>
+                <span className="col-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="9" r="3.5" /><path d="M5 20a7 7 0 0 1 14 0" /></svg></span>
                 <div>
                   <div className="col-title">Participant</div>
                   <div className="col-meta">Anyone you invite</div>
@@ -590,7 +590,7 @@ function Testimonials() {
     <section className="section" id="testimonials">
       <div className="section-head">
         <p className="eyebrow">Winners' stories</p>
-        <h2 className="h-display h2">Names that stuck</h2>
+        <h2 className="h-display h2">Names that clicked</h2>
       </div>
       <div className="testimonials">
         {list.map((t, i) => (
