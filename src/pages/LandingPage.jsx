@@ -49,7 +49,7 @@ function Nav() {
 }
 
 /* ========== HERO ANIMATION ========== */
-const HERO_NAMES = ['Northbound', 'Lumira', 'Quiet Static', 'Helix', 'Beacon', 'Hollow Signal', 'Vanta Pay', 'Clara'];
+const HERO_NAMES = ['Atlas', 'Quill', 'Spire', 'Beacon', 'Helix', 'Vesper', 'Ember', 'Cobalt', 'Verge', 'Onyx'];
 
 const HERO_AVATARS = [
   // Top-left
@@ -67,8 +67,9 @@ const HERO_AVATARS = [
 ];
 
 function HeroAnimation() {
-  // round = { leftSugId, rightSugId, leftName, rightName, voters: [{id, target, vote, voted, dx, dy}], phase, winnerId }
+  // round = { leftSugId, rightSugId, leftName, rightName, voters: [{id, target, vote, voted, dx, dy}], phase, winnerId, finalTotals: {left, right} }
   const [round, setRound] = useState(null);
+  const [voteProgress, setVoteProgress] = useState(0);
   const avatarRefs = useRef({});
 
   useEffect(() => {
@@ -88,52 +89,48 @@ function HeroAnimation() {
       do { rightSugId = rightAvs[Math.floor(Math.random() * rightAvs.length)].id; } while (rightSugId === lastRightId);
       lastLeftId = leftSugId; lastRightId = rightSugId;
 
-      // Pick two distinct names
+      // Pick two distinct names — neither can match either name from the previous round
       let leftName, rightName;
-      do { leftName = HERO_NAMES[Math.floor(Math.random() * HERO_NAMES.length)]; } while (leftName === lastLeftName);
-      do { rightName = HERO_NAMES[Math.floor(Math.random() * HERO_NAMES.length)]; } while (rightName === leftName || rightName === lastRightName);
+      do { leftName = HERO_NAMES[Math.floor(Math.random() * HERO_NAMES.length)]; } while (leftName === lastLeftName || leftName === lastRightName);
+      do { rightName = HERO_NAMES[Math.floor(Math.random() * HERO_NAMES.length)]; } while (rightName === leftName || rightName === lastLeftName || rightName === lastRightName);
       lastLeftName = leftName; lastRightName = rightName;
 
-      // Remaining 4 avatars vote — left-side voters vote left, right-side voters vote right
-      // (votes never cross the central text)
+      // Remaining 4 avatars vote — each casts 1 vote (Simple Poll), same side as voter
       const voterIds = HERO_AVATARS.filter(a => a.id !== leftSugId && a.id !== rightSugId).map(a => a.id);
       const voters = voterIds.map(id => {
         const av = HERO_AVATARS.find(a => a.id === id);
         return {
           id,
-          target: av.side, // 'left' or 'right' — same side as the voter
-          vote: 1 + Math.floor(Math.random() * 3), // 1-3
+          target: av.side,
+          vote: 1, // every voter casts exactly 1 vote (visual fly)
           voted: false,
           counted: false,
         };
       });
 
-      // Compute winner up front (so we can also force a winner if it ties)
-      const leftTotal = voters.filter(v => v.target === 'left').reduce((s, v) => s + v.vote, 0);
-      const rightTotal = voters.filter(v => v.target === 'right').reduce((s, v) => s + v.vote, 0);
-      let winnerId;
-      if (leftTotal === rightTotal) {
-        // Force a winner: bump one voter's pick randomly
-        const bumpIdx = Math.floor(Math.random() * voters.length);
-        voters[bumpIdx].vote += 1;
-      }
-      const finalLeft = voters.filter(v => v.target === 'left').reduce((s, v) => s + v.vote, 0);
-      const finalRight = voters.filter(v => v.target === 'right').reduce((s, v) => s + v.vote, 0);
-      winnerId = finalLeft > finalRight ? leftSugId : rightSugId;
+      // Pre-determine winner side + final totals (representing the larger imagined audience)
+      const winnerSide = Math.random() < 0.5 ? 'left' : 'right';
+      const winnerFinal = 30 + Math.floor(Math.random() * 20); // 30-49
+      const loserFinal = 12 + Math.floor(Math.random() * 12); // 12-23
+      const finalTotals = {
+        left: winnerSide === 'left' ? winnerFinal : loserFinal,
+        right: winnerSide === 'right' ? winnerFinal : loserFinal,
+      };
+      const winnerId = winnerSide === 'left' ? leftSugId : rightSugId;
 
       // Phase 1: typing dots on both suggesters
-      setRound({ leftSugId, rightSugId, leftName, rightName, voters, phase: 'typing', winnerId });
+      setRound({ leftSugId, rightSugId, leftName, rightName, voters, phase: 'typing', winnerId, finalTotals });
 
       // Phase 2: name bubbles appear (after typing, with breathing room)
       timeouts.push(setTimeout(() => {
         if (cancelled) return;
         setRound(prev => prev ? { ...prev, phase: 'name' } : null);
-      }, 1000));
+      }, 700));
 
       // Phase 3: voters cast votes one-by-one — vote-fly leaves voter, lands on suggester
-      const voteStart = 2600;
-      const voteGap = 1100;
-      const voteFlightDuration = 1400; // matches CSS animation peak (vote arrives ~85% through 1.7s)
+      const voteStart = 1500;
+      const voteGap = 800;
+      const voteFlightDuration = 950; // matches CSS animation peak (vote arrives ~85% through 1.12s)
       voters.forEach((v, idx) => {
         // Vote leaves the voter (vote-fly starts traveling)
         timeouts.push(setTimeout(() => {
@@ -171,7 +168,7 @@ function HeroAnimation() {
         }, voteStart + idx * voteGap + voteFlightDuration));
       });
 
-      // Phase 4: crown winner — wait for last vote to arrive + breathe before crown
+      // Phase 4: crown winner — wait for last vote + dramatic breath before crown
       const crownAt = voteStart + (voters.length - 1) * voteGap + voteFlightDuration + 1000;
       timeouts.push(setTimeout(() => {
         if (cancelled) return;
@@ -179,7 +176,7 @@ function HeroAnimation() {
       }, crownAt));
 
       // Phase 5: ending — loser fades while winner stays
-      const fadeAt = crownAt + 2200;
+      const fadeAt = crownAt + 2500;
       timeouts.push(setTimeout(() => {
         if (cancelled) return;
         setRound(prev => prev ? { ...prev, phase: 'ending' } : null);
@@ -190,7 +187,7 @@ function HeroAnimation() {
       timeouts.push(setTimeout(() => {
         if (cancelled) return;
         setRound(null);
-        timeouts.push(setTimeout(startRound, 800));
+        timeouts.push(setTimeout(startRound, 400));
       }, endAt));
     };
 
@@ -198,9 +195,39 @@ function HeroAnimation() {
     return () => { cancelled = true; timeouts.forEach(clearTimeout); };
   }, []);
 
-  // Running vote totals — only counts votes that have ARRIVED at the suggester
-  const totals = round
-    ? round.voters.reduce((a, v) => { if (v.counted) a[v.target] += v.vote; return a; }, { left: 0, right: 0 })
+  // Animate vote chip — starts immediately when first vote arrives, organic step pacing
+  const firstVoteCounted = round?.voters?.some(v => v.counted) || false;
+  useEffect(() => {
+    if (!round) { setVoteProgress(0); return; }
+    if (round.phase === 'typing' || round.phase === 'name') { setVoteProgress(0); return; }
+    if (round.phase === 'crowned' || round.phase === 'ending') { setVoteProgress(1); return; }
+    if (round.phase === 'voting' && firstVoteCounted) {
+      let timer;
+      const start = Date.now();
+      const duration = 2700; // fits within voting phase, completes before crown
+      const tick = () => {
+        const elapsed = Date.now() - start;
+        const linearP = Math.min(1, elapsed / duration);
+        // Ease-out quad: moderate start, slows at end (no slow-start drag)
+        const easedP = 1 - Math.pow(1 - linearP, 2);
+        setVoteProgress(easedP);
+        if (linearP < 1) {
+          // Variable delay 140-260ms for organic batch feel
+          timer = setTimeout(tick, 140 + Math.random() * 120);
+        }
+      };
+      // Quick first tick so motion starts immediately
+      timer = setTimeout(tick, 30);
+      return () => clearTimeout(timer);
+    }
+  }, [round?.phase, firstVoteCounted]);
+
+  // Running vote totals — interpolate toward predetermined final totals
+  const totals = round?.finalTotals
+    ? {
+        left: Math.floor(round.finalTotals.left * voteProgress),
+        right: Math.floor(round.finalTotals.right * voteProgress),
+      }
     : { left: 0, right: 0 };
 
   return (
@@ -251,7 +278,7 @@ function HeroAnimation() {
             {isSuggester && round && round.phase !== 'typing' && (
               <div className={`hero-bubble hero-bubble-${bubbleSide}${isLoser ? ' is-loser' : ''}${showCrown ? ' is-winner' : ''}`}>
                 {team === 'left' ? round.leftName : round.rightName}
-                <span className="vote-chip" key={`chip-${teamTotal}`}>{teamTotal}</span>
+                <span className="vote-chip"><span className="num" key={`num-${teamTotal}`}>{teamTotal}</span> {teamTotal === 1 ? 'vote' : 'votes'}</span>
               </div>
             )}
 
