@@ -83,8 +83,8 @@
 /* The actually-hovered one stays full ink (specificity boosted to win over :has rule) */
 .lp-v3 .nav-pill:has(.links a:hover) .links a:hover,
 .lp-v3 .nav-pill:has(.signin:hover) .signin:hover{color:var(--fg)}
-.lp-v3 .nav-pill .cta{background:var(--bg-ink);color:var(--fg-on-ink);padding:10px 18px;border-radius:var(--r-pill);font-weight:600;font-size:13px;text-decoration:none;box-shadow:var(--shadow-pill)}
-.lp-v3 .nav-pill .cta:hover{background:#1a1a18}
+.lp-v3 .nav-pill .cta{background:linear-gradient(to top,#fff 50%,var(--bg-ink) 50%);background-size:100% 200%;background-position:top;color:var(--fg-on-ink);border:1px solid var(--bg-ink);padding:10px 18px;border-radius:var(--r-pill);font-weight:600;font-size:13px;text-decoration:none;box-shadow:var(--shadow-pill);transition:background-position .55s cubic-bezier(0.65,0,0.35,1),color .35s ease}
+.lp-v3 .nav-pill .cta:hover{background-position:bottom;color:var(--fg)}
 
 /* === Hero === */
 .lp-v3 .hero{position:relative;margin-top:var(--s-30);border-radius:var(--r-2xl);overflow:visible;background:radial-gradient(80% 60% at 50% 0%,var(--panel-blush) 0%,var(--panel-butter) 50%,#fff5e0 100%);box-shadow:var(--shadow-block)}
