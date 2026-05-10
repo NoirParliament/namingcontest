@@ -803,7 +803,6 @@ export default function LandingPage() {
           <Hero onStart={handleStart} />
           <Offerings onStart={handleStart} />
           <HowItWorks />
-          <SharedAccountability onStart={handleStart} />
           <Testimonials />
           <FAQ />
           <ClosingCTA onStart={handleStart} />
