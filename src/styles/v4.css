@@ -1,0 +1,1677 @@
+/* ============================================
+   V4 internal pages — design language
+   Chat-style, warm, mobile-first
+   ============================================ */
+
+/* ---------- BASE ---------- */
+.v4 {
+  --v4-bg: #fcf9f7;
+  --v4-fg: #030302;
+  --v4-muted: rgba(3, 3, 2, 0.6);
+  --v4-faint: rgba(3, 3, 2, 0.1);
+  --v4-bubble-bg: #f5f1ee;
+  --v4-card-bg: #ffffff;
+  /* Design-doc focus ring token (#0303021f = 12% black) */
+  --v4-ring: rgba(3, 3, 2, 0.12);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--v4-fg);
+  /* Stop browser from picking blue/green for selection / form controls */
+  accent-color: var(--v4-fg);
+}
+
+.v4-screen {
+  /* Option B: fixed-height flex column. Header sits at top (flex: none),
+     content area scrolls internally. The page itself does NOT scroll —
+     all overflow happens inside .v4-chat / .v4-review. */
+  height: 100vh;
+  height: 100dvh; /* dynamic vh — better on mobile */
+  background: var(--v4-bg);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- NAV (slim top bar — flex: none so it stays at top) ---------- */
+.v4-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 32px;
+  position: relative;
+  z-index: 10;
+  gap: 16px;
+  flex: none;
+  background: var(--v4-bg);
+  /* subtle bottom border appears once content scrolls under */
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
+}
+.v4-nav.is-scrolled {
+  border-bottom-color: var(--v4-faint);
+}
+
+.v4-brand {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  text-decoration: none;
+}
+.v4-logo {
+  height: 22px;
+  width: auto;
+  display: block;
+}
+
+.v4-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  justify-content: center;
+}
+.v4-step-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(3, 3, 2, 0.15);
+  transition: background 0.3s ease;
+}
+.v4-step-dot.is-active {
+  background: var(--v4-fg);
+}
+.v4-step-dot.is-done {
+  background: rgba(3, 3, 2, 0.55);
+}
+.v4-step-label {
+  font-size: 13px;
+  color: var(--v4-muted);
+  margin-left: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.v4-exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--v4-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  flex: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+.v4-exit:hover {
+  color: var(--v4-fg);
+  background: rgba(3, 3, 2, 0.04);
+}
+
+/* ---------- DECORATIVE BLOBS ---------- */
+.v4-blob {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  animation: v4-blob-drift 14s ease-in-out infinite;
+}
+.v4-blob-1 {
+  width: 260px;
+  height: 260px;
+  top: 8%;
+  right: -80px;
+  background: #b3c4f0;
+  opacity: 0.28;
+  animation-delay: 0s;
+  filter: blur(2px);
+}
+.v4-blob-2 {
+  width: 160px;
+  height: 160px;
+  bottom: 14%;
+  left: -50px;
+  background: #fceebc;
+  opacity: 0.4;
+  animation-delay: -5s;
+  filter: blur(1px);
+}
+.v4-blob-3 {
+  width: 90px;
+  height: 90px;
+  top: 36%;
+  left: 6%;
+  background: #fadecc;
+  opacity: 0.55;
+  animation-delay: -9s;
+}
+.v4-blob-4 {
+  width: 70px;
+  height: 70px;
+  bottom: 28%;
+  right: 8%;
+  background: #a6dcb3;
+  opacity: 0.4;
+  animation-delay: -2s;
+}
+@keyframes v4-blob-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(8px, -10px) scale(1.04); }
+  66% { transform: translate(-6px, 6px) scale(0.98); }
+}
+
+/* ---------- CHAT CONTAINER ---------- */
+.v4-chat {
+  /* Option B: scrollable region. Takes all remaining height after .v4-nav.
+     min-height: 0 is the magic that lets flex children actually shrink
+     so internal overflow works. */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  position: relative;
+  z-index: 5;
+}
+/* Inner wrapper centers the chat content + holds the column layout
+   that was previously on .v4-chat itself. */
+.v4-chat-inner {
+  max-width: 640px;
+  margin: 56px auto 0;
+  padding: 0 24px 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* ---------- TYPING INDICATOR ---------- */
+.v4-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--v4-bubble-bg);
+  padding: 16px 18px;
+  border-radius: 20px;
+  border-top-left-radius: 6px;
+  margin-bottom: 12px;
+  opacity: 0;
+  animation: v4-bubble-in 0.3s ease-out forwards;
+}
+.v4-typing span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(3, 3, 2, 0.4);
+  animation: v4-typing-dot 1.2s ease-in-out infinite;
+}
+.v4-typing span:nth-child(2) { animation-delay: 0.15s; }
+.v4-typing span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes v4-typing-dot {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-4px); }
+}
+
+/* ---------- CHAT BUBBLES (system) ---------- */
+.v4-bubble {
+  background: var(--v4-bubble-bg);
+  padding: 18px 22px;
+  border-radius: 20px;
+  border-top-left-radius: 6px;
+  font-size: 17px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+  max-width: 460px;
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 10px;
+  opacity: 0;
+  animation: v4-bubble-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  font-weight: 450;
+  letter-spacing: -0.005em;
+}
+.v4-bubble-icon {
+  font-size: 22px;
+  line-height: 1.2;
+  flex: none;
+}
+@keyframes v4-bubble-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- CHOICE LIST ---------- */
+.v4-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 32px;
+}
+
+.v4-choice {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: var(--v4-card-bg);
+  border: 1px solid var(--v4-faint);
+  border-radius: 16px;
+  padding: 18px 22px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: inherit;
+  width: 100%;
+  outline: none;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  opacity: 0;
+  animation: v4-bubble-in 0.4s ease-out forwards;
+  position: relative;
+}
+.v4-choice:focus-visible {
+  border-color: rgba(3, 3, 2, 0.4);
+  box-shadow: 0 0 0 3px var(--v4-ring);
+}
+
+.v4-choice:hover {
+  border-color: rgba(3, 3, 2, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px -10px rgba(0, 0, 0, 0.14);
+}
+
+.v4-choice.is-selected {
+  background: var(--v4-fg);
+  color: #ffffff;
+  border-color: var(--v4-fg);
+  transform: translateY(-2px);
+}
+
+.v4-choice-icon {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease;
+  animation: v4-icon-bob 3.6s ease-in-out infinite;
+  /* bg + color set inline per option for distinct pastel tones */
+}
+.v4-choice:hover .v4-choice-icon {
+  animation-play-state: paused;
+  transform: translateY(-3px);
+}
+.v4-choice.is-selected .v4-choice-icon {
+  animation-play-state: paused;
+  transform: scale(1.05);
+}
+@keyframes v4-icon-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+.v4-choice-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.v4-choice-title {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin-bottom: 2px;
+  line-height: 1.2;
+}
+
+.v4-choice-body {
+  font-size: 14px;
+  color: var(--v4-muted);
+  line-height: 1.4;
+}
+
+.v4-choice.is-selected .v4-choice-body {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.v4-choice-arrow {
+  font-size: 20px;
+  color: rgba(3, 3, 2, 0.3);
+  transition: transform 0.25s ease, color 0.25s ease;
+  flex: none;
+  font-weight: 300;
+}
+
+.v4-choice:hover .v4-choice-arrow {
+  color: rgba(3, 3, 2, 0.7);
+  transform: translateX(4px);
+}
+
+.v4-choice.is-selected .v4-choice-arrow {
+  color: #ffffff;
+  transform: translateX(4px);
+}
+
+/* ---------- NEXT-UP PREVIEW ---------- */
+.v4-next-preview {
+  margin: 32px auto 0;
+  font-size: 13px;
+  color: rgba(3, 3, 2, 0.45);
+  text-align: center;
+  letter-spacing: 0.01em;
+  align-self: center;
+  opacity: 0;
+  animation: v4-bubble-in 0.5s ease-out 0.6s forwards;
+}
+
+/* ---------- USER REPLY BUBBLE ---------- */
+.v4-bubble-user {
+  align-self: flex-end;
+  background: var(--v4-fg);
+  color: #ffffff;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 6px;
+  font-weight: 500;
+  padding: 16px 20px;
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.v4-bubble-user-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  flex: none;
+}
+
+/* ============================================
+   TIER PICKER PAGE — overrides homepage spacing
+   to fit a dedicated mid-flow page context.
+   Reuses .lp-v3 .offering and .section-head styles
+   verbatim; only adjusts the layout shell.
+   ============================================ */
+.lp-v3-pick-tier {
+  min-height: 100vh;
+  animation: v4-page-fade-in 240ms ease-out;
+}
+.lp-v3-pick-tier .section {
+  margin-top: 40px;
+}
+@keyframes v4-page-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Click confirmation — picked card lifts, other cards dim.
+   Preserve homepage's box-shadow + border-color transitions; only ADD transform + opacity. */
+.lp-v3-pick-tier .offering {
+  transition:
+    box-shadow .45s ease,
+    border-color .35s ease,
+    transform 280ms ease-out,
+    opacity 280ms ease-out;
+}
+.lp-v3-pick-tier .offering[data-picked="yes"] {
+  transform: scale(1.02);
+}
+.lp-v3-pick-tier .offering[data-picked="no"] {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* ============================================
+   TIER PICKER MODAL  (deprecated - kept for reference)
+   ============================================ */
+
+.v4-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(252, 249, 247, 0.85);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: v4-backdrop-in 0.3s ease forwards;
+}
+.v4-modal-backdrop.is-clearing {
+  background: #fcf9f7;
+  -webkit-backdrop-filter: blur(0px);
+  backdrop-filter: blur(0px);
+  transition: background 0.5s ease, backdrop-filter 0.5s ease;
+}
+@keyframes v4-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.v4-modal {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 40px 32px 32px;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.25), 0 6px 24px rgba(0, 0, 0, 0.08);
+  animation: v4-modal-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  position: relative;
+  font-family: 'Inter', sans-serif;
+}
+.v4-modal.is-fading {
+  background: transparent;
+  box-shadow: none;
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+@keyframes v4-modal-in {
+  from { opacity: 0; transform: translateY(20px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.v4-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(3, 3, 2, 0.04);
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: rgba(3, 3, 2, 0.6);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.v4-modal-close:hover {
+  background: rgba(3, 3, 2, 0.08);
+  color: #030302;
+}
+
+.v4-modal-title {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 30px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  text-align: center;
+  margin: 0 0 28px;
+  color: #030302;
+}
+
+.v4-modal-tiers {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ---------- TIER CARD ---------- */
+.v4-tier-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(3, 3, 2, 0.1);
+  border-radius: 14px;
+  padding: 16px 18px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+  color: inherit;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  position: relative;
+}
+.v4-tier-card:hover {
+  border-color: rgba(3, 3, 2, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.12);
+}
+
+.v4-tier-icon {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.v4-tier-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.v4-tier-title {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  margin-bottom: 4px;
+}
+
+.v4-tier-body {
+  font-size: 13px;
+  color: rgba(3, 3, 2, 0.6);
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+.v4-tier-meta {
+  font-size: 12px;
+  color: rgba(3, 3, 2, 0.45);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* ---------- MORPH: flying card ---------- */
+.v4-tier-card.is-flying {
+  position: fixed;
+  top: 78px;
+  left: 50%;
+  transform: translateX(-50%) scale(0.5);
+  z-index: 10001;
+  width: 280px;
+  pointer-events: none;
+  transition: top 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+              left 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.4s ease 0.4s;
+  opacity: 0.85;
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* ---------- MORPH: other cards fade out ---------- */
+.v4-tier-card.is-fading-out {
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+/* ============================================
+   TIER BADGE — appears at top of chat screen
+   ============================================ */
+.v4-tier-badge {
+  position: absolute;
+  top: 78px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid rgba(3, 3, 2, 0.1);
+  border-radius: 100px;
+  padding: 6px 14px 6px 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(3, 3, 2, 0.7);
+  z-index: 6;
+  box-shadow: 0 4px 14px -4px rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  animation: v4-badge-in 0.4s ease 0.5s forwards;
+}
+.v4-tier-badge-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 100px;
+}
+.v4-tier-badge-change {
+  margin-left: 8px;
+  font-size: 12px;
+  color: rgba(3, 3, 2, 0.5);
+  text-decoration: none;
+  border-left: 1px solid rgba(3, 3, 2, 0.12);
+  padding-left: 10px;
+  transition: color 0.2s ease;
+}
+.v4-tier-badge-change:hover {
+  color: #030302;
+}
+@keyframes v4-badge-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(-4px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Mobile modal: bottom sheet */
+@media (max-width: 640px) {
+  .v4-modal-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .v4-modal {
+    border-radius: 20px 20px 0 0;
+    max-width: none;
+    padding: 32px 20px 24px;
+    animation: v4-modal-sheet-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes v4-modal-sheet-in {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .v4-tier-card.is-flying {
+    width: 200px;
+    top: 64px;
+  }
+  .v4-tier-badge {
+    top: 64px;
+  }
+}
+
+/* ---------- MOBILE (≤ 640px) ---------- */
+@media (max-width: 640px) {
+  .v4-nav {
+    padding: 16px 20px;
+  }
+  .v4-progress {
+    justify-content: flex-start;
+  }
+  .v4-progress .v4-step-label {
+    display: none;
+  }
+  .v4-chat-inner {
+    padding: 0 16px 80px;
+    margin-top: 36px;
+  }
+  .v4-review-inner {
+    padding: 0 16px 80px;
+    margin-top: 36px;
+  }
+  .v4-bubble {
+    font-size: 16px;
+    padding: 14px 18px;
+    max-width: 100%;
+  }
+  .v4-bubble-icon {
+    font-size: 20px;
+  }
+  .v4-choices {
+    margin-top: 24px;
+    gap: 8px;
+  }
+  .v4-choice {
+    padding: 14px 16px;
+    gap: 14px;
+    border-radius: 14px;
+  }
+  .v4-choice-icon {
+    width: 38px;
+    height: 38px;
+  }
+  .v4-choice-title {
+    font-size: 17px;
+  }
+  .v4-choice-body {
+    font-size: 13px;
+  }
+  .v4-blob {
+    display: none;
+  }
+  .v4-input {
+    font-size: 16px;
+  }
+  .v4-input-row {
+    padding: 6px 6px 6px 14px;
+  }
+}
+
+/* ============================================
+   TEXT INPUT BUBBLE — used on chat screens that
+   ask for short free-text answers (Screen 2 etc.)
+   ============================================ */
+.v4-hint {
+  margin-top: 18px;
+  margin-bottom: 14px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--v4-muted);
+  max-width: 460px;
+  letter-spacing: -0.005em;
+  animation: v4-bubble-in 0.5s ease-out forwards;
+  opacity: 0;
+}
+.v4-hint-eg {
+  display: inline-block;
+  background: var(--v4-bubble-bg);
+  padding: 1px 8px;
+  border-radius: 6px;
+  color: var(--v4-fg);
+  font-weight: 500;
+}
+
+.v4-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1.5px solid var(--v4-faint);
+  border-radius: 16px;
+  padding: 8px 8px 8px 16px;
+  max-width: 520px;
+  width: 100%;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  animation: v4-bubble-in 0.5s ease-out 0.05s forwards;
+  opacity: 0;
+}
+.v4-input-row:focus-within {
+  border-color: rgba(3, 3, 2, 0.45);
+  /* Design-doc --ring token */
+  box-shadow: 0 0 0 3px var(--v4-ring);
+}
+
+.v4-input-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--v4-muted);
+  flex: none;
+}
+
+/* Use input.v4-input (specificity 0,1,1) to beat globals.css's
+   input[type="text"] base rules. Force-clear every legacy input style. */
+input.v4-input,
+input.v4-input:focus,
+input.v4-input:hover {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  box-shadow: none; /* kills lime focus ring from globals.css */
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  letter-spacing: -0.005em;
+  padding: 10px 0;
+  height: auto; /* globals sets 44px */
+  width: auto;  /* globals sets 100% */
+  border-radius: 0;
+}
+input.v4-input::placeholder {
+  color: rgba(3, 3, 2, 0.35);
+  font-weight: 400;
+}
+
+/* Kill Chrome / Safari autofill yellow-green tint.
+   The trick: long inset shadow paints over autofill bg, and explicit
+   text fill stops the autofill text color override. */
+.v4-input:-webkit-autofill,
+.v4-input:-webkit-autofill:hover,
+.v4-input:-webkit-autofill:focus,
+.v4-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: var(--v4-fg) !important;
+  caret-color: var(--v4-fg);
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+.v4-input-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: none;
+  background: var(--v4-fg);
+  color: #ffffff;
+  cursor: pointer;
+  flex: none;
+  outline: none;
+  transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
+}
+.v4-input-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+/* Design-doc --ring token, slightly stronger on dark button so it's visible */
+.v4-input-submit:focus-visible {
+  box-shadow: 0 0 0 3px var(--v4-ring), 0 0 0 4px rgba(255, 255, 255, 0.4);
+}
+.v4-input-submit:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.v4-input-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  max-width: 520px;
+  font-size: 12px;
+  color: var(--v4-muted);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  animation: v4-bubble-in 0.5s ease-out 0.15s forwards;
+  opacity: 0;
+}
+.v4-input-meta kbd {
+  display: inline-block;
+  background: var(--v4-bubble-bg);
+  border: 1px solid var(--v4-faint);
+  border-radius: 5px;
+  padding: 1px 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  margin: 0 2px;
+}
+
+/* ============================================
+   TEXTAREA VARIANT of the input row
+   ============================================ */
+.v4-input-row-textarea {
+  align-items: flex-end;
+  padding: 12px 10px 12px 16px;
+}
+textarea.v4-input,
+textarea.v4-input:focus,
+textarea.v4-input:hover {
+  resize: none;
+  min-height: 80px;
+  padding: 4px 0;
+  line-height: 1.5;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  height: auto;
+  width: auto;
+  border-radius: 0;
+  flex: 1;
+  min-width: 0;
+}
+textarea.v4-input::placeholder {
+  color: rgba(3, 3, 2, 0.35);
+  font-weight: 400;
+}
+
+/* ============================================
+   CHIPS row — single-select pill list
+   ============================================ */
+.v4-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+  max-width: 560px;
+  animation: v4-bubble-in 0.5s ease-out forwards;
+  opacity: 0;
+}
+.v4-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 16px;
+  background: #ffffff;
+  border: 1.5px solid var(--v4-faint);
+  border-radius: 999px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  cursor: pointer;
+  letter-spacing: -0.005em;
+  outline: none;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.v4-chip:hover {
+  border-color: rgba(3, 3, 2, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px -10px rgba(0, 0, 0, 0.18);
+}
+.v4-chip:focus-visible {
+  border-color: rgba(3, 3, 2, 0.45);
+  box-shadow: 0 0 0 3px var(--v4-ring);
+}
+
+/* ============================================
+   RADIO CARDS — card-style picker with label + sublabel
+   (smaller variant of v4-choice for in-chat use)
+   ============================================ */
+.v4-radiocards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+  max-width: 560px;
+  width: 100%;
+  animation: v4-bubble-in 0.5s ease-out forwards;
+  opacity: 0;
+}
+.v4-radiocard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 14px;
+  padding: 14px 18px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: inherit;
+  width: 100%;
+  outline: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.v4-radiocard:hover {
+  border-color: rgba(3, 3, 2, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px -10px rgba(0, 0, 0, 0.12);
+}
+.v4-radiocard:focus-visible {
+  border-color: rgba(3, 3, 2, 0.4);
+  box-shadow: 0 0 0 3px var(--v4-ring);
+}
+.v4-radiocard-text {
+  flex: 1;
+  min-width: 0;
+}
+.v4-radiocard-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--v4-fg);
+}
+.v4-radiocard-sub {
+  font-size: 13px;
+  color: var(--v4-muted);
+  margin-top: 2px;
+  letter-spacing: -0.005em;
+}
+.v4-radiocard-rec {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--v4-bubble-bg);
+  color: var(--v4-muted);
+  padding: 2px 7px;
+  border-radius: 5px;
+}
+
+/* ============================================
+   NUMBER CHIPS — tighter, fixed-width chips for numeric picks
+   ============================================ */
+.v4-number-chips .v4-chip-number {
+  min-width: 48px;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+.v4-chip.is-default {
+  border-color: rgba(3, 3, 2, 0.35);
+  background: var(--v4-bubble-bg);
+}
+.v4-chip-tag {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+}
+
+/* ============================================
+   DATE INPUT — quick-pick chips + date field
+   ============================================ */
+.v4-date-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 520px;
+  width: 100%;
+  animation: v4-bubble-in 0.5s ease-out forwards;
+  opacity: 0;
+}
+.v4-date-row {
+  padding: 6px 6px 6px 16px;
+}
+input.v4-input-date,
+input.v4-input-date:focus,
+input.v4-input-date:hover {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  color: var(--v4-fg);
+  padding: 10px 0;
+  height: auto;
+  width: auto;
+  border-radius: 0;
+  flex: 1;
+  min-width: 0;
+  color-scheme: light;
+}
+
+.v4-input-skip,
+.v4-defer-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--v4-muted);
+}
+.v4-defer-row {
+  background: var(--v4-bubble-bg);
+  padding: 12px 16px;
+  border-radius: 14px;
+  max-width: 520px;
+  width: 100%;
+  animation: v4-bubble-in 0.5s ease-out forwards;
+  opacity: 0;
+}
+.v4-input-skip-note code {
+  background: var(--v4-bubble-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+}
+
+/* ============================================
+   GUIDE EXPANDABLE — the "📖 Read the guide" card
+   ============================================ */
+.v4-guide {
+  width: 100%;
+  max-width: 560px;
+  margin: 4px 0 14px;
+  animation: v4-bubble-in 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+/* ── Trigger pill ─────────────────────────────────────────────────── */
+.v4-guide-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 999px;
+  padding: 8px 16px 8px 12px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  color: var(--v4-fg);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  max-width: 100%;
+}
+.v4-guide-trigger:hover {
+  border-color: rgba(3, 3, 2, 0.35);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px -10px rgba(0, 0, 0, 0.14);
+}
+.v4-guide-trigger:focus-visible {
+  border-color: rgba(3, 3, 2, 0.45);
+  box-shadow: 0 0 0 3px var(--v4-ring);
+}
+.v4-guide.is-open .v4-guide-trigger {
+  background: var(--v4-bubble-bg);
+  border-color: rgba(3, 3, 2, 0.2);
+}
+
+/* Compact variant — used when guide lives in history (already-answered turn).
+   Slightly tighter, slightly muted, comes alive on hover/expand so the
+   re-read affordance stays discoverable without competing with the
+   current question. */
+.v4-guide-compact {
+  margin: 4px 0 18px;
+}
+.v4-guide-compact .v4-guide-trigger {
+  padding: 6px 12px 6px 10px;
+  font-size: 12px;
+  background: transparent;
+  border-color: var(--v4-faint);
+  opacity: 0.7;
+  transition: opacity 0.2s ease, border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+.v4-guide-compact .v4-guide-trigger:hover {
+  opacity: 1;
+  background: #ffffff;
+  border-color: rgba(3, 3, 2, 0.3);
+}
+.v4-guide-compact.is-open .v4-guide-trigger {
+  opacity: 1;
+  background: var(--v4-bubble-bg);
+  border-color: rgba(3, 3, 2, 0.2);
+}
+.v4-guide-compact .v4-guide-trigger-icon svg {
+  width: 14px;
+  height: 14px;
+}
+.v4-guide-compact .v4-guide-trigger-text {
+  font-weight: 500;
+  max-width: 320px;
+}
+.v4-guide-compact .v4-guide-trigger-meta {
+  font-size: 10px;
+}
+.v4-guide-trigger-icon {
+  display: inline-flex;
+  color: var(--v4-fg);
+  flex: none;
+}
+.v4-guide-trigger-text {
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 360px;
+}
+.v4-guide-trigger-title {
+  color: var(--v4-muted);
+  font-weight: 400;
+}
+.v4-guide-trigger-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--v4-muted);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-left: auto;
+  padding-left: 8px;
+  white-space: nowrap;
+}
+.v4-guide-trigger-caret {
+  display: inline-flex;
+  color: var(--v4-muted);
+}
+
+/* ── Expanded body ───────────────────────────────────────────────── */
+.v4-guide-body {
+  margin-top: 12px;
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 18px;
+  padding: 26px 28px 22px;
+  animation: v4-guide-expand 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: top center;
+}
+@keyframes v4-guide-expand {
+  from { opacity: 0; transform: translateY(-4px) scaleY(0.98); }
+  to   { opacity: 1; transform: translateY(0)    scaleY(1); }
+}
+
+.v4-guide-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--v4-faint);
+}
+.v4-guide-head-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--v4-bubble-bg);
+  color: var(--v4-fg);
+  flex: none;
+}
+.v4-guide-head-text {
+  flex: 1;
+  min-width: 0;
+}
+.v4-guide-title {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0 0 4px;
+  color: var(--v4-fg);
+}
+.v4-guide-readtime {
+  font-size: 10px;
+  color: var(--v4-muted);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.v4-guide-section {
+  margin-bottom: 20px;
+}
+.v4-guide-section:last-of-type {
+  margin-bottom: 0;
+}
+.v4-guide-section-head {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  color: var(--v4-fg);
+  margin: 0 0 8px;
+  text-transform: none;
+}
+.v4-guide-section-body {
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(3, 3, 2, 0.8);
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+
+/* ── Callout as pull-quote (Fraunces italic + left border accent) ── */
+.v4-guide-callout {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 26px 0 6px;
+  padding: 4px 0 4px 18px;
+  border-left: 3px solid var(--v4-fg);
+}
+.v4-guide-callout-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.v4-guide-callout-quote {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-style: italic;
+  font-size: 19px;
+  line-height: 1.4;
+  font-weight: 400;
+  color: var(--v4-fg);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+/* ── Close button at the bottom of the body ──────────────────────── */
+.v4-guide-close {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 24px;
+  padding: 6px 12px 6px 10px;
+  background: transparent;
+  border: 1px solid var(--v4-faint);
+  border-radius: 999px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--v4-muted);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+.v4-guide-close:hover {
+  border-color: rgba(3, 3, 2, 0.35);
+  color: var(--v4-fg);
+  background: var(--v4-bubble-bg);
+}
+.v4-guide-close:focus-visible {
+  border-color: rgba(3, 3, 2, 0.45);
+  box-shadow: 0 0 0 3px var(--v4-ring);
+}
+
+/* ============================================
+   HISTORY container — flex column so bubbles
+   stack vertically; matches parent .v4-chat
+   ============================================ */
+.v4-history {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* ============================================
+   EDITABLE USER REPLY BUBBLE — tap to edit
+   ============================================ */
+.v4-bubble-editable {
+  align-self: flex-end;
+  background: var(--v4-fg);
+  color: #ffffff;
+  border: none;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 6px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 500;
+  padding: 16px 18px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  outline: none;
+  text-align: left;
+  letter-spacing: -0.005em;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.25s ease;
+  position: relative;
+}
+.v4-bubble-editable:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.35);
+}
+.v4-bubble-editable:focus-visible {
+  box-shadow: 0 0 0 3px var(--v4-ring), 0 0 0 4px rgba(255, 255, 255, 0.4);
+}
+.v4-bubble-edit-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  padding-left: 8px;
+  border-left: 1px solid rgba(255, 255, 255, 0.18);
+  opacity: 0;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+.v4-bubble-editable:hover .v4-bubble-edit-hint,
+.v4-bubble-editable:focus-visible .v4-bubble-edit-hint {
+  opacity: 1;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ============================================
+   EDIT BLOCK — input affordance shown in place
+   of a user bubble during edit mode
+   ============================================ */
+.v4-edit-block {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.v4-edit-cancel {
+  background: transparent;
+  border: 1px solid var(--v4-faint);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--v4-muted);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+.v4-edit-cancel:hover {
+  border-color: rgba(3, 3, 2, 0.35);
+  color: var(--v4-fg);
+  background: var(--v4-bubble-bg);
+}
+.v4-edit-cancel:focus-visible {
+  border-color: rgba(3, 3, 2, 0.45);
+  box-shadow: 0 0 0 3px var(--v4-ring);
+}
+
+/* ============================================
+   SECTION BREAK — visual divider with hairlines + label
+   Marks the brief→settings handoff (and similar phase jumps)
+   ============================================ */
+.v4-section-break {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  margin: 28px 0 24px;
+  animation: v4-bubble-in 0.5s ease-out forwards;
+  opacity: 0;
+}
+.v4-section-break-rule {
+  flex: 1 1 auto;
+  height: 1px;
+  background: var(--v4-faint);
+}
+.v4-section-break-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px 6px 12px;
+  background: var(--v4-bubble-bg);
+  border: 1px solid var(--v4-faint);
+  border-radius: 999px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--v4-fg);
+  flex: none;
+  max-width: 70%;
+}
+.v4-section-break-badge svg {
+  color: var(--v4-muted);
+  flex: none;
+}
+
+/* ============================================
+   REVIEW & LAUNCH SCREEN
+   ============================================ */
+.v4-review {
+  /* Same option-B pattern as .v4-chat — scrollable region */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  position: relative;
+  z-index: 5;
+}
+.v4-review-inner {
+  max-width: 640px;
+  margin: 56px auto 0;
+  padding: 0 24px 120px;
+  animation: v4-bubble-in 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+.v4-review-hero {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.v4-review-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  margin-bottom: 18px;
+}
+.v4-review-title {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 44px;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  margin: 0 0 10px;
+  color: var(--v4-fg);
+}
+.v4-review-subtitle {
+  font-size: 14px;
+  color: var(--v4-muted);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+.v4-review-section {
+  margin-bottom: 28px;
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 18px;
+  padding: 22px 24px;
+}
+.v4-review-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.v4-review-section-head h2 {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin: 0;
+}
+.v4-review-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--v4-muted);
+  text-decoration: none;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--v4-faint);
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+.v4-review-edit:hover {
+  border-color: rgba(3, 3, 2, 0.35);
+  color: var(--v4-fg);
+  background: var(--v4-bubble-bg);
+}
+
+.v4-review-list {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.v4-review-row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 16px;
+  padding: 10px 0;
+  border-top: 1px solid var(--v4-faint);
+}
+.v4-review-row:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+.v4-review-row dt {
+  font-size: 13px;
+  color: var(--v4-muted);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  margin: 0;
+}
+.v4-review-row dd {
+  font-size: 14px;
+  color: var(--v4-fg);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  margin: 0;
+  line-height: 1.5;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.v4-review-launch {
+  margin-top: 32px;
+  text-align: center;
+}
+.v4-launch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--v4-fg);
+  color: #ffffff;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  padding: 16px 32px;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+.v4-launch-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 28px -10px rgba(0, 0, 0, 0.3);
+}
+.v4-launch-btn:focus-visible {
+  box-shadow: 0 0 0 3px var(--v4-ring), 0 0 0 4px rgba(255, 255, 255, 0.4);
+}
+.v4-launch-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+.v4-launch-btn.is-launching {
+  animation: v4-launch-pulse 1.2s ease-in-out infinite;
+}
+@keyframes v4-launch-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.03); }
+}
+.v4-review-fineprint {
+  margin: 14px auto 0;
+  max-width: 360px;
+  font-size: 12px;
+  color: var(--v4-muted);
+  line-height: 1.55;
+  letter-spacing: -0.005em;
+}
+
+@media (max-width: 640px) {
+  .v4-review {
+    padding: 0 16px 80px;
+    margin-top: 36px;
+  }
+  .v4-review-title {
+    font-size: 34px;
+  }
+  .v4-review-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}

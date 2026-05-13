@@ -24,6 +24,9 @@ import ResultsPage          from '@pages/ResultsPage';
 import Dashboard            from '@pages/dashboard/Dashboard';
 import ContestDetail        from '@pages/ContestDetail';
 import DocumentationPage    from '@pages/DocumentationPage';
+import V4PickTier          from '@pages/v4/PickTier';
+import V4BriefChat         from '@pages/v4/BriefChat';
+import V4ReviewLaunch      from '@pages/v4/ReviewLaunch';
 
 // ─── FloatingNav ─────────────────────────────────────────────────────────────
 
@@ -106,8 +109,8 @@ function FloatingNav() {
     return () => window.removeEventListener('storage', handler);
   }, []);
 
-  // ── Hide on hub pages ─────────────────────────────────────────────────────
-  if (path === '/wireframe' || path === '/') return null;
+  // ── Hide on hub pages and all V4 routes ───────────────────────────────────
+  if (path === '/wireframe' || path === '/' || path.startsWith('/v4/')) return null;
 
   // ── Fresh meta (read after URL extraction effects have fired) ────────────
   const meta  = getJourneyMeta();
@@ -392,6 +395,9 @@ function AppInner() {
         <Route path="/dashboard"                       element={<Dashboard />} />
         <Route path="/contest-detail/:contestId"       element={<ContestDetail />} />
         <Route path="/docs"                            element={<DocumentationPage />} />
+        <Route path="/v4/pick"                         element={<V4PickTier />} />
+        <Route path="/v4/setup/brief"                  element={<V4BriefChat />} />
+        <Route path="/v4/setup/review"                 element={<V4ReviewLaunch />} />
       </Routes>
       <FloatingNav />
     </>

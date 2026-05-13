@@ -789,11 +789,22 @@ function Footer() {
 /* ========== PAGE ========== */
 export default function LandingPage() {
   const navigate = useNavigate();
-  // Preview mode: "Start a contest" CTAs retain hover/click animations but don't navigate
-  const handleStart = () => { /* no-op for preview */ };
-  // (Restore the original behavior by uncommenting the version below)
-  // const handleStart = (tier) => { tier ? navigate(`/brief?group=${tier}`) : navigate('/brief'); };
-  void navigate; // keep import alive
+  // Tier CTAs route into the unified V4 setup flow.
+  // - Card CTAs (Personal/Group/Business) → persist tier + jump straight
+  //   to the unified setup chat where sub-segment is the first question
+  // - Generic CTAs (no tier) → tier picker page (/v4/pick)
+  const handleStart = (tier) => {
+    if (tier) {
+      try {
+        localStorage.setItem('v4_contest_setup', JSON.stringify({ group: tier }));
+      } catch {
+        // localStorage unavailable — proceed anyway
+      }
+      navigate('/v4/setup/brief');
+    } else {
+      navigate('/v4/pick');
+    }
+  };
 
   return (
     <div className="lp-v3">
