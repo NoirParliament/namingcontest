@@ -17,6 +17,7 @@ import {
   ToggleTextareaInput,
   ToggleNameDescInput,
   BrandingBlockInput,
+  BrandingFullInput,
   DeferLaunchInput,
 } from './CompoundInputs';
 
@@ -32,6 +33,7 @@ export default function QuestionInput({ question, onSubmit, autoFocus = true }) 
   if (type === 'text')           return <TextInput question={question} onSubmit={onSubmit} autoFocus={autoFocus} />;
   if (type === 'textarea')       return <TextareaInput question={question} onSubmit={onSubmit} autoFocus={autoFocus} />;
   if (type === 'chips')          return <ChipsInput question={question} onSubmit={onSubmit} />;
+  if (type === 'multiChips')     return <MultiChipsInput question={question} onSubmit={onSubmit} />;
   if (type === 'radioCards')     return <RadioCardsInput question={question} onSubmit={onSubmit} />;
   if (type === 'numberChips')    return <NumberChipsInput question={question} onSubmit={onSubmit} />;
   if (type === 'toggle')         return <ToggleInput question={question} onSubmit={onSubmit} />;
@@ -39,6 +41,7 @@ export default function QuestionInput({ question, onSubmit, autoFocus = true }) 
   if (type === 'toggleTextarea') return <ToggleTextareaInput question={question} onSubmit={onSubmit} />;
   if (type === 'toggleNameDesc') return <ToggleNameDescInput question={question} onSubmit={onSubmit} />;
   if (type === 'brandingBlock')  return <BrandingBlockInput question={question} onSubmit={onSubmit} />;
+  if (type === 'brandingFull')   return <BrandingFullInput question={question} onSubmit={onSubmit} />;
   if (type === 'segmentCards')   return <SegmentCardsInput question={question} onSubmit={onSubmit} />;
 
   // Heavy types not yet built — colorPicker, fileUpload, repeater
@@ -165,6 +168,62 @@ function ChipsInput({ question, onSubmit }) {
         );
       })}
     </div>
+  );
+}
+
+// ── multiChips (multi-select pill list — needs Continue button) ─────
+function MultiChipsInput({ question, onSubmit }) {
+  const opts = question.options || [];
+  const [selected, setSelected] = useState([]);
+
+  const toggle = (val) => {
+    setSelected((prev) =>
+      prev.includes(val) ? prev.filter((v) => v !== val) : [...prev, val]
+    );
+  };
+
+  const handleSubmit = (e) => {
+    e?.preventDefault?.();
+    if (selected.length === 0) return;
+    onSubmit(selected);
+  };
+
+  return (
+    <form className="v4-multichips-block" onSubmit={handleSubmit}>
+      <div className="v4-chips-row" role="group" aria-label={question.label}>
+        {opts.map((opt) => {
+          const value = typeof opt === 'string' ? opt : (opt.label || opt.id);
+          const label = typeof opt === 'string' ? opt : (opt.label || opt.id);
+          const isOn = selected.includes(value);
+          return (
+            <button
+              key={value}
+              type="button"
+              role="checkbox"
+              aria-checked={isOn}
+              className={`v4-chip ${isOn ? 'is-checked' : ''}`}
+              onClick={() => toggle(value)}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
+      <div className="v4-multichips-footer">
+        <span className="v4-multichips-count">
+          {selected.length === 0
+            ? 'Pick one or more'
+            : `${selected.length} selected`}
+        </span>
+        <button
+          type="submit"
+          className="v4-multichips-submit"
+          disabled={selected.length === 0}
+        >
+          Continue <ArrowRight weight="bold" size={14} />
+        </button>
+      </div>
+    </form>
   );
 }
 

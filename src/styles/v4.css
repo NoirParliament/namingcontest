@@ -24,7 +24,7 @@
      content area scrolls internally. The page itself does NOT scroll —
      all overflow happens inside .v4-chat / .v4-review. */
   height: 100vh;
-  height: 100dvh; /* dynamic vh — better on mobile */
+  height: 100dvh;
   background: var(--v4-bg);
   position: relative;
   overflow: hidden;
@@ -33,23 +33,24 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* ---------- NAV (slim top bar — flex: none so it stays at top) ---------- */
+/* ---------- NAV — slim glass top bar (sticky inside chat scroll
+   so chat content slides UNDER it, backdrop-blur picks up content) ---------- */
 .v4-nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 22px 32px;
-  position: relative;
-  z-index: 10;
+  padding: 18px 32px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
   gap: 16px;
-  flex: none;
-  background: var(--v4-bg);
-  /* subtle bottom border appears once content scrolls under */
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.2s ease;
+  background: rgba(252, 249, 247, 0.55);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  backdrop-filter: saturate(180%) blur(18px);
+  transition: background 0.25s ease;
 }
 .v4-nav.is-scrolled {
-  border-bottom-color: var(--v4-faint);
+  background: rgba(252, 249, 247, 0.78);
 }
 
 .v4-brand {
@@ -91,6 +92,12 @@
   font-weight: 500;
   letter-spacing: 0.01em;
 }
+.v4-step-counter {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+
+
 
 .v4-exit {
   display: inline-flex;
@@ -117,13 +124,15 @@
   pointer-events: none;
   z-index: 1;
   animation: v4-blob-drift 14s ease-in-out infinite;
+  /* Smooth color transition when segment theme kicks in */
+  transition: background 0.7s ease;
 }
 .v4-blob-1 {
   width: 260px;
   height: 260px;
   top: 8%;
   right: -80px;
-  background: #b3c4f0;
+  background: var(--v4-blob-1-color, #b3c4f0);
   opacity: 0.28;
   animation-delay: 0s;
   filter: blur(2px);
@@ -133,7 +142,7 @@
   height: 160px;
   bottom: 14%;
   left: -50px;
-  background: #fceebc;
+  background: var(--v4-blob-2-color, #fceebc);
   opacity: 0.4;
   animation-delay: -5s;
   filter: blur(1px);
@@ -143,7 +152,7 @@
   height: 90px;
   top: 36%;
   left: 6%;
-  background: #fadecc;
+  background: var(--v4-blob-3-color, #fadecc);
   opacity: 0.55;
   animation-delay: -9s;
 }
@@ -152,9 +161,23 @@
   height: 70px;
   bottom: 28%;
   right: 8%;
-  background: #a6dcb3;
+  background: var(--v4-blob-4-color, #a6dcb3);
   opacity: 0.4;
   animation-delay: -2s;
+}
+
+/* ---------- SCATTERED THEME ICONS — per-segment decoration ---------- */
+.v4-theme-icon {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+  color: var(--v4-fg);
+  opacity: 0;
+  animation: v4-theme-icon-fade-in 1.4s ease-out forwards;
+}
+@keyframes v4-theme-icon-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 0.07; }
 }
 @keyframes v4-blob-drift {
   0%, 100% { transform: translate(0, 0) scale(1); }
@@ -164,9 +187,6 @@
 
 /* ---------- CHAT CONTAINER ---------- */
 .v4-chat {
-  /* Option B: scrollable region. Takes all remaining height after .v4-nav.
-     min-height: 0 is the magic that lets flex children actually shrink
-     so internal overflow works. */
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
@@ -175,8 +195,6 @@
   position: relative;
   z-index: 5;
 }
-/* Inner wrapper centers the chat content + holds the column layout
-   that was previously on .v4-chat itself. */
 .v4-chat-inner {
   max-width: 640px;
   margin: 56px auto 0;
@@ -1071,6 +1089,319 @@ input.v4-input-date:hover {
   color-scheme: light;
 }
 
+/* ============================================
+   MULTI-CHIPS — multi-select pills with Continue
+   ============================================ */
+.v4-multichips-block {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 560px;
+  animation: v4-bubble-in 0.5s ease-out forwards;
+  opacity: 0;
+}
+.v4-chip.is-checked {
+  background: var(--v4-fg);
+  color: #ffffff;
+  border-color: var(--v4-fg);
+}
+.v4-chip.is-checked:hover {
+  border-color: var(--v4-fg);
+  transform: translateY(-1px);
+}
+.v4-multichips-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 4px;
+}
+.v4-multichips-count {
+  font-size: 12px;
+  color: var(--v4-muted);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+.v4-multichips-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  background: var(--v4-fg);
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+.v4-multichips-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+.v4-multichips-submit:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.v4-multichips-submit:focus-visible {
+  box-shadow: 0 0 0 3px var(--v4-ring), 0 0 0 4px rgba(255, 255, 255, 0.4);
+}
+
+/* ============================================
+   BRANDING PANEL — logo upload + 2 color pickers
+   ============================================ */
+.v4-branding-block {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 520px;
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 16px;
+  padding: 18px 20px 20px;
+  animation: v4-bubble-in 0.5s ease-out forwards;
+  opacity: 0;
+}
+.v4-branding-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.v4-branding-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+}
+.v4-branding-logo-area {
+  display: flex;
+}
+.v4-branding-logo-empty {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  background: var(--v4-bubble-bg);
+  border: 1.5px dashed rgba(3, 3, 2, 0.2);
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  outline: none;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.v4-branding-logo-empty:hover {
+  border-color: rgba(3, 3, 2, 0.4);
+  background: #ffffff;
+}
+.v4-branding-logo-empty:focus-visible {
+  border-style: solid;
+  box-shadow: 0 0 0 3px var(--v4-ring);
+}
+.v4-branding-logo-hint {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--v4-muted);
+}
+.v4-branding-logo-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--v4-bubble-bg);
+  padding: 10px 14px 10px 10px;
+  border-radius: 12px;
+}
+.v4-branding-logo-preview img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 4px;
+}
+.v4-branding-logo-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.v4-branding-logo-replace {
+  background: transparent;
+  border: 1px solid var(--v4-faint);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--v4-muted);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.v4-branding-logo-replace:hover {
+  border-color: rgba(3, 3, 2, 0.4);
+  color: var(--v4-fg);
+}
+.v4-branding-colors {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.v4-branding-color {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.v4-branding-color-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+input.v4-branding-color-input,
+input.v4-branding-color-input:focus,
+input.v4-branding-color-input:hover {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--v4-faint);
+  border-radius: 10px;
+  padding: 2px;
+  cursor: pointer;
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+}
+.v4-branding-color-hex {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--v4-muted);
+  letter-spacing: 0.02em;
+}
+
+/* ============================================
+   AUTH MODAL — magic-link account creation
+   ============================================ */
+.v4-auth-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 3, 2, 0.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: v4-auth-fadein 0.25s ease-out forwards;
+}
+@keyframes v4-auth-fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.v4-auth-modal {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  background: var(--v4-bg);
+  border-radius: 22px;
+  padding: 36px 32px 28px;
+  text-align: center;
+  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.3), 0 8px 16px rgba(0, 0, 0, 0.08);
+  animation: v4-auth-slideup 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes v4-auth-slideup {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.v4-auth-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid var(--v4-faint);
+  color: var(--v4-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+.v4-auth-close:hover {
+  border-color: rgba(3, 3, 2, 0.35);
+  color: var(--v4-fg);
+  background: var(--v4-bubble-bg);
+}
+.v4-auth-close:focus-visible {
+  border-color: rgba(3, 3, 2, 0.45);
+  box-shadow: 0 0 0 3px var(--v4-ring);
+}
+.v4-auth-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--v4-bubble-bg);
+  color: var(--v4-fg);
+  margin-bottom: 18px;
+}
+.v4-auth-icon-success {
+  background: #bce5c8;
+  color: #1f5430;
+}
+.v4-auth-title {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0 0 10px;
+  color: var(--v4-fg);
+}
+.v4-auth-blurb {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--v4-muted);
+  margin: 0 0 22px;
+  letter-spacing: -0.005em;
+}
+.v4-auth-blurb strong {
+  color: var(--v4-fg);
+  font-weight: 600;
+}
+.v4-auth-form {
+  margin: 0 auto 14px;
+  max-width: 360px;
+}
+.v4-auth-fineprint {
+  font-size: 12px;
+  color: var(--v4-muted);
+  margin: 14px 0 0;
+  letter-spacing: 0.01em;
+}
+.v4-auth-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: v4-auth-fadein 0.3s ease-out forwards;
+}
+
 .v4-input-skip,
 .v4-defer-row {
   display: flex;
@@ -1491,7 +1822,6 @@ input.v4-input-date:hover {
    REVIEW & LAUNCH SCREEN
    ============================================ */
 .v4-review {
-  /* Same option-B pattern as .v4-chat — scrollable region */
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;

@@ -70,40 +70,30 @@ export default function PickTier() {
   };
 
   return (
-    <div className="lp-v3 lp-v3-pick-tier">
+    /* v4 class brings the --v4-muted / --v4-fg / --v4-ring tokens into
+       scope so the v4-nav styling works identically to the chat. */
+    <div className="lp-v3 lp-v3-pick-tier v4">
+      {/* Slim v4-style nav — matches the chat screens */}
+      <header className="v4-nav">
+        <Link to="/" className="v4-brand">
+          <img src={namingContestLogo} alt="NamingContest" className="v4-logo" />
+        </Link>
+        <div className="v4-progress">
+          <span className="v4-step-dot is-active"></span>
+          <span className="v4-step-dot"></span>
+          <span className="v4-step-dot"></span>
+          <span className="v4-step-label">
+            Setup<span className="v4-step-counter"> · 1/16</span>
+          </span>
+        </div>
+        <Link to="/" className="v4-exit" aria-label="Exit">
+          <X weight="regular" size={14} />
+          <span>Exit</span>
+        </Link>
+      </header>
+
       <div className="frame">
         <div className="wrap">
-          {/* Slim top bar — brand + Exit (no marketing nav) */}
-          <div className="nav-row" style={{ pointerEvents: 'none' }}>
-            <nav
-              className="nav-pill"
-              aria-label="Primary"
-              style={{ pointerEvents: 'auto', justifyContent: 'space-between' }}
-            >
-              <Link to="/" className="brand-mark" onClick={(e) => e.preventDefault() & 0}>
-                <img src={namingContestLogo} alt="NamingContest" className="brand-logo" />
-              </Link>
-              <Link
-                to="/"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  fontSize: 13,
-                  fontWeight: 500,
-                  color: 'rgba(3,3,2,0.6)',
-                  textDecoration: 'none',
-                  padding: '6px 10px',
-                  borderRadius: 8,
-                }}
-                aria-label="Exit"
-              >
-                <X weight="regular" size={14} />
-                Exit
-              </Link>
-            </nav>
-          </div>
-
           {/* Identical to homepage offerings section */}
           <section className="section" id="pricing">
             <div className="section-head">

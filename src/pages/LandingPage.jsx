@@ -793,10 +793,14 @@ export default function LandingPage() {
   // - Card CTAs (Personal/Group/Business) → persist tier + jump straight
   //   to the unified setup chat where sub-segment is the first question
   // - Generic CTAs (no tier) → tier picker page (/v4/pick)
+  // Tier card uses 'team' as id (legacy) but SUB_SEGMENTS data file
+  // uses 'group' as the key — normalize before persisting.
+  const TIER_TO_GROUP = { personal: 'personal', team: 'group', business: 'business' };
   const handleStart = (tier) => {
     if (tier) {
+      const group = TIER_TO_GROUP[tier] || tier;
       try {
-        localStorage.setItem('v4_contest_setup', JSON.stringify({ group: tier }));
+        localStorage.setItem('v4_contest_setup', JSON.stringify({ group }));
       } catch {
         // localStorage unavailable — proceed anyway
       }

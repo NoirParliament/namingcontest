@@ -2,7 +2,7 @@
 // presents a single "Launch contest" CTA. This is the last screen
 // in the creator setup flow before the contest goes live.
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   X, PencilSimple, CheckCircle, Rocket,
@@ -11,6 +11,7 @@ import {
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import { readSetup, getSegmentLabel } from '../../utils/v4Brief';
 import { BRIEF_QUESTIONS, SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
+import AuthModal from '../../components/v4/AuthModal';
 import '../../styles/v4.css';
 
 const TIER_ICON = {
@@ -40,6 +41,17 @@ export default function ReviewLaunch() {
   const navigate = useNavigate();
   const [launching, setLaunching] = useState(false);
   const setup = readSetup();
+
+  // Track scroll for the glass nav state (matches BriefChat behavior)
+  const scrollRef = useRef(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const handler = () => setIsScrolled(el.scrollTop > 8);
+    el.addEventListener('scroll', handler, { passive: true });
+    return () => el.removeEventListener('scroll', handler);
+  }, []);
   const subId = setup.subSegmentId || 'b1';
   const segmentLabel = getSegmentLabel(subId);
   const tierMeta = TIER_ICON[setup.group] || TIER_ICON.business;
@@ -52,41 +64,59 @@ export default function ReviewLaunch() {
   const filledBrief = briefQuestions.filter((q) => briefAnswers[q.id] !== undefined);
   const filledSettings = SHARED_SETTINGS_QUESTIONS.filter((q) => settingsAnswers[q.id] !== undefined);
 
-  const handleLaunch = () => {
+  const [authOpen, setAuthOpen] = useState(false);
+
+  const proceedLaunch = () => {
     if (launching) return;
     setLaunching(true);
     // TODO: in real build, this would submit to backend.
-    // For now, just navigate home after a brief celebration.
     setTimeout(() => {
       console.log('V4 contest launched. Full setup:', readSetup());
       navigate('/');
     }, 2200);
   };
 
+  const handleLaunch = () => {
+    if (launching) return;
+    // Require auth before launch — magic-link modal
+    const cur = readSetup();
+    if (!cur.userEmail) {
+      setAuthOpen(true);
+      return;
+    }
+    proceedLaunch();
+  };
+
+  const handleAuthSuccess = () => {
+    setAuthOpen(false);
+    proceedLaunch();
+  };
+
   return (
     <div className="v4">
       <div className="v4-screen">
-        <header className="v4-nav">
-          <Link to="/" className="v4-brand">
-            <img src={namingContestLogo} alt="NamingContest" className="v4-logo" />
-          </Link>
-          <div className="v4-progress">
-            <span className="v4-step-dot is-done"></span>
-            <span className="v4-step-dot is-done"></span>
-            <span className="v4-step-dot is-active"></span>
-            <span className="v4-step-label">Review &amp; launch</span>
-          </div>
-          <Link to="/" className="v4-exit" aria-label="Exit">
-            <X weight="regular" size={14} />
-            <span>Exit</span>
-          </Link>
-        </header>
+        <span className="v4-blob v4-blob-1" aria-hidden="true"></span>
+        <span className="v4-blob v4-blob-2" aria-hidden="true"></span>
+        <span className="v4-blob v4-blob-3" aria-hidden="true"></span>
+        <span className="v4-blob v4-blob-4" aria-hidden="true"></span>
 
-        <main className="v4-review" role="main">
-          <span className="v4-blob v4-blob-1" aria-hidden="true"></span>
-          <span className="v4-blob v4-blob-2" aria-hidden="true"></span>
-          <span className="v4-blob v4-blob-3" aria-hidden="true"></span>
-          <span className="v4-blob v4-blob-4" aria-hidden="true"></span>
+        <main className="v4-review" role="main" ref={scrollRef}>
+          {/* Glass nav — sticky inside review scroll */}
+          <header className={`v4-nav ${isScrolled ? 'is-scrolled' : ''}`}>
+            <Link to="/" className="v4-brand">
+              <img src={namingContestLogo} alt="NamingContest" className="v4-logo" />
+            </Link>
+            <div className="v4-progress">
+              <span className="v4-step-dot is-done"></span>
+              <span className="v4-step-dot is-done"></span>
+              <span className="v4-step-dot is-active"></span>
+              <span className="v4-step-label">Review</span>
+            </div>
+            <Link to="/" className="v4-exit" aria-label="Exit">
+              <X weight="regular" size={14} />
+              <span>Exit</span>
+            </Link>
+          </header>
 
           <div className="v4-review-inner">
           {/* Hero */}
@@ -174,6 +204,14 @@ export default function ReviewLaunch() {
           </div>
           </div>
         </main>
+
+        <AuthModal
+          open={authOpen}
+          mode="launch"
+          contextLabel={setup.workingName || ''}
+          onClose={() => setAuthOpen(false)}
+          onSuccess={handleAuthSuccess}
+        />
       </div>
     </div>
   );
