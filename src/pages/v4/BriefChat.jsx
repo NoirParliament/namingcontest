@@ -25,187 +25,12 @@ import {
   GraduationCap, GameController, Buildings, Package, Target, ArrowsClockwise,
   // Used only inside the section-break divider badge
   Confetti,
-  // Per-segment scattered theme icons (4-5 per segment, mix-and-match
-  // so the scatter feels organic rather than a repeating tile pattern)
-  Bone, FishSimple, Heart, Bird,
-  Star, Moon, Cloud,
-  Tree, MapPin, Sun,
-  Trophy, Lightning, Medal,
-  Guitar, Headphones, VinylRecord,
-  Broadcast, ChatCircle, Smiley,
-  HandHeart, Plant,
-  Sword, Crown,
-  UsersThree, Sparkle,
-  Compass, Lightbulb, Rocket, ChartLine,
-  ClipboardText, CheckCircle, Flag,
-  PaintBrushBroad, ArrowsClockwise as RebrandIcon,
 } from '@phosphor-icons/react';
+import { SegmentThemeBackdrop } from '../../data/v4/segmentTheme';
 
-// Per-segment chat theming — A: blob colors (from design-doc panels only)
-// + B: 4-5 different scattered icons per segment so each contest type has a
-// unique visual "scene" without feeling like a repeating template.
-//
-// Color palette options (only these — design-doc panel tokens):
-//   periwinkle #b3c4f0 · mint #a6dcb3 · butter #fceebc
-//   sky        #c4dffb · blush #fadecc
-const SEGMENT_THEME = {
-  // ── Personal ──
-  p1: { // Baby
-    blobs: ['#fadecc', '#fceebc', '#fadecc', '#c4dffb'],
-    iconPositions: [
-      { Icon: Baby,      top: '14%',  left: '7%',  size: 40, rotate: '-10deg' },
-      { Icon: Star,      top: '32%',  right: '6%', size: 24, rotate: '14deg'  },
-      { Icon: Moon,      top: '58%',  left: '4%',  size: 30, rotate: '8deg'   },
-      { Icon: Cloud,     top: '72%',  right: '10%', size: 38, rotate: '-12deg'},
-      { Icon: Heart,     bottom: '8%', left: '20%', size: 26, rotate: '20deg' },
-    ],
-  },
-  p2: { // Pet
-    blobs: ['#fceebc', '#fadecc', '#fceebc', '#fadecc'],
-    iconPositions: [
-      { Icon: PawPrint,   top: '14%',  left: '7%',  size: 38, rotate: '-12deg' },
-      { Icon: Bone,       top: '36%',  right: '6%', size: 30, rotate: '18deg'  },
-      { Icon: Bird,       top: '58%',  left: '4%',  size: 28, rotate: '24deg'  },
-      { Icon: Heart,      top: '72%',  right: '12%', size: 28, rotate: '-8deg' },
-      { Icon: FishSimple, bottom: '8%', left: '18%', size: 32, rotate: '32deg' },
-    ],
-  },
-  p3: { // Home / property
-    blobs: ['#a6dcb3', '#fadecc', '#a6dcb3', '#fceebc'],
-    iconPositions: [
-      { Icon: House,    top: '14%',  left: '7%',  size: 36, rotate: '-8deg'  },
-      { Icon: Tree,     top: '36%',  right: '6%', size: 32, rotate: '12deg'  },
-      { Icon: Sun,      top: '58%',  left: '4%',  size: 28, rotate: '0deg'   },
-      { Icon: MapPin,   top: '72%',  right: '12%', size: 26, rotate: '-14deg' },
-      { Icon: Plant,    bottom: '8%', left: '18%', size: 30, rotate: '20deg' },
-    ],
-  },
-  p4: { // Other personal
-    blobs: ['#fadecc', '#fceebc', '#fadecc', '#c4dffb'],
-    iconPositions: [
-      { Icon: Heart,    top: '16%',  left: '8%',  size: 32, rotate: '-10deg' },
-      { Icon: Sparkle,  top: '38%',  right: '8%', size: 28, rotate: '16deg'  },
-      { Icon: Star,     top: '60%',  left: '6%',  size: 26, rotate: '8deg'   },
-      { Icon: Sun,      top: '74%',  right: '14%', size: 30, rotate: '-6deg' },
-      { Icon: Smiley,   bottom: '10%', left: '22%', size: 28, rotate: '24deg'},
-    ],
-  },
 
-  // ── Group ──
-  t1: { // Sports team
-    blobs: ['#a6dcb3', '#c4dffb', '#a6dcb3', '#fceebc'],
-    iconPositions: [
-      { Icon: SoccerBall, top: '14%',  left: '7%',  size: 36, rotate: '-12deg' },
-      { Icon: Trophy,     top: '36%',  right: '6%', size: 32, rotate: '14deg'  },
-      { Icon: Lightning,  top: '58%',  left: '4%',  size: 28, rotate: '20deg'  },
-      { Icon: Medal,      top: '72%',  right: '12%', size: 30, rotate: '-8deg' },
-      { Icon: Flag,       bottom: '8%', left: '18%', size: 26, rotate: '18deg' },
-    ],
-  },
-  t2: { // Band / music
-    blobs: ['#b3c4f0', '#fadecc', '#b3c4f0', '#fceebc'],
-    iconPositions: [
-      { Icon: Guitar,      top: '14%',  left: '7%',  size: 38, rotate: '-10deg' },
-      { Icon: MusicNote,   top: '36%',  right: '6%', size: 32, rotate: '12deg'  },
-      { Icon: Microphone,  top: '58%',  left: '4%',  size: 30, rotate: '20deg'  },
-      { Icon: Headphones,  top: '72%',  right: '12%', size: 32, rotate: '-8deg' },
-      { Icon: VinylRecord, bottom: '8%', left: '18%', size: 30, rotate: '24deg' },
-    ],
-  },
-  t3: { // Podcast / channel
-    blobs: ['#c4dffb', '#fceebc', '#c4dffb', '#fadecc'],
-    iconPositions: [
-      { Icon: Microphone, top: '14%',  left: '7%',  size: 40, rotate: '-12deg' },
-      { Icon: Broadcast,  top: '36%',  right: '6%', size: 32, rotate: '14deg'  },
-      { Icon: Headphones, top: '58%',  left: '4%',  size: 30, rotate: '8deg'   },
-      { Icon: ChatCircle, top: '72%',  right: '12%', size: 28, rotate: '-10deg'},
-      { Icon: Star,       bottom: '8%', left: '18%', size: 24, rotate: '20deg' },
-    ],
-  },
-  t4: { // Civic / school / nonprofit
-    blobs: ['#a6dcb3', '#fadecc', '#a6dcb3', '#fceebc'],
-    iconPositions: [
-      { Icon: GraduationCap, top: '14%', left: '7%',  size: 36, rotate: '-8deg' },
-      { Icon: HandHeart,     top: '36%', right: '6%', size: 34, rotate: '14deg' },
-      { Icon: UsersThree,    top: '58%', left: '4%',  size: 30, rotate: '8deg'  },
-      { Icon: Tree,          top: '72%', right: '12%', size: 32, rotate: '-12deg'},
-      { Icon: Heart,         bottom: '8%', left: '18%', size: 26, rotate: '20deg'},
-    ],
-  },
-  t5: { // Gaming group
-    blobs: ['#b3c4f0', '#fceebc', '#b3c4f0', '#c4dffb'],
-    iconPositions: [
-      { Icon: GameController, top: '14%', left: '7%',  size: 40, rotate: '-12deg' },
-      { Icon: Lightning,      top: '36%', right: '6%', size: 30, rotate: '14deg'  },
-      { Icon: Crown,          top: '58%', left: '4%',  size: 28, rotate: '8deg'   },
-      { Icon: Sword,          top: '72%', right: '12%', size: 32, rotate: '-10deg' },
-      { Icon: Trophy,         bottom: '8%', left: '18%', size: 26, rotate: '22deg' },
-    ],
-  },
-  t6: { // Other team / group
-    blobs: ['#a6dcb3', '#c4dffb', '#a6dcb3', '#fceebc'],
-    iconPositions: [
-      { Icon: UsersThree, top: '14%',  left: '7%',  size: 40, rotate: '-10deg' },
-      { Icon: Heart,      top: '36%',  right: '6%', size: 28, rotate: '14deg'  },
-      { Icon: Star,       top: '58%',  left: '4%',  size: 26, rotate: '8deg'   },
-      { Icon: Sparkle,    top: '72%',  right: '12%', size: 30, rotate: '-8deg' },
-      { Icon: Smiley,     bottom: '8%', left: '18%', size: 28, rotate: '20deg' },
-    ],
-  },
+import namingContestLogo from "../../assets/namingcontestlogo-cropped.svg";
 
-  // ── Business ──
-  b1: { // Company / startup
-    blobs: ['#b3c4f0', '#a6dcb3', '#b3c4f0', '#fceebc'],
-    iconPositions: [
-      { Icon: Buildings, top: '14%',  left: '7%',  size: 38, rotate: '-8deg'  },
-      { Icon: Compass,   top: '36%',  right: '6%', size: 30, rotate: '14deg'  },
-      { Icon: Target,    top: '58%',  left: '4%',  size: 28, rotate: '8deg'   },
-      { Icon: Lightbulb, top: '72%',  right: '12%', size: 32, rotate: '-12deg'},
-      { Icon: Rocket,    bottom: '8%', left: '18%', size: 30, rotate: '24deg' },
-    ],
-  },
-  b2: { // Product / service
-    blobs: ['#c4dffb', '#fceebc', '#c4dffb', '#fadecc'],
-    iconPositions: [
-      { Icon: Package,   top: '14%',  left: '7%',  size: 38, rotate: '-10deg' },
-      { Icon: Sparkle,   top: '36%',  right: '6%', size: 28, rotate: '14deg'  },
-      { Icon: Lightbulb, top: '58%',  left: '4%',  size: 30, rotate: '8deg'   },
-      { Icon: ChartLine, top: '72%',  right: '12%', size: 32, rotate: '-8deg' },
-      { Icon: Rocket,    bottom: '8%', left: '18%', size: 28, rotate: '22deg' },
-    ],
-  },
-  b3: { // Project / initiative
-    blobs: ['#b3c4f0', '#fadecc', '#b3c4f0', '#fceebc'],
-    iconPositions: [
-      { Icon: ClipboardText, top: '14%', left: '7%',  size: 36, rotate: '-8deg'  },
-      { Icon: Target,        top: '36%', right: '6%', size: 30, rotate: '14deg'  },
-      { Icon: CheckCircle,   top: '58%', left: '4%',  size: 28, rotate: '8deg'   },
-      { Icon: Lightbulb,     top: '72%', right: '12%', size: 30, rotate: '-12deg'},
-      { Icon: Compass,       bottom: '8%', left: '18%', size: 26, rotate: '20deg'},
-    ],
-  },
-  b4: { // Rebrand
-    blobs: ['#a6dcb3', '#b3c4f0', '#a6dcb3', '#fadecc'],
-    iconPositions: [
-      { Icon: RebrandIcon,    top: '14%', left: '7%',  size: 36, rotate: '-10deg' },
-      { Icon: Sparkle,        top: '36%', right: '6%', size: 28, rotate: '14deg'  },
-      { Icon: PaintBrushBroad,top: '58%', left: '4%',  size: 32, rotate: '8deg'   },
-      { Icon: Target,         top: '72%', right: '12%', size: 28, rotate: '-12deg'},
-      { Icon: Lightbulb,      bottom: '8%', left: '18%', size: 26, rotate: '22deg'},
-    ],
-  },
-  b5: { // Other business
-    blobs: ['#c4dffb', '#a6dcb3', '#c4dffb', '#fceebc'],
-    iconPositions: [
-      { Icon: Sparkle,   top: '16%', left: '8%',  size: 32, rotate: '-10deg' },
-      { Icon: Lightbulb, top: '38%', right: '8%', size: 28, rotate: '14deg'  },
-      { Icon: Target,    top: '60%', left: '6%',  size: 26, rotate: '8deg'   },
-      { Icon: Rocket,    top: '74%', right: '14%', size: 30, rotate: '-8deg' },
-      { Icon: Star,      bottom: '10%', left: '22%', size: 24, rotate: '20deg'},
-    ],
-  },
-};
-import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 
 // Phosphor icon name (string from data file) → component map.
 // Used by the segment user-reply bubble to mirror the icon from the card.
@@ -462,6 +287,10 @@ export default function BriefChat() {
         ]);
         setSubId(value.id);
         setIdx(1); // sub-segment is now in history; next question (workingName) is index 1
+        // Clear in the same batch so the next question's CurrentQuestion
+        // doesn't render with the stale reply for one frame.
+        setUserReply(null);
+        setPhase(0);
       }, POST_SUBMIT_DELAY);
       return;
     }
@@ -474,6 +303,9 @@ export default function BriefChat() {
         { question: currentQ, answer: value, display, article: currentArticle },
       ]);
       setIdx((i) => i + 1);
+      // Clear in the same batch — see comment above.
+      setUserReply(null);
+      setPhase(0);
     }, POST_SUBMIT_DELAY);
   };
 
@@ -550,49 +382,10 @@ export default function BriefChat() {
 
   return (
     <div className="v4">
-      <div
-        className="v4-screen"
-        style={
-          (() => {
-            const theme = SEGMENT_THEME[subId];
-            if (!theme?.blobs) return undefined;
-            return {
-              '--v4-blob-1-color': theme.blobs[0],
-              '--v4-blob-2-color': theme.blobs[1],
-              '--v4-blob-3-color': theme.blobs[2],
-              '--v4-blob-4-color': theme.blobs[3],
-            };
-          })()
-        }
-      >
-        {/* Decorative pastel blobs — fixed in v4-screen so they stay
-            put as chat content scrolls underneath them. */}
-        <span className="v4-blob v4-blob-1" aria-hidden="true"></span>
-        <span className="v4-blob v4-blob-2" aria-hidden="true"></span>
-        <span className="v4-blob v4-blob-3" aria-hidden="true"></span>
-        <span className="v4-blob v4-blob-4" aria-hidden="true"></span>
-
-        {/* Per-segment scattered theme icons. Each position has its OWN
-            icon component so the scatter feels organic (e.g., for sports:
-            ball + trophy + lightning + medal + flag instead of 5 balls).
-            Each icon fades in with a small stagger. */}
-        {SEGMENT_THEME[subId]?.iconPositions.map((pos, i) => {
-          const { Icon, size, rotate, ...positionStyle } = pos;
-          return (
-            <span
-              key={i}
-              className="v4-theme-icon"
-              style={{
-                ...positionStyle,
-                transform: `rotate(${rotate})`,
-                animationDelay: `${i * 0.18}s`,
-              }}
-              aria-hidden="true"
-            >
-              <Icon weight="duotone" size={size} />
-            </span>
-          );
-        })}
+      <div className="v4-screen">
+        {/* Per-segment theme decoration (blobs + icons + illustrations).
+            Carries from setup → live so the contest keeps its identity. */}
+        <SegmentThemeBackdrop subId={subId} />
 
         <main className="v4-chat" role="main" ref={chatRef}>
           {/* Glass nav — sticky inside the chat scroll container so

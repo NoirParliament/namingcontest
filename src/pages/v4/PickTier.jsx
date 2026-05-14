@@ -73,6 +73,14 @@ export default function PickTier() {
     /* v4 class brings the --v4-muted / --v4-fg / --v4-ring tokens into
        scope so the v4-nav styling works identically to the chat. */
     <div className="lp-v3 lp-v3-pick-tier v4">
+      {/* Decorative pastel blobs — same default palette as a fresh
+          (unpicked) chat. Pre-segment these stay in their default tones
+          since user hasn't chosen a contest type yet. */}
+      <span className="v4-blob v4-blob-1" aria-hidden="true"></span>
+      <span className="v4-blob v4-blob-2" aria-hidden="true"></span>
+      <span className="v4-blob v4-blob-3" aria-hidden="true"></span>
+      <span className="v4-blob v4-blob-4" aria-hidden="true"></span>
+
       {/* Slim v4-style nav — matches the chat screens */}
       <header className="v4-nav">
         <Link to="/" className="v4-brand">

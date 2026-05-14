@@ -36,19 +36,28 @@
 /* ---------- NAV — slim glass top bar (sticky inside chat scroll
    so chat content slides UNDER it, backdrop-blur picks up content) ---------- */
 .v4-nav {
-  display: flex;
+  /* Three-column grid (1fr auto 1fr) ensures the breadcrumb sits at the
+     TRUE viewport center, regardless of brand vs exit widths. */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
+  gap: 16px;
   padding: 18px 32px;
   position: sticky;
   top: 0;
   z-index: 20;
-  gap: 16px;
   background: rgba(252, 249, 247, 0.55);
   -webkit-backdrop-filter: saturate(180%) blur(18px);
   backdrop-filter: saturate(180%) blur(18px);
   transition: background 0.25s ease;
 }
+.v4-nav .v4-brand     { justify-self: start;  }
+.v4-nav .v4-progress  { justify-self: center; }
+.v4-nav .v4-exit      { justify-self: end;    }
+/* Right-side wrapper for nav surfaces that combine Exit + AvatarMenu
+   (or any other right-edge actions). Without this, the wrapper lands
+   at the START of the right grid column, not pinned to the edge. */
+.v4-nav .v4-nav-right { justify-self: end;    }
 .v4-nav.is-scrolled {
   background: rgba(252, 249, 247, 0.78);
 }
@@ -130,7 +139,7 @@
 .v4-blob-1 {
   width: 260px;
   height: 260px;
-  top: 8%;
+  top: 16%;
   right: -80px;
   background: var(--v4-blob-1-color, #b3c4f0);
   opacity: 0.28;
@@ -161,7 +170,10 @@
   height: 70px;
   bottom: 28%;
   right: 8%;
-  background: var(--v4-blob-4-color, #a6dcb3);
+  /* Reuse the primary segment color so the bottom-right accent matches
+     the rest of the palette instead of using the legacy blob-4 contrast
+     accent (which read as "always blue/green" across segments). */
+  background: var(--v4-blob-1-color, #a6dcb3);
   opacity: 0.4;
   animation-delay: -2s;
 }
@@ -173,11 +185,52 @@
   z-index: 1;
   color: var(--v4-fg);
   opacity: 0;
-  animation: v4-theme-icon-fade-in 1.4s ease-out forwards;
+  /* Two animations:
+     1. fade-in (opacity 0 → 0.08) on appear
+     2. float (translate + slight rotation drift) on loop
+     Each icon has its own --rot CSS var (set inline) so its inline
+     rotation is preserved across the float keyframes. */
+  transform: rotate(var(--rot, 0deg));
+  animation:
+    v4-theme-icon-fade-in 1.4s ease-out forwards,
+    v4-theme-icon-float 12s ease-in-out infinite;
 }
 @keyframes v4-theme-icon-fade-in {
   from { opacity: 0; }
-  to   { opacity: 0.07; }
+  to   { opacity: 0.08; }
+}
+@keyframes v4-theme-icon-float {
+  0%, 100% { transform: translate(0, 0)       rotate(var(--rot, 0deg)); }
+  25%      { transform: translate(10px, -14px) rotate(calc(var(--rot, 0deg) + 6deg)); }
+  50%      { transform: translate(-8px, -6px)  rotate(calc(var(--rot, 0deg) - 4deg)); }
+  75%      { transform: translate(12px, 10px)  rotate(calc(var(--rot, 0deg) + 8deg)); }
+}
+
+/* ---------- THEME ILLUSTRATIONS — full-opacity PNGs sitting on top
+   of the pastel blobs (blob acts as a colored halo behind the creature) ---------- */
+.v4-theme-img {
+  position: absolute;
+  pointer-events: none;
+  z-index: 2; /* above blobs (1), below chat content (5) */
+  height: auto;
+  object-fit: contain;
+  opacity: 0;
+  transform: rotate(var(--rot, 0deg));
+  animation:
+    v4-theme-img-fade-in 1.6s ease-out forwards,
+    v4-theme-img-float 18s ease-in-out infinite;
+}
+@keyframes v4-theme-img-fade-in {
+  from { opacity: 0; }
+  to   { opacity: var(--target-opacity, 1); }
+}
+@keyframes v4-theme-img-float {
+  0%, 100% { transform: translate(0, 0)        rotate(var(--rot, 0deg)); }
+  50%      { transform: translate(-8px, -18px) rotate(calc(var(--rot, 0deg) + 2deg)); }
+}
+/* Hide illustrations on narrow viewports — they'd clip the chat */
+@media (max-width: 900px) {
+  .v4-theme-img { display: none; }
 }
 @keyframes v4-blob-drift {
   0%, 100% { transform: translate(0, 0) scale(1); }
@@ -196,6 +249,9 @@
   z-index: 5;
 }
 .v4-chat-inner {
+  /* Intimate chat column — tuned for the 460px bubble width. Narrower
+     than the dashboard surfaces by design; the width shift between
+     chat and manage signals "you've moved into a different mode." */
   max-width: 640px;
   margin: 56px auto 0;
   padding: 0 24px 100px;
@@ -263,6 +319,14 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Fade-only entry — used by the input row (and friends) to avoid the
+   translateY "jiggle" that would otherwise fight with the auto-scroll
+   bringing the input into view. */
+@keyframes v4-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* ---------- CHOICE LIST ---------- */
@@ -422,6 +486,9 @@
 .lp-v3-pick-tier {
   min-height: 100vh;
   animation: v4-page-fade-in 240ms ease-out;
+  /* Positioning context for the absolute-positioned decorative blobs */
+  position: relative;
+  overflow: hidden;
 }
 .lp-v3-pick-tier .section {
   margin-top: 40px;
@@ -785,7 +852,8 @@
   max-width: 520px;
   width: 100%;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  animation: v4-bubble-in 0.5s ease-out 0.05s forwards;
+  /* Fade-only entry — see comment on @keyframes v4-fade-in. */
+  animation: v4-fade-in 0.5s ease-out 0.05s forwards;
   opacity: 0;
 }
 .v4-input-row:focus-within {
@@ -877,7 +945,8 @@ input.v4-input::placeholder {
   color: var(--v4-muted);
   font-weight: 500;
   letter-spacing: 0.01em;
-  animation: v4-bubble-in 0.5s ease-out 0.15s forwards;
+  /* Fade-only entry — matches the input row above. */
+  animation: v4-fade-in 0.5s ease-out 0.15s forwards;
   opacity: 0;
 }
 .v4-input-meta kbd {
@@ -1402,6 +1471,1562 @@ input.v4-branding-color-input:hover {
   animation: v4-auth-fadein 0.3s ease-out forwards;
 }
 
+/* ============================================
+   LAUNCH MODAL — wider variant for email + Stripe payment
+   ============================================ */
+.v4-launch-modal {
+  max-width: 480px;
+  text-align: left;
+  padding: 36px 32px 28px;
+}
+.v4-launch-modal .v4-auth-title {
+  text-align: left;
+  margin-bottom: 8px;
+}
+.v4-launch-modal .v4-auth-blurb {
+  text-align: left;
+  margin-bottom: 24px;
+}
+.v4-launch-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.v4-launch-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.v4-launch-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+}
+.v4-launch-email-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1.5px solid var(--v4-faint);
+  border-radius: 10px;
+  padding: 0 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.v4-launch-email-row:focus-within {
+  border-color: rgba(3, 3, 2, 0.45);
+  box-shadow: 0 0 0 3px var(--v4-ring);
+}
+.v4-launch-email-icon {
+  display: inline-flex;
+  color: var(--v4-muted);
+  flex: none;
+}
+input.v4-launch-email-input,
+input.v4-launch-email-input:hover,
+input.v4-launch-email-input:focus {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  box-shadow: none;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  padding: 12px 0;
+  height: auto;
+  width: auto;
+  border-radius: 0;
+}
+input.v4-launch-email-input::placeholder {
+  color: rgba(3, 3, 2, 0.35);
+  font-weight: 400;
+}
+.v4-launch-card-wrapper {
+  background: #ffffff;
+  border: 1.5px solid var(--v4-faint);
+  border-radius: 10px;
+  padding: 14px 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.v4-launch-card-wrapper:focus-within {
+  border-color: rgba(3, 3, 2, 0.45);
+  box-shadow: 0 0 0 3px var(--v4-ring);
+}
+.v4-launch-card-error {
+  font-size: 12px;
+  color: #bb433a;
+  margin-top: 4px;
+  letter-spacing: -0.005em;
+}
+.v4-launch-btn-modal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--v4-fg);
+  color: #ffffff;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  padding: 14px 22px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  outline: none;
+  margin-top: 4px;
+  transition: opacity 0.2s ease, transform 0.18s ease;
+}
+.v4-launch-btn-modal:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+.v4-launch-btn-modal:focus-visible {
+  box-shadow: 0 0 0 3px var(--v4-ring), 0 0 0 4px rgba(255, 255, 255, 0.4);
+}
+.v4-launch-btn-modal:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.v4-launch-btn-modal.is-loading {
+  opacity: 0.85;
+  cursor: progress;
+}
+.v4-launch-secure {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--v4-muted);
+  margin: 6px 0 0;
+  letter-spacing: 0.01em;
+}
+
+/* ============================================
+   CONTEST MANAGE PAGE — post-launch creator workspace
+   ============================================ */
+.v4-manage-hero {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+/* ── Poster hero card ─────────────────────────────────────────────
+   Wide rounded card with a soft segment-themed gradient wash.
+   Badge top-left, LIVE chip top-right, massive Fraunces title in the
+   middle, three stat tabs at the bottom. */
+.v4-manage-hero-poster {
+  position: relative;
+  background:
+    radial-gradient(
+      ellipse 90% 70% at 50% 0%,
+      var(--hero-tint-bg, #fadecc) 0%,
+      rgba(255, 255, 255, 0.85) 65%,
+      #ffffff 100%
+    );
+  border: 1px solid var(--v4-faint);
+  border-radius: 24px;
+  padding: 28px 36px 26px;
+  margin-bottom: 32px;
+  box-shadow: 0 14px 40px -18px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+/* Badge floats top-left */
+.v4-manage-hero-badge {
+  position: absolute;
+  top: 22px;
+  left: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px -6px rgba(0, 0, 0, 0.18);
+}
+
+/* LIVE chip floats top-right */
+.v4-manage-hero-live {
+  position: absolute;
+  top: 28px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid var(--v4-faint);
+  border-radius: 999px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.08);
+}
+.v4-manage-hero-live-sep {
+  opacity: 0.35;
+}
+
+/* Massive title — the visual focal point */
+.v4-manage-hero-title {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 56px;
+  font-weight: 350;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  color: var(--v4-fg);
+  margin: 60px 0 8px;
+  text-align: center;
+}
+.v4-manage-hero-subtitle {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--v4-muted);
+  letter-spacing: 0.01em;
+  text-align: center;
+  margin: 0 0 26px;
+}
+
+/* Stat tabs — three columns, separated by thin dividers */
+.v4-manage-hero-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding-top: 22px;
+  border-top: 1px solid var(--v4-faint);
+}
+.v4-manage-hero-stat {
+  text-align: center;
+  min-width: 70px;
+}
+.v4-manage-hero-stat-value {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--v4-fg);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.v4-manage-hero-stat-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+}
+.v4-manage-hero-stat-sep {
+  width: 1px;
+  height: 28px;
+  background: var(--v4-faint);
+}
+
+@media (max-width: 640px) {
+  .v4-manage-hero-poster { padding: 22px 18px 20px; }
+  .v4-manage-hero-badge { width: 36px; height: 36px; top: 16px; left: 16px; }
+  .v4-manage-hero-live { top: 20px; right: 16px; padding: 5px 10px; font-size: 10.5px; }
+  .v4-manage-hero-title { font-size: 36px; margin-top: 50px; }
+  .v4-manage-hero-stats { gap: 16px; }
+  .v4-manage-hero-stat-value { font-size: 22px; }
+}
+.v4-manage-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--v4-muted);
+  letter-spacing: 0.02em;
+  background: rgba(3, 3, 2, 0.04);
+  border-radius: 999px;
+  padding: 8px 14px;
+}
+.v4-manage-live-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #3f8850;
+  animation: v4-manage-live-pulse 2s ease-in-out infinite;
+}
+@keyframes v4-manage-live-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.55; transform: scale(0.85); }
+}
+.v4-manage-status-label {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #1f5430;
+}
+.v4-manage-status-sep {
+  opacity: 0.4;
+}
+
+/* Stats panel — 3 or 4 tiles, always visible (zero state fills over time) */
+.v4-manage-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.v4-manage-stats.v4-manage-stats-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.v4-manage-stat {
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 16px;
+  padding: 18px 14px 16px;
+  text-align: center;
+  position: relative;
+}
+.v4-manage-stat-icon {
+  color: var(--v4-muted);
+  margin-bottom: 6px;
+}
+.v4-manage-stat-value {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--v4-fg);
+  line-height: 1;
+}
+.v4-manage-stat-value-text {
+  font-size: 14px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 500;
+  color: var(--v4-muted);
+}
+.v4-manage-stat-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin-top: 4px;
+}
+
+/* Share card — PRIMARY action, enriched */
+.v4-manage-share {
+  background: linear-gradient(180deg, #ffffff 0%, #ffffff 100%);
+  border: 1px solid var(--v4-faint);
+  border-radius: 22px;
+  padding: 26px 28px 22px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.v4-manage-share::before {
+  content: "";
+  position: absolute;
+  top: 0; right: 0;
+  width: 220px;
+  height: 100%;
+  background: radial-gradient(ellipse at top right, rgba(63, 136, 80, 0.06), transparent 70%);
+  pointer-events: none;
+}
+.v4-manage-share-head {
+  margin-bottom: 18px;
+  position: relative;
+}
+.v4-manage-share-eyebrow {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin-bottom: 6px;
+}
+.v4-manage-share-title {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--v4-fg);
+  margin: 0;
+}
+.v4-manage-share-bigrow {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  position: relative;
+}
+.v4-manage-share-url {
+  flex: 1;
+  min-width: 0;
+  background: var(--v4-bubble-bg);
+  border: 1.5px solid var(--v4-faint);
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 14px;
+  color: var(--v4-fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  letter-spacing: -0.005em;
+}
+.v4-manage-copy-btn-big {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--v4-fg);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 0 20px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  outline: none;
+  flex: none;
+  transition: transform 0.18s ease, opacity 0.18s ease, background 0.25s ease;
+}
+.v4-manage-copy-btn-big:hover {
+  transform: translateY(-1px);
+}
+.v4-manage-copy-btn-big.is-copied {
+  background: #3f8850;
+}
+.v4-manage-share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+  position: relative;
+}
+.v4-manage-share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.18s ease;
+}
+.v4-manage-share-btn:hover {
+  border-color: rgba(3, 3, 2, 0.3);
+  background: var(--v4-bubble-bg);
+  transform: translateY(-1px);
+}
+.v4-manage-share-foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--v4-faint);
+}
+.v4-manage-share-avatars {
+  display: inline-flex;
+  align-items: center;
+}
+.v4-manage-share-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  margin-left: -8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  background: #f0ece4;
+}
+.v4-manage-share-avatar:first-child { margin-left: 0; }
+.v4-manage-share-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Pull the face up + zoom in so the circle is filled with face,
+     not torso/shoulders cropping awkwardly at the edges. */
+  object-position: center 15%;
+  transform: scale(2);
+  transform-origin: center 25%;
+  display: block;
+}
+.v4-manage-share-meta-bold {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--v4-muted);
+  letter-spacing: 0;
+}
+
+/* Phase timeline */
+.v4-manage-timeline {
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 18px;
+  padding: 22px 24px;
+  margin-bottom: 24px;
+}
+.v4-manage-phases {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  position: relative;
+}
+.v4-manage-phase {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 0;
+}
+.v4-manage-phase-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(3, 3, 2, 0.15);
+  position: relative;
+}
+.v4-manage-phase.is-active .v4-manage-phase-dot {
+  background: var(--v4-fg);
+  box-shadow: 0 0 0 4px rgba(3, 3, 2, 0.08);
+}
+.v4-manage-phase.is-done .v4-manage-phase-dot {
+  background: rgba(3, 3, 2, 0.55);
+}
+.v4-manage-phase-text {
+  flex: 1;
+}
+.v4-manage-phase-name {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  letter-spacing: -0.005em;
+}
+.v4-manage-phase.is-active .v4-manage-phase-name {
+  color: var(--v4-fg);
+}
+.v4-manage-phase:not(.is-active) .v4-manage-phase-name {
+  color: var(--v4-muted);
+}
+.v4-manage-phase-meta {
+  font-size: 11px;
+  color: var(--v4-muted);
+  letter-spacing: 0.01em;
+  margin-top: 2px;
+}
+
+/* Brief recap collapser */
+.v4-manage-recap {
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 18px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.v4-manage-recap-trigger {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 18px 22px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--v4-fg);
+  cursor: pointer;
+  outline: none;
+  text-align: left;
+  transition: background 0.2s ease;
+}
+.v4-manage-recap-trigger:hover {
+  background: rgba(3, 3, 2, 0.03);
+}
+.v4-manage-recap-icon {
+  display: inline-flex;
+  color: var(--v4-muted);
+  flex: none;
+}
+.v4-manage-recap-text {
+  flex: 1;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+.v4-manage-recap-meta {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+}
+.v4-manage-recap-body {
+  padding: 0 22px 22px;
+  border-top: 1px solid var(--v4-faint);
+}
+.v4-manage-recap-group {
+  margin-top: 18px;
+}
+.v4-manage-recap-group-title {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin: 0 0 10px;
+}
+.v4-manage-recap-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 18px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--v4-muted);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--v4-faint);
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+.v4-manage-recap-edit:hover {
+  border-color: rgba(3, 3, 2, 0.35);
+  color: var(--v4-fg);
+  background: var(--v4-bubble-bg);
+}
+
+/* ─── While You Wait — rich onboarding section using design-doc patterns ─── */
+.v4-manage-wait {
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 22px;
+  padding: 32px 32px 28px;
+  margin-bottom: 24px;
+}
+.v4-manage-wait-eyebrow {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin-bottom: 8px;
+}
+.v4-manage-wait-title {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--v4-fg);
+  margin: 0 0 10px;
+}
+.v4-manage-wait-lede {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--v4-muted);
+  margin: 0 0 24px;
+  max-width: 52ch;
+  letter-spacing: -0.005em;
+}
+
+.v4-manage-wait-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.v4-manage-wait-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  border: 1px solid var(--v4-faint);
+  background: #ffffff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.v4-manage-wait-step:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px -10px rgba(0, 0, 0, 0.1);
+}
+
+/* Step states — only the active step gets the segment-themed wash.
+   Done/upcoming stay as plain outline cards (with done dimmed slightly). */
+.v4-manage-wait-step.is-done {
+  opacity: 0.62;
+}
+.v4-manage-wait-step.is-active {
+  background: linear-gradient(
+    135deg,
+    var(--journey-active-bg, #fceebc) 0%,
+    #ffffff 75%
+  );
+  border-color: var(--journey-active-border, rgba(3, 3, 2, 0.18));
+  box-shadow: 0 12px 32px -10px rgba(0, 0, 0, 0.14);
+}
+.v4-manage-wait-step.is-upcoming {
+  opacity: 0.78;
+}
+
+/* Step status pill — sits above the title inside each step card */
+.v4-manage-wait-step-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin-bottom: 4px;
+}
+/* Date metadata pulled in from the old timeline strip — sits beside
+   the status word in the same line, slightly de-emphasized. */
+.v4-manage-wait-step-meta {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--v4-muted);
+  opacity: 0.85;
+  padding-left: 8px;
+  border-left: 1px solid rgba(3, 3, 2, 0.12);
+}
+.v4-manage-wait-step.is-active .v4-manage-wait-step-status {
+  color: #1f5430;
+}
+.v4-manage-wait-step.is-done .v4-manage-wait-step-status::before {
+  content: "✓ ";
+  margin-right: 2px;
+}
+.v4-manage-wait-step-pulse {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #3f8850;
+  animation: v4-manage-live-pulse 2s ease-in-out infinite;
+}
+.v4-manage-wait-step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--v4-fg);
+  flex: none;
+}
+.v4-manage-wait-step-text h3 {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 19px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  color: var(--v4-fg);
+  margin: 0 0 4px;
+  line-height: 1.2;
+}
+.v4-manage-wait-step-text p {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: rgba(3, 3, 2, 0.72);
+  margin: 0;
+  letter-spacing: -0.005em;
+  max-width: 56ch;
+}
+
+/* Pull-quote callout — Fraunces italic with left-border accent
+   (mirrors GuideExpandable callout pattern + design doc quote treatment) */
+.v4-manage-wait-pullquote {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 4px 0 4px 18px;
+  border-left: 3px solid var(--v4-fg);
+  margin-top: 22px;
+}
+.v4-manage-wait-pullquote-icon {
+  display: inline-flex;
+  color: var(--v4-fg);
+  margin-top: 4px;
+  flex: none;
+}
+.v4-manage-wait-pullquote p {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 17px;
+  line-height: 1.45;
+  font-weight: 400;
+  color: var(--v4-fg);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.v4-manage-wait-pullquote em {
+  font-style: italic;
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .v4-manage-wait { padding: 26px 22px 22px; }
+  .v4-manage-wait-title { font-size: 24px; }
+  .v4-manage-wait-step { padding: 16px; gap: 12px; }
+  .v4-manage-wait-step-icon { width: 38px; height: 38px; }
+  .v4-manage-wait-step-text h3 { font-size: 17px; }
+}
+
+/* Quiet actions row */
+.v4-manage-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding-top: 8px;
+}
+.v4-manage-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--v4-muted);
+  text-decoration: none;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+.v4-manage-action:hover {
+  color: var(--v4-fg);
+  background: rgba(3, 3, 2, 0.04);
+}
+.v4-manage-action-danger:hover {
+  color: #bb433a;
+}
+
+/* ─── Clickable recap rows (each row opens the edit modal) ─── */
+.v4-manage-recap-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.v4-manage-recap-row {
+  display: grid;
+  grid-template-columns: 200px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--v4-faint);
+  padding: 12px 8px;
+  font-family: 'Inter', system-ui, sans-serif;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.15s ease;
+}
+.v4-manage-recap-list li:first-child .v4-manage-recap-row {
+  border-top: none;
+}
+.v4-manage-recap-row:hover {
+  background: rgba(3, 3, 2, 0.03);
+}
+.v4-manage-recap-row:focus-visible {
+  background: rgba(3, 3, 2, 0.04);
+  border-radius: 8px;
+  box-shadow: 0 0 0 3px var(--v4-ring);
+}
+.v4-manage-recap-row-label {
+  font-size: 13px;
+  color: var(--v4-muted);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+.v4-manage-recap-row-value {
+  font-size: 14px;
+  color: var(--v4-fg);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.5;
+}
+.v4-manage-recap-row-edit {
+  color: var(--v4-muted);
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.v4-manage-recap-row:hover .v4-manage-recap-row-edit,
+.v4-manage-recap-row:focus-visible .v4-manage-recap-row-edit {
+  opacity: 1;
+}
+
+/* ─── Edit question modal (side modal for inline editing) ─── */
+.v4-edit-modal {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  background: var(--v4-bg);
+  border-radius: 22px;
+  padding: 36px 32px 32px;
+  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.3), 0 8px 16px rgba(0, 0, 0, 0.08);
+  animation: v4-auth-slideup 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  text-align: left;
+}
+.v4-edit-modal-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin-bottom: 8px;
+}
+.v4-edit-modal-prompt {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--v4-fg);
+  margin: 0 0 16px;
+}
+.v4-edit-modal-current {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--v4-bubble-bg);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 18px;
+}
+.v4-edit-modal-current-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+}
+.v4-edit-modal-current-value {
+  font-size: 14px;
+  color: var(--v4-fg);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+.v4-edit-modal-input {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============================================
+   LIVE RESULTS PANEL — names + participants + multi-criteria heatmap
+   ============================================ */
+.v4-results {
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 22px;
+  padding: 24px 26px 22px;
+  margin-bottom: 28px;
+}
+
+.v4-results-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.v4-results-eyebrow {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin-bottom: 6px;
+}
+.v4-results-stats {
+  font-size: 13px;
+  color: var(--v4-fg);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.v4-results-stats-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--v4-muted);
+  font-weight: 500;
+}
+
+/* View toggle — Names / Participants tabs */
+.v4-results-toggle {
+  display: inline-flex;
+  background: rgba(3, 3, 2, 0.05);
+  border-radius: 999px;
+  padding: 3px;
+  flex: none;
+}
+.v4-results-toggle-btn {
+  background: transparent;
+  border: none;
+  padding: 6px 16px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--v4-muted);
+  border-radius: 999px;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.v4-results-toggle-btn:hover {
+  color: var(--v4-fg);
+}
+.v4-results-toggle-btn.is-active {
+  background: var(--v4-fg);
+  color: #ffffff;
+}
+
+/* Search + sort row */
+.v4-results-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.v4-results-search {
+  position: relative;
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  align-items: center;
+}
+.v4-results-search-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--v4-muted);
+  pointer-events: none;
+}
+input.v4-results-search-input,
+input.v4-results-search-input:focus,
+input.v4-results-search-input:hover {
+  width: 100%;
+  padding: 9px 14px 9px 36px;
+  background: var(--v4-bubble-bg);
+  border: 1px solid var(--v4-faint);
+  border-radius: 999px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  outline: none;
+  box-shadow: none;
+  height: auto;
+  border-radius: 999px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+input.v4-results-search-input:focus {
+  border-color: rgba(3, 3, 2, 0.45);
+  box-shadow: 0 0 0 3px var(--v4-ring);
+}
+input.v4-results-search-input::placeholder {
+  color: rgba(3, 3, 2, 0.4);
+}
+
+/* Empty state */
+.v4-results-empty {
+  text-align: center;
+  padding: 32px 0;
+  font-size: 13px;
+  color: var(--v4-muted);
+  font-style: italic;
+}
+
+/* Empty-state pane shown when the user has a real contest but no
+   submissions have arrived yet (Live Results dataset is empty). */
+.v4-results-empty-state {
+  padding: 36px 28px 12px;
+  text-align: center;
+}
+.v4-results-empty-state p {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--v4-muted);
+  letter-spacing: -0.005em;
+  max-width: 42ch;
+  margin: 0 auto;
+}
+
+/* Results scroller — collapsed shows ~5, expanded scrolls inside */
+.v4-results-scroller {
+  max-height: none;
+  overflow: visible;
+  margin: 0 -4px;
+  padding: 0 4px;
+}
+.v4-results-scroller.is-scrolling {
+  /* Cap at ~10 rows tall when expanded; the rest scrolls */
+  max-height: 620px;
+  overflow-y: auto;
+  /* Trap wheel scroll inside the list — never bubble to page */
+  overscroll-behavior: contain;
+  border-top: 1px solid var(--v4-faint);
+  border-bottom: 1px solid var(--v4-faint);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(3, 3, 2, 0.18) transparent;
+  /* Fade top/bottom edges so cut-off rows feel intentional */
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 12px,
+    #000 calc(100% - 12px),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 12px,
+    #000 calc(100% - 12px),
+    transparent 100%
+  );
+}
+.v4-results-scroller.is-scrolling::-webkit-scrollbar {
+  width: 8px;
+}
+.v4-results-scroller.is-scrolling::-webkit-scrollbar-thumb {
+  background: rgba(3, 3, 2, 0.18);
+  border-radius: 8px;
+}
+.v4-results-scroller.is-scrolling::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Show more / show less toggle */
+.v4-results-showmore {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: rgba(3, 3, 2, 0.03);
+  border: 1px dashed rgba(3, 3, 2, 0.12);
+  border-radius: 12px;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+.v4-results-showmore:hover {
+  background: rgba(3, 3, 2, 0.06);
+  border-color: rgba(3, 3, 2, 0.22);
+}
+
+/* Results list — clickable rows */
+.v4-results-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.v4-results-row {
+  border-top: 1px solid var(--v4-faint);
+}
+.v4-results-list li:first-child .v4-results-row {
+  border-top: none;
+}
+.v4-results-row.is-expanded {
+  background: rgba(3, 3, 2, 0.02);
+  border-radius: 12px;
+}
+/* Top-3 podium tinting — segment-tone wash, fading from #1 → #3.
+   Rounded so the tinted block reads as its own card, not a striped
+   table row. Hide the divider line so the wash isn't cut by it. */
+.v4-results-row-tier-1,
+.v4-results-row-tier-2,
+.v4-results-row-tier-3 {
+  border-top: none !important;
+  border-radius: 14px;
+  margin: 4px 0;
+}
+.v4-results-row-tier-1 + .v4-results-row,
+.v4-results-row-tier-2 + .v4-results-row,
+.v4-results-row-tier-3 + .v4-results-row {
+  border-top-color: transparent;
+}
+/* Rank number gets a subtle medal glow on the top 3 */
+.v4-results-row-tier-1 .v4-results-rank,
+.v4-results-row-tier-2 .v4-results-rank,
+.v4-results-row-tier-3 .v4-results-rank {
+  color: var(--v4-fg);
+  font-weight: 500;
+}
+.v4-results-row-trigger {
+  display: grid;
+  grid-template-columns: 28px 1fr auto 16px;
+  gap: 14px;
+  align-items: center;
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 14px 12px;
+  font-family: 'Inter', system-ui, sans-serif;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.15s ease;
+  border-radius: 12px;
+}
+.v4-results-row-trigger:hover {
+  background: rgba(3, 3, 2, 0.03);
+}
+.v4-results-rank {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--v4-muted);
+  letter-spacing: -0.02em;
+}
+.v4-results-name {
+  min-width: 0;
+}
+.v4-results-name-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  letter-spacing: -0.01em;
+  margin-bottom: 2px;
+}
+.v4-results-name-meta {
+  font-size: 12px;
+  color: var(--v4-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+/* In the row meta: submitter name reads as muted text, same weight as
+   the timestamp beside it. Quiet, doesn't compete with the name itself. */
+.v4-results-submitter-pill {
+  display: inline;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--v4-muted);
+  letter-spacing: 0;
+}
+/* In the expanded detail: bring back the themed chip so the submitter
+   gets proper credit when you're actually reading the name's story. */
+.v4-results-submitter-pill.is-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.v4-results-votes {
+  text-align: right;
+  flex: none;
+}
+.v4-results-votes-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin-top: 2px;
+}
+.v4-results-votes-value {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--v4-fg);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.v4-results-caret {
+  display: inline-flex;
+  color: var(--v4-muted);
+}
+
+/* Avatar (participants view) */
+.v4-results-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* Expanded row body */
+.v4-results-row-body {
+  padding: 8px 16px 18px;
+}
+
+/* Name detail panel — submitter rationale shown on row expand */
+.v4-name-detail {
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 14px;
+  padding: 18px 22px;
+  margin: 6px 0;
+}
+.v4-name-detail-tagline {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 17px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--v4-fg);
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  margin: 0 0 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--v4-faint);
+}
+.v4-name-detail-list {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+}
+.v4-name-detail-field {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 16px;
+  align-items: baseline;
+}
+.v4-name-detail-field dt {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin: 0;
+}
+.v4-name-detail-field dd {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13.5px;
+  font-weight: 400;
+  color: var(--v4-fg);
+  line-height: 1.55;
+  margin: 0;
+}
+.v4-name-detail-foot {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--v4-faint);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11.5px;
+  color: var(--v4-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+/* Participants view — sub-list of submitted names */
+.v4-results-sub-head {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin-bottom: 8px;
+  padding-left: 4px;
+}
+.v4-results-sub-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.v4-results-sub-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--v4-bubble-bg);
+  border-radius: 8px;
+}
+.v4-results-sub-name {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--v4-fg);
+}
+.v4-results-sub-votes {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--v4-muted);
+  letter-spacing: 0.02em;
+}
+.v4-results-sub-empty {
+  font-size: 13px;
+  color: var(--v4-muted);
+  font-style: italic;
+  padding: 4px;
+}
+
+@media (max-width: 640px) {
+  .v4-results { padding: 20px 18px; }
+  .v4-results-row-trigger {
+    grid-template-columns: 24px 1fr auto 16px;
+    gap: 10px;
+    padding: 12px 8px;
+  }
+  .v4-name-detail { padding: 14px 16px; }
+  .v4-name-detail-field {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+/* ─── Activity fly-over (avatar + flying +N points pill) ─── */
+.v4-flyover-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 3;
+}
+.v4-flyover-group {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.v4-flyover-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 50%;
+  box-shadow: 0 6px 18px -6px rgba(0, 0, 0, 0.18), 0 2px 4px rgba(0, 0, 0, 0.04);
+  opacity: 0;
+  animation: v4-flyover-rise 3.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  will-change: transform, opacity;
+}
+@keyframes v4-flyover-rise {
+  0%   { opacity: 0;   transform: translate(0, 12px) scale(0.6); }
+  18%  { opacity: 0.95; transform: translate(0, 0)    scale(1); }
+  82%  { opacity: 0.95; transform: translate(0, 0)   scale(1); }
+  100% { opacity: 0;   transform: translate(0, -8px) scale(0.92); }
+}
+
+/* +N points pill — flies from the avatar INWARD toward the contest name
+   but fades out at ~60% of journey so it never crosses into the safe
+   zone around the title text. Keep the title clean and readable. */
+.v4-flyover-pill {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: #3f8850; /* design-doc accent-green */
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 3px 9px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow: 0 6px 16px -4px rgba(63, 136, 80, 0.45), 0 2px 4px rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  animation: v4-flyover-pill 2.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 0.5s;
+  will-change: transform, opacity;
+}
+@keyframes v4-flyover-pill {
+  0%   {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  12%  {
+    opacity: 1;
+    transform: translate(-50%, calc(-50% - 6px)) scale(1);
+  }
+  60%  {
+    opacity: 0.85;
+    transform: translate(
+      calc(-50% + var(--end-x, 12vw) * 0.7),
+      calc(-50% + var(--end-y, 0vh) * 0.7)
+    ) scale(0.92);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(
+      calc(-50% + var(--end-x, 12vw)),
+      calc(-50% + var(--end-y, 0vh))
+    ) scale(0.7);
+  }
+}
+
+@media (max-width: 640px) {
+  .v4-manage-stats,
+  .v4-manage-stats.v4-manage-stats-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .v4-manage-phases {
+    flex-direction: column;
+  }
+  .v4-manage-recap-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .v4-flyover-layer { display: none; }
+}
+
 .v4-input-skip,
 .v4-defer-row {
   display: flex;
@@ -1687,6 +3312,20 @@ input.v4-branding-color-input:hover {
   align-items: flex-start;
   width: 100%;
 }
+/* Suppress entry animations for everything that lives in history. The
+   prompt bubble + user reply briefly mount as part of CurrentQuestion
+   (where they animate in once) and then re-mount as part of a new
+   HistoryTurn when the user advances. Without this rule, that re-mount
+   re-triggers the bubble-in animation and looks like a "refresh." */
+.v4-history .v4-bubble,
+.v4-history .v4-hint,
+.v4-history .v4-bubble-user,
+.v4-history .v4-bubble-editable,
+.v4-history .v4-typing {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
 
 /* ============================================
    EDITABLE USER REPLY BUBBLE — tap to edit
@@ -1831,11 +3470,18 @@ input.v4-branding-color-input:hover {
   z-index: 5;
 }
 .v4-review-inner {
-  max-width: 640px;
+  /* Single 740px column across the entire v4 flow. Matches .v4-chat-
+     inner so the page width never jumps as the user moves between
+     surfaces. The .v4-review-inner-wide modifier is kept dormant for
+     possible future dashboard breakouts. */
+  max-width: 740px;
   margin: 56px auto 0;
   padding: 0 24px 120px;
   animation: v4-bubble-in 0.5s ease-out forwards;
   opacity: 0;
+}
+.v4-review-inner.v4-review-inner-wide {
+  max-width: 880px;
 }
 
 .v4-review-hero {
@@ -2004,4 +3650,1162 @@ input.v4-branding-color-input:hover {
     grid-template-columns: 1fr;
     gap: 4px;
   }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   AVATAR MENU — top-right account dropdown on every authenticated v4
+   surface. Sits beside (or in place of) the Exit link in .v4-nav.
+   ───────────────────────────────────────────────────────────────────── */
+.v4-nav-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+.v4-avatar-menu {
+  position: relative;
+}
+.v4-avatar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid #ffffff;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  outline: none;
+  overflow: hidden;
+  padding: 0;
+  box-shadow: 0 2px 6px -2px rgba(0, 0, 0, 0.12);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+/* Photo inside the button. Default hero placeholder gets zoomed to
+   crop out the shoulders; real user uploads are shown as-is (cover). */
+.v4-avatar-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.v4-avatar-photo.is-default {
+  object-position: center 15%;
+  transform: scale(2);
+  transform-origin: center 25%;
+}
+.v4-avatar-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px -3px rgba(0, 0, 0, 0.18);
+}
+.v4-avatar-btn:focus-visible {
+  box-shadow: 0 0 0 3px var(--v4-ring), 0 2px 6px -2px rgba(0, 0, 0, 0.12);
+}
+
+.v4-avatar-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 240px;
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 14px;
+  padding: 6px;
+  box-shadow: 0 18px 48px -16px rgba(0, 0, 0, 0.22);
+  z-index: 50;
+  animation: v4-fade-in 0.15s ease-out forwards;
+}
+.v4-avatar-dropdown-head {
+  padding: 12px 14px 10px;
+}
+.v4-avatar-dropdown-name {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  letter-spacing: -0.005em;
+}
+.v4-avatar-dropdown-email {
+  font-size: 12px;
+  color: var(--v4-muted);
+  margin-top: 2px;
+  word-break: break-all;
+}
+.v4-avatar-dropdown-divider {
+  height: 1px;
+  background: var(--v4-faint);
+  margin: 4px 0;
+}
+
+/* Active-contest mini-card inside the avatar dropdown. Segment-tinted
+   background, live status pill (pulsing dot), whole row clickable to
+   jump straight to ContestManage. Anchored visually so the user always
+   knows what's "live right now." */
+.v4-avatar-dropdown-contest {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  margin: 4px 0;
+  border-radius: 10px;
+  text-decoration: none;
+  outline: none;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+.v4-avatar-dropdown-contest:hover {
+  filter: brightness(0.97);
+  transform: translateY(-1px);
+}
+.v4-avatar-dropdown-contest:focus-visible {
+  box-shadow: 0 0 0 2px var(--v4-ring);
+}
+.v4-avatar-dropdown-contest-text {
+  flex: 1;
+  min-width: 0;
+}
+.v4-avatar-dropdown-contest-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #1f5430;
+  margin-bottom: 4px;
+}
+.v4-avatar-dropdown-contest-sep {
+  opacity: 0.4;
+  color: var(--v4-muted);
+}
+.v4-avatar-dropdown-contest-name {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.v4-avatar-dropdown-contest-arrow {
+  color: var(--v4-fg);
+  flex: none;
+  opacity: 0.6;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.v4-avatar-dropdown-contest:hover .v4-avatar-dropdown-contest-arrow {
+  opacity: 1;
+  transform: translateX(2px);
+}
+.v4-avatar-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  text-decoration: none;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.v4-avatar-dropdown-item:hover {
+  background: var(--v4-bubble-bg);
+}
+.v4-avatar-dropdown-item:focus-visible {
+  box-shadow: 0 0 0 2px var(--v4-ring);
+}
+.v4-avatar-dropdown-item-danger {
+  color: #b3401f;
+}
+.v4-avatar-dropdown-item-danger:hover {
+  background: rgba(179, 64, 31, 0.06);
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   SIGN-IN MODAL — magic-link flow.
+   Single-column centered card with three phases: input / sent / success.
+   ───────────────────────────────────────────────────────────────────── */
+.v4-signin-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 3, 2, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 24px;
+  animation: v4-fade-in 0.2s ease-out forwards;
+}
+.v4-signin-modal {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: var(--v4-bg);
+  border-radius: 22px;
+  padding: 32px 32px 28px;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.4);
+  animation: v4-fade-in 0.25s ease-out forwards;
+  text-align: center;
+}
+.v4-signin-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--v4-muted);
+  cursor: pointer;
+  outline: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.v4-signin-close:hover {
+  background: var(--v4-bubble-bg);
+  color: var(--v4-fg);
+}
+
+.v4-signin-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--v4-bubble-bg);
+  color: var(--v4-fg);
+  margin: 4px 0 18px;
+}
+.v4-signin-icon-wrap-sent {
+  background: rgba(196, 207, 245, 0.5);
+  color: #283b78;
+}
+.v4-signin-icon-wrap-success {
+  background: rgba(166, 220, 179, 0.5);
+  color: #1f5430;
+}
+
+.v4-signin-title {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 26px;
+  font-weight: 350;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--v4-fg);
+  margin: 0 0 8px;
+}
+.v4-signin-subtitle {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--v4-muted);
+  margin: 0 0 24px;
+}
+.v4-signin-subtitle strong {
+  color: var(--v4-fg);
+  font-weight: 600;
+}
+
+.v4-signin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+  margin-bottom: 18px;
+}
+.v4-signin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.v4-signin-field-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+}
+.v4-signin-submit {
+  width: 100%;
+  justify-content: center;
+  padding: 12px 18px;
+  font-size: 14px;
+}
+
+.v4-signin-foot {
+  font-size: 12.5px;
+  color: var(--v4-muted);
+  margin: 4px 0 0;
+}
+.v4-signin-foot a {
+  color: var(--v4-fg);
+  font-weight: 600;
+  text-decoration: none;
+}
+.v4-signin-foot a:hover {
+  text-decoration: underline;
+}
+.v4-signin-foot-demo {
+  margin: 14px 0 12px;
+  padding: 10px 14px;
+  background: var(--v4-bubble-bg);
+  border-radius: 10px;
+  font-size: 11.5px;
+  font-style: italic;
+  text-align: left;
+  color: var(--v4-muted);
+}
+.v4-signin-link {
+  background: transparent;
+  border: none;
+  color: var(--v4-muted);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  margin-top: 8px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.v4-signin-link:hover {
+  color: var(--v4-fg);
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   SETTINGS PAGE — single page with Account + Subscription sections.
+   Reuses .v4-review-inner (740px) for column consistency.
+   ───────────────────────────────────────────────────────────────────── */
+.v4-settings-head {
+  margin-bottom: 28px;
+}
+.v4-settings-title {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 38px;
+  font-weight: 350;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--v4-fg);
+  margin: 0 0 8px;
+}
+.v4-settings-subtitle {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14.5px;
+  font-weight: 400;
+  color: var(--v4-muted);
+  margin: 0;
+}
+
+.v4-settings-section {
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 18px;
+  padding: 24px 28px;
+  margin-bottom: 20px;
+}
+
+/* Compact section variant — used by the Account row at the bottom of
+   the workspace page. Tighter padding when collapsed, expands to a
+   normal section when opened. */
+.v4-settings-section-compact {
+  padding: 0;
+  overflow: hidden;
+}
+.v4-settings-account-trigger {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 20px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.15s ease;
+}
+.v4-settings-account-trigger:hover {
+  background: var(--v4-bubble-bg);
+}
+.v4-settings-account-trigger:focus-visible {
+  box-shadow: 0 0 0 2px var(--v4-ring) inset;
+}
+.v4-settings-account-photo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--v4-bubble-bg);
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 2px 6px -2px rgba(0, 0, 0, 0.12);
+  flex: none;
+}
+/* Square-ish icon variant used by the Billing trigger row instead of
+   a circular photo. Same footprint, same alignment, just a tile look. */
+.v4-settings-trigger-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--v4-bubble-bg);
+  color: var(--v4-fg);
+  flex: none;
+}
+.v4-settings-account-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.v4-settings-account-photo-img.is-default {
+  object-position: center 15%;
+  transform: scale(2);
+  transform-origin: center 25%;
+}
+.v4-settings-account-meta {
+  flex: 1;
+  min-width: 0;
+}
+.v4-settings-account-name {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  letter-spacing: -0.005em;
+  line-height: 1.2;
+}
+.v4-settings-account-email {
+  font-size: 12.5px;
+  color: var(--v4-muted);
+  margin-top: 2px;
+}
+.v4-settings-account-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: var(--v4-bubble-bg);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  letter-spacing: -0.005em;
+  flex: none;
+}
+.v4-settings-section-compact.is-open .v4-settings-account-action {
+  background: var(--v4-fg);
+  color: #ffffff;
+}
+.v4-settings-account-body {
+  /* Generous top padding so expanded content has breathing room from
+     the divider line — was 4px, felt cramped against the trigger row. */
+  padding: 22px 28px 24px;
+  border-top: 1px solid var(--v4-faint);
+}
+.v4-settings-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 22px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--v4-faint);
+}
+.v4-settings-section-head h2 {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--v4-fg);
+  margin: 0;
+}
+
+/* ── Profile photo block — sits at the top of the Account section.
+   Avatar on the left, action buttons + helper note on the right. */
+.v4-settings-photo-block {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding-bottom: 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--v4-faint);
+}
+.v4-settings-photo {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  background: var(--v4-bubble-bg);
+  padding: 0;
+  cursor: pointer;
+  overflow: hidden;
+  outline: none;
+  flex: none;
+  box-shadow: 0 4px 14px -6px rgba(0, 0, 0, 0.18);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.v4-settings-photo:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px -8px rgba(0, 0, 0, 0.22);
+}
+.v4-settings-photo:focus-visible {
+  box-shadow: 0 0 0 3px var(--v4-ring), 0 4px 14px -6px rgba(0, 0, 0, 0.18);
+}
+.v4-settings-photo.is-dragover {
+  box-shadow: 0 0 0 3px var(--v4-ring), 0 8px 22px -8px rgba(0, 0, 0, 0.22);
+  transform: scale(1.03);
+}
+.v4-settings-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.v4-settings-photo-img.is-default {
+  object-position: center 15%;
+  transform: scale(2);
+  transform-origin: center 25%;
+}
+/* Hover overlay — soft scrim with camera icon + label */
+.v4-settings-photo-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: rgba(3, 3, 2, 0.55);
+  color: #ffffff;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.v4-settings-photo:hover .v4-settings-photo-overlay,
+.v4-settings-photo.is-dragover .v4-settings-photo-overlay {
+  opacity: 1;
+}
+.v4-settings-photo-input {
+  /* Visually hidden, programmatically clickable */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+.v4-settings-photo-meta {
+  flex: 1;
+  min-width: 0;
+}
+.v4-settings-photo-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.v4-settings-photo-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 12px 0 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--v4-muted);
+  letter-spacing: -0.005em;
+}
+.v4-settings-photo-note svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--v4-muted);
+}
+
+/* Account form */
+.v4-settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.v4-settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.v4-settings-field-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+}
+.v4-settings-field-hint {
+  font-size: 12px;
+  color: var(--v4-muted);
+  margin-top: 2px;
+}
+.v4-settings-input-with-icon {
+  position: relative;
+}
+.v4-settings-input-icon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  color: var(--v4-muted);
+  pointer-events: none;
+}
+input.v4-settings-input,
+input.v4-settings-input:focus,
+input.v4-settings-input:hover {
+  width: 100%;
+  padding: 11px 14px;
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 10px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  letter-spacing: -0.005em;
+  outline: none;
+  height: auto;
+  box-shadow: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+input.v4-settings-input-padded {
+  padding-left: 38px;
+}
+input.v4-settings-input:focus {
+  border-color: rgba(3, 3, 2, 0.4);
+  box-shadow: 0 0 0 3px var(--v4-ring);
+}
+input.v4-settings-input::placeholder {
+  color: rgba(3, 3, 2, 0.35);
+  font-weight: 400;
+}
+/* Kill Chrome / Safari autofill yellow + the wobble it causes when
+   the global `transition: all` animates the autofilled tint changes
+   on hover. Same trick as .v4-input. */
+input.v4-settings-input:-webkit-autofill,
+input.v4-settings-input:-webkit-autofill:hover,
+input.v4-settings-input:-webkit-autofill:focus,
+input.v4-settings-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: var(--v4-fg) !important;
+  caret-color: var(--v4-fg);
+  transition: background-color 9999s ease-in-out 0s;
+}
+.v4-settings-form-foot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+/* Buttons */
+.v4-settings-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  outline: none;
+  border: 1px solid transparent;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+.v4-settings-btn-primary {
+  background: var(--v4-fg);
+  color: #ffffff;
+  border-color: var(--v4-fg);
+}
+.v4-settings-btn-primary:hover {
+  transform: translateY(-1px);
+}
+.v4-settings-btn-secondary {
+  background: #ffffff;
+  color: var(--v4-fg);
+  border-color: var(--v4-faint);
+}
+.v4-settings-btn-secondary:hover {
+  border-color: rgba(3, 3, 2, 0.3);
+}
+.v4-settings-btn-link {
+  background: transparent;
+  color: var(--v4-fg);
+  padding: 6px 10px;
+  font-weight: 500;
+}
+.v4-settings-btn-link:hover {
+  background: var(--v4-bubble-bg);
+}
+.v4-settings-btn-danger {
+  background: transparent;
+  color: #b3401f;
+  border-color: rgba(179, 64, 31, 0.3);
+}
+.v4-settings-btn-danger:hover {
+  background: rgba(179, 64, 31, 0.06);
+  border-color: rgba(179, 64, 31, 0.5);
+}
+
+/* CURRENT contest card — the prominent card in the billing section.
+   Segment-tinted, contains the live status pill and Manage button. */
+.v4-settings-current {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: 14px;
+  margin-bottom: 18px;
+}
+.v4-settings-current-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  flex: none;
+}
+.v4-settings-current-text {
+  flex: 1;
+  min-width: 0;
+}
+.v4-settings-current-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #1f5430;
+  margin-bottom: 4px;
+}
+.v4-settings-current-sep {
+  opacity: 0.4;
+  color: var(--v4-muted);
+}
+.v4-settings-current-name {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  color: var(--v4-fg);
+  line-height: 1.2;
+}
+.v4-settings-current-meta {
+  font-size: 12.5px;
+  color: var(--v4-muted);
+  margin-top: 4px;
+}
+
+/* Empty state when there's no current contest (yet). Quiet, italic. */
+.v4-settings-empty-current {
+  padding: 14px 18px;
+  margin-bottom: 18px;
+  border: 1px dashed var(--v4-faint);
+  border-radius: 14px;
+  font-size: 13px;
+  color: var(--v4-muted);
+  font-style: italic;
+}
+
+/* SECONDARY contest rows — drafts and closed contests. Outlined,
+   slim, no fill. A 4px left-edge stripe in the segment tint hints at
+   the tier without competing with the colored "current contest" card.
+   Hierarchy of one: only the current card screams; these rows whisper. */
+.v4-settings-contest-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px 14px 22px;
+  border: 1px solid var(--v4-faint);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  background: #ffffff;
+  overflow: hidden;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.v4-settings-contest-row:hover {
+  border-color: rgba(3, 3, 2, 0.18);
+}
+/* Left-edge stripe — accent in the tier tint */
+.v4-settings-contest-row::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 0;
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: var(--row-accent, var(--v4-faint));
+}
+.v4-settings-contest-row-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--v4-bubble-bg);
+  color: var(--v4-fg);
+  flex: none;
+}
+.v4-settings-contest-row-text {
+  flex: 1;
+  min-width: 0;
+}
+.v4-settings-contest-row-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin-bottom: 3px;
+}
+.v4-settings-contest-row-name {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  letter-spacing: -0.005em;
+  line-height: 1.3;
+}
+
+/* Closed-row variant — slightly dimmed text + grey icon */
+/* Closed-contest variant — quiet history row. No border, no stripe, no
+   hover lift. Muted icon + name color. Slightly smaller padding so it
+   reads as a footer item, not as competing card with the colored
+   ongoing contest above. */
+.v4-settings-contest-row-closed {
+  background: transparent;
+  border-color: transparent;
+  padding: 10px 18px 10px 18px;
+  margin-bottom: 4px;
+  opacity: 0.7;
+  transition: opacity 0.15s ease;
+}
+.v4-settings-contest-row-closed:hover {
+  opacity: 1;
+  border-color: transparent;
+}
+.v4-settings-contest-row-closed::before {
+  display: none;
+}
+.v4-settings-contest-row-closed .v4-settings-contest-row-icon {
+  background: rgba(3, 3, 2, 0.04);
+  color: var(--v4-muted);
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+}
+.v4-settings-contest-row-closed .v4-settings-contest-row-name {
+  font-size: 13.5px;
+  color: var(--v4-muted);
+  font-weight: 500;
+}
+.v4-settings-contest-row-closed .v4-settings-contest-row-eyebrow {
+  font-size: 10px;
+}
+
+/* Show/Hide closed contests toggle */
+.v4-settings-closed-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  padding: 8px 4px;
+  margin: 6px 0 12px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--v4-muted);
+  cursor: pointer;
+  outline: none;
+  transition: color 0.15s ease;
+}
+.v4-settings-closed-toggle:hover {
+  color: var(--v4-fg);
+}
+
+/* Quiet "start another contest" action at the bottom of the section.
+   Outlined secondary button + small inline price meta. Doesn't compete
+   visually with the prominent current-contest card above. */
+.v4-settings-newcontest-quiet {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--v4-faint);
+}
+.v4-settings-newcontest-quiet-meta {
+  font-size: 12px;
+  color: var(--v4-muted);
+}
+
+/* Hint sub-text on a settings row */
+.v4-settings-row-hint {
+  font-size: 12px;
+  color: var(--v4-muted);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* Sub-line in a billing row (e.g. the contest name) */
+.v4-settings-billing-sub {
+  color: var(--v4-muted);
+  font-weight: 400;
+}
+
+/* Plan card — segment-tinted hero of the subscription section */
+.v4-settings-plan {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: 14px;
+  margin-bottom: 18px;
+}
+.v4-settings-plan-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  flex: none;
+}
+.v4-settings-plan-text {
+  flex: 1;
+  min-width: 0;
+}
+.v4-settings-plan-eyebrow {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin-bottom: 4px;
+}
+.v4-settings-plan-name {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  color: var(--v4-fg);
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.v4-settings-plan-price {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--v4-fg);
+}
+.v4-settings-plan-per {
+  font-weight: 400;
+  color: var(--v4-muted);
+}
+.v4-settings-plan-meta {
+  font-size: 12.5px;
+  color: var(--v4-muted);
+  margin-top: 4px;
+}
+
+/* Generic row with text + action (used for payment method) */
+.v4-settings-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: 1px solid var(--v4-faint);
+}
+.v4-settings-row:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+.v4-settings-row-text {
+  flex: 1;
+  min-width: 0;
+}
+.v4-settings-row-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin-bottom: 4px;
+}
+.v4-settings-row-value {
+  font-size: 14px;
+  color: var(--v4-fg);
+  font-weight: 500;
+}
+.v4-settings-row-meta {
+  color: var(--v4-muted);
+  font-weight: 400;
+}
+.v4-settings-card-brand {
+  display: inline-block;
+  padding: 1px 8px;
+  background: var(--v4-fg);
+  color: #ffffff;
+  border-radius: 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin-right: 4px;
+}
+
+/* Billing history */
+.v4-settings-billing {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--v4-faint);
+}
+.v4-settings-billing-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin-bottom: 12px;
+}
+.v4-settings-billing-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.v4-settings-billing-row {
+  display: grid;
+  /* Fixed widths on date + amount + status so rows align cleanly across
+     the table. Description (1fr) flexes to fill the middle. */
+  grid-template-columns: 110px 1fr 64px 56px;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 0;
+  font-size: 13.5px;
+  color: var(--v4-fg);
+  border-top: 1px solid var(--v4-faint);
+}
+.v4-settings-billing-row:first-child {
+  border-top: none;
+}
+.v4-settings-billing-date {
+  color: var(--v4-muted);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.v4-settings-billing-desc {
+  font-weight: 500;
+}
+.v4-settings-billing-amount {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.v4-settings-billing-status {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #1f5430;
+  background: rgba(63, 136, 80, 0.12);
+  text-align: center;
+  justify-self: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+.v4-settings-billing-empty {
+  padding: 12px 0;
+  font-size: 13px;
+  color: var(--v4-muted);
+  font-style: italic;
+}
+
+/* Cancel block — quiet but discoverable */
+.v4-settings-danger {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--v4-faint);
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 640px) {
+  .v4-settings-title { font-size: 28px; }
+  .v4-settings-section { padding: 18px 18px; }
+  .v4-settings-photo-block {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .v4-settings-plan,
+  .v4-settings-current {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .v4-settings-billing-row {
+    grid-template-columns: 1fr auto;
+    gap: 4px 12px;
+  }
+  .v4-settings-billing-date { grid-column: 1 / -1; }
+  .v4-settings-billing-status { grid-column: 2; grid-row: 2; }
 }

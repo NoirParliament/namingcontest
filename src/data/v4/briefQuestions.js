@@ -905,18 +905,6 @@ export const SHARED_SETTINGS_QUESTIONS = [
     hint: `Sweet spot: 3-5 names per person. Here's why: 1 name = overthinking. Unlimited = quality drops after the first few. 3-5 = people submit their best ideas without overthinking or spamming. Data: Contests with 3-5 limit have 31% more 'quality badge' submissions. Recommended: 3 for small teams (<10), 5 for larger groups.`,
   },
   {
-    id: 'votingMethod',
-    type: 'radioCards',
-    defaultValue: 'multicriteria',
-    options: [
-      { id: 'simple', label: 'Simple poll', sublabel: 'Fast and familiar — one vote per person' },
-      { id: 'multicriteria', label: 'Multi-criteria', sublabel: 'Score each name on 5 dimensions', recommended: true },
-    ],
-    label: 'Voting method',
-    prompt: 'How should votes work?',
-    hint: `Simple poll is fast and familiar — one vote per person. Multi-criteria asks voters to score each name on five dimensions (memorability, fit, distinctiveness, etc.) — more rigorous results, takes a bit more time per voter.`,
-  },
-  {
     id: 'customRequirements',
     type: 'toggleTextarea',
     defaultValue: false,

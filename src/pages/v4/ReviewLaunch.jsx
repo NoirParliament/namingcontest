@@ -9,9 +9,9 @@ import {
   Heart, UsersThree, Briefcase,
 } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
-import { readSetup, getSegmentLabel } from '../../utils/v4Brief';
+import { readSetup, writeSetup, getSegmentLabel } from '../../utils/v4Brief';
 import { BRIEF_QUESTIONS, SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
-import AuthModal from '../../components/v4/AuthModal';
+import LaunchModal from '../../components/v4/LaunchModal';
 import '../../styles/v4.css';
 
 const TIER_ICON = {
@@ -64,32 +64,24 @@ export default function ReviewLaunch() {
   const filledBrief = briefQuestions.filter((q) => briefAnswers[q.id] !== undefined);
   const filledSettings = SHARED_SETTINGS_QUESTIONS.filter((q) => settingsAnswers[q.id] !== undefined);
 
-  const [authOpen, setAuthOpen] = useState(false);
-
-  const proceedLaunch = () => {
-    if (launching) return;
-    setLaunching(true);
-    // TODO: in real build, this would submit to backend.
-    setTimeout(() => {
-      console.log('V4 contest launched. Full setup:', readSetup());
-      navigate('/');
-    }, 2200);
-  };
+  const [launchOpen, setLaunchOpen] = useState(false);
 
   const handleLaunch = () => {
     if (launching) return;
-    // Require auth before launch — magic-link modal
-    const cur = readSetup();
-    if (!cur.userEmail) {
-      setAuthOpen(true);
-      return;
-    }
-    proceedLaunch();
+    // Open the combined Launch modal (email + Stripe payment).
+    // This always opens — even if userEmail was set by an earlier
+    // save-progress, we still need to collect payment.
+    setLaunchOpen(true);
   };
 
-  const handleAuthSuccess = () => {
-    setAuthOpen(false);
-    proceedLaunch();
+  const handleLaunchSuccess = () => {
+    setLaunchOpen(false);
+    setLaunching(true);
+    // Generate a contest ID + record launch timestamp, then navigate to
+    // the manage page. In production this would also POST to backend.
+    const contestId = `c${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+    writeSetup({ contestId, launchedAt: Date.now() });
+    setTimeout(() => navigate(`/v4/contest/${contestId}`), 600);
   };
 
   return (
@@ -205,12 +197,12 @@ export default function ReviewLaunch() {
           </div>
         </main>
 
-        <AuthModal
-          open={authOpen}
-          mode="launch"
+        <LaunchModal
+          open={launchOpen}
           contextLabel={setup.workingName || ''}
-          onClose={() => setAuthOpen(false)}
-          onSuccess={handleAuthSuccess}
+          tier={setup.group || 'personal'}
+          onClose={() => setLaunchOpen(false)}
+          onSuccess={handleLaunchSuccess}
         />
       </div>
     </div>

@@ -14,6 +14,11 @@ import heroProfile5 from '../assets/hero-profile-5.png';
 import heroProfile6 from '../assets/hero-profile-6.png';
 import namingContestLogo from '../assets/namingcontestlogo-cropped.svg';
 import '../styles/landing-v3.css';
+import '../styles/v4.css';
+import { readSetup } from '../utils/v4Brief';
+import { getSegmentTone } from '../data/v4/segmentTheme';
+import AvatarMenu from '../components/v4/AvatarMenu';
+import SignInModal from '../components/v4/SignInModal';
 
 /* ========== ICONS ========== */
 const Star = () => <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.2 4.5 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7L8 1z"/></svg>;
@@ -21,30 +26,79 @@ const Check = () => <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" s
 
 /* ========== NAV ========== */
 function Nav() {
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
+  const [signinOpen, setSigninOpen] = useState(false);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // If the visitor already has a saved v4 setup (returning user with
+  // an active or in-progress contest), swap the "Sign In" link for
+  // the AvatarMenu so they can see what's live and jump back in.
+  const setup = readSetup();
+  const isAuthed = !!(setup.userEmail || setup.contestId);
+  const segmentTone = getSegmentTone(setup.subSegmentId || 'b1');
+  const activeContest = setup.contestId
+    ? {
+        id: setup.contestId,
+        name: setup.workingName || 'Your contest',
+        // Mock voting phase to match the rest of the prototype.
+        phase: 'Voting',
+        daysLeft: setup.settings?.votingDays || 3,
+        // Contest-specific tone for the dropdown card.
+        tone: segmentTone,
+      }
+    : null;
+
   return (
-    <div className="nav-row">
-      <nav className={`nav-pill${scrolled ? ' is-scrolled' : ''}`} aria-label="Primary">
-        <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="brand-mark">
-          <img src={namingContestLogo} alt="NamingContest" className="brand-logo" />
-        </a>
-        <div className="links">
-          <a href="#pricing">Pricing</a>
-          <a href="#how">How it works</a>
-          <a href="#testimonials">Testimonials</a>
-        </div>
-        <div className="nav-actions">
-          <a href="#signin" onClick={(e) => e.preventDefault()} className="signin">Sign In</a>
-          <a href="#start" onClick={(e) => e.preventDefault()} className="cta">Start a contest</a>
-        </div>
-      </nav>
-    </div>
+    <>
+      <div className="nav-row">
+        <nav className={`nav-pill${scrolled ? ' is-scrolled' : ''}`} aria-label="Primary">
+          <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="brand-mark">
+            <img src={namingContestLogo} alt="NamingContest" className="brand-logo" />
+          </a>
+          <div className="links">
+            <a href="#pricing">Pricing</a>
+            <a href="#how">How it works</a>
+            <a href="#testimonials">Testimonials</a>
+          </div>
+          <div className="nav-actions">
+            {isAuthed ? (
+              <AvatarMenu
+                email={setup.userEmail}
+                name={setup.userName}
+                photo={setup.userPhoto}
+                tone={segmentTone}
+                activeContest={activeContest}
+              />
+            ) : (
+              <>
+                <a
+                  href="#signin"
+                  onClick={(e) => { e.preventDefault(); setSigninOpen(true); }}
+                  className="signin"
+                >
+                  Sign In
+                </a>
+                <a
+                  href="/v4/pick"
+                  onClick={(e) => { e.preventDefault(); navigate('/v4/pick'); }}
+                  className="cta"
+                >
+                  Start a contest
+                </a>
+              </>
+            )}
+          </div>
+        </nav>
+      </div>
+
+      <SignInModal open={signinOpen} onClose={() => setSigninOpen(false)} />
+    </>
   );
 }
 
@@ -789,6 +843,22 @@ function Footer() {
 /* ========== PAGE ========== */
 export default function LandingPage() {
   const navigate = useNavigate();
+
+  // Signed-in users don't belong on the marketing page. Redirect them
+  // to their workspace home — their active contest if they have one,
+  // otherwise Settings (where the prominent CTA lets them launch one).
+  // To revisit the marketing page they need to sign out first.
+  useEffect(() => {
+    const setup = readSetup();
+    const isAuthed = !!(setup.userEmail || setup.contestId);
+    if (!isAuthed) return;
+    if (setup.contestId) {
+      navigate(`/v4/contest/${setup.contestId}`, { replace: true });
+    } else {
+      navigate('/v4/settings', { replace: true });
+    }
+  }, [navigate]);
+
   // Tier CTAs route into the unified V4 setup flow.
   // - Card CTAs (Personal/Group/Business) → persist tier + jump straight
   //   to the unified setup chat where sub-segment is the first question

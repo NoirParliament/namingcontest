@@ -27,6 +27,8 @@ import DocumentationPage    from '@pages/DocumentationPage';
 import V4PickTier          from '@pages/v4/PickTier';
 import V4BriefChat         from '@pages/v4/BriefChat';
 import V4ReviewLaunch      from '@pages/v4/ReviewLaunch';
+import V4ContestManage     from '@pages/v4/ContestManage';
+import V4Settings          from '@pages/v4/Settings';
 
 // ─── FloatingNav ─────────────────────────────────────────────────────────────
 
@@ -398,6 +400,8 @@ function AppInner() {
         <Route path="/v4/pick"                         element={<V4PickTier />} />
         <Route path="/v4/setup/brief"                  element={<V4BriefChat />} />
         <Route path="/v4/setup/review"                 element={<V4ReviewLaunch />} />
+        <Route path="/v4/contest/:id"                  element={<V4ContestManage />} />
+        <Route path="/v4/settings"                     element={<V4Settings />} />
       </Routes>
       <FloatingNav />
     </>
