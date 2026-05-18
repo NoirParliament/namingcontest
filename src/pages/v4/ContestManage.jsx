@@ -7,13 +7,16 @@
 // From: Launch button on /v4/setup/review
 // Future: dashboard list links here per contest
 
-import { useState, useEffect, useMemo } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
 import {
   X, Heart, UsersThree, Briefcase,
   Copy, Check, EnvelopeSimple, ShareNetwork,
   PencilSimple, CalendarBlank, Hash, Clock,
-  PaperPlaneTilt, Eye, Trophy, Lightbulb,
+  PaperPlaneTilt, Eye, Trophy, Lightbulb, Confetti,
+  Gift, Download, FilePdf, Quotes,
+  FacebookLogo, LinkedinLogo, InstagramLogo,
+  Palette, CaretDown, UploadSimple,
 } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import heroProfile1 from '../../assets/hero-profile-1.png';
@@ -22,16 +25,21 @@ import heroProfile4 from '../../assets/hero-profile-4.png';
 import {
   readSetup, writeSetup, getSegmentLabel,
 } from '../../utils/v4Brief';
-import { PARTICIPANTS } from '../../data/v4/mockContestData';
+import { PARTICIPANTS, NAMES as MOCK_NAMES, getParticipantById } from '../../data/v4/mockContestData';
 import { getMockContestById } from '../../data/v4/mockContests';
 import {
   BRIEF_QUESTIONS, SHARED_SETTINGS_QUESTIONS,
 } from '../../data/v4/briefQuestions';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
+import confetti from 'canvas-confetti';
 import EditQuestionModal from '../../components/v4/EditQuestionModal';
 import ActivityFlyOver from '../../components/v4/ActivityFlyOver';
 import LiveResults from '../../components/v4/LiveResults';
 import AvatarMenu from '../../components/v4/AvatarMenu';
+import PickWinnerModal from '../../components/v4/PickWinnerModal';
+import WinnerHero from '../../components/v4/WinnerHero';
+import PdfReport from '../../components/v4/PdfReport';
+import { downloadShareCard, downloadFullReport } from '../../utils/v4ContestExport';
 import '../../styles/v4.css';
 
 const TIER_ICON = {
@@ -79,9 +87,21 @@ function formatDate(launchedAt, daysOffset) {
   return target.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
+// Three one-word stages that mirror the real contest lifecycle.
+// URL ?phase= drives the view in demo (mock) mode. The "winner" stage
+// has two sub-states: pre-pick (CTA to pick) and post-pick (celebration).
+// Sub-state is controlled by ?winner=<nameId> or setup.winner.
+const PHASES = ['submission', 'voting', 'winner'];
+const PHASE_LABELS = {
+  'submission': 'Submissions',
+  'voting':     'Voting',
+  'winner':     'Winner',
+};
+
 export default function ContestManage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   // If the URL points to a mock contest (e.g. the demo "Sunday football
   // crew"), render the page with that contest's data instead of the
   // user's real setup blob — otherwise the dashboard shows their
@@ -96,6 +116,38 @@ export default function ContestManage() {
       }
     : realSetup;
   const subId = setup.subSegmentId || 'b1';
+  // Phase resolution — defaults to 'voting' for prototype demos. The
+  // URL ?phase= param lets us flip a mock contest through every stage
+  // without rebuilding mock data.
+  const phaseParam = searchParams.get('phase');
+  const phase = PHASES.includes(phaseParam) ? phaseParam : 'voting';
+  // Sub-state of the "winner" phase: nameId of the picked winner, or
+  // null when the creator still needs to pick. ?winner=n1 prefills for
+  // demo. In production this would come from setup.winner.
+  const winnerNameId = searchParams.get('winner') || setup.winner?.nameId || null;
+  const isWinnerPicked = phase === 'winner' && !!winnerNameId;
+  // Resolve winner data (only meaningful when isWinnerPicked).
+  const winnerName = isWinnerPicked
+    ? MOCK_NAMES.find((n) => n.id === winnerNameId)
+    : null;
+  const winnerSubmitter = winnerName
+    ? getParticipantById(winnerName.submittedBy)
+    : null;
+  // Runners-up: top 5 names that AREN'T the winner, sorted by votes.
+  const runnersUp = isWinnerPicked
+    ? [...MOCK_NAMES]
+        .filter((n) => n.id !== winnerNameId)
+        .sort((a, b) => b.voteCount - a.voteCount)
+        .slice(0, 5)
+    : [];
+  const setPhase = (next) => {
+    const params = new URLSearchParams(searchParams);
+    if (next === 'voting') params.delete('phase');
+    else params.set('phase', next);
+    // Drop winner sub-state when moving away from the winner phase.
+    if (next !== 'winner') params.delete('winner');
+    setSearchParams(params, { replace: true });
+  };
   // Strip the disambiguation suffix some labels carry, e.g.
   // "Something else (personal)" → "Something else". We only need the
   // segment name here; tier is already conveyed by the badge color/icon.
@@ -118,6 +170,19 @@ export default function ContestManage() {
   const votingDays = settingsAnswers.votingDays || 3;
 
   const [copied, setCopied] = useState(false);
+  const [pickWinnerOpen, setPickWinnerOpen] = useState(false);
+  // Winner-card customization (only meaningful on winner-picked state).
+  // Color & logo override the defaults on WinnerHero so the creator can
+  // brand the share card. hideBranding strips the NamingContest marks.
+  const [customColor, setCustomColor] = useState(null);
+  const [customLogo, setCustomLogo] = useState(null);
+  const [hideBranding, setHideBranding] = useState(false);
+  const [customizerOpen, setCustomizerOpen] = useState(false);
+  // Ref to the WinnerHero DOM node — used by the PNG export to
+  // snapshot the card exactly as it appears on the page.
+  const winnerHeroRef = useRef(null);
+  // Ref to the hidden PdfReport DOM node — used by the PDF export.
+  const pdfReportRef = useRef(null);
   // Hardcoded simulated stats — currently showing VOTING-phase state
   // so we can see how the page reads when the contest is mid-voting.
   // When backend is wired, replace this with realtime data + auto-switch
@@ -192,10 +257,6 @@ export default function ContestManage() {
               <span className="v4-step-label">Live</span>
             </div>
             <div className="v4-nav-right">
-              <Link to="/" className="v4-exit" aria-label="Exit">
-                <X weight="regular" size={14} />
-                <span>Exit</span>
-              </Link>
               <AvatarMenu
                 email={setup.userEmail}
                 name={setup.userName}
@@ -218,8 +279,23 @@ export default function ContestManage() {
           </header>
 
           <div className="v4-review-inner">
-            {/* ── Hero (simple) — poster JSX kept in chat history,
-                CSS still in v4.css under .v4-manage-hero-poster. ── */}
+            {/* ── Hero — regular contest hero for live phases, swapped
+                for the celebratory WinnerHero when a winner is picked. */}
+            {isWinnerPicked && winnerName && (
+              <div ref={winnerHeroRef}>
+                <WinnerHero
+                  name={winnerName}
+                  submitter={winnerSubmitter}
+                  tone={segmentTone}
+                  contestName={setup.workingName || 'Your contest'}
+                  totalVotes={stats.votes}
+                  customColor={customColor}
+                  customLogo={customLogo}
+                  hideBranding={hideBranding}
+                />
+              </div>
+            )}
+            {!isWinnerPicked && (
             <div className="v4-manage-hero">
               <span
                 className="v4-review-badge"
@@ -240,23 +316,364 @@ export default function ContestManage() {
               <p className="v4-review-subtitle">
                 {segmentLabel}
               </p>
-              <div className="v4-manage-status">
+              <div className={`v4-manage-status v4-manage-status-${phase}`}>
                 <span className="v4-manage-live-dot" aria-hidden="true"></span>
-                <span className="v4-manage-status-label">VOTING</span>
-                <span className="v4-manage-status-sep">·</span>
-                <span>Closes {formatDaysFrom(launchedAt, submissionDays + votingDays)}</span>
-                <span className="v4-manage-status-sep">·</span>
-                <span>Last vote {stats.lastActivity}</span>
+                {phase === 'submission' && (
+                  <>
+                    <span className="v4-manage-status-label">SUBMISSIONS OPEN</span>
+                    <span className="v4-manage-status-sep">·</span>
+                    <span>{stats.submissions} names so far</span>
+                    <span className="v4-manage-status-sep">·</span>
+                    <span>Closes {formatDaysFrom(launchedAt, submissionDays)}</span>
+                  </>
+                )}
+                {phase === 'voting' && (
+                  <>
+                    <span className="v4-manage-status-label">VOTING</span>
+                    <span className="v4-manage-status-sep">·</span>
+                    <span>Closes {formatDaysFrom(launchedAt, submissionDays + votingDays)}</span>
+                    <span className="v4-manage-status-sep">·</span>
+                    <span>Last vote {stats.lastActivity}</span>
+                  </>
+                )}
+                {phase === 'winner' && !isWinnerPicked && (
+                  <>
+                    <span className="v4-manage-status-label">VOTING ENDED</span>
+                    <span className="v4-manage-status-sep">·</span>
+                    <span>Pick your winner</span>
+                  </>
+                )}
+                {phase === 'winner' && isWinnerPicked && (
+                  <>
+                    <span className="v4-manage-status-label">WINNER PICKED</span>
+                    <span className="v4-manage-status-sep">·</span>
+                    <span>Closed · {stats.votes} votes total</span>
+                  </>
+                )}
               </div>
             </div>
+            )}
+
+            {/* ── Winner-picked surface (action row + prize + story +
+                runners-up). Replaces LiveResults + Share card. */}
+            {isWinnerPicked && winnerName && (
+              <>
+                {/* Action row — download share card, export full report,
+                    copy contest link. Buttons placeholder for now; PNG +
+                    PDF generation wires in the next pass. */}
+                <div className="v4-winner-actions">
+                  <button
+                    type="button"
+                    className="v4-winner-action v4-winner-action-primary"
+                    onClick={() => downloadShareCard(
+                      winnerHeroRef.current,
+                      setup.workingName
+                    )}
+                  >
+                    <Download weight="bold" size={14} />
+                    Download share card
+                  </button>
+                  <button
+                    type="button"
+                    className="v4-winner-action"
+                    onClick={() => downloadFullReport(
+                      pdfReportRef.current,
+                      setup.workingName
+                    )}
+                  >
+                    <FilePdf weight="bold" size={14} />
+                    Download full report
+                  </button>
+
+                  {/* Social share icon buttons — open native share intents
+                      with pre-filled text + the contest URL. Instagram has
+                      no web share API, so it just downloads the card and
+                      tells the user to upload manually. */}
+                  <div className="v4-winner-share-icons">
+                    <a
+                      className="v4-winner-share-icon"
+                      title="Share on X"
+                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Meet "${winnerName.text}" — our new ${setup.workingName || 'name'}. Picked via naming contest.`)}&url=${encodeURIComponent(shareUrl)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      𝕏
+                    </a>
+                    <a
+                      className="v4-winner-share-icon"
+                      title="Share on Facebook"
+                      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <FacebookLogo weight="bold" size={16} />
+                    </a>
+                    <a
+                      className="v4-winner-share-icon"
+                      title="Share on LinkedIn"
+                      href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <LinkedinLogo weight="bold" size={16} />
+                    </a>
+                    <button
+                      type="button"
+                      className="v4-winner-share-icon"
+                      title="Download for Instagram"
+                      onClick={() => window.alert('Downloads the share card so you can upload it to Instagram (no web share API for IG)')}
+                    >
+                      <InstagramLogo weight="bold" size={16} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Customize your branding — collapsible row. Lets the
+                    creator swap the segment color, upload their own logo,
+                    and hide NamingContest branding. Applies to BOTH the
+                    share card and the PDF report. */}
+                <div className={`v4-winner-customizer ${customizerOpen ? 'is-open' : ''}`}>
+                  <button
+                    type="button"
+                    className="v4-winner-customizer-trigger"
+                    onClick={() => setCustomizerOpen((v) => !v)}
+                    aria-expanded={customizerOpen}
+                  >
+                    <Palette weight="duotone" size={14} />
+                    <span>Customize your branding</span>
+                    <CaretDown
+                      weight="bold"
+                      size={11}
+                      style={{
+                        marginLeft: 'auto',
+                        transform: customizerOpen ? 'rotate(180deg)' : 'rotate(0)',
+                        transition: 'transform 0.2s ease',
+                      }}
+                    />
+                  </button>
+
+                  {customizerOpen && (
+                    <div className="v4-winner-customizer-body">
+                      {/* Color presets + a custom color picker swatch */}
+                      <div className="v4-winner-customizer-field">
+                        <div className="v4-winner-customizer-label">Card color</div>
+                        <div className="v4-winner-customizer-swatches">
+                          {[
+                            { id: null,        bg: segmentTone.bg, label: 'Default (segment)' },
+                            { id: '#fadecc',   bg: '#fadecc', label: 'Blush' },
+                            { id: '#fceebc',   bg: '#fceebc', label: 'Butter' },
+                            { id: '#bce5c8',   bg: '#bce5c8', label: 'Mint' },
+                            { id: '#c4cff5',   bg: '#c4cff5', label: 'Periwinkle' },
+                            { id: '#c4dffb',   bg: '#c4dffb', label: 'Sky' },
+                          ].map((s) => (
+                            <button
+                              key={s.id || 'default'}
+                              type="button"
+                              className={`v4-winner-customizer-swatch ${customColor === s.id ? 'is-selected' : ''}`}
+                              style={{ background: s.bg }}
+                              onClick={() => setCustomColor(s.id)}
+                              title={s.label}
+                              aria-label={s.label}
+                            />
+                          ))}
+                          {/* Custom color picker — clicking opens the
+                              native color picker. If a custom (non-preset)
+                              color is active, the swatch shows it. */}
+                          <label
+                            className={`v4-winner-customizer-swatch v4-winner-customizer-swatch-custom ${
+                              customColor && !['#fadecc','#fceebc','#bce5c8','#c4cff5','#c4dffb'].includes(customColor)
+                                ? 'is-selected'
+                                : ''
+                            }`}
+                            style={{
+                              background: customColor && !['#fadecc','#fceebc','#bce5c8','#c4cff5','#c4dffb'].includes(customColor)
+                                ? customColor
+                                : 'conic-gradient(from 0deg, #fadecc, #fceebc, #bce5c8, #c4cff5, #c4dffb, #fadecc)',
+                            }}
+                            title="Custom color"
+                            aria-label="Pick a custom color"
+                          >
+                            <input
+                              type="color"
+                              className="v4-winner-customizer-swatch-input"
+                              value={customColor || '#fadecc'}
+                              onChange={(e) => setCustomColor(e.target.value)}
+                            />
+                            <span className="v4-winner-customizer-swatch-plus" aria-hidden="true">+</span>
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Logo upload */}
+                      <div className="v4-winner-customizer-field">
+                        <div className="v4-winner-customizer-label">Your logo</div>
+                        <div className="v4-winner-customizer-logo-row">
+                          {customLogo && (
+                            <img
+                              src={customLogo}
+                              alt="Custom logo preview"
+                              className="v4-winner-customizer-logo-preview"
+                            />
+                          )}
+                          <label className="v4-winner-customizer-upload">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                if (file.size > 1024 * 1024) {
+                                  window.alert('Logo must be under 1 MB.');
+                                  return;
+                                }
+                                const reader = new FileReader();
+                                reader.onload = (ev) => setCustomLogo(ev.target?.result);
+                                reader.readAsDataURL(file);
+                              }}
+                              style={{ display: 'none' }}
+                            />
+                            <UploadSimple weight="bold" size={13} />
+                            {customLogo ? 'Replace logo' : 'Upload logo'}
+                          </label>
+                          {customLogo && (
+                            <button
+                              type="button"
+                              className="v4-winner-customizer-link"
+                              onClick={() => setCustomLogo(null)}
+                            >
+                              Remove
+                            </button>
+                          )}
+                        </div>
+                        <p className="v4-winner-customizer-hint">
+                          PNG or SVG, transparent background works best.
+                        </p>
+                      </div>
+
+                      {/* Hide NamingContest branding */}
+                      <div className="v4-winner-customizer-field">
+                        <label className="v4-winner-customizer-toggle">
+                          <input
+                            type="checkbox"
+                            checked={hideBranding}
+                            onChange={(e) => setHideBranding(e.target.checked)}
+                          />
+                          <span>Hide NamingContest branding entirely</span>
+                        </label>
+                        <p className="v4-winner-customizer-hint">
+                          Removes NamingContest marks from the share card
+                          and the PDF report. Pure white-label.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Prize card — only if a prize was configured */}
+                {liveSettingsAnswers.submitterPrize?.enabled && (
+                  <section
+                    className="v4-winner-prize"
+                    style={{
+                      '--winner-tint-bg': segmentTone.bg,
+                      '--winner-tint-border': segmentTone.fg + '33',
+                    }}
+                  >
+                    <span
+                      className="v4-winner-prize-icon"
+                      style={{ background: segmentTone.bg, color: segmentTone.fg }}
+                      aria-hidden="true"
+                    >
+                      <Gift weight="duotone" size={20} />
+                    </span>
+                    <div className="v4-winner-prize-text">
+                      <div className="v4-winner-prize-eyebrow">Prize</div>
+                      <div className="v4-winner-prize-line">
+                        <strong>{winnerSubmitter?.name}</strong> wins{' '}
+                        <em>"{liveSettingsAnswers.submitterPrize.name || 'the prize'}"</em>
+                      </div>
+                      {liveSettingsAnswers.submitterPrize.text && (
+                        <p className="v4-winner-prize-desc">
+                          {liveSettingsAnswers.submitterPrize.text}
+                        </p>
+                      )}
+                    </div>
+                  </section>
+                )}
+
+                {/* Story behind the name */}
+                <section className="v4-winner-story">
+                  <header className="v4-winner-story-head">
+                    <Quotes weight="duotone" size={16} />
+                    <h2>The story behind the name</h2>
+                  </header>
+                  {winnerName.tagline && (
+                    <p className="v4-winner-story-tagline">
+                      "{winnerName.tagline}"
+                    </p>
+                  )}
+                  <dl className="v4-winner-story-list">
+                    {winnerName.description && (
+                      <div className="v4-winner-story-field">
+                        <dt>{winnerSubmitter?.name?.split(' ')[0] || 'Sarah'} said</dt>
+                        <dd>{winnerName.description}</dd>
+                      </div>
+                    )}
+                    {winnerName.whyItFits && (
+                      <div className="v4-winner-story-field">
+                        <dt>Why it fits</dt>
+                        <dd>{winnerName.whyItFits}</dd>
+                      </div>
+                    )}
+                    {winnerName.inspiration && (
+                      <div className="v4-winner-story-field">
+                        <dt>What inspired it</dt>
+                        <dd>{winnerName.inspiration}</dd>
+                      </div>
+                    )}
+                  </dl>
+                </section>
+
+                {/* Close behind — top 5 non-winners */}
+                <section className="v4-winner-runners">
+                  <header className="v4-winner-runners-head">
+                    <h2>Close behind</h2>
+                    <span className="v4-winner-runners-meta">
+                      {stats.submissions} names total
+                    </span>
+                  </header>
+                  <ul className="v4-winner-runners-list">
+                    {runnersUp.map((n, i) => {
+                      const sub = getParticipantById(n.submittedBy);
+                      return (
+                        <li key={n.id} className="v4-winner-runners-row">
+                          <span className="v4-winner-runners-rank">#{i + 2}</span>
+                          <div className="v4-winner-runners-name">
+                            <div className="v4-winner-runners-name-text">{n.text}</div>
+                            <div className="v4-winner-runners-name-meta">
+                              {sub?.name} · {n.voteCount} {n.voteCount === 1 ? 'vote' : 'votes'}
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </section>
+              </>
+            )}
 
             {/* ── Live Results — names + participants ──
                 When the contest is the demo mock (no real launched
                 contest), populate from mock data. Real contests show
-                an empty state until backend submissions are wired. */}
-            <LiveResults tone={segmentTone} isMock={!!mockContest} />
+                an empty state until backend submissions are wired.
+                Hidden when a winner has been picked. */}
+            {!isWinnerPicked && (
+              <LiveResults tone={segmentTone} isMock={!!mockContest} />
+            )}
 
-            {/* ── Share card (PRIMARY action) ──────────────────────── */}
+            {/* ── Share card (PRIMARY action) — hidden when winner
+                has been picked since voting is closed and asking for
+                more votes no longer makes sense. */}
+            {!isWinnerPicked && (
             <section className="v4-manage-share">
               <header className="v4-manage-share-head">
                 <div>
@@ -335,9 +752,11 @@ export default function ContestManage() {
                 </span>
               </div>
             </section>
+            )}
 
-            {/* ── Your contest journey — 3 steps; only active step is
-                tinted with the segment's color, others are outline cards ── */}
+            {/* ── Your contest journey — hidden on winner-picked state
+                since the contest is concluded and lifecycle is moot. */}
+            {!isWinnerPicked && (
             <section
               className="v4-manage-wait"
               style={{
@@ -345,84 +764,171 @@ export default function ContestManage() {
                 '--journey-active-border': segmentTone.fg + '33',
               }}
             >
-              <div className="v4-manage-wait-eyebrow">Step 2 of 3 · You are here</div>
-              <h2 className="v4-manage-wait-title">Your contest journey</h2>
-              <p className="v4-manage-wait-lede">
-                Where you are in the lifecycle — and what's coming next.
-              </p>
+              {(() => {
+                // Step index of the active phase (1-based) for the eyebrow.
+                const stepIndex = phase === 'submission' ? 1
+                  : phase === 'voting' ? 2
+                  : 3;
+                const eyebrowText = isWinnerPicked
+                  ? 'All steps complete · 🎉'
+                  : `Step ${stepIndex} of 3 · You are here`;
+                return (
+                  <>
+                    <div className="v4-manage-wait-eyebrow">{eyebrowText}</div>
+                    <h2 className="v4-manage-wait-title">Your contest journey</h2>
+                    <p className="v4-manage-wait-lede">
+                      Where you are in the lifecycle — and what's coming next.
+                    </p>
+                  </>
+                );
+              })()}
 
-              <div className="v4-manage-wait-steps">
-                <div className="v4-manage-wait-step is-done">
+              {/* Three steps mirror the three real contest phases. The
+                  third step "Winner" has two sub-states: needs-picking
+                  (active CTA) and picked (done).
+                  On mock contests, each step is clickable to jump to
+                  that phase — doubles as a demo lifecycle toggle. */}
+              <div className={`v4-manage-wait-steps ${mockContest ? 'is-clickable' : ''}`}>
+
+                {/* Step 1 — Submissions */}
+                <div
+                  className={`v4-manage-wait-step ${
+                    phase === 'submission' ? 'is-active' : 'is-done'
+                  }`}
+                  onClick={mockContest ? () => setPhase('submission') : undefined}
+                  role={mockContest ? 'button' : undefined}
+                  tabIndex={mockContest ? 0 : undefined}
+                >
                   <span className="v4-manage-wait-step-icon" aria-hidden="true">
                     <PaperPlaneTilt weight="duotone" size={22} />
                   </span>
                   <div className="v4-manage-wait-step-text">
                     <div className="v4-manage-wait-step-status">
-                      Done
+                      {phase === 'submission' && (
+                        <span className="v4-manage-wait-step-pulse" aria-hidden="true"></span>
+                      )}
+                      {phase === 'submission' ? 'Now' : 'Done'}
                       <span className="v4-manage-wait-step-meta">
-                        Launched {formatDate(launchedAt, 0)} · {stats.participants} joined
+                        {phase === 'submission'
+                          ? `${stats.submissions} names so far · Closes ${formatDaysFrom(launchedAt, submissionDays)}`
+                          : `${stats.submissions} names · ${stats.participants} joined`}
                       </span>
                     </div>
-                    <h3>Share the link</h3>
+                    <h3>Submissions</h3>
                     <p>
-                      You sent the join link to participants. The sweet spot is 12–25 — variety without voting drag.
+                      {phase === 'submission'
+                        ? 'Share the link with your participants and watch the names come in. The sweet spot is 12–25 — variety without voting drag.'
+                        : 'Submissions wrapped. Every name is now in the running for the vote.'}
                     </p>
                   </div>
                 </div>
 
-                <div className="v4-manage-wait-step is-active">
+                {/* Step 2 — Voting */}
+                <div
+                  className={`v4-manage-wait-step ${
+                    phase === 'submission' ? 'is-upcoming'
+                      : phase === 'voting' ? 'is-active'
+                      : 'is-done'
+                  }`}
+                  onClick={mockContest ? () => setPhase('voting') : undefined}
+                  role={mockContest ? 'button' : undefined}
+                  tabIndex={mockContest ? 0 : undefined}
+                >
                   <span className="v4-manage-wait-step-icon" aria-hidden="true">
                     <Eye weight="duotone" size={22} />
                   </span>
                   <div className="v4-manage-wait-step-text">
                     <div className="v4-manage-wait-step-status">
-                      <span className="v4-manage-wait-step-pulse" aria-hidden="true"></span>
-                      Now
+                      {phase === 'voting' && (
+                        <span className="v4-manage-wait-step-pulse" aria-hidden="true"></span>
+                      )}
+                      {phase === 'voting' ? 'Now'
+                        : phase === 'submission' ? 'Up next'
+                        : 'Done'}
                       <span className="v4-manage-wait-step-meta">
-                        Submissions closed · Voting ends {formatDaysFrom(launchedAt, submissionDays + votingDays)} ({formatDate(launchedAt, submissionDays + votingDays)})
+                        {phase === 'voting'
+                          ? `Voting ends ${formatDaysFrom(launchedAt, submissionDays + votingDays)} (${formatDate(launchedAt, submissionDays + votingDays)})`
+                          : phase === 'submission'
+                          ? `Opens ${formatDate(launchedAt, submissionDays)}`
+                          : `${stats.votes} votes cast`}
                       </span>
                     </div>
-                    <h3>Watch the contest unfold</h3>
+                    <h3>Voting</h3>
                     <p>
-                      {stats.submissions} names submitted. Voting is live. Activity rolls in real-time — no need to refresh, and you don't have to be watching.
+                      {phase === 'voting'
+                        ? 'Voting is live. Activity rolls in real-time — no need to refresh, and you don\'t have to be watching.'
+                        : phase === 'submission'
+                        ? 'Once submissions close, participants vote on the names. You\'ll see the leaderboard update live.'
+                        : 'Voting has wrapped. The leaderboard is final.'}
                     </p>
                   </div>
                 </div>
 
-                <div className="v4-manage-wait-step is-upcoming">
+                {/* Step 3 — Winner (active when needs-picking, done when picked) */}
+                <div
+                  className={`v4-manage-wait-step ${
+                    phase !== 'winner' ? 'is-upcoming'
+                      : isWinnerPicked ? 'is-done'
+                      : 'is-active'
+                  }`}
+                  onClick={mockContest ? () => setPhase('winner') : undefined}
+                  role={mockContest ? 'button' : undefined}
+                  tabIndex={mockContest ? 0 : undefined}
+                >
                   <span className="v4-manage-wait-step-icon" aria-hidden="true">
                     <Trophy weight="duotone" size={22} />
                   </span>
                   <div className="v4-manage-wait-step-text">
                     <div className="v4-manage-wait-step-status">
-                      Up next
+                      {phase === 'winner' && !isWinnerPicked && (
+                        <span className="v4-manage-wait-step-pulse" aria-hidden="true"></span>
+                      )}
+                      {phase === 'winner' && !isWinnerPicked ? 'Now'
+                        : isWinnerPicked ? 'Done'
+                        : 'Up next'}
                       <span className="v4-manage-wait-step-meta">
-                        {formatDate(launchedAt, submissionDays + votingDays)}
+                        {isWinnerPicked
+                          ? 'Winner picked · share the results'
+                          : formatDate(launchedAt, submissionDays + votingDays)}
                       </span>
                     </div>
-                    <h3>Pick the winner</h3>
+                    <h3>Winner</h3>
                     <p>
-                      When voting closes, we'll send you the leaderboard. You make the final call — top vote or any name that won your heart.
+                      {phase === 'winner' && !isWinnerPicked
+                        ? 'Voting is closed. Time to crown your winning name. Pick the top vote or any name that won your heart.'
+                        : isWinnerPicked
+                        ? 'You picked the winner. Download the share card or export the full report below.'
+                        : 'When voting closes, we\'ll send you the leaderboard. You make the final call — top vote or any name that won your heart.'}
                     </p>
+                    {phase === 'winner' && !isWinnerPicked && (
+                      <button
+                        type="button"
+                        className="v4-manage-pick-btn"
+                        onClick={() => setPickWinnerOpen(true)}
+                      >
+                        <Trophy weight="bold" size={14} />
+                        Pick the winner
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
 
             </section>
+            )}
 
-            {/* ── Brief recap (collapsible, click-to-edit per row) ─
-                Sits below the journey since it's reference material —
-                you set it during creation, glance at it occasionally,
-                edit it rarely. The journey + live results are higher
-                priority on this surface. */}
-            <BriefRecapCollapser
-              filledBrief={filledBrief}
-              filledSettings={filledSettings}
-              briefAnswers={liveBriefAnswers}
-              settingsAnswers={liveSettingsAnswers}
-              onEditBrief={(q) => setEditingQuestion({ question: q, section: 'brief' })}
-              onEditSettings={(q) => setEditingQuestion({ question: q, section: 'settings' })}
-            />
+            {/* ── Brief recap — reference material, hidden once the
+                winner is picked (contest is concluded, brief is moot). */}
+            {!isWinnerPicked && (
+              <BriefRecapCollapser
+                filledBrief={filledBrief}
+                filledSettings={filledSettings}
+                briefAnswers={liveBriefAnswers}
+                settingsAnswers={liveSettingsAnswers}
+                onEditBrief={(q) => setEditingQuestion({ question: q, section: 'brief' })}
+                onEditSettings={(q) => setEditingQuestion({ question: q, section: 'settings' })}
+              />
+            )}
 
             {/* ── Quiet actions ────────────────────────────────────── */}
             <div className="v4-manage-actions">
@@ -438,6 +944,7 @@ export default function ContestManage() {
                 Cancel contest
               </button>
             </div>
+
           </div>
         </main>
 
@@ -452,6 +959,75 @@ export default function ContestManage() {
           }
           onClose={() => setEditingQuestion(null)}
           onSave={handleEditSave}
+        />
+
+        {/* Hidden off-screen PDF report — captured by the export
+            utility when the user clicks "Download full report". The
+            ref attaches directly to the absolutely-positioned report
+            element (forwardRef inside PdfReport) so html-to-image
+            captures the real 794×1123 box, not a 0×0 wrapper. */}
+        {isWinnerPicked && winnerName && (
+          <PdfReport
+            ref={pdfReportRef}
+            contestName={setup.workingName || 'Your contest'}
+            segmentLabel={segmentLabel}
+            subId={subId}
+            tone={customColor
+              ? { bg: customColor, fg: segmentTone.fg }
+              : segmentTone}
+            winner={winnerName}
+            submitter={winnerSubmitter}
+            prize={liveSettingsAnswers.submitterPrize}
+            names={MOCK_NAMES}
+            stats={stats}
+            durationDays={submissionDays + votingDays}
+            hideBranding={hideBranding}
+            customLogo={customLogo}
+          />
+        )}
+
+        {/* Pick-the-winner modal */}
+        <PickWinnerModal
+          open={pickWinnerOpen}
+          onClose={() => setPickWinnerOpen(false)}
+          tone={segmentTone}
+          prize={liveSettingsAnswers.submitterPrize}
+          onConfirm={(nameId) => {
+            // Close the modal first so the celebration is unobstructed,
+            // then flip the URL into the picked sub-state. ContestManage
+            // re-renders into the winner celebration view, which animates
+            // in (see .v4-winner-* CSS). A confetti burst punctuates the
+            // moment so it feels like a real "win," not a state change.
+            setPickWinnerOpen(false);
+            // Scroll the internal review container (NOT window) — the
+            // page itself doesn't scroll on v4 surfaces; .v4-review is
+            // the overflow:auto container.
+            const scroller = document.querySelector('.v4-review');
+            scroller?.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => {
+              const params = new URLSearchParams(searchParams);
+              params.set('phase', 'winner');
+              params.set('winner', nameId);
+              setSearchParams(params, { replace: true });
+              // Ensure we're at top after the re-render lands too.
+              scroller?.scrollTo({ top: 0, behavior: 'smooth' });
+              // Confetti burst from both bottom corners — fires after
+              // the new hero starts animating in.
+              setTimeout(() => {
+                const burst = (opts) => confetti({
+                  particleCount: 80,
+                  startVelocity: 55,
+                  spread: 70,
+                  ticks: 220,
+                  scalar: 0.9,
+                  colors: ['#fadecc', '#fceebc', '#a6dcb3', '#c4dffb', '#c4cff5', segmentTone.fg],
+                  ...opts,
+                });
+                burst({ origin: { x: 0.1, y: 0.9 }, angle: 60 });
+                burst({ origin: { x: 0.9, y: 0.9 }, angle: 120 });
+              }, 350);
+            }, 250);
+          }}
         />
       </div>
     </div>

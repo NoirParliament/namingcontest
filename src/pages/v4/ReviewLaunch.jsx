@@ -77,11 +77,12 @@ export default function ReviewLaunch() {
   const handleLaunchSuccess = () => {
     setLaunchOpen(false);
     setLaunching(true);
-    // Generate a contest ID + record launch timestamp, then navigate to
-    // the manage page. In production this would also POST to backend.
-    const contestId = `c${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
-    writeSetup({ contestId, launchedAt: Date.now() });
-    setTimeout(() => navigate(`/v4/contest/${contestId}`), 600);
+    // PROTOTYPE: pin every launched contest to the mock demo contest
+    // so the dashboard is always populated regardless of what segment
+    // the user picked or what they filled in. Production would POST
+    // to backend and route to the real new contest ID instead.
+    writeSetup({ contestId: 'mock_ongoing_1', launchedAt: Date.now() });
+    setTimeout(() => navigate('/v4/contest/mock_ongoing_1'), 600);
   };
 
   return (

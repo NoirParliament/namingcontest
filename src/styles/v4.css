@@ -490,6 +490,16 @@
   position: relative;
   overflow: hidden;
 }
+/* Push the decorative blobs BEHIND the nav + tier cards so they read
+   as ambient background, not floating obstructions. */
+.lp-v3-pick-tier .v4-blob {
+  z-index: 0;
+}
+.lp-v3-pick-tier .v4-nav,
+.lp-v3-pick-tier .frame {
+  position: relative;
+  z-index: 1;
+}
 .lp-v3-pick-tier .section {
   margin-top: 40px;
 }
@@ -1382,7 +1392,8 @@ input.v4-branding-color-input:hover {
   position: relative;
   width: 100%;
   max-width: 440px;
-  background: var(--v4-bg);
+  /* Floating card surface — see comment on .v4-pickwinner-modal. */
+  background: var(--v4-card-bg);
   border-radius: 22px;
   padding: 36px 32px 28px;
   text-align: center;
@@ -2400,7 +2411,8 @@ input.v4-launch-email-input::placeholder {
   position: relative;
   width: 100%;
   max-width: 520px;
-  background: var(--v4-bg);
+  /* Floating card surface — see comment on .v4-pickwinner-modal. */
+  background: var(--v4-card-bg);
   border-radius: 22px;
   padding: 36px 32px 32px;
   box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.3), 0 8px 16px rgba(0, 0, 0, 0.08);
@@ -3653,6 +3665,1305 @@ input.v4-results-search-input::placeholder {
 }
 
 /* ─────────────────────────────────────────────────────────────────────
+   PICK-THE-WINNER CTA — primary button inside the active journey
+   step when the contest is in 'voting-ended' phase. Segment-themed
+   bg with a strong contrast so it reads as "the action to take now".
+   ───────────────────────────────────────────────────────────────────── */
+.v4-manage-pick-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 11px 18px;
+  background: var(--v4-fg);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  outline: none;
+  box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.3);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.v4-manage-pick-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.4);
+}
+.v4-manage-pick-btn:focus-visible {
+  box-shadow: 0 0 0 3px var(--v4-ring), 0 8px 20px -8px rgba(0, 0, 0, 0.3);
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   JOURNEY STEPS — clickable on mock contests so the demo viewer can
+   preview every lifecycle state by tapping a step. Subtle cursor +
+   lift hover cue. On real contests the steps render as normal.
+   ───────────────────────────────────────────────────────────────────── */
+.v4-manage-wait-steps.is-clickable .v4-manage-wait-step {
+  cursor: pointer;
+}
+.v4-manage-wait-steps.is-clickable .v4-manage-wait-step:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px -12px rgba(0, 0, 0, 0.16);
+}
+.v4-manage-wait-steps.is-clickable .v4-manage-wait-step:focus-visible {
+  outline: 2px solid var(--v4-ring);
+  outline-offset: 2px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   PDF REPORT — hidden, off-screen A4 page rendered with the full v4
+   design system (Fraunces, Inter, segment blobs, scattered icons,
+   gradient washes). Captured as an image by html-to-image and
+   embedded in a single-page jsPDF document.
+   A4 portrait at 96 DPI ≈ 794 × 1123 px.
+   ───────────────────────────────────────────────────────────────────── */
+.v4-pdf-report {
+  /* Hidden but RENDERED. We use fixed positioning at 0,0 (in viewport
+     coords, behind everything) with opacity:0 — this keeps the element
+     in the proper coordinate space so html-to-image can capture it.
+     The far-off-screen `left: -10000px` trick breaks the snapshot. */
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -9999;
+  opacity: 0;
+  pointer-events: none;
+  width: 794px;
+  height: 1123px;
+  overflow: hidden;
+  background: linear-gradient(
+    160deg,
+    var(--report-tint-bg, #fadecc) 0%,
+    #fdfaf6 55%,
+    #ffffff 100%
+  );
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--v4-fg);
+  box-sizing: border-box;
+}
+
+/* Decorative blobs — soft segment-tinted circles in the corners.
+   Lower opacity than the live page since the report doesn't animate. */
+.v4-pdf-report-blob {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(2px);
+}
+.v4-pdf-report-blob-1 {
+  width: 380px;
+  height: 380px;
+  top: -120px;
+  right: -120px;
+  background: var(--v4-blob-1-color, #fadecc);
+  opacity: 0.32;
+}
+.v4-pdf-report-blob-2 {
+  width: 240px;
+  height: 240px;
+  bottom: -60px;
+  left: -80px;
+  background: var(--v4-blob-2-color, #fceebc);
+  opacity: 0.4;
+}
+.v4-pdf-report-blob-3 {
+  width: 140px;
+  height: 140px;
+  top: 38%;
+  left: 8%;
+  background: var(--v4-blob-3-color, #fadecc);
+  opacity: 0.32;
+}
+
+/* Scattered segment icons — same set the SegmentThemeBackdrop uses
+   on the live page, sized down for the print layout. */
+.v4-pdf-report-icon {
+  position: absolute;
+  color: rgba(3, 3, 2, 0.18);
+  pointer-events: none;
+}
+
+/* Content column */
+.v4-pdf-report-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 56px 64px 48px;
+  box-sizing: border-box;
+}
+
+.v4-pdf-report-brandbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+.v4-pdf-report-brand-logo {
+  height: 22px;
+  width: auto;
+  display: block;
+  opacity: 0.9;
+}
+.v4-pdf-report-brandbar-meta {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+}
+
+/* Title block */
+.v4-pdf-report-title-block {
+  margin-bottom: 28px;
+}
+.v4-pdf-report-title {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 36px;
+  font-weight: 350;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  color: var(--v4-fg);
+  margin: 0 0 6px;
+}
+.v4-pdf-report-subtitle {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--v4-muted);
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+/* Winner card — featured gradient panel */
+.v4-pdf-report-winner {
+  background: linear-gradient(
+    135deg,
+    var(--report-tint-bg, #fadecc) 0%,
+    rgba(255, 255, 255, 0.7) 80%
+  );
+  border: 1px solid var(--report-tint-border, rgba(3, 3, 2, 0.12));
+  border-radius: 20px;
+  padding: 32px 32px 30px;
+  margin-bottom: 22px;
+  box-shadow: 0 18px 40px -20px rgba(0, 0, 0, 0.18);
+}
+.v4-pdf-report-winner-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--report-tint-fg, #9c4818);
+  margin-bottom: 14px;
+}
+.v4-pdf-report-winner-name {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 56px;
+  font-weight: 350;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--v4-fg);
+  margin: 0 0 18px;
+}
+.v4-pdf-report-winner-tagline {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 16px;
+  font-style: italic;
+  color: var(--v4-fg);
+  opacity: 0.85;
+  line-height: 1.4;
+  margin: 0 0 18px;
+}
+.v4-pdf-report-winner-tagline svg {
+  color: var(--report-tint-fg, #9c4818);
+  margin-top: 4px;
+  flex: none;
+}
+.v4-pdf-report-winner-credit {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12.5px;
+  color: var(--v4-fg);
+  letter-spacing: -0.005em;
+}
+.v4-pdf-report-winner-credit strong {
+  font-weight: 600;
+}
+.v4-pdf-report-winner-credit-sep {
+  opacity: 0.4;
+}
+
+/* Prize strip */
+.v4-pdf-report-prize {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--report-tint-border, rgba(3, 3, 2, 0.12));
+  border-radius: 999px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--v4-fg);
+  margin-bottom: 22px;
+}
+.v4-pdf-report-prize strong {
+  font-weight: 600;
+}
+.v4-pdf-report-prize em {
+  font-style: italic;
+  font-weight: 500;
+}
+.v4-pdf-report-prize svg {
+  color: var(--report-tint-fg, #9c4818);
+  flex: none;
+}
+
+/* Top names leaderboard */
+.v4-pdf-report-names {
+  margin-bottom: 22px;
+}
+.v4-pdf-report-section-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin-bottom: 10px;
+}
+.v4-pdf-report-names-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--v4-faint);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.v4-pdf-report-names-row {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  border-top: 1px solid var(--v4-faint);
+  font-size: 13px;
+}
+.v4-pdf-report-names-row:first-child {
+  border-top: none;
+}
+.v4-pdf-report-names-rank {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--v4-muted);
+  letter-spacing: -0.02em;
+}
+.v4-pdf-report-names-text {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 600;
+  color: var(--v4-fg);
+  letter-spacing: -0.005em;
+}
+.v4-pdf-report-names-votes {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  color: var(--v4-muted);
+  font-variant-numeric: tabular-nums;
+}
+.v4-pdf-report-names-more {
+  font-size: 11.5px;
+  color: var(--v4-muted);
+  margin-top: 10px;
+  padding-left: 18px;
+  font-style: italic;
+}
+
+/* Stats row */
+.v4-pdf-report-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 16px;
+  margin-bottom: auto;
+  padding: 18px 24px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--v4-faint);
+  border-radius: 14px;
+}
+.v4-pdf-report-stat {
+  text-align: center;
+}
+.v4-pdf-report-stat-value {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--v4-fg);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.v4-pdf-report-stat-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+}
+
+/* Footer */
+.v4-pdf-report-foot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 18px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  color: var(--v4-muted);
+  letter-spacing: 0.01em;
+}
+.v4-pdf-report-foot strong {
+  color: var(--v4-fg);
+  font-weight: 600;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   WINNER-PICKED STATE — celebration surface that replaces the regular
+   hero + LiveResults + Share card on ContestManage once the creator
+   has confirmed a winner. WinnerHero doubles as the PNG snapshot
+   target so what the user sees IS what downloads.
+   ───────────────────────────────────────────────────────────────────── */
+/* Each winner section cascades in for a "this is your moment" feel.
+   Hero appears first (with a bigger scale-up entrance), then action
+   row, prize, story, runners-up each fade up a beat later. */
+@keyframes v4-winner-hero-in {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) scale(0.94);
+  }
+  60% {
+    transform: translateY(0) scale(1.015);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes v4-winner-fadeup {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.v4-winner-hero {
+  position: relative;
+  margin-bottom: 18px;
+  border-radius: 24px;
+  border: 1px solid var(--winner-tint-border, var(--v4-faint));
+  background: linear-gradient(
+    160deg,
+    var(--winner-tint-bg, #fadecc) 0%,
+    #ffffff 80%
+  );
+  box-shadow: 0 18px 48px -18px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+  /* Bigger, bouncier entrance — this card is the moment. */
+  opacity: 0;
+  animation: v4-winner-hero-in 0.7s cubic-bezier(0.34, 1.4, 0.5, 1) forwards;
+}
+/* Brand bar at top — logo (left) + inline trophy/eyebrow (right).
+   Single strip carries identity + celebration + context. */
+.v4-winner-hero-brandbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 22px;
+  background: rgba(255, 255, 255, 0.45);
+  border-bottom: 1px solid rgba(3, 3, 2, 0.06);
+}
+.v4-winner-hero-brand-logo {
+  height: 18px;
+  width: auto;
+  display: block;
+  opacity: 0.85;
+}
+.v4-winner-hero-trophy-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  /* Match the body text color (not the segment tint). The trophy icon
+     itself keeps its segment color via an inline style above. */
+  color: var(--v4-fg);
+}
+
+.v4-winner-hero-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 56px 28px 44px;
+}
+.v4-winner-hero-name {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 64px;
+  font-weight: 350;
+  letter-spacing: -0.03em;
+  line-height: 1.02;
+  color: var(--v4-fg);
+  margin: 0 0 18px;
+  max-width: 92%;
+}
+/* Tagline pull-quote — the most quotable line from the submitter,
+   sits directly under the name like a brand promise. */
+.v4-winner-hero-tagline {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 19px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--v4-fg);
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+  margin: 0 0 28px;
+  max-width: 34ch;
+  opacity: 0.82;
+}
+.v4-winner-hero-credit {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--v4-muted);
+  letter-spacing: -0.005em;
+  line-height: 1.5;
+  max-width: 38ch;
+}
+.v4-winner-hero-credit strong {
+  color: var(--v4-fg);
+  font-weight: 600;
+}
+
+/* Growth footer — turns the share card into a discoverable CTA. */
+.v4-winner-hero-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 22px;
+  background: rgba(255, 255, 255, 0.45);
+  border-top: 1px solid rgba(3, 3, 2, 0.06);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11.5px;
+  color: var(--v4-muted);
+  letter-spacing: 0.005em;
+}
+.v4-winner-hero-foot-text strong {
+  color: var(--v4-fg);
+  font-weight: 600;
+}
+.v4-winner-hero-foot-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  color: var(--v4-fg);
+}
+
+/* Action row — sits directly under the hero card. */
+.v4-winner-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: v4-winner-fadeup 0.55s cubic-bezier(0.2, 0.8, 0.3, 1) 0.4s forwards;
+}
+
+/* Social share icon group — sits to the right of the action buttons.
+   Compact circles, each opens a native share intent. Instagram is the
+   only one that downloads + prompts (no web share API). */
+.v4-winner-share-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding-left: 12px;
+  border-left: 1px solid var(--v4-faint);
+}
+.v4-winner-share-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  color: var(--v4-fg);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.15s ease, border-color 0.15s ease,
+              transform 0.15s ease;
+}
+.v4-winner-share-icon:hover {
+  background: var(--v4-fg);
+  color: #ffffff;
+  border-color: var(--v4-fg);
+  transform: translateY(-1px);
+}
+.v4-winner-share-icon:focus-visible {
+  box-shadow: 0 0 0 2px var(--v4-ring);
+}
+
+/* Customizer — collapsible row below the action bar. Lets the creator
+   override the segment color, upload their own logo, or strip the
+   NamingContest branding entirely. */
+.v4-winner-customizer {
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 14px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  opacity: 0;
+  animation: v4-winner-fadeup 0.55s cubic-bezier(0.2, 0.8, 0.3, 1) 0.45s forwards;
+}
+.v4-winner-customizer-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  cursor: pointer;
+  outline: none;
+  transition: background 0.15s ease;
+}
+.v4-winner-customizer-trigger:hover {
+  background: var(--v4-bubble-bg);
+}
+.v4-winner-customizer-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 18px 18px 20px;
+  border-top: 1px solid var(--v4-faint);
+}
+.v4-winner-customizer-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.v4-winner-customizer-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+}
+.v4-winner-customizer-swatches {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.v4-winner-customizer-swatch {
+  /* Use inline-flex on EVERY swatch (button OR label) so the box model
+     matches and they line up on the same baseline. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  box-sizing: border-box;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 1px var(--v4-faint), 0 2px 6px -2px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  outline: none;
+  padding: 0;
+  margin: 0;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.v4-winner-customizer-swatch:hover {
+  transform: translateY(-1px);
+}
+.v4-winner-customizer-swatch.is-selected {
+  box-shadow: 0 0 0 2px var(--v4-fg), 0 2px 8px -2px rgba(0, 0, 0, 0.2);
+}
+/* Custom color swatch — conic-gradient rainbow when nothing custom
+   is picked yet, the actual chosen color once one is selected.
+   The native color input sits invisible on top so clicking the
+   swatch opens the OS/browser color picker. Layout is inherited
+   from .v4-winner-customizer-swatch above. */
+.v4-winner-customizer-swatch-custom {
+  position: relative;
+}
+.v4-winner-customizer-swatch-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  /* Make sure the picker actually opens — some browsers need a
+     non-zero clickable area on the input itself. */
+  width: 100%;
+  height: 100%;
+  border: none;
+  padding: 0;
+}
+.v4-winner-customizer-swatch-plus {
+  color: rgba(3, 3, 2, 0.55);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  filter: invert(1);
+}
+.v4-winner-customizer-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.v4-winner-customizer-logo-preview {
+  height: 32px;
+  width: auto;
+  max-width: 120px;
+  display: block;
+  object-fit: contain;
+  background: var(--v4-bubble-bg);
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--v4-faint);
+}
+.v4-winner-customizer-upload {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 999px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.v4-winner-customizer-upload:hover {
+  border-color: rgba(3, 3, 2, 0.3);
+}
+.v4-winner-customizer-link {
+  background: transparent;
+  border: none;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  color: var(--v4-muted);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.v4-winner-customizer-link:hover {
+  color: var(--v4-fg);
+}
+.v4-winner-customizer-hint {
+  font-size: 11.5px;
+  color: var(--v4-muted);
+  margin: 4px 0 0;
+  line-height: 1.5;
+}
+.v4-winner-customizer-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--v4-fg);
+  cursor: pointer;
+}
+.v4-winner-customizer-toggle input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--v4-fg);
+}
+.v4-winner-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 12px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease,
+              transform 0.15s ease, box-shadow 0.15s ease;
+}
+.v4-winner-action:hover {
+  border-color: rgba(3, 3, 2, 0.25);
+  transform: translateY(-1px);
+}
+.v4-winner-action-primary {
+  background: var(--v4-fg);
+  color: #ffffff;
+  border-color: var(--v4-fg);
+  box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.3);
+}
+.v4-winner-action-primary:hover {
+  box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.4);
+  border-color: var(--v4-fg);
+}
+
+/* Prize card */
+.v4-winner-prize {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+  border-radius: 16px;
+  border: 1px solid var(--winner-tint-border, var(--v4-faint));
+  background: linear-gradient(
+    135deg,
+    var(--winner-tint-bg, #fadecc) 0%,
+    #ffffff 75%
+  );
+  box-shadow: 0 12px 32px -10px rgba(0, 0, 0, 0.12);
+  opacity: 0;
+  animation: v4-winner-fadeup 0.55s cubic-bezier(0.2, 0.8, 0.3, 1) 0.55s forwards;
+}
+.v4-winner-prize-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  flex: none;
+}
+.v4-winner-prize-text {
+  flex: 1;
+  min-width: 0;
+}
+.v4-winner-prize-eyebrow {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin-bottom: 4px;
+}
+.v4-winner-prize-line {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 19px;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: -0.015em;
+  color: var(--v4-fg);
+  line-height: 1.3;
+}
+.v4-winner-prize-line strong {
+  font-style: normal;
+  font-weight: 500;
+}
+.v4-winner-prize-line em {
+  font-style: italic;
+  font-weight: 500;
+}
+.v4-winner-prize-desc {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--v4-muted);
+  margin: 6px 0 0;
+  line-height: 1.5;
+}
+
+/* Story section */
+.v4-winner-story {
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 18px;
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: v4-winner-fadeup 0.55s cubic-bezier(0.2, 0.8, 0.3, 1) 0.7s forwards;
+}
+.v4-winner-story-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.v4-winner-story-head h2 {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--v4-fg);
+  margin: 0;
+}
+.v4-winner-story-tagline {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 26px;
+  font-weight: 350;
+  font-style: italic;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  color: var(--v4-fg);
+  margin: 0 0 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--v4-faint);
+}
+.v4-winner-story-list {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+}
+.v4-winner-story-field {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 16px;
+  align-items: baseline;
+}
+.v4-winner-story-field dt {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin: 0;
+}
+.v4-winner-story-field dd {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--v4-fg);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Runners-up list */
+.v4-winner-runners {
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 18px;
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: v4-winner-fadeup 0.55s cubic-bezier(0.2, 0.8, 0.3, 1) 0.85s forwards;
+}
+.v4-winner-runners-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--v4-faint);
+}
+.v4-winner-runners-head h2 {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--v4-fg);
+  margin: 0;
+}
+.v4-winner-runners-meta {
+  font-size: 12px;
+  color: var(--v4-muted);
+}
+.v4-winner-runners-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.v4-winner-runners-row {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 0;
+  border-top: 1px solid var(--v4-faint);
+}
+.v4-winner-runners-row:first-child {
+  border-top: none;
+  padding-top: 4px;
+}
+.v4-winner-runners-rank {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--v4-muted);
+  letter-spacing: -0.02em;
+}
+.v4-winner-runners-name-text {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  letter-spacing: -0.005em;
+}
+.v4-winner-runners-name-meta {
+  font-size: 12px;
+  color: var(--v4-muted);
+  margin-top: 2px;
+}
+
+@media (max-width: 640px) {
+  .v4-winner-hero-name { font-size: 44px; }
+  .v4-winner-hero-inner { padding: 30px 18px 28px; }
+  .v4-winner-story,
+  .v4-winner-runners { padding: 18px 18px; }
+  .v4-winner-story-field {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   PICK-THE-WINNER MODAL — creator's final-call surface. Top-voted
+   name preselected, full leaderboard underneath as radio buttons.
+   Confirm sets ?winner=<nameId> and the page transforms.
+   ───────────────────────────────────────────────────────────────────── */
+.v4-pickwinner-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 3, 2, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 24px;
+  animation: v4-fade-in 0.2s ease-out forwards;
+}
+.v4-pickwinner-modal {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  /* Floating card surface — uses the design-system card-bg token,
+     not the page bg, so the modal reads as a distinct card on top of
+     the cream page beneath. */
+  background: var(--v4-card-bg);
+  border-radius: 22px;
+  padding: 28px 28px 22px;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.45);
+  animation: v4-fade-in 0.25s ease-out forwards;
+}
+.v4-pickwinner-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--v4-muted);
+  cursor: pointer;
+  outline: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.v4-pickwinner-close:hover {
+  background: var(--v4-bubble-bg);
+  color: var(--v4-fg);
+}
+
+/* Header */
+.v4-pickwinner-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.v4-pickwinner-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  flex: none;
+}
+.v4-pickwinner-title {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 24px;
+  font-weight: 350;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--v4-fg);
+  margin: 0 0 4px;
+}
+.v4-pickwinner-subtitle {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--v4-muted);
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+
+/* Selected preview card — matches the system's "highlighted card"
+   pattern (135° gradient, faint segment border, soft shadow) used by
+   .v4-manage-wait-step.is-active and .v4-settings-current. */
+.v4-pickwinner-preview {
+  padding: 18px 20px;
+  border-radius: 16px;
+  margin-bottom: 18px;
+  background: linear-gradient(
+    135deg,
+    var(--pickwinner-tint-bg, #fceebc) 0%,
+    #ffffff 75%
+  );
+  border: 1px solid var(--pickwinner-tint-border, rgba(3, 3, 2, 0.12));
+  box-shadow: 0 12px 32px -10px rgba(0, 0, 0, 0.12);
+  transition: background 0.2s ease;
+}
+.v4-pickwinner-preview-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin-bottom: 6px;
+}
+.v4-pickwinner-preview-name {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--v4-fg);
+}
+.v4-pickwinner-preview-meta {
+  font-size: 12.5px;
+  color: var(--v4-muted);
+  margin-top: 4px;
+}
+.v4-pickwinner-preview-meta strong {
+  color: var(--v4-fg);
+  font-weight: 600;
+}
+.v4-pickwinner-preview-prize {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 999px;
+  font-size: 12px;
+  color: var(--v4-fg);
+  letter-spacing: -0.005em;
+}
+.v4-pickwinner-preview-prize strong {
+  font-weight: 600;
+}
+.v4-pickwinner-preview-prize em {
+  font-style: italic;
+  color: var(--v4-fg);
+}
+
+/* List */
+.v4-pickwinner-list-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin: 4px 0 10px;
+}
+.v4-pickwinner-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin: 0 -8px;
+  padding: 0 8px 4px;
+  scrollbar-width: thin;
+}
+.v4-pickwinner-row {
+  display: grid;
+  grid-template-columns: 22px 30px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13.5px;
+  color: var(--v4-fg);
+  cursor: pointer;
+  outline: none;
+  text-align: left;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.v4-pickwinner-row:hover {
+  /* Match LiveResults row hover for consistency across leaderboards. */
+  background: rgba(3, 3, 2, 0.03);
+}
+.v4-pickwinner-row.is-selected {
+  background: rgba(3, 3, 2, 0.04);
+  border-color: rgba(3, 3, 2, 0.18);
+}
+.v4-pickwinner-row-radio {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(3, 3, 2, 0.25);
+  color: #ffffff;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.v4-pickwinner-row.is-selected .v4-pickwinner-row-radio {
+  background: var(--v4-fg);
+  border-color: var(--v4-fg);
+}
+.v4-pickwinner-row-rank {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 13px;
+  color: var(--v4-muted);
+  letter-spacing: -0.01em;
+}
+.v4-pickwinner-row-name {
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.v4-pickwinner-row-meta {
+  font-size: 11.5px;
+  color: var(--v4-muted);
+  white-space: nowrap;
+}
+
+/* Footer actions */
+.v4-pickwinner-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--v4-faint);
+}
+.v4-pickwinner-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 18px;
+  border-radius: 12px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  outline: none;
+  border: 1px solid transparent;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+.v4-pickwinner-btn-secondary {
+  background: transparent;
+  color: var(--v4-fg);
+  border-color: var(--v4-faint);
+}
+.v4-pickwinner-btn-secondary:hover {
+  border-color: rgba(3, 3, 2, 0.3);
+}
+.v4-pickwinner-btn-primary {
+  background: var(--v4-fg);
+  color: #ffffff;
+  border-color: var(--v4-fg);
+  flex: 1;
+  justify-content: center;
+  box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.3);
+}
+.v4-pickwinner-btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.4);
+}
+.v4-pickwinner-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .v4-pickwinner-modal {
+    padding: 22px 18px 18px;
+    max-height: 95vh;
+  }
+  .v4-pickwinner-preview-name { font-size: 22px; }
+  .v4-pickwinner-row-meta { display: none; }
+  .v4-pickwinner-btn-primary { font-size: 13px; padding: 11px 14px; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
    AVATAR MENU — top-right account dropdown on every authenticated v4
    surface. Sits beside (or in place of) the Exit link in .v4-nav.
    ───────────────────────────────────────────────────────────────────── */
@@ -3665,23 +4976,48 @@ input.v4-results-search-input::placeholder {
   position: relative;
 }
 .v4-avatar-btn {
+  /* Pill trigger — matches the dropdown's surface (white + faint border)
+     so they read as the same material when the menu opens. Background
+     stays neutral; only the caret rotates to signal state. */
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 1.5px solid #ffffff;
+  gap: 6px;
+  padding: 2px 8px 2px 2px;
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 999px;
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  color: var(--v4-fg);
   cursor: pointer;
   outline: none;
+  box-shadow: 0 2px 6px -2px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.18s ease;
+}
+.v4-avatar-photo-wrap {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
   overflow: hidden;
-  padding: 0;
-  box-shadow: 0 2px 6px -2px rgba(0, 0, 0, 0.12);
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  flex: none;
+  background: var(--v4-bubble-bg);
+}
+.v4-avatar-btn .v4-avatar-photo {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.v4-avatar-caret {
+  display: inline-flex;
+  color: var(--v4-muted);
+  margin-right: 2px;
+  transition: transform 0.2s ease;
+}
+.v4-avatar-btn:hover {
+  box-shadow: 0 4px 12px -3px rgba(0, 0, 0, 0.14);
+}
+.v4-avatar-btn.is-open .v4-avatar-caret {
+  transform: rotate(180deg);
 }
 /* Photo inside the button. Default hero placeholder gets zoomed to
    crop out the shoulders; real user uploads are shown as-is (cover). */
@@ -3696,11 +5032,7 @@ input.v4-results-search-input::placeholder {
   transform: scale(2);
   transform-origin: center 25%;
 }
-.v4-avatar-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px -3px rgba(0, 0, 0, 0.18);
-}
-.v4-avatar-btn:focus-visible {
+.v4-avatar-btn:focus-visible .v4-avatar-photo-wrap {
   box-shadow: 0 0 0 3px var(--v4-ring), 0 2px 6px -2px rgba(0, 0, 0, 0.12);
 }
 
@@ -3855,7 +5187,8 @@ input.v4-results-search-input::placeholder {
   position: relative;
   width: 100%;
   max-width: 420px;
-  background: var(--v4-bg);
+  /* Floating card surface — see comment on .v4-pickwinner-modal. */
+  background: var(--v4-card-bg);
   border-radius: 22px;
   padding: 32px 32px 28px;
   box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.4);

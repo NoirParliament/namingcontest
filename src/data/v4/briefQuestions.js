@@ -913,14 +913,8 @@ export const SHARED_SETTINGS_QUESTIONS = [
     placeholder: `e.g. Must work as a .com domain, should not start with 'X', needs to sound good in Spanish...`,
     hint: `Use this to capture requirements unique to your situation — domain preferences, phonetic constraints, cultural considerations, or anything else participants should know.`,
   },
-  {
-    id: 'branding',
-    type: 'brandingFull',
-    defaultValue: false,
-    label: 'Custom branding',
-    prompt: 'Want your logo and colors on shareable reports?',
-    hint: `Your logo and colors will appear on PDF reports and the share page. Transparent PNG works best, under 1MB.`,
-  },
+  // Custom branding moved out of the brief — handled at the winner
+  // stage instead, where it directly customizes the share card.
   {
     id: 'submitterPrize',
     type: 'toggleNameDesc',

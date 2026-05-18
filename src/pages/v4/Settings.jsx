@@ -221,10 +221,6 @@ export default function Settings() {
               <span className="v4-step-label">Workspace</span>
             </div>
             <div className="v4-nav-right">
-              <Link to="/" className="v4-exit" aria-label="Exit">
-                <X weight="regular" size={14} />
-                <span>Exit</span>
-              </Link>
               <AvatarMenu
                 email={email}
                 name={name}

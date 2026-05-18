@@ -74,8 +74,9 @@ export default function PickTier() {
        scope so the v4-nav styling works identically to the chat. */
     <div className="lp-v3 lp-v3-pick-tier v4">
       {/* Decorative pastel blobs — same default palette as a fresh
-          (unpicked) chat. Pre-segment these stay in their default tones
-          since user hasn't chosen a contest type yet. */}
+          (unpicked) chat. CSS (see .lp-v3-pick-tier in v4.css) pins
+          their z-index behind the content so they don't overlap the
+          tier cards. */}
       <span className="v4-blob v4-blob-1" aria-hidden="true"></span>
       <span className="v4-blob v4-blob-2" aria-hidden="true"></span>
       <span className="v4-blob v4-blob-3" aria-hidden="true"></span>

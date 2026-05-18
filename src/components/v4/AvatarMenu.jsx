@@ -4,7 +4,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Gear, SignOut, ArrowRight } from '@phosphor-icons/react';
+import { Gear, SignOut, ArrowRight, CaretDown } from '@phosphor-icons/react';
 import heroProfile1 from '../../assets/hero-profile-1.png';
 
 export default function AvatarMenu({ email, name, photo, tone, activeContest }) {
@@ -41,18 +41,24 @@ export default function AvatarMenu({ email, name, photo, tone, activeContest }) 
     <div className="v4-avatar-menu" ref={wrapRef}>
       <button
         type="button"
-        className="v4-avatar-btn"
+        className={`v4-avatar-btn ${open ? 'is-open' : ''}`}
         onClick={() => setOpen((v) => !v)}
-        style={{ background: t.bg, color: t.fg }}
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label="Account menu"
       >
-        <img
-          src={photoSrc}
-          alt=""
-          className={`v4-avatar-photo ${photo ? 'is-custom' : 'is-default'}`}
-        />
+        <span className="v4-avatar-photo-wrap" aria-hidden="true">
+          <img
+            src={photoSrc}
+            alt=""
+            className={`v4-avatar-photo ${photo ? 'is-custom' : 'is-default'}`}
+          />
+        </span>
+        {/* Caret signals "this is a menu trigger, not just a photo".
+            Rotates 180° when open for an extra clarity cue. */}
+        <span className="v4-avatar-caret" aria-hidden="true">
+          <CaretDown weight="bold" size={10} />
+        </span>
       </button>
 
       {open && (

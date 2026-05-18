@@ -29,7 +29,6 @@ export const MOCK_CONTESTS = {
         enabled: true,
         text: 'Should sound good when chanted on the touchline. Avoid existing pro-club names. Two-word maximum, please.',
       },
-      branding: false,
       submitterPrize: {
         enabled: true,
         name: 'A round at The Crown',
