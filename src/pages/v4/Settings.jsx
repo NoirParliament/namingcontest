@@ -8,12 +8,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   X, EnvelopeSimple, User, CreditCard, Receipt, ArrowSquareOut,
   Heart, UsersThree, Briefcase, Camera, Info, Trash, Plus,
-  ArrowRight, ListBullets, Trophy,
+  ArrowRight, ListBullets, Trophy, Clock,
 } from '@phosphor-icons/react';
+import useCountdown, { pad2 } from '../../utils/useCountdown';
+import heroProfile3 from '../../assets/hero-profile-3.png';
 // Heart/UsersThree/Briefcase still used by TIER_INFO below for billing rows.
 import heroProfile1 from '../../assets/hero-profile-1.png';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import { readSetup, writeSetup } from '../../utils/v4Brief';
+import { readAllParticipations, getParticipantRow } from '../../utils/v4Participant';
+import { getMockContestById, MOCK_CONTESTS } from '../../data/v4/mockContests';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import '../../styles/v4.css';
@@ -70,7 +74,6 @@ function buildBillingHistory({ realContest, mockClosed }) {
 // (shared with ContestManage so the dashboard renders coherently when
 // the user opens it). Here we only adapt the field name (`group` →
 // `tierKey`) for the local TIER_INFO lookup.
-import { MOCK_CONTESTS } from '../../data/v4/mockContests';
 const MOCK_ONGOING = {
   ...MOCK_CONTESTS.mock_ongoing_1,
   tierKey: MOCK_CONTESTS.mock_ongoing_1.group,
@@ -157,6 +160,43 @@ export default function Settings() {
   const currentContest = realContest || mockOngoingContest;
   const closedContests = MOCK_CLOSED;
 
+  // ── PARTICIPANT-ROLE STATE ─────────────────────────────────────────
+  // Same account can be both a creator AND a participant on contests
+  // they were invited to. The "Contests you've joined" section reads
+  // every v4_participant_* localStorage entry and pairs each with the
+  // referenced contest's current phase to derive a row.
+  const participations = useMemo(() => readAllParticipations(), []);
+  const joinedRows = participations.map((p) => {
+    const mock = getMockContestById(p.contestId);
+    // Build a minimal contest descriptor for the row helper.
+    // For the prototype, all joined contests are mocks; in production
+    // this would be a real contest lookup. Phase defaults to 'submission'
+    // (the natural state right after joining).
+    const contest = {
+      id: p.contestId,
+      name: mock?.workingName || p.contestName || 'Contest',
+      phase: mock?.phase ? (
+        // Map mock phase strings → our 3 lifecycle phases
+        mock.phase.toLowerCase() === 'voting' ? 'voting'
+          : mock.phase.toLowerCase() === 'winner' ? 'winner'
+          : 'submission'
+      ) : 'submission',
+      submissionLimit: mock?.settings?.submissionLimit || 3,
+      tierKey: mock?.group || 'group',
+      Icon: mock?.Icon,
+      subSegmentId: mock?.subSegmentId,
+      // For the inline countdown on the joined row.
+      launchedAt: mock?.launchedAt,
+      submissionDays: mock?.settings?.submissionDays,
+    };
+    return {
+      participation: p,
+      contest,
+      row: getParticipantRow(contest, p),
+    };
+  });
+  const hasRunningContests = !!realContest;
+
   const billing = useMemo(
     () => buildBillingHistory({ realContest, mockClosed: closedContests }),
     [realContest, closedContests]
@@ -189,7 +229,9 @@ export default function Settings() {
 
   const handleSave = (e) => {
     e.preventDefault();
-    writeSetup({ userEmail: email.trim(), userName: name.trim() });
+    // Email is read-only here — only the display name is editable
+    // through this form. (Photo persists on upload immediately.)
+    writeSetup({ userName: name.trim() });
     setSavedFlash(true);
     setTimeout(() => setSavedFlash(false), 2200);
   };
@@ -225,6 +267,11 @@ export default function Settings() {
                 email={email}
                 name={name}
                 photo={photo}
+                /* Participant-only mode: no launched contest, but has
+                   joined contests → use the same default illustration
+                   the participant chat / status pages use, so the
+                   identity stays consistent across surfaces. */
+                defaultPhoto={!realContest && joinedRows.length > 0 ? heroProfile3 : undefined}
                 tone={segmentTone}
                 activeContest={
                   currentContest
@@ -233,6 +280,13 @@ export default function Settings() {
                         name: currentContest.name,
                         ...describeContestStatus(currentContest),
                         tone: segmentTone,
+                        /* Participant-only mode → contest card in the
+                           dropdown stays on the workspace (creator
+                           manage page would be the wrong destination).
+                           Real-creator mode → default contest route. */
+                        to: !realContest && joinedRows.length > 0
+                          ? '/v4/settings'
+                          : undefined,
                       }
                     : null
                 }
@@ -241,130 +295,174 @@ export default function Settings() {
           </header>
 
           <div className="v4-review-inner">
-            {/* ── Page heading ─────────────────────────────────── */}
+            {/* ── Page heading ───────────────────────────────────
+                Subtitle adapts to what's actually on the page so it
+                never promises a section the user can't see. Three
+                cases:
+                  - Creator with a launched contest → mentions billing
+                  - Participant only (no launched contest) → mentions
+                    just the contests they've joined
+                  - Fresh user (nothing yet) → friendly catch-all */}
             <div className="v4-settings-head">
               <h1 className="v4-settings-title">My workspace</h1>
               <p className="v4-settings-subtitle">
-                Your contests, billing, and account in one place.
+                {realContest
+                  ? 'Your contests, billing, and account in one place.'
+                  : joinedRows.length > 0
+                    ? 'Your contests and account, in one place.'
+                    : 'Your account — and the home for any contest you run or join.'}
               </p>
             </div>
 
-            {/* ── Contests section (drafts + live + closed) ─────── */}
-            <section className="v4-settings-section">
-              <header className="v4-settings-section-head">
-                <ListBullets weight="duotone" size={18} />
-                <h2>Contests</h2>
-              </header>
+            {/* ── CONTESTS YOU'VE JOINED ────────────────────────────
+                Joined contests come FIRST: if you signed in as a
+                participant, that's the only thing you care about. If
+                you've also launched your own, you'll still see this
+                section first because invitations from other people
+                are time-sensitive (submissions / votes open / close)
+                while your own running contest is a slower-burn item. */}
+            {joinedRows.length > 0 && (
+              <section className="v4-settings-section">
+                <header className="v4-settings-section-head">
+                  <ListBullets weight="duotone" size={18} />
+                  <h2>Contests you've joined</h2>
+                </header>
+                {joinedRows.map(({ participation, contest, row }) => (
+                  <JoinedContestRow
+                    key={contest.id}
+                    participation={participation}
+                    contest={contest}
+                    row={row}
+                    navigate={navigate}
+                  />
+                ))}
+              </section>
+            )}
 
-              {/* CURRENT CONTEST — the only fully-tinted card. Hierarchy
-                  of one: this gets the user's full attention because it
-                  needs action right now. */}
-              {(() => {
-                const status = describeContestStatus(currentContest);
-                // Prefer a contest-specific icon (e.g. SoccerBall for the
-                // sports mock) over the generic tier icon (UsersThree).
-                const TierIcon = currentContest.Icon || currentContest.tierInfo.Icon;
-                // segmentTone always matches the displayed contest now
-                // (subId follows real → fallback to mock).
-                return (
-                  <div
-                    className="v4-settings-current"
-                    style={{ background: segmentTone.bg + '40' }}
-                  >
-                    <span
-                      className="v4-settings-current-icon"
-                      style={{ background: segmentTone.bg, color: segmentTone.fg }}
-                      aria-hidden="true"
+            {/* ── CONTESTS YOU'RE RUNNING ─────────────────────────
+                Two visual treatments:
+                - WITH a real contest: full section with header, the
+                  big tinted "current" card, closed-contest history,
+                  and a quiet "start another" footer.
+                - WITHOUT: no header, no big empty card — just a quiet
+                  inline "Start a contest" prompt that lives politely
+                  under the joined contests, so participants who never
+                  intend to run one aren't pestered. */}
+            {realContest ? (
+              <section className="v4-settings-section">
+                <header className="v4-settings-section-head">
+                  <ListBullets weight="duotone" size={18} />
+                  <h2>Contests you're running</h2>
+                </header>
+
+                {(() => {
+                  const status = describeContestStatus(realContest);
+                  const TierIcon = realContest.Icon || realContest.tierInfo.Icon;
+                  return (
+                    <div
+                      className="v4-settings-current"
+                      style={{ background: segmentTone.bg + '40' }}
                     >
-                      <TierIcon weight="duotone" size={22} />
-                    </span>
-                    <div className="v4-settings-current-text">
-                      <div className="v4-settings-current-eyebrow">
-                        <span className="v4-manage-live-dot" aria-hidden="true"></span>
-                        <span>{status.phase.toUpperCase()}</span>
-                        {status.daysLeft !== null && status.phase !== 'Closed' && (
-                          <>
-                            <span className="v4-settings-current-sep">·</span>
-                            <span>
-                              {status.daysLeft === 0 ? 'Closes today'
-                                : status.daysLeft === 1 ? '1 day left'
-                                : `${status.daysLeft} days left`}
-                            </span>
-                          </>
-                        )}
+                      <span
+                        className="v4-settings-current-icon"
+                        style={{ background: segmentTone.bg, color: segmentTone.fg }}
+                        aria-hidden="true"
+                      >
+                        <TierIcon weight="duotone" size={22} />
+                      </span>
+                      <div className="v4-settings-current-text">
+                        <div className="v4-settings-current-eyebrow">
+                          <span className="v4-manage-live-dot" aria-hidden="true"></span>
+                          <span>{status.phase.toUpperCase()}</span>
+                          {status.daysLeft !== null && status.phase !== 'Closed' && (
+                            <>
+                              <span className="v4-settings-current-sep">·</span>
+                              <span>
+                                {status.daysLeft === 0 ? 'Closes today'
+                                  : status.daysLeft === 1 ? '1 day left'
+                                  : `${status.daysLeft} days left`}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                        <div className="v4-settings-current-name">
+                          {realContest.name}
+                        </div>
+                        <div className="v4-settings-current-meta">
+                          {realContest.tierInfo.label} contest · paid ${realContest.tierInfo.price}
+                        </div>
                       </div>
-                      <div className="v4-settings-current-name">
-                        {currentContest.name}
-                      </div>
-                      <div className="v4-settings-current-meta">
-                        {currentContest.tierInfo.label} contest · paid ${currentContest.tierInfo.price}
-                      </div>
+                      <button
+                        type="button"
+                        className="v4-settings-btn v4-settings-btn-primary"
+                        onClick={() => navigate(`/v4/contest/${realContest.id}`)}
+                      >
+                        Manage
+                        <ArrowRight weight="bold" size={14} />
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      className="v4-settings-btn v4-settings-btn-primary"
-                      onClick={() => navigate(`/v4/contest/${currentContest.id}`)}
+                  );
+                })()}
+
+                {/* PAST CLOSED — only when there's a real creator
+                    history. In participant-only simulation, closed
+                    contests vanish too (nothing to show). */}
+                {closedContests.map((closed) => {
+                  const closedTier = TIER_INFO[closed.tierKey] || TIER_INFO.personal;
+                  const ClosedIcon = closedTier.Icon;
+                  return (
+                    <div
+                      key={closed.id}
+                      className="v4-settings-contest-row v4-settings-contest-row-closed"
                     >
-                      Manage
-                      <ArrowRight weight="bold" size={14} />
-                    </button>
-                  </div>
-                );
-              })()}
-
-
-              {/* PAST CLOSED contests — quiet history rows. Visually
-                  subdued so they don't compete with the colored ongoing
-                  card above: grey stripe (no tier color), muted text,
-                  reduced opacity. Still accessible, just whispered. */}
-              {closedContests.map((closed) => {
-                const closedTier = TIER_INFO[closed.tierKey] || TIER_INFO.personal;
-                const ClosedIcon = closedTier.Icon;
-                return (
-                  <div
-                    key={closed.id}
-                    className="v4-settings-contest-row v4-settings-contest-row-closed"
-                  >
-                    <span className="v4-settings-contest-row-icon" aria-hidden="true">
-                      <ClosedIcon weight="duotone" size={18} />
-                    </span>
-                    <div className="v4-settings-contest-row-text">
-                      <div className="v4-settings-contest-row-eyebrow">
-                        <Trophy weight="bold" size={11} />
-                        <span>Closed {closed.closedAgo} · won "{closed.winner}"</span>
+                      <span className="v4-settings-contest-row-icon" aria-hidden="true">
+                        <ClosedIcon weight="duotone" size={18} />
+                      </span>
+                      <div className="v4-settings-contest-row-text">
+                        <div className="v4-settings-contest-row-eyebrow">
+                          <Trophy weight="bold" size={11} />
+                          <span>Closed {closed.closedAgo} · won "{closed.winner}"</span>
+                        </div>
+                        <div className="v4-settings-contest-row-name">
+                          {closed.name}
+                        </div>
                       </div>
-                      <div className="v4-settings-contest-row-name">
-                        {closed.name}
-                      </div>
+                      <button
+                        type="button"
+                        className="v4-settings-btn v4-settings-btn-link"
+                        onClick={() => window.alert('Results page lands when we build it.')}
+                      >
+                        View results
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      className="v4-settings-btn v4-settings-btn-link"
-                      onClick={() => window.alert('Results page lands when we build it.')}
-                    >
-                      View results
-                    </button>
-                  </div>
-                );
-              })}
+                  );
+                })}
 
-              {/* Quiet "start another" action — bottom of contests section */}
-              <div className="v4-settings-newcontest-quiet">
-                <button
-                  type="button"
-                  className="v4-settings-btn v4-settings-btn-secondary"
-                  onClick={handleStartNewContest}
-                >
-                  <Plus weight="bold" size={14} />
-                  Start another contest
-                </button>
-                <span className="v4-settings-newcontest-quiet-meta">
-                  One-time fee · Personal $9 · Group $29 · Business $89
-                </span>
-              </div>
-            </section>
+                {/* Quiet "start another" footer. */}
+                <div className="v4-settings-newcontest-quiet">
+                  <button
+                    type="button"
+                    className="v4-settings-btn v4-settings-btn-secondary"
+                    onClick={handleStartNewContest}
+                  >
+                    <Plus weight="bold" size={14} />
+                    Start another contest
+                  </button>
+                  <span className="v4-settings-newcontest-quiet-meta">
+                    One-time fee · Personal $9 · Group $29 · Business $89
+                  </span>
+                </div>
+              </section>
+            ) : null /* Quiet "Start a contest" nudge lives at the
+                        very bottom of the page (after the Account
+                        section) so it stays out of the way. */}
 
-            {/* ── Billing section (compact, collapsed by default) ── */}
+            {/* ── Billing section (compact, collapsed by default) ──
+                Only shown after the user has launched a real contest —
+                participants and never-launched creators have nothing to
+                bill, so the section is hidden entirely (no Visa-on-file
+                placeholder, no "no purchases yet" empty state). */}
+            {realContest && (
             <section className={`v4-settings-section v4-settings-section-compact ${billingOpen ? 'is-open' : ''}`}>
               <button
                 type="button"
@@ -439,6 +537,7 @@ export default function Settings() {
                 </div>
               )}
             </section>
+            )}
 
             {/* ── Account section (compact, collapsed by default) ── */}
             <section className={`v4-settings-section v4-settings-section-compact ${accountOpen ? 'is-open' : ''}`}>
@@ -450,7 +549,7 @@ export default function Settings() {
               >
                 <span className="v4-settings-account-photo" aria-hidden="true">
                   <img
-                    src={photo || heroProfile1}
+                    src={photo || (!realContest && joinedRows.length > 0 ? heroProfile3 : heroProfile1)}
                     alt=""
                     className={`v4-settings-account-photo-img ${photo ? 'is-custom' : 'is-default'}`}
                   />
@@ -487,7 +586,7 @@ export default function Settings() {
                       aria-label="Change profile photo"
                     >
                       <img
-                        src={photo || heroProfile1}
+                        src={photo || (!realContest && joinedRows.length > 0 ? heroProfile3 : heroProfile1)}
                         alt=""
                         className={`v4-settings-photo-img ${photo ? 'is-custom' : 'is-default'}`}
                       />
@@ -546,20 +645,28 @@ export default function Settings() {
                       />
                     </label>
 
+                    {/* Email is locked. It's the magic-link sign-in
+                        identity, so changing it would orphan the
+                        account. Shown read-only so the user knows what
+                        we have on file. In the future this could open
+                        a "change email" confirmation flow. */}
                     <label className="v4-settings-field">
                       <span className="v4-settings-field-label">Email</span>
                       <div className="v4-settings-input-with-icon">
                         <EnvelopeSimple weight="bold" size={14} className="v4-settings-input-icon" />
                         <input
                           type="email"
-                          className="v4-settings-input v4-settings-input-padded"
+                          className="v4-settings-input v4-settings-input-padded v4-settings-input-locked"
                           value={email}
-                          onChange={(e) => setEmail(e.target.value)}
+                          readOnly
+                          disabled
+                          aria-readonly="true"
+                          tabIndex={-1}
                           placeholder="you@example.com"
                         />
                       </div>
                       <span className="v4-settings-field-hint">
-                        Where contest updates and receipts are sent.
+                        Tied to your sign-in — can't be changed here.
                       </span>
                     </label>
 
@@ -575,9 +682,114 @@ export default function Settings() {
                 </div>
               )}
             </section>
+
+            {/* ── QUIET "START A CONTEST" NUDGE ──────────────────
+                Bottom of the page, only for users who haven't
+                launched anything yet. One soft line so participants
+                aren't pestered — they can run their own naming
+                contest whenever they're ready. */}
+            {!realContest && (
+              <p className="v4-settings-start-nudge">
+                Want to name something of your own?{' '}
+                <button
+                  type="button"
+                  className="v4-settings-start-nudge-link"
+                  onClick={handleStartNewContest}
+                >
+                  Start a contest <ArrowRight weight="bold" size={12} />
+                </button>
+              </p>
+            )}
           </div>
         </main>
       </div>
+    </div>
+  );
+}
+
+// ── Joined contest row — with live countdown + greyed-out vote button.
+// Lives at the bottom of the file because it uses its own hook
+// (useCountdown) so it has to be a component, not inline JSX in map.
+function JoinedContestRow({ participation, contest, row, navigate }) {
+  const tier = TIER_INFO[contest.tierKey] || TIER_INFO.group;
+  const JoinedIcon = contest.Icon || tier.Icon;
+  const votingOpensAt =
+    Number.isFinite(contest.launchedAt) && Number.isFinite(contest.submissionDays)
+      ? contest.launchedAt + contest.submissionDays * 86400000
+      : null;
+  const countdown = useCountdown(votingOpensAt);
+  const submittedCount = participation?.submittedNames?.length || 0;
+  const votedCount = participation?.votedFor?.length || 0;
+  const hasSubmitted = submittedCount > 0;
+  const hasVoted = votedCount > 0;
+
+  // What action lives on the right side of the row:
+  //   - No submissions yet → "Suggest a name" → /submit
+  //   - Submitted, voting not open → greyed Vote button + countdown
+  //   - Voting open, not voted → enabled Vote button
+  //   - Voted → no button (just status)
+  let actionUI = null;
+  if (!hasSubmitted) {
+    actionUI = (
+      <button
+        type="button"
+        className="v4-settings-btn v4-settings-btn-secondary"
+        onClick={() => navigate(`/v4/contest/${contest.id}/submit`)}
+      >
+        Suggest a name
+        <ArrowRight weight="bold" size={14} />
+      </button>
+    );
+  } else if (hasVoted) {
+    actionUI = (
+      <span className="v4-settings-joined-voted">Voted ✓</span>
+    );
+  } else {
+    const showCountdown = !countdown.isReady && !countdown.unknown;
+    actionUI = (
+      <div className="v4-settings-joined-vote">
+        {showCountdown && (
+          <div className="v4-settings-joined-countdown" title="Time until voting opens">
+            <Clock weight="duotone" size={11} />
+            <span className="v4-settings-joined-countdown-time">
+              {countdown.d}d {pad2(countdown.h)}:{pad2(countdown.m)}:{pad2(countdown.s)}
+            </span>
+          </div>
+        )}
+        <button
+          type="button"
+          className="v4-settings-btn v4-settings-btn-primary v4-settings-joined-vote-btn"
+          onClick={() => navigate(`/v4/contest/${contest.id}/vote`)}
+          disabled={!countdown.isReady}
+          title={countdown.isReady ? 'Cast your vote' : 'Voting opens soon'}
+        >
+          {countdown.isReady ? 'Vote now' : 'Vote'}
+          {countdown.isReady && <ArrowRight weight="bold" size={14} />}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="v4-settings-contest-row v4-settings-contest-row-joined"
+      style={{ '--row-accent': tier.tint }}
+    >
+      <span className="v4-settings-contest-row-icon" aria-hidden="true">
+        <JoinedIcon weight="duotone" size={18} />
+      </span>
+      <div className="v4-settings-contest-row-text">
+        <div className="v4-settings-contest-row-eyebrow">
+          <span>{row.phaseLabel}</span>
+        </div>
+        <div className="v4-settings-contest-row-name">
+          {contest.name}
+        </div>
+        <div className="v4-settings-contest-row-desc">
+          {row.description}
+        </div>
+      </div>
+      {actionUI}
     </div>
   );
 }

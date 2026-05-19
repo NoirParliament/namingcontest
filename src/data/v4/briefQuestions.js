@@ -28,6 +28,15 @@ export const BRIEF_QUESTIONS = {
     suggestedDeadlineDays: 10,
     questions: [
       {
+        id: 'projectSummary',
+        label: 'About this',
+        prompt: 'What does the company do?',
+        type: 'textarea',
+        rows: 3,
+        required: true,
+        placeholder: `e.g. An AI-powered project management tool for distributed engineering teams. We help engineering managers spot work that's stuck before it slips a sprint.`,
+      },
+      {
         id: 'currentName',
         label: 'Current name',
         prompt: 'What is your current brand name?',
@@ -107,6 +116,15 @@ export const BRIEF_QUESTIONS = {
     suggestedDeadlineDays: 10,
     questions: [
       {
+        id: 'projectSummary',
+        label: 'About this',
+        prompt: 'What is this product?',
+        type: 'textarea',
+        rows: 3,
+        required: true,
+        placeholder: 'e.g. An iOS app that helps freelancers track billable hours by project. It auto-tags time blocks based on which app you had open.',
+      },
+      {
         id: 'prodDesc',
         label: 'What does this product / service do?',
         prompt: 'What does it do, who is it for, and what is the core benefit in one sentence?',
@@ -176,6 +194,15 @@ export const BRIEF_QUESTIONS = {
     suggestedDeadlineDays: 10,
     questions: [
       {
+        id: 'projectSummary',
+        label: 'About this',
+        prompt: `What's this project about?`,
+        type: 'textarea',
+        rows: 3,
+        required: true,
+        placeholder: 'e.g. A 6-month internal migration of our customer data from Snowflake to BigQuery. Touches every analytics pipeline and three customer-facing dashboards.',
+      },
+      {
         id: 'projDesc',
         label: 'What is this project / initiative?',
         prompt: `Describe the project's goal, scope, and who it affects.`,
@@ -215,6 +242,15 @@ export const BRIEF_QUESTIONS = {
     label: 'Rebrand',
     suggestedDeadlineDays: 10,
     questions: [
+      {
+        id: 'projectSummary',
+        label: 'About this',
+        prompt: `What's the company being rebranded?`,
+        type: 'textarea',
+        rows: 3,
+        required: true,
+        placeholder: 'e.g. A 30-year-old commercial real estate firm pivoting into residential. Old name leans corporate; we need something that lands warmer with homeowners.',
+      },
       {
         id: 'currentName',
         label: 'Current name',
@@ -281,6 +317,15 @@ export const BRIEF_QUESTIONS = {
     suggestedDeadlineDays: 10,
     questions: [
       {
+        id: 'projectSummary',
+        label: 'About this',
+        prompt: 'What is this?',
+        type: 'textarea',
+        rows: 3,
+        required: true,
+        placeholder: 'e.g. Our annual 3-day company retreat where every department demos what they\'re building. Around 200 people fly in; we want a name that makes them feel something.',
+      },
+      {
         id: 'groupDesc',
         label: 'Describe what you are naming',
         prompt: `In a few sentences, describe what you're naming and what makes it unique.`,
@@ -314,6 +359,15 @@ export const BRIEF_QUESTIONS = {
     label: 'Sports team',
     suggestedDeadlineDays: 7,
     questions: [
+      {
+        id: 'projectSummary',
+        label: 'About this',
+        prompt: 'Tell us about the team.',
+        type: 'textarea',
+        rows: 3,
+        required: true,
+        placeholder: 'e.g. A Sunday-league 7-a-side football team in the Brookside Adult Rec League Division B. Mostly mates from work who took it more seriously than expected.',
+      },
       {
         id: 'sportLeague',
         label: 'Sport and league / competition',
@@ -389,6 +443,15 @@ export const BRIEF_QUESTIONS = {
     suggestedDeadlineDays: 10,
     questions: [
       {
+        id: 'projectSummary',
+        label: 'About this',
+        prompt: 'Tell us about the band.',
+        type: 'textarea',
+        rows: 3,
+        required: true,
+        placeholder: 'e.g. A 4-piece dream-pop band from Bristol with one EP out. Booked for a small US tour in the fall and need a name we can grow into.',
+      },
+      {
         id: 'genre',
         label: 'Genre / Sound',
         prompt: `What's your genre and sound?`,
@@ -447,6 +510,15 @@ export const BRIEF_QUESTIONS = {
     suggestedDeadlineDays: 10,
     questions: [
       {
+        id: 'projectSummary',
+        label: 'About this',
+        prompt: `What's the show about?`,
+        type: 'textarea',
+        rows: 3,
+        required: true,
+        placeholder: 'e.g. A weekly interview show with first-time founders about the year before product-market fit. Honest, slow conversations — not a hype podcast.',
+      },
+      {
         id: 'showDesc',
         label: 'What is your show about?',
         prompt: `What is the show about, and who is it for?`,
@@ -490,6 +562,15 @@ export const BRIEF_QUESTIONS = {
     label: 'Civic / school / nonprofit',
     suggestedDeadlineDays: 10,
     questions: [
+      {
+        id: 'projectSummary',
+        label: 'About this',
+        prompt: 'What does this organization do?',
+        type: 'textarea',
+        rows: 3,
+        required: true,
+        placeholder: 'e.g. We run free coding workshops for teenagers in three South Side neighborhoods. Working name is placeholder; donors keep asking what to put on the check.',
+      },
       {
         id: 'orgType',
         label: 'Organization type',
@@ -541,6 +622,15 @@ export const BRIEF_QUESTIONS = {
     label: 'Gaming group',
     suggestedDeadlineDays: 5,
     questions: [
+      {
+        id: 'projectSummary',
+        label: 'About this',
+        prompt: 'Tell us about the squad.',
+        type: 'textarea',
+        rows: 3,
+        required: true,
+        placeholder: 'e.g. A 6-player Valorant roster playing Diamond rank in NA East. Mix of an old college clan and two pickups — first time we\'re properly registering as a team.',
+      },
       {
         id: 'games',
         label: 'Games you play',
@@ -604,6 +694,15 @@ export const BRIEF_QUESTIONS = {
     suggestedDeadlineDays: 10,
     questions: [
       {
+        id: 'projectSummary',
+        label: 'About this',
+        prompt: 'What is this group?',
+        type: 'textarea',
+        rows: 3,
+        required: true,
+        placeholder: `e.g. A monthly potluck club of 8 friends who've been meeting since college. Almost a decade in and someone finally said 'we should name this.'`,
+      },
+      {
         id: 'groupDesc',
         label: 'Describe your group',
         prompt: 'What kind of group is this, and what do you do together?',
@@ -639,6 +738,15 @@ export const BRIEF_QUESTIONS = {
     label: 'Baby name',
     suggestedDeadlineDays: 7,
     questions: [
+      {
+        id: 'projectSummary',
+        label: 'About this',
+        prompt: 'Tell us about the baby — anything that might help shape the name.',
+        type: 'textarea',
+        rows: 3,
+        required: true,
+        placeholder: `e.g. First baby, a girl, due in March. We want something timeless but not in this year's top 100, and ideally something that travels well across our two families' languages.`,
+      },
       {
         id: 'dueDate',
         label: 'When is your baby due?',
@@ -726,6 +834,15 @@ export const BRIEF_QUESTIONS = {
     suggestedDeadlineDays: 5,
     questions: [
       {
+        id: 'projectSummary',
+        label: 'About this',
+        prompt: 'Tell us about the pet — personality, looks, anything fun.',
+        type: 'textarea',
+        rows: 3,
+        required: true,
+        placeholder: 'e.g. A 10-week-old female golden retriever puppy. Goofy, sleeps in weird positions, and has a permanent zoomies mode. Will be our first dog.',
+      },
+      {
         id: 'petType',
         label: 'What kind of pet?',
         prompt: `What kind of pet are you naming?`,
@@ -785,6 +902,15 @@ export const BRIEF_QUESTIONS = {
     label: 'Home / property / fun',
     suggestedDeadlineDays: 7,
     questions: [
+      {
+        id: 'projectSummary',
+        label: 'About this',
+        prompt: 'Tell us about the place.',
+        type: 'textarea',
+        rows: 3,
+        required: true,
+        placeholder: 'e.g. A 1920s lake cabin in northern Wisconsin we just inherited from my grandmother. Sits between two big pines, the dock is original, and the kitchen still has her wallpaper.',
+      },
       {
         id: 'namingTarget',
         label: 'What are you naming?',
@@ -852,6 +978,15 @@ export const BRIEF_QUESTIONS = {
     label: 'Something else (personal)',
     suggestedDeadlineDays: 10,
     questions: [
+      {
+        id: 'projectSummary',
+        label: 'About this',
+        prompt: 'What are you naming?',
+        type: 'textarea',
+        rows: 3,
+        required: true,
+        placeholder: `e.g. Our weekly Saturday brunch tradition with 6 close friends — currently in year 4 and still unnamed. We've talked about printing T-shirts, which is the moment we realized it needs a name.`,
+      },
       {
         id: 'groupDesc',
         label: 'Describe what you are naming',

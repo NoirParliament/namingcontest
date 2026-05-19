@@ -7,14 +7,19 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Gear, SignOut, ArrowRight, CaretDown } from '@phosphor-icons/react';
 import heroProfile1 from '../../assets/hero-profile-1.png';
 
-export default function AvatarMenu({ email, name, photo, tone, activeContest }) {
+export default function AvatarMenu({ email, name, photo, defaultPhoto, tone, activeContest }) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
   const navigate = useNavigate();
 
   const fallbackTone = { bg: '#fadecc', fg: '#9c4818' };
   const t = tone || fallbackTone;
-  const photoSrc = photo || heroProfile1;
+  // `photo` = real upload from the user; falls back to a per-page
+  // default illustration (`defaultPhoto`), else heroProfile1. We track
+  // whether we're showing a default so CSS can apply the face-zoom
+  // transform without zooming real selfies.
+  const isDefault = !photo;
+  const photoSrc = photo || defaultPhoto || heroProfile1;
 
   // Close on outside click / Escape
   useEffect(() => {
@@ -51,7 +56,7 @@ export default function AvatarMenu({ email, name, photo, tone, activeContest }) 
           <img
             src={photoSrc}
             alt=""
-            className={`v4-avatar-photo ${photo ? 'is-custom' : 'is-default'}`}
+            className={`v4-avatar-photo ${isDefault ? 'is-default' : 'is-custom'}`}
           />
         </span>
         {/* Caret signals "this is a menu trigger, not just a photo".
@@ -77,7 +82,10 @@ export default function AvatarMenu({ email, name, photo, tone, activeContest }) 
             <>
               <div className="v4-avatar-dropdown-divider" aria-hidden="true"></div>
               <Link
-                to={`/v4/contest/${activeContest.id}`}
+                /* Pages can pass `to` on activeContest to override the
+                   default route. Used by participant pages to send the
+                   user to /status instead of the creator's manage page. */
+                to={activeContest.to || `/v4/contest/${activeContest.id}`}
                 className="v4-avatar-dropdown-contest"
                 role="menuitem"
                 onClick={() => setOpen(false)}

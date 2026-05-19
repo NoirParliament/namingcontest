@@ -68,6 +68,16 @@
   flex: none;
   text-decoration: none;
 }
+/* When the brand is a <button> (scroll-to-top trigger) instead of
+   a <Link>, strip the default button chrome so it looks identical. */
+.v4-brand-button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  color: inherit;
+  cursor: pointer;
+}
 .v4-logo {
   height: 22px;
   width: auto;
@@ -5006,6 +5016,14 @@ input.v4-results-search-input::placeholder {
   width: 100%;
   height: 100%;
   display: block;
+  object-fit: cover;
+}
+/* Zoom in tighter on the face — the hero-profile illustrations have
+   wide negative space around the head. Skip the zoom for `is-custom`
+   uploads (those are user photos, already framed by them). */
+.v4-avatar-btn .v4-avatar-photo.is-default {
+  transform: scale(2.2);
+  transform-origin: center 28%;
 }
 .v4-avatar-caret {
   display: inline-flex;
@@ -5307,6 +5325,34 @@ input.v4-results-search-input::placeholder {
   font-style: italic;
   text-align: left;
   color: var(--v4-muted);
+}
+
+/* "or" divider between primary magic-link form and the participant
+   shortcut. Subtle hairline with the word centered. */
+.v4-signin-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0 14px;
+  color: var(--v4-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.v4-signin-divider::before,
+.v4-signin-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--v4-border);
+}
+
+/* Participant-mode secondary action — full width so it visually
+   balances the magic-link primary button above it. */
+.v4-signin-participant {
+  width: 100%;
+  justify-content: center;
 }
 .v4-signin-link {
   background: transparent;
@@ -5620,9 +5666,13 @@ input.v4-results-search-input::placeholder {
   color: var(--v4-muted);
   pointer-events: none;
 }
+/* Specificity matters: globals.css has `input[type="text"]:focus`
+   (0,2,1) painting a lime-green ring. Plain `.v4-settings-input:focus`
+   is only (0,2,0) and loses. Compound with the element tag so we
+   match (0,2,1) and win on source order (v4.css loads after globals).
+   Same trick for textarea. */
 input.v4-settings-input,
-input.v4-settings-input:focus,
-input.v4-settings-input:hover {
+textarea.v4-settings-input {
   width: 100%;
   padding: 11px 14px;
   background: #ffffff;
@@ -5641,7 +5691,9 @@ input.v4-settings-input:hover {
 input.v4-settings-input-padded {
   padding-left: 38px;
 }
-input.v4-settings-input:focus {
+input.v4-settings-input:focus,
+textarea.v4-settings-input:focus {
+  /* Ink-tinted ring on focus for both <input> and <textarea>. */
   border-color: rgba(3, 3, 2, 0.4);
   box-shadow: 0 0 0 3px var(--v4-ring);
 }
@@ -5780,6 +5832,94 @@ input.v4-settings-input:-webkit-autofill:active {
   font-size: 13px;
   color: var(--v4-muted);
   font-style: italic;
+}
+
+/* Empty state for "Contests you're running" — friendly + actionable.
+   Dashed border for "nothing here yet" feel, but with a primary CTA
+   so the next step is obvious. */
+.v4-settings-empty-running {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px;
+  border: 1px dashed var(--v4-faint);
+  border-radius: 14px;
+  margin-bottom: 6px;
+}
+.v4-settings-empty-running-text {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13.5px;
+  color: var(--v4-muted);
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+
+/* Description line on joined-contest rows — sits below the name and
+   tells the participant what they need to do (or when they need to
+   come back). */
+.v4-settings-contest-row-desc {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12.5px;
+  color: var(--v4-muted);
+  margin-top: 4px;
+  letter-spacing: -0.005em;
+}
+/* Joined-row variant — slightly stronger left stripe than closed
+   variant, full color text since the action is live. */
+.v4-settings-contest-row-joined {
+  background: #ffffff;
+}
+.v4-settings-contest-row-joined .v4-settings-contest-row-name {
+  color: var(--v4-fg);
+}
+
+/* ── Joined-row right-side: countdown + greyed vote button ───────
+   Stacked vertically: small ticking time on top, the Vote CTA below.
+   The button stays disabled (faded + cursor not-allowed) until the
+   countdown hits zero, at which point it lights up and routes the
+   user to /vote. */
+.v4-settings-joined-vote {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+.v4-settings-joined-countdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--v4-muted);
+  font-variant-numeric: tabular-nums;
+}
+.v4-settings-joined-countdown-time {
+  letter-spacing: 0.01em;
+}
+.v4-settings-joined-vote-btn:disabled,
+.v4-settings-joined-vote-btn[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  background: #ffffff;
+  color: var(--v4-fg);
+  border-color: var(--v4-faint);
+}
+.v4-settings-joined-vote-btn:disabled:hover,
+.v4-settings-joined-vote-btn[disabled]:hover {
+  background: #ffffff;
+  color: var(--v4-fg);
+  transform: none;
+  box-shadow: none;
+}
+.v4-settings-joined-voted {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--v4-muted);
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--v4-bubble-bg);
 }
 
 /* SECONDARY contest rows — drafts and closed contests. Outlined,
@@ -5922,6 +6062,72 @@ input.v4-settings-input:-webkit-autofill:active {
 .v4-settings-newcontest-quiet-meta {
   font-size: 12px;
   color: var(--v4-muted);
+}
+
+/* Standalone variant — used when there's no "Running" section above
+   it (i.e. the user hasn't launched anything). No top border because
+   there's nothing to separate from, smaller top margin so it sits
+   close to whatever's above (page heading or joined section). */
+.v4-settings-newcontest-quiet-standalone {
+  margin-top: 8px;
+  padding-top: 0;
+  border-top: none;
+}
+
+/* Quiet "start your own contest" nudge for participants who haven't
+   launched anything. One soft line of text with an inline link-style
+   button — deliberately not a card, not a button, not a section. Just
+   sits between the joined contests and the account section with
+   enough air on both sides that it reads as a friendly aside rather
+   than an action the app is pushing. */
+.v4-settings-start-nudge {
+  /* Sits at the very bottom of the page: comfortable top margin
+     above (separates from the account section) and breathing room
+     below (so it doesn't kiss the bottom of the viewport). */
+  margin: 24px 4px 40px;
+  padding: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--v4-muted);
+  text-align: center;
+}
+.v4-settings-start-nudge-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--v4-fg);
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 120ms ease;
+}
+.v4-settings-start-nudge-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.v4-settings-start-nudge-link svg {
+  transition: transform 120ms ease;
+}
+.v4-settings-start-nudge-link:hover svg {
+  transform: translateX(2px);
+}
+
+/* Email-locked input: visually obvious it can't be edited, but not
+   so washed out that the user can't read their own address. */
+.v4-settings-input-locked {
+  background: var(--v4-faint);
+  color: var(--v4-muted);
+  cursor: not-allowed;
+  opacity: 1; /* override the default browser disabled fade */
+}
+.v4-settings-input-locked:focus {
+  outline: none;
+  box-shadow: none;
 }
 
 /* Hint sub-text on a settings row */
@@ -6141,4 +6347,1603 @@ input.v4-settings-input:-webkit-autofill:active {
   }
   .v4-settings-billing-date { grid-column: 1 / -1; }
   .v4-settings-billing-status { grid-column: 2; grid-row: 2; }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   V4 JOIN PAGE  (/v4/join/:contestId)
+   The participant's first impression of the product. Inverted palette:
+   page bg = segment color (football → mint green), bubbles flipped to
+   white. Inviter shows as a real person (photo + name + role). One
+   big exciting CTA up front; the magic-link mechanics only appear
+   AFTER the click so they don't read as "yet another email form."
+   ───────────────────────────────────────────────────────────────── */
+.v4-join-screen {
+  /* Rich segment-color gradient — uses design-doc panel colors as
+     anchors. Lighter wash at the top fades into a deeper saturated
+     version of the segment color at the bottom, with a soft radial
+     highlight that lifts the hero area. NOT a flat color or a plain
+     blur — has depth and direction. */
+  background:
+    radial-gradient(
+      ellipse 80% 60% at 50% 0%,
+      color-mix(in srgb, var(--join-bg, #a6dcb3) 35%, white) 0%,
+      transparent 70%
+    ),
+    linear-gradient(
+      170deg,
+      color-mix(in srgb, var(--join-bg, #a6dcb3) 75%, white) 0%,
+      var(--join-bg, #a6dcb3) 55%,
+      color-mix(in srgb, var(--join-bg, #a6dcb3) 88%, black) 100%
+    );
+  position: relative;
+  overflow: hidden;
+}
+.v4-join-screen-error {
+  background: var(--v4-bg);
+}
+/* On the Join page the main scroll container becomes a three-row
+   flex shell: sticky nav (logo + deadline) at top, centered
+   invitation in the middle, flow-steps footer at the bottom — the
+   footer mirrors the nav by hugging the page's bottom edge with the
+   same horizontal padding so logo + deadline + steps share an
+   alignment grid down both edges of the screen. */
+.v4-join-screen .v4-review {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.v4-join-screen .v4-review > .v4-join-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.v4-join-foot {
+  position: relative;
+  z-index: 2;
+  padding: 16px 24px 28px;
+  display: flex;
+  justify-content: center;
+}
+.v4-join-foot .v4-join-flow {
+  /* Match the same column width as .v4-join-inner so the steps line
+     up edge-to-edge with the hero, prize and CTA above. */
+  max-width: 740px;
+  width: 100%;
+  margin: 0;
+}
+@media (max-width: 720px) {
+  .v4-join-foot {
+    padding: 12px 20px 18px;
+  }
+}
+.v4-join-inner {
+  position: relative;
+  z-index: 2;
+  /* Reset the default v4-review-inner top-margin / pad so the flex
+     centering above isn't fighting an offset. */
+  margin: 0 auto;
+  padding: 32px 24px 48px;
+  width: 100%;
+  text-align: center;
+}
+
+/* Hero, prize, action and flow sections all align center inside
+   the now-centered inner. */
+.v4-join-inner .v4-join-hero-bold,
+.v4-join-inner .v4-join-action {
+  width: 100%;
+}
+.v4-join-inner .v4-join-inviter-line {
+  justify-content: center;
+}
+/* Prize + email entry cards share one narrower ticket-style width so
+   each feels like a focused chip rather than a wall. Headline + flow
+   keep the wider 740px column for breathing room. */
+.v4-join-inner .v4-join-prize,
+.v4-join-inner .v4-join-form-reveal,
+.v4-join-inner .v4-join-sent-card {
+  width: 100%;
+  max-width: 540px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.v4-join-inner .v4-join-action {
+  /* Action wrapper stays full-width so the centered CTA button and
+     the centered-narrower form-reveal both align cleanly under it. */
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.v4-join-inner .v4-join-prize-body {
+  text-align: left; /* prize body reads better left-aligned next to medal */
+}
+.v4-join-nav {
+  /* Keep the default v4-nav 3-column grid (logo left, breadcrumb
+     middle, nav-right slot). Transparent so the segment-colored page
+     palette dominates. */
+  background: transparent !important;
+  border-bottom-color: rgba(255,255,255,0.4) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Center slot of the join nav — holds the inviter sentence so it
+   reads as top-of-page context (same role the breadcrumb plays
+   elsewhere in v4). Overrides the default .v4-progress flex layout
+   so the inviter text can flow as inline-baseline content. */
+.v4-join-nav-inviter {
+  display: inline-flex !important;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--v4-fg);
+  max-width: 100%;
+}
+.v4-join-nav-inviter .v4-join-inviter-name-inline {
+  font-size: 14.5px;
+  font-weight: 700;
+}
+.v4-join-nav-inviter .v4-join-inviter-role-inline {
+  font-size: 13px;
+  opacity: 0.6;
+}
+.v4-join-nav-inviter .v4-join-inviter-invites {
+  font-size: 14px;
+  opacity: 0.78;
+}
+@media (max-width: 820px) {
+  /* On smaller screens the nav has no room for the full sentence —
+     hide the inviter copy and let the page hero carry the context. */
+  .v4-join-nav-inviter { display: none !important; }
+}
+
+/* Deadline pill that lives in the nav's right slot. Soft white pill
+   so it reads on the segment-colored page without competing with
+   the prize card below. */
+.v4-join-nav-deadline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: rgba(255,255,255,0.85);
+  border-radius: 999px;
+  font-size: 12.5px;
+  color: var(--v4-fg);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.06);
+  white-space: nowrap;
+}
+.v4-join-nav-deadline strong {
+  font-weight: 700;
+}
+@media (max-width: 640px) {
+  /* On narrow screens, hide the "Submissions close" prefix and just
+     show the relative time so the pill stays compact. */
+  .v4-join-nav-deadline {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+}
+
+/* ── Join page hero animation ────────────────────────────────────
+   Reuses the full homepage HeroAvatarsAnimation (drifting avatars,
+   typing dots, name bubbles, vote-fly chips, crown). The shared
+   component renders `.hero-av`, `.hero-bubble`, `.hero-crown`, and
+   `.vote-fly` — all styled by landing-v3.css. We only need to make
+   sure the animation root sits behind the content. */
+.v4-join-anim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+/* On narrower screens the side-anchored avatars bleed off and cover
+   content — hide the whole orbit under 1080px. */
+@media (max-width: 1080px) {
+  .v4-join-anim { display: none; }
+}
+
+/* ── White bubbles (inverted palette) ────────────────────────────
+   Drop position/size from the standard blob set but recolor to white
+   with higher opacity so they read against the segment-tinted bg. */
+.v4-join-blob {
+  background: #ffffff !important;
+  opacity: 0.55 !important;
+  z-index: 1;
+}
+.v4-join-blob-1 {
+  width: 320px; height: 320px;
+  top: -60px; right: -100px;
+  filter: blur(1px);
+  animation: v4-blob-drift 14s ease-in-out infinite;
+}
+.v4-join-blob-2 {
+  width: 220px; height: 220px;
+  bottom: 8%; left: -80px;
+  opacity: 0.42 !important;
+  animation: v4-blob-drift 18s ease-in-out -5s infinite;
+}
+.v4-join-blob-3 {
+  width: 140px; height: 140px;
+  top: 32%; left: 6%;
+  opacity: 0.6 !important;
+  animation: v4-blob-drift 20s ease-in-out -9s infinite;
+}
+.v4-join-blob-4 {
+  width: 90px; height: 90px;
+  bottom: 22%; right: 12%;
+  opacity: 0.55 !important;
+  animation: v4-blob-drift 16s ease-in-out -2s infinite;
+}
+.v4-join-blob-5 {
+  width: 60px; height: 60px;
+  top: 70%; left: 38%;
+  opacity: 0.48 !important;
+  animation: v4-blob-drift 22s ease-in-out -7s infinite;
+}
+
+/* ── Hero (bold, no card) ───────────────────────────────────────── */
+.v4-join-hero-bold {
+  margin: 14px 0 32px;
+}
+
+/* Inline inviter row — photo + name + role + "invites you…" all on
+   one horizontal line, reads like a sentence. Wraps on narrow widths. */
+.v4-join-inviter-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+  font-size: 15px;
+  color: var(--v4-fg);
+  line-height: 1.4;
+  animation: v4-join-fade-up 0.6s ease-out both;
+}
+.v4-join-inviter-photo {
+  /* Outer wrapper — no overflow:hidden so the badge can sit outside.
+     The circle border + shadow live on the inner .photo-clip. */
+  position: relative;
+  flex-shrink: 0;
+  display: inline-flex;
+}
+.v4-join-inviter-photo-clip {
+  display: block;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2.5px solid #ffffff;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.14);
+  background: #ffffff;
+}
+.v4-join-inviter-photo img {
+  display: block;
+  object-fit: cover;
+}
+.v4-join-inviter-photo-sm {
+  width: 56px;
+  height: 56px;
+  margin-right: 4px;
+}
+.v4-join-inviter-photo-sm .v4-join-inviter-photo-clip,
+.v4-join-inviter-photo-sm .v4-join-inviter-photo-clip img {
+  width: 56px;
+  height: 56px;
+}
+.v4-join-inviter-photo-sm .v4-join-inviter-photo-clip img {
+  /* Aggressive zoom + top-biased origin so the face fills the
+     circle and no white illustration background shows around it.
+     The .photo-clip wrapper's overflow:hidden does the cropping. */
+  transform: scale(2.2);
+  transform-origin: center 28%;
+}
+.v4-join-inviter-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  /* Sit on top of the scaled photo. */
+  z-index: 2;
+}
+.v4-join-inviter-name-inline {
+  font-weight: 700;
+  font-size: 15.5px;
+  color: var(--v4-fg);
+}
+.v4-join-inviter-role-inline {
+  font-size: 14px;
+  color: var(--v4-fg);
+  opacity: 0.65;
+}
+.v4-join-inviter-invites {
+  font-size: 15px;
+  color: var(--v4-fg);
+  opacity: 0.8;
+  margin-left: 2px;
+}
+
+.v4-join-hero-headline {
+  margin: 0 0 16px;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.018em;
+  color: var(--v4-fg);
+  animation: v4-join-fade-up 0.7s ease-out 0.08s both;
+}
+.v4-join-hero-verb {
+  display: block;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--v4-fg);
+  opacity: 0.55;
+  margin-bottom: 10px;
+}
+.v4-join-hero-workingname {
+  display: block;
+  font-size: 56px;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.022em;
+  /* Ink-dark — same as the rest of the page text. The segment color
+     already lives on the page background; the working name should
+     read like the actual content, not blend into the bg. */
+  color: var(--v4-fg);
+}
+.v4-join-hero-summary {
+  margin: 14px auto 0;
+  max-width: 56ch;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--v4-fg);
+  opacity: 0.7;
+  animation: v4-join-fade-up 0.8s ease-out 0.14s both;
+}
+.v4-join-hero-sub {
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: var(--v4-fg);
+  opacity: 0.78;
+  max-width: 54ch;
+  margin: 0;
+  animation: v4-join-fade-up 0.8s ease-out 0.16s both;
+}
+
+@keyframes v4-join-fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── PRIZE CARD — ticket-stub banner ──────────────────────────────
+   Two-tone horizontal card: a saturated segment-colored band on the
+   left carries the trophy icon; a clean white slab on the right
+   holds the prize copy. A perforated dashed seam between them sells
+   the "ticket" metaphor. Soft segment-colored drop shadow keeps
+   the card grounded in the page palette without flooding it. */
+.v4-join-prize {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  margin: 0 0 22px;
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.05),
+    0 12px 32px -8px rgba(0,0,0,0.18);
+  animation: v4-join-fade-up 0.7s ease-out 0.22s both;
+}
+/* The trophy band — green / segment-colored slab on the left. */
+.v4-join-prize-band {
+  flex-shrink: 0;
+  width: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(
+      155deg,
+      color-mix(in srgb, var(--join-bg, #a6dcb3) 60%, white) 0%,
+      var(--join-bg, #a6dcb3) 100%
+    );
+  color: var(--v4-fg);
+  position: relative;
+}
+/* Perforated seam between the band and the body — sells the ticket
+   metaphor. Dashed vertical line with semicircular cutouts top/bottom. */
+.v4-join-prize-band::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -1px;
+  bottom: 0;
+  width: 2px;
+  background-image: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.18) 0,
+    rgba(0,0,0,0.18) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+  background-size: 100% 12px;
+}
+.v4-join-prize-body {
+  flex: 1;
+  min-width: 0;
+  padding: 18px 22px;
+}
+/* Text colors switch to ink-on-mint now that the card uses the
+   segment color instead of yellow. Eyebrow stays slightly muted to
+   preserve hierarchy; the prize name + desc read as primary content. */
+.v4-join-prize-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--v4-fg);
+  opacity: 0.55;
+  margin-bottom: 3px;
+}
+.v4-join-prize-name {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 24px;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.012em;
+  color: var(--v4-fg);
+  margin-bottom: 6px;
+}
+.v4-join-prize-desc {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--v4-fg);
+  opacity: 0.75;
+}
+
+/* (Deadline moved to nav-right pill — see .v4-join-nav-deadline) */
+
+/* ── PRIMARY ACTION: big CTA → reveals form → sent → success ────── */
+.v4-join-action {
+  margin: 0 0 40px;
+  animation: v4-join-fade-up 0.9s ease-out 0.32s both;
+}
+.v4-join-cta-wrap {
+  text-align: center;
+}
+/* CTA — exact match for the homepage `.btn.btn-primary.btn-lg`.
+   - Fixed size (no width growth on hover; arrow is always visible).
+   - 200%-tall gradient slides top → bottom on hover, color flips
+     from white-on-ink to ink-on-white over 0.55s.
+   - Arrow translates 2px on hover (same as homepage), nothing else. */
+.v4-join-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  /* btn-lg sizing — identical to landing-v3 */
+  padding: 16px 28px;
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 1;
+  color: #ffffff;
+  background: linear-gradient(to top, #ffffff 50%, #030302 50%);
+  background-size: 100% 200%;
+  background-position: top;
+  border: 1px solid #030302;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.06),
+    0 4px 14px rgba(0,0,0,0.08);
+  transition:
+    background-position 0.55s cubic-bezier(0.65, 0, 0.35, 1),
+    color 0.35s ease;
+}
+.v4-join-cta:hover:not(:disabled) {
+  background-position: bottom;
+  color: #030302;
+}
+.v4-join-cta:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+/* Arrow — always visible, just nudges 2px on hover (matches homepage). */
+.v4-join-arrow {
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+.v4-join-cta:hover .v4-join-arrow {
+  transform: translateX(2px);
+}
+
+/* Compact variant kept for the form-row "Continue" + sent-state. */
+.v4-join-cta-compact {
+  padding: 12px 20px;
+  font-size: 14px;
+}
+.v4-join-cta-fine {
+  margin: 14px 0 0;
+  font-size: 12.5px;
+  color: var(--v4-fg);
+  opacity: 0.7;
+}
+
+/* Reveal form (after CTA click) — white card with breathing room */
+.v4-join-form-reveal {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 22px 24px 24px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+  animation: v4-join-fade-up 0.4s ease-out both;
+}
+.v4-join-form-head {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  margin-bottom: 4px;
+  letter-spacing: -0.01em;
+}
+.v4-join-form-why {
+  font-size: 13px;
+  color: var(--v4-muted);
+  margin: 0 0 14px;
+  line-height: 1.5;
+}
+.v4-join-form-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+.v4-join-form-input {
+  flex: 1;
+}
+.v4-join-form-fine {
+  margin: 10px 0 0;
+  font-size: 11.5px;
+  color: var(--v4-muted);
+  text-align: center;
+}
+.v4-join-form-fine-demo {
+  font-style: italic;
+}
+
+/* Sent / success cards */
+.v4-join-sent-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 28px 24px 24px;
+  text-align: center;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+  animation: v4-join-fade-up 0.4s ease-out both;
+}
+.v4-join-sent-card .v4-signin-icon-wrap {
+  margin: 0 auto 12px;
+  /* Tint the sent / success icon to the contest's segment color so the
+     "magic link sent" state feels like a continuation of the page —
+     same green for football, blush for baby, sky for podcast, etc.
+     The default sent-blue / success-mint colors get overridden because
+     this nested selector wins on specificity. */
+  background: color-mix(in srgb, var(--join-bg, #a6dcb3) 55%, white);
+  color: var(--v4-fg);
+}
+.v4-join-sent-title {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  margin: 0 0 6px;
+  letter-spacing: -0.01em;
+}
+.v4-join-sent-sub {
+  font-size: 14px;
+  color: var(--v4-muted);
+  margin: 0 0 18px;
+  line-height: 1.55;
+}
+.v4-join-sent-card .v4-join-cta-compact {
+  margin: 0 auto;
+}
+
+/* ── 3-step flow — horizontal progress strip with thin connectors.
+   No card, no header, no numbers. Three dots on a faint line, each
+   with a bold label + tiny supporting detail underneath. Reads as
+   a glance, not a section. */
+.v4-join-flow {
+  list-style: none;
+  padding: 0;
+  margin: 12px auto 0;
+  max-width: 620px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  position: relative;
+  animation: v4-join-fade-up 1s ease-out 0.4s both;
+}
+/* The connecting line — sits behind the dots, runs between the
+   first and last dot, fades on both ends so it doesn't draw a hard
+   boundary on the page. */
+.v4-join-flow::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 16.66%;
+  right: 16.66%;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0,0,0,0.2) 15%,
+    rgba(0,0,0,0.2) 85%,
+    transparent 100%
+  );
+  z-index: 0;
+}
+.v4-join-flow-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+  padding: 0 8px;
+}
+.v4-join-flow-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--v4-fg);
+  border: 3px solid rgba(255,255,255,0.95);
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.v4-join-flow-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+}
+.v4-join-flow-label strong {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--v4-fg);
+  letter-spacing: -0.005em;
+}
+.v4-join-flow-label em {
+  font-size: 11.5px;
+  font-style: normal;
+  color: var(--v4-fg);
+  opacity: 0.55;
+}
+
+/* Current step — bigger dot, full-opacity label, ring around the
+   dot to read as "you are here". */
+.v4-join-flow-step.is-current .v4-join-flow-dot {
+  width: 16px;
+  height: 16px;
+  background: var(--v4-fg);
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.15),
+    0 0 0 5px color-mix(in srgb, var(--v4-fg) 18%, transparent);
+}
+.v4-join-flow-step.is-current .v4-join-flow-label strong {
+  font-weight: 700;
+}
+.v4-join-flow-step.is-current .v4-join-flow-label em {
+  opacity: 0.85;
+  font-weight: 600;
+}
+
+/* Upcoming steps — muted dot + label so the current step stands out. */
+.v4-join-flow-step.is-upcoming .v4-join-flow-dot {
+  background: rgba(0,0,0,0.18);
+  border-color: rgba(255,255,255,0.7);
+  box-shadow: none;
+}
+.v4-join-flow-step.is-upcoming .v4-join-flow-label strong {
+  color: var(--v4-fg);
+  opacity: 0.5;
+  font-weight: 600;
+}
+.v4-join-flow-step.is-upcoming .v4-join-flow-label em {
+  opacity: 0.4;
+}
+@media (max-width: 560px) {
+  .v4-join-flow {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    max-width: 280px;
+  }
+  .v4-join-flow::before {
+    display: none;
+  }
+}
+
+/* ── Error state (bad invite link) ──────────────────────────────── */
+.v4-join-error {
+  text-align: center;
+  padding: 60px 24px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.v4-join-error-title {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  margin: 0 0 12px;
+  letter-spacing: -0.01em;
+}
+.v4-join-error-body {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--v4-muted);
+  margin: 0 0 24px;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .v4-join-hero-workingname {
+    font-size: 40px;
+  }
+  .v4-join-form-row {
+    flex-direction: column;
+  }
+  .v4-join-inviter-line {
+    font-size: 14px;
+  }
+}
+@media (max-width: 480px) {
+  .v4-join-hero-workingname {
+    font-size: 32px;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   V4 PARTICIPANT CHAT  (/v4/contest/:id/submit)
+   Brief-first, single-shot submission layout.
+   Reuses .v4-chat-inner, .v4-bubble, GuideExpandable, .v4-settings-input
+   from the creator side. Adds: brief card, composite submission card,
+   add-slot button, submit-all row.
+   ───────────────────────────────────────────────────────────────── */
+.v4-pchat-inner {
+  /* Slightly wider than creator chat — the brief card + 3 submission
+     cards need horizontal room without becoming dashboard-wide. */
+  max-width: 680px;
+}
+
+/* ── Brief card ─────────────────────────────────────────────────── */
+.v4-pchat-brief {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 18px;
+  padding: 22px 24px 18px;
+  margin: 12px 0 18px;
+  opacity: 0;
+  animation: v4-bubble-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;
+}
+.v4-pchat-brief-head {
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--v4-faint);
+}
+.v4-pchat-brief-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin-bottom: 6px;
+}
+.v4-pchat-brief-name {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.018em;
+  color: var(--v4-fg);
+  margin: 0 0 6px;
+  line-height: 1.15;
+}
+.v4-pchat-brief-summary {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--v4-muted);
+  font-style: italic;
+  margin: 0;
+}
+.v4-pchat-brief-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+.v4-pchat-brief-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 16px;
+  padding: 6px 0;
+  align-items: baseline;
+}
+.v4-pchat-brief-row-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--v4-muted);
+  letter-spacing: 0.01em;
+}
+.v4-pchat-brief-row-value {
+  font-size: 14px;
+  color: var(--v4-fg);
+  line-height: 1.5;
+}
+.v4-pchat-brief-row-settings .v4-pchat-brief-row-label {
+  color: var(--v4-muted);
+  opacity: 0.85;
+}
+
+/* ── Prior submissions (read-only, from past session) ───────────── */
+.v4-pchat-prior {
+  width: 100%;
+  background: var(--v4-bubble-bg);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin: 8px 0 18px;
+}
+.v4-pchat-prior-head {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin-bottom: 10px;
+}
+.v4-pchat-prior-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 0;
+  border-top: 1px solid var(--v4-faint);
+}
+.v4-pchat-prior-row:first-of-type {
+  border-top: none;
+}
+.v4-pchat-prior-num {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--v4-muted);
+  flex-shrink: 0;
+  padding-top: 4px;
+}
+.v4-pchat-prior-name {
+  font-family: 'Fraunces', Georgia, serif;
+  font-style: italic;
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  letter-spacing: -0.01em;
+  margin-bottom: 2px;
+}
+.v4-pchat-prior-why {
+  font-size: 13px;
+  color: var(--v4-muted);
+  line-height: 1.5;
+}
+
+/* ── Submission form stack ──────────────────────────────────────── */
+.v4-pchat-form-stack {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 6px 0 18px;
+}
+.v4-pchat-card {
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 16px;
+  padding: 18px 20px 16px;
+  opacity: 0;
+  animation: v4-bubble-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.v4-pchat-card-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--v4-faint);
+}
+.v4-pchat-card-title {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 19px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+.v4-pchat-card-of {
+  color: var(--v4-muted);
+  font-weight: 400;
+}
+.v4-pchat-card-tip {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--v4-muted);
+}
+.v4-pchat-card-tip-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--v4-fg);
+  background: var(--v4-bubble-bg);
+  padding: 3px 7px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+/* Compact "rapid-fire" variant — kicks in for submissions 6+
+   when the creator allowed many slots. Slimmer header, no tip
+   (caller passes tip=null past slot 5), tighter padding. */
+.v4-pchat-card-compact {
+  padding: 14px 18px 14px;
+}
+.v4-pchat-card-compact .v4-pchat-card-head {
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+}
+.v4-pchat-card-compact .v4-pchat-card-title {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+}
+.v4-pchat-card-compact .v4-pchat-card-field {
+  margin-bottom: 10px;
+}
+.v4-pchat-card-compact .v4-pchat-textarea {
+  min-height: 48px;
+}
+.v4-pchat-card-field {
+  display: block;
+  margin-bottom: 12px;
+}
+.v4-pchat-card-field:last-child {
+  margin-bottom: 0;
+}
+.v4-pchat-card-label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  margin-bottom: 5px;
+}
+.v4-pchat-card-hint {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 11.5px;
+  color: var(--v4-muted);
+  margin-left: 4px;
+}
+.v4-pchat-textarea {
+  resize: vertical;
+  min-height: 64px;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+/* ── Add another slot button ────────────────────────────────────── */
+.v4-pchat-addslot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1.5px dashed var(--v4-faint);
+  border-radius: 14px;
+  padding: 14px 18px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--v4-muted);
+  cursor: pointer;
+  width: 100%;
+  justify-content: center;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.v4-pchat-addslot:hover {
+  border-color: var(--v4-muted);
+  color: var(--v4-fg);
+}
+
+/* ── Submit-all row ─────────────────────────────────────────────── */
+/* .v4-chat-inner is align-items: flex-start, so the row would only
+   be as wide as its content unless we explicitly stretch it. */
+.v4-pchat-submit-row {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0 40px;
+}
+.v4-pchat-submit-fine {
+  font-size: 12px;
+  color: var(--v4-muted);
+  margin: 0;
+}
+.v4-pchat-submit-warn {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--v4-muted);
+  margin: 0;
+  text-align: center;
+}
+.v4-pchat-submit-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.v4-pchat-keep-adding {
+  background: transparent;
+  border: none;
+  padding: 4px 8px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--v4-muted);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.v4-pchat-keep-adding:hover {
+  color: var(--v4-fg);
+}
+
+/* ── Combined "Naming tips" card (article + fun facts) ──────────── */
+.v4-pchat-tips {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 16px;
+  margin: 0 0 16px;
+  overflow: hidden;
+  opacity: 0;
+  animation: v4-bubble-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s forwards;
+}
+.v4-pchat-tips-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 18px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: var(--v4-fg);
+}
+.v4-pchat-tips-title {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+.v4-pchat-tips-count {
+  font-weight: 500;
+  color: var(--v4-muted);
+}
+.v4-pchat-tips-caret {
+  color: var(--v4-muted);
+  transition: transform 0.2s ease;
+}
+.v4-pchat-tips-caret.is-open {
+  transform: rotate(90deg);
+}
+.v4-pchat-tips-body {
+  padding: 4px 18px 18px;
+  border-top: 1px solid var(--v4-faint);
+}
+.v4-pchat-tips-section {
+  margin-top: 18px;
+}
+.v4-pchat-tips-section-head {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin-bottom: 10px;
+}
+.v4-pchat-funfact {
+  margin-top: 16px;
+}
+.v4-pchat-funfact-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.v4-pchat-funfact-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--v4-bubble-bg);
+  color: var(--v4-fg);
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.v4-pchat-funfact-head strong {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  letter-spacing: -0.005em;
+}
+.v4-pchat-funfact p {
+  margin: 0 0 0 32px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--v4-muted);
+}
+
+/* ── Drafted name bubble (right-aligned user reply) ─────────────── */
+/* .v4-chat-inner is `align-items: flex-start` so margin:auto won't
+   push the bubble right. Use align-self: flex-end like
+   .v4-bubble-user does on the creator side. */
+.v4-pchat-draft {
+  align-self: flex-end;
+  background: var(--v4-fg);
+  color: #ffffff;
+  padding: 14px 18px;
+  border-radius: 18px;
+  border-top-right-radius: 6px;
+  margin: 4px 0 12px;
+  max-width: 460px;
+  opacity: 0;
+  animation: v4-bubble-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.v4-pchat-draft-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.v4-pchat-draft-num {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  opacity: 0.55;
+}
+.v4-pchat-draft-name {
+  font-family: 'Fraunces', Georgia, serif;
+  font-style: italic;
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.v4-pchat-draft-why {
+  font-size: 13.5px;
+  line-height: 1.5;
+  opacity: 0.86;
+}
+
+/* ── Card foot (Add this) ───────────────────────────────────────── */
+.v4-pchat-card-foot {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+/* ── "Submit what I have" finalize block ────────────────────────── */
+/* Sits BELOW the card's primary action row (separated visually) so
+   users don't mistake it for another "add" button. Quieter outline
+   style + an irreversibility line right under it. */
+.v4-pchat-finalize {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--v4-faint);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+.v4-pchat-finalize-btn {
+  background: #ffffff;
+  border: 1px solid var(--v4-fg);
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.v4-pchat-finalize-btn:hover {
+  background: var(--v4-fg);
+  color: #ffffff;
+}
+.v4-pchat-finalize-note {
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--v4-muted);
+}
+
+/* ── Before-you-send checklist ──────────────────────────────────── */
+.v4-pchat-checklist {
+  width: 100%;
+  background: var(--v4-bubble-bg);
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin: 4px 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.v4-pchat-checklist-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.v4-pchat-checklist-icon {
+  color: var(--v4-fg);
+  opacity: 0.55;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.v4-pchat-checklist-question {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  line-height: 1.4;
+}
+.v4-pchat-checklist-hint {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--v4-muted);
+  margin-top: 2px;
+}
+
+@media (max-width: 560px) {
+  .v4-pchat-brief-row {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  .v4-pchat-brief-row-label {
+    font-size: 11px;
+  }
+}
+
+/* ── Participant Thanks page ────────────────────────────────────── */
+.v4-pthanks-inner {
+  text-align: center;
+  padding-top: 64px;
+  max-width: 620px !important;
+}
+.v4-pthanks-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: var(--v4-bubble-bg);
+  margin-bottom: 22px;
+}
+.v4-pthanks-title {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 36px;
+  font-weight: 500;
+  letter-spacing: -0.018em;
+  color: var(--v4-fg);
+  margin: 0 0 14px;
+}
+.v4-pthanks-sub {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--v4-muted);
+  margin: 0 auto 36px;
+  max-width: 52ch;
+}
+
+/* ── 3-step flow on the thanks page ──────────────────────────────
+   Re-uses .v4-join-flow base styles from the invitation page (same
+   row of dots + labels) and adds state-specific overrides:
+   - done: ink-filled dot with a small check inside
+   - active: pulsing dot + clock icon next to the label
+   - upcoming: muted dot, faded label */
+.v4-pthanks-flow {
+  margin: 0 auto 40px !important;
+  max-width: 520px !important;
+}
+.v4-pthanks-flow-step-done .v4-join-flow-dot {
+  background: var(--v4-fg);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+.v4-pthanks-flow-step-done .v4-join-flow-label strong,
+.v4-pthanks-flow-step-done .v4-join-flow-label em {
+  opacity: 0.6;
+}
+
+/* Active step — pulsing ring around the dot draws the eye to the
+   "next" phase. Plus a ticking clock icon in the label. */
+.v4-pthanks-flow-step-active .v4-join-flow-dot {
+  width: 16px;
+  height: 16px;
+  background: var(--v4-fg);
+  position: relative;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.15),
+    0 0 0 5px color-mix(in srgb, var(--v4-fg) 20%, transparent);
+  animation: v4-pthanks-dot-pulse 2.2s ease-in-out infinite;
+}
+@keyframes v4-pthanks-dot-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.15),
+      0 0 0 5px color-mix(in srgb, var(--v4-fg) 20%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.2),
+      0 0 0 9px color-mix(in srgb, var(--v4-fg) 8%, transparent);
+  }
+}
+.v4-pthanks-flow-step-active .v4-join-flow-label strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  color: var(--v4-fg);
+}
+.v4-pthanks-flow-step-active .v4-join-flow-label em {
+  font-weight: 600;
+  opacity: 0.85;
+}
+/* Tick-tick animation on the clock icon — gentle 1s rotation
+   nudge mimicking a second hand. */
+.v4-pthanks-clock-icon {
+  display: inline-block;
+  transform-origin: 50% 50%;
+  animation: v4-pthanks-clock-tick 2s steps(2) infinite;
+}
+@keyframes v4-pthanks-clock-tick {
+  0%   { transform: rotate(0deg);   }
+  50%  { transform: rotate(12deg);  }
+  100% { transform: rotate(0deg);   }
+}
+
+.v4-pthanks-flow-step-upcoming .v4-join-flow-dot {
+  background: rgba(0,0,0,0.18);
+  box-shadow: none;
+}
+.v4-pthanks-flow-step-upcoming .v4-join-flow-label strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--v4-fg);
+  opacity: 0.5;
+  font-weight: 600;
+}
+.v4-pthanks-flow-step-upcoming .v4-join-flow-label em {
+  opacity: 0.4;
+}
+
+.v4-pthanks-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   V4 PARTICIPANT STATUS  (/v4/contest/:id/status)
+   The persistent dashboard for a contest you've joined. Live
+   countdown to voting, submission summary, disabled vote CTA.
+   ───────────────────────────────────────────────────────────────── */
+.v4-pstatus-inner {
+  max-width: 620px !important;
+  padding-top: 24px;
+}
+
+.v4-pstatus-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--v4-muted);
+  text-decoration: none;
+  margin-bottom: 18px;
+}
+.v4-pstatus-back:hover { color: var(--v4-fg); }
+
+/* Contest hero — segment icon + name + project summary. */
+.v4-pstatus-hero {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.v4-pstatus-hero-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  margin-bottom: 14px;
+}
+.v4-pstatus-hero-name {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: -0.018em;
+  color: var(--v4-fg);
+  margin: 0 0 8px;
+  line-height: 1.15;
+}
+.v4-pstatus-hero-sub {
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--v4-muted);
+  font-style: italic;
+  margin: 0 auto;
+  max-width: 50ch;
+}
+
+/* Submission summary chip — small confirmation pill above the
+   countdown. Different from the thanks page's celebration card. */
+.v4-pstatus-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 14px;
+  margin-bottom: 18px;
+}
+.v4-pstatus-summary-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.v4-pstatus-summary-head {
+  font-size: 14.5px;
+  color: var(--v4-fg);
+  line-height: 1.3;
+}
+.v4-pstatus-summary-sub {
+  font-size: 12.5px;
+  color: var(--v4-muted);
+  margin-top: 2px;
+}
+
+/* Countdown card — big ticking d/h/m/s. */
+.v4-pstatus-countdown {
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 18px;
+  padding: 22px 24px;
+  text-align: center;
+  margin-bottom: 18px;
+}
+.v4-pstatus-countdown-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin-bottom: 14px;
+}
+.v4-pstatus-countdown-clock {
+  animation: v4-pthanks-clock-tick 2s steps(2) infinite;
+}
+.v4-pstatus-countdown-digits {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 10px;
+}
+.v4-pstatus-countdown-sep {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 32px;
+  color: var(--v4-muted);
+  line-height: 1;
+  margin-bottom: 14px;
+}
+.v4-pstatus-countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 56px;
+}
+.v4-pstatus-countdown-num {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 38px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  animation: v4-pstatus-num-flash 0.4s ease-out;
+}
+@keyframes v4-pstatus-num-flash {
+  from { opacity: 0.4; transform: translateY(-2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.v4-pstatus-countdown-lbl {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin-top: 6px;
+}
+.v4-pstatus-countdown-foot {
+  font-size: 12px;
+  color: var(--v4-muted);
+  margin-top: 14px;
+}
+.v4-pstatus-countdown-ready {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  letter-spacing: -0.01em;
+}
+.v4-pstatus-countdown-unknown {
+  font-size: 14px;
+  color: var(--v4-muted);
+}
+
+.v4-pstatus-vote-row {
+  display: flex;
+  justify-content: center;
+  margin: 6px 0 36px;
 }

@@ -29,6 +29,10 @@ import V4BriefChat         from '@pages/v4/BriefChat';
 import V4ReviewLaunch      from '@pages/v4/ReviewLaunch';
 import V4ContestManage     from '@pages/v4/ContestManage';
 import V4Settings          from '@pages/v4/Settings';
+import V4JoinContest      from '@pages/v4/JoinContest';
+import V4ParticipantChat  from '@pages/v4/ParticipantChat';
+import V4ParticipantThanks from '@pages/v4/ParticipantThanks';
+import V4ParticipantStatus from '@pages/v4/ParticipantStatus';
 
 // ─── FloatingNav ─────────────────────────────────────────────────────────────
 
@@ -402,6 +406,10 @@ function AppInner() {
         <Route path="/v4/setup/review"                 element={<V4ReviewLaunch />} />
         <Route path="/v4/contest/:id"                  element={<V4ContestManage />} />
         <Route path="/v4/settings"                     element={<V4Settings />} />
+        <Route path="/v4/join/:contestId"              element={<V4JoinContest />} />
+        <Route path="/v4/contest/:id/submit"           element={<V4ParticipantChat />} />
+        <Route path="/v4/contest/:id/thanks"           element={<V4ParticipantThanks />} />
+        <Route path="/v4/contest/:id/status"           element={<V4ParticipantStatus />} />
       </Routes>
       <FloatingNav />
     </>

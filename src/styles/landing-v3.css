@@ -43,6 +43,8 @@
 
 /* === Buttons === */
 .lp-v3 .btn{display:inline-flex;align-items:center;gap:var(--s-2);font-family:var(--font-text);font-weight:500;font-size:14px;border-radius:var(--r-pill);padding:12px 20px;border:1px solid transparent;cursor:pointer;transition:transform .12s ease,background .12s ease,box-shadow .12s ease;white-space:nowrap;text-decoration:none}
+.lp-v3 .btn:disabled,.lp-v3 .btn[disabled]{opacity:0.45;cursor:not-allowed;background:#ffffff;color:var(--fg);box-shadow:none}
+.lp-v3 .btn:disabled:hover,.lp-v3 .btn[disabled]:hover{background:#ffffff;color:var(--fg);transform:none;box-shadow:none}
 /* Override globals.css ripple/scale interference */
 .lp-v3 .btn-primary::before{content:none}
 .lp-v3 .btn-primary:hover::before{width:0;height:0}

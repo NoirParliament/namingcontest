@@ -17,6 +17,13 @@ export const MOCK_CONTESTS = {
     group: 'group',
     subSegmentId: 't1',
     subSegmentTitle: 'Sports team',
+    // Inviter persona — used by the Join page to humanize the
+    // invitation. photoIndex maps to hero-profile-{N}.png in assets.
+    creator: {
+      name: 'Marcus',
+      photoIndex: 4,
+      role: 'Team captain',
+    },
     phase: 'Voting',
     daysLeft: 5,
     launchedAt: Date.now() - 4 * 24 * 60 * 60 * 1000, // 4 days ago
@@ -41,6 +48,7 @@ export const MOCK_CONTESTS = {
     // schema so the BriefRecapCollapser shows realistic content rather
     // than an empty list.
     brief: {
+      projectSummary: 'A Sunday-league 7-a-side football team in the Brookside Adult Rec League Division B. Mostly mates from work who took it more seriously than expected.',
       sportLeague: 'Sunday-league 7-a-side football, Brookside Adult Rec League Division B',
       ageGroup: 'Adult Amateur',
       personality: ['Underdog / Gritty', 'Fun / Playful'],
