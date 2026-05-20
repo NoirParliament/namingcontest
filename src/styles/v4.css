@@ -7947,3 +7947,207 @@ input.v4-settings-input:-webkit-autofill:active {
   justify-content: center;
   margin: 6px 0 36px;
 }
+
+/* ─────────────────────────────────────────────────────────────────
+   V4 DEMO INDEX  (/v4/demo)
+   In-app screen directory. Lists every page in the demo grouped by
+   stage so clients can navigate the whole product without a doc.
+   Source of truth — edit the arrays at the top of DemoIndex.jsx to
+   add a row.
+   ───────────────────────────────────────────────────────────────── */
+.v4-demo-inner {
+  max-width: 820px !important;
+  padding-bottom: 80px;
+}
+.v4-demo-head {
+  margin: 12px 0 28px;
+}
+.v4-demo-title {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 36px;
+  font-weight: 500;
+  letter-spacing: -0.018em;
+  color: var(--v4-fg);
+  margin: 0 0 10px;
+  line-height: 1.15;
+}
+.v4-demo-sub {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--v4-muted);
+  margin: 0;
+  max-width: 56ch;
+}
+
+/* Quick-action button row at top. */
+.v4-demo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 16px 18px;
+  background: var(--v4-bubble-bg);
+  border-radius: 14px;
+  margin-bottom: 28px;
+}
+
+/* Flow walk-throughs — three inline-arrow click-paths. */
+.v4-demo-flows {
+  margin-bottom: 32px;
+}
+.v4-demo-flow {
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--v4-muted);
+  padding: 8px 0;
+  border-bottom: 1px solid var(--v4-faint);
+}
+.v4-demo-flow:last-child { border-bottom: none; }
+.v4-demo-flow strong { color: var(--v4-fg); }
+.v4-demo-flow a {
+  color: var(--v4-fg);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+}
+.v4-demo-flow a:hover { opacity: 0.7; }
+
+/* Sections (Creator / Participant / Planned / Legacy) */
+.v4-demo-section {
+  margin-bottom: 24px;
+  border: 1px solid var(--v4-faint);
+  border-radius: 16px;
+  overflow: hidden;
+  background: #ffffff;
+}
+.v4-demo-section-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 16px 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+}
+.v4-demo-section-title {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  margin: 0;
+  flex: 1;
+  letter-spacing: -0.01em;
+}
+.v4-demo-section-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--v4-muted);
+}
+.v4-demo-section-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--v4-bubble-bg);
+  color: var(--v4-fg);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.v4-demo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-top: 1px solid var(--v4-faint);
+}
+.v4-demo-row {
+  padding: 16px 20px;
+  border-top: 1px solid var(--v4-faint);
+}
+.v4-demo-row:first-child { border-top: none; }
+
+.v4-demo-row-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.v4-demo-status {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.v4-demo-row-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  flex: 1;
+}
+.v4-demo-row-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: 1px solid var(--v4-faint);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.v4-demo-row-open:hover {
+  background: var(--v4-fg);
+  color: #ffffff;
+  border-color: var(--v4-fg);
+}
+.v4-demo-row-path {
+  display: inline-block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: var(--v4-muted);
+  background: var(--v4-bubble-bg);
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+.v4-demo-row-desc {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--v4-muted);
+  margin: 4px 0 0;
+}
+.v4-demo-row-notes {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--v4-muted);
+  font-style: italic;
+  margin: 4px 0 0;
+  opacity: 0.85;
+}
+
+.v4-demo-foot {
+  margin-top: 24px;
+  padding: 14px 18px;
+  background: var(--v4-bubble-bg);
+  border-radius: 12px;
+  font-size: 12.5px;
+  color: var(--v4-muted);
+}
+.v4-demo-foot code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: #ffffff;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+}
