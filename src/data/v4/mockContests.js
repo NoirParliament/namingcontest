@@ -33,7 +33,9 @@ export const MOCK_CONTESTS = {
       // Not anonymous by default — submitter names show under each
       // entry on the vote page. Creator can flip this to hide them.
       anonymous: false,
-      submissionLimit: 3,
+      // Bumped from 3 → 5 so the participant chat can naturally test
+      // the overflow case (where /thanks renders "+ N more names").
+      submissionLimit: 5,
       // How many votes each participant can cast on the vote page.
       votingLimit: 3,
       customRequirements: {
