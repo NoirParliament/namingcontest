@@ -61,8 +61,88 @@ export default function HeroAvatarsAnimation({
     let cancelled = false;
     let lastLeftId = -1, lastRightId = -1, lastLeftName = '', lastRightName = '';
 
+    const pickUniqueName = (used) => {
+      // Pick a name not in the `used` array. Caller is responsible
+      // for tracking what's already been shown this round.
+      let n;
+      let tries = 0;
+      do {
+        n = names[Math.floor(Math.random() * names.length)];
+        tries++;
+      } while (used.includes(n) && tries < 20);
+      return n;
+    };
+
     const startRound = () => {
       if (cancelled) return;
+
+      // ═══════════════════════════════════════════════════════════════
+      // SUBMISSIONS MODE — every avatar suggests, cycling through
+      // multiple names per round. No voting flight, no crown, no
+      // vote totals. Reads as "the whole crowd is brainstorming."
+      // Same total cycle length as full mode (~7.5s).
+      // ═══════════════════════════════════════════════════════════════
+      if (mode === 'submissions') {
+        const cycleNames = (used = []) => {
+          const out = {};
+          const accumulating = [...used];
+          avatars.forEach(av => {
+            const n = pickUniqueName(accumulating);
+            out[av.id] = n;
+            accumulating.push(n);
+          });
+          return out;
+        };
+
+        // Pick 3 batches of names — one per "spread" so each avatar
+        // shows 3 different names over the round. Visually reads as
+        // "everyone keeps suggesting more."
+        const batch1 = cycleNames();
+        const batch2 = cycleNames(Object.values(batch1));
+        const batch3 = cycleNames([...Object.values(batch1), ...Object.values(batch2)]);
+
+        setRound({ mode: 'submissions', suggesterNames: batch1, phase: 'typing' });
+
+        // Typing → first name reveal (same 700ms as og).
+        timeouts.push(setTimeout(() => {
+          if (cancelled) return;
+          setRound(prev => prev ? { ...prev, phase: 'name', suggesterNames: batch1 } : null);
+        }, 700));
+
+        // Swap to second name batch ~2.2s later (each name reads for
+        // ~2.2s, total visible time ~6.6s across 3 batches).
+        timeouts.push(setTimeout(() => {
+          if (cancelled) return;
+          setRound(prev => prev ? { ...prev, suggesterNames: batch2 } : null);
+        }, 700 + 2200));
+
+        // Third name batch.
+        timeouts.push(setTimeout(() => {
+          if (cancelled) return;
+          setRound(prev => prev ? { ...prev, suggesterNames: batch3 } : null);
+        }, 700 + 4400));
+
+        // Fade after the third name has had time to read.
+        const submissionsFadeAt = 700 + 4400 + 1800;
+        timeouts.push(setTimeout(() => {
+          if (cancelled) return;
+          setRound(prev => prev ? { ...prev, phase: 'ending' } : null);
+        }, submissionsFadeAt));
+
+        const submissionsEndAt = submissionsFadeAt + 1300;
+        timeouts.push(setTimeout(() => {
+          if (cancelled) return;
+          setRound(null);
+          timeouts.push(setTimeout(startRound, 400));
+        }, submissionsEndAt));
+        return;
+      }
+
+      // ═══════════════════════════════════════════════════════════════
+      // FULL + VOTING modes — keep the original left/right suggester
+      // structure with voting flight. Voting mode skips typing dots
+      // and the crown; full mode plays the whole cycle.
+      // ═══════════════════════════════════════════════════════════════
       const leftAvs = avatars.filter(a => a.side === 'left');
       const rightAvs = avatars.filter(a => a.side === 'right');
 
@@ -91,16 +171,10 @@ export default function HeroAvatarsAnimation({
       };
       const winnerId = winnerSide === 'left' ? leftSugId : rightSugId;
 
-      // Voting mode skips the typing phase — start with the name
-      // bubble already showing so the round opens directly into the
-      // voting flight.
       const initialPhase = mode === 'voting' ? 'name' : 'typing';
       setRound({ leftSugId, rightSugId, leftName, rightName, voters, phase: initialPhase, winnerId, finalTotals });
 
-      // Typing → name transition (skipped entirely in voting mode
-      // since we open at 'name'). In submissions mode we still play
-      // the typing → name reveal so the audience sees "names being
-      // typed in" — that's the whole point of this mode.
+      // Typing → name transition (skipped in voting mode).
       if (mode !== 'voting') {
         timeouts.push(setTimeout(() => {
           if (cancelled) return;
@@ -108,30 +182,10 @@ export default function HeroAvatarsAnimation({
         }, 700));
       }
 
-      // Submissions mode ends the round after the name bubble shows
-      // and lingers for a beat — no voting, no crown. Loop back to
-      // typing dots so the page reads as a continuous "names dropping
-      // in" stream.
-      if (mode === 'submissions') {
-        const nameHoldAt = 700;
-        const submissionsFadeAt = nameHoldAt + 1800;
-        const submissionsEndAt = submissionsFadeAt + 800;
-        timeouts.push(setTimeout(() => {
-          if (cancelled) return;
-          setRound(prev => prev ? { ...prev, phase: 'ending' } : null);
-        }, submissionsFadeAt));
-        timeouts.push(setTimeout(() => {
-          if (cancelled) return;
-          setRound(null);
-          timeouts.push(setTimeout(startRound, 500));
-        }, submissionsEndAt));
-        return;
-      }
-
-      // Voting mode starts the votes immediately (no waiting for the
-      // typing reveal). Full mode keeps the standard 1500ms pause so
-      // the audience reads the names before votes start flying.
-      const voteStart = mode === 'voting' ? 600 : 1500;
+      // Same vote pacing as og full mode (1500ms before votes start,
+      // 800ms gap, 950ms flight) for voting mode too — the user
+      // wanted "the same speed as og animations."
+      const voteStart = 1500;
       const voteGap = 800;
       const voteFlightDuration = 950;
       voters.forEach((v, idx) => {
@@ -167,8 +221,8 @@ export default function HeroAvatarsAnimation({
       // yet (we're in the "votes coming in" phase). Just fade after
       // votes finish and restart for a continuous voting stream.
       if (mode === 'voting') {
-        const votingFadeAt = voteStart + (voters.length - 1) * voteGap + voteFlightDuration + 800;
-        const votingEndAt = votingFadeAt + 800;
+        const votingFadeAt = voteStart + (voters.length - 1) * voteGap + voteFlightDuration + 1200;
+        const votingEndAt = votingFadeAt + 1300;
         timeouts.push(setTimeout(() => {
           if (cancelled) return;
           setRound(prev => prev ? { ...prev, phase: 'ending' } : null);
@@ -176,7 +230,7 @@ export default function HeroAvatarsAnimation({
         timeouts.push(setTimeout(() => {
           if (cancelled) return;
           setRound(null);
-          timeouts.push(setTimeout(startRound, 500));
+          timeouts.push(setTimeout(startRound, 400));
         }, votingEndAt));
         return;
       }
@@ -236,12 +290,22 @@ export default function HeroAvatarsAnimation({
       }
     : { left: 0, right: 0 };
 
+  // Vote chip only shown in full mode — voting/submissions modes
+  // represent earlier lifecycle stages where vote totals don't exist
+  // yet (or are not the point of the visualization).
+  const showVoteChip = mode === 'full';
+
   return (
     <div className={className} aria-hidden="true">
       {avatars.map(av => {
         const isLeftSug = round?.leftSugId === av.id;
         const isRightSug = round?.rightSugId === av.id;
-        const isSuggester = isLeftSug || isRightSug;
+        // In submissions mode every avatar with an entry in
+        // suggesterNames acts as a suggester showing their own name.
+        const submissionsName = round?.mode === 'submissions'
+          ? round.suggesterNames?.[av.id]
+          : null;
+        const isSuggester = isLeftSug || isRightSug || !!submissionsName;
         const team = isLeftSug ? 'left' : isRightSug ? 'right' : null;
         const voter = round?.voters?.find(v => v.id === av.id);
         const isWinner = isSuggester && round?.winnerId === av.id;
@@ -256,6 +320,11 @@ export default function HeroAvatarsAnimation({
           ? av.side
           : (av.side === 'left' ? 'right' : 'left');
         const teamTotal = team === 'left' ? totals.left : team === 'right' ? totals.right : 0;
+
+        // Resolve the name to render in the bubble based on mode.
+        const bubbleName = submissionsName
+          ? submissionsName
+          : (team === 'left' ? round?.leftName : team === 'right' ? round?.rightName : null);
 
         return (
           <div
@@ -284,12 +353,17 @@ export default function HeroAvatarsAnimation({
                 <span className="dot"></span>
               </div>
             )}
-            {isSuggester && round && round.phase !== 'typing' && (
-              <div className={`hero-bubble hero-bubble-${bubbleSide}${isLoser ? ' is-loser' : ''}${showCrown ? ' is-winner' : ''}`}>
-                {team === 'left' ? round.leftName : round.rightName}
-                <span className="vote-chip">
-                  <span className="num" key={`num-${teamTotal}`}>{teamTotal}</span> {teamTotal === 1 ? 'vote' : 'votes'}
-                </span>
+            {isSuggester && round && round.phase !== 'typing' && bubbleName && (
+              <div
+                key={`bubble-${av.id}-${bubbleName}`}
+                className={`hero-bubble hero-bubble-${bubbleSide}${isLoser ? ' is-loser' : ''}${showCrown ? ' is-winner' : ''}`}
+              >
+                {bubbleName}
+                {showVoteChip && (
+                  <span className="vote-chip">
+                    <span className="num" key={`num-${teamTotal}`}>{teamTotal}</span> {teamTotal === 1 ? 'vote' : 'votes'}
+                  </span>
+                )}
               </div>
             )}
 

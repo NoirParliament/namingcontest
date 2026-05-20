@@ -7,7 +7,7 @@
 // the user's picks visually carry through from /vote. Countdown to
 // the winner lives inside the footer timeline's current step. No CTA.
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useParams, useNavigate, Link, Navigate } from 'react-router-dom';
 import { Trophy, LockSimple } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
@@ -18,8 +18,10 @@ import heroProfile4 from '../../assets/hero-profile-4.png';
 import heroProfile5 from '../../assets/hero-profile-5.png';
 import heroProfile6 from '../../assets/hero-profile-6.png';
 import HeroAvatarsAnimation from '../../components/HeroAvatarsAnimation';
+import AvatarMenu from '../../components/v4/AvatarMenu';
 import { getMockContestById } from '../../data/v4/mockContests';
 import { getSegmentTone, SEGMENT_THEME } from '../../data/v4/segmentTheme';
+import { readSetup } from '../../utils/v4Brief';
 import { readParticipation } from '../../utils/v4Participant';
 import useCountdown, { pad2 } from '../../utils/useCountdown';
 import '../../styles/landing-v3.css';
@@ -29,13 +31,6 @@ const HERO_PROFILES = [
   heroProfile1, heroProfile2, heroProfile3,
   heroProfile4, heroProfile5, heroProfile6,
 ];
-
-function shortCountdown(c) {
-  if (!c || c.unknown) return 'Winner soon';
-  if (c.isReady) return 'Winner picked';
-  if (c.d > 0) return `Winner in ${c.d}d ${pad2(c.h)}h`;
-  return `Winner in ${pad2(c.h)}:${pad2(c.m)}:${pad2(c.s)}`;
-}
 
 // Compact "in 4d 09h" ETA for the disabled CTA button.
 function ctaEta(c) {
@@ -61,6 +56,12 @@ export default function ParticipantVoteThanks() {
   const submittedCount = participation?.submittedNames?.length || 0;
   const isAnonymous = contest?.anonymous === true;
 
+  // Authed user.
+  const setup = readSetup();
+  const userEmail = setup.userEmail || '';
+  const userName = setup.userName || (userEmail.split('@')[0] || 'You');
+  const userPhoto = setup.userPhoto || null;
+
   // Resolve voted ids back to actual submission objects for card rendering.
   const votedSubs = (() => {
     if (!contest?.allSubmissions) return [];
@@ -84,6 +85,12 @@ export default function ParticipantVoteThanks() {
     : 'soon';
 
   const scrollRef = useRef(null);
+
+  // Card overflow handling — show first N + a "+X more" pill.
+  const VISIBLE_LIMIT = 3;
+  const [expanded, setExpanded] = useState(false);
+  const visibleVotedSubs = expanded ? votedSubs : votedSubs.slice(0, VISIBLE_LIMIT);
+  const overflowCount = Math.max(0, votedSubs.length - VISIBLE_LIMIT);
 
   if (!contest) return <Navigate to="/v4/settings" replace />;
   if (!participation) return <Navigate to={`/v4/join/${contestId}`} replace />;
@@ -115,14 +122,12 @@ export default function ParticipantVoteThanks() {
         <span className="v4-blob v4-join-blob v4-join-blob-4" aria-hidden="true" />
         <span className="v4-blob v4-join-blob v4-join-blob-5" aria-hidden="true" />
 
-        {/* Drifting avatars in VOTING mode — crowd shows names
-            already up and votes flying between them. No typing dots,
-            no crown (winner hasn't been picked yet). Reinforces the
-            "votes coming in, waiting for the verdict" mood. */}
+        {/* Same drifting-avatars animation as /join (full mode —
+            typing → name → voting → crown). Keeps the participant
+            journey visually consistent across all three pages. */}
         <HeroAvatarsAnimation
           className="hero-anim v4-join-anim"
           bubbleDirection="outward"
-          mode="voting"
           avatars={animAvatars}
         />
 
@@ -141,10 +146,20 @@ export default function ParticipantVoteThanks() {
               </span>
             </div>
             <div className="v4-nav-right">
-              <span className="v4-join-nav-deadline">
-                <Trophy weight="duotone" size={14} />
-                {shortCountdown(c)}
-              </span>
+              <AvatarMenu
+                email={userEmail}
+                name={userName}
+                photo={userPhoto}
+                defaultPhoto={heroProfile3}
+                tone={tone}
+                activeContest={{
+                  id: contest.id,
+                  name: contestName,
+                  phase: 'WINNER SOON',
+                  tone,
+                  to: '/v4/settings',
+                }}
+              />
             </div>
           </header>
 
@@ -174,7 +189,7 @@ export default function ParticipantVoteThanks() {
                 aria-label="Names you voted for"
               >
                 <ul className="v4-pthanks-card-list">
-                  {votedSubs.map((s, i) => (
+                  {visibleVotedSubs.map((s, i) => (
                     <li key={s.id} className="v4-pthanks-card">
                       <div className="v4-pthanks-card-band" aria-hidden="true">
                         <span className="v4-pthanks-card-band-num">
@@ -197,6 +212,17 @@ export default function ParticipantVoteThanks() {
                     </li>
                   ))}
                 </ul>
+                {overflowCount > 0 && (
+                  <button
+                    type="button"
+                    className="v4-pthanks-overflow"
+                    onClick={() => setExpanded((v) => !v)}
+                  >
+                    {expanded
+                      ? 'Show fewer'
+                      : `+ ${overflowCount} more ${overflowCount === 1 ? 'vote' : 'votes'}`}
+                  </button>
+                )}
               </section>
             )}
 

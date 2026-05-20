@@ -8120,6 +8120,44 @@ input.v4-settings-input:-webkit-autofill:active {
   opacity: 1;
 }
 
+/* "+ N more" pill — appears under the card list when there are more
+   names than VISIBLE_LIMIT. Single line, compact, doesn't add
+   vertical heft. Click toggles inline expansion. */
+.v4-pthanks-overflow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px auto 0;
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px dashed rgba(0, 0, 0, 0.12);
+  border-radius: 999px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  opacity: 0.7;
+  cursor: pointer;
+  outline: none;
+  width: fit-content;
+  align-self: center;
+  transition: opacity 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+.v4-pthanks-receipt {
+  /* Center the overflow pill below the list. */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.v4-pthanks-receipt .v4-pthanks-card-list {
+  width: 100%;
+}
+.v4-pthanks-overflow:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(0, 0, 0, 0.2);
+  opacity: 1;
+}
+
 /* ── Timeline countdown — when a footer-timeline step is BOTH the
    current step AND has a live countdown attached, the <em> hint
    text becomes a monospace ticker. Lives inside .v4-join-flow-label
