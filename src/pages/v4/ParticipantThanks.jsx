@@ -16,24 +16,12 @@ import { useRef } from 'react';
 import { useParams, useNavigate, Link, Navigate } from 'react-router-dom';
 import { Clock } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
-import heroProfile1 from '../../assets/hero-profile-1.png';
-import heroProfile2 from '../../assets/hero-profile-2.png';
-import heroProfile3 from '../../assets/hero-profile-3.png';
-import heroProfile4 from '../../assets/hero-profile-4.png';
-import heroProfile5 from '../../assets/hero-profile-5.png';
-import heroProfile6 from '../../assets/hero-profile-6.png';
-import HeroAvatarsAnimation from '../../components/HeroAvatarsAnimation';
 import { getMockContestById } from '../../data/v4/mockContests';
 import { getSegmentTone, SEGMENT_THEME } from '../../data/v4/segmentTheme';
 import { readParticipation } from '../../utils/v4Participant';
 import useCountdown, { pad2 } from '../../utils/useCountdown';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
-
-const HERO_PROFILES = [
-  heroProfile1, heroProfile2, heroProfile3,
-  heroProfile4, heroProfile5, heroProfile6,
-];
 
 // Compact nav-pill copy.
 function shortCountdown(c) {
@@ -86,22 +74,6 @@ export default function ParticipantThanks() {
   if (!contest) return <Navigate to="/v4/settings" replace />;
   if (!participation) return <Navigate to={`/v4/join/${contestId}`} replace />;
 
-  // Pool of drifting voter avatars for the hero animation — same
-  // recipe as the join page so the crowd carries over visually.
-  const animAvatars = (() => {
-    const inviterIdx = (contest?.creator?.photoIndex || 1) - 1;
-    const pool = HERO_PROFILES.filter((_, i) => i !== inviterIdx);
-    const positions = [
-      { id: 0, side: 'left',  top: '16%', x: '7%' },
-      { id: 1, side: 'right', top: '16%', x: '7%' },
-      { id: 2, side: 'left',  top: '46%', x: '3%' },
-      { id: 3, side: 'right', top: '46%', x: '3%' },
-      { id: 4, side: 'left',  top: '76%', x: '8%' },
-      { id: 5, side: 'right', top: '76%', x: '8%' },
-    ];
-    return positions.map((p, i) => ({ ...p, photo: pool[i % pool.length] }));
-  })();
-
   return (
     <div className="v4 lp-v3">
       <div
@@ -114,12 +86,12 @@ export default function ParticipantThanks() {
         <span className="v4-blob v4-join-blob v4-join-blob-4" aria-hidden="true" />
         <span className="v4-blob v4-join-blob v4-join-blob-5" aria-hidden="true" />
 
-        {/* Drifting voter avatars — same component as the join page. */}
-        <HeroAvatarsAnimation
-          className="hero-anim v4-join-anim"
-          bubbleDirection="outward"
-          avatars={animAvatars}
-        />
+        {/* No drifting-voter animation here — that's the /join + /vote
+            crowd vibe. The submission thanks moment is personal and
+            quiet: you just dropped your ideas in the box. Animations
+            live on the receipt cards themselves (card-land stagger +
+            idea-bubble rise — see .v4-pthanks-card / ::before / ::after
+            keyframes in v4.css). */}
 
         <main className="v4-review" role="main" ref={scrollRef}>
           <header className="v4-nav v4-join-nav">
@@ -197,18 +169,24 @@ export default function ParticipantThanks() {
                 the next step + how long until it's available.
                 Activates and routes to /vote when ready. */}
             <div className="v4-pthanks-cta">
+              {/* aria-disabled (not the HTML disabled attr) so hover still
+                  fires — the click is no-op'd in onClick instead. Lets the
+                  user feel the button as a button: it lights up under the
+                  cursor and tells them "almost — time is ticking" rather
+                  than reading as a broken/dead element. */}
               <button
                 type="button"
                 className="btn btn-primary btn-lg v4-pthanks-cta-btn"
-                disabled={!c.isReady}
-                onClick={() =>
-                  c.isReady && navigate(`/v4/contest/${contestId}/vote`)
-                }
+                aria-disabled={!c.isReady}
+                onClick={() => {
+                  if (!c.isReady) return;
+                  navigate(`/v4/contest/${contestId}/vote`);
+                }}
                 title={
                   c.isReady ? 'Cast your vote' : 'Voting opens soon'
                 }
               >
-                <Clock weight="bold" size={14} />
+                <Clock weight="bold" size={14} className="v4-pthanks-cta-icon" />
                 {c.isReady ? (
                   <>Vote now <span className="arrow">→</span></>
                 ) : c.unknown ? (

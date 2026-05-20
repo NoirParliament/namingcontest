@@ -7790,37 +7790,36 @@ input.v4-settings-input:-webkit-autofill:active {
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.005em;
 }
-/* When disabled, override the default .btn:disabled white-on-white
-   from landing-v3 — that disappears against this page's segment
-   wash. Instead: white pill with muted ink so it reads as
-   "available but not yet". */
-.v4 .btn.v4-pthanks-cta-btn:disabled,
-.v4 .btn.v4-pthanks-cta-btn[disabled],
-.lp-v3 .btn.v4-pthanks-cta-btn:disabled,
-.lp-v3 .btn.v4-pthanks-cta-btn[disabled] {
-  background: rgba(255,255,255,0.88);
-  color: var(--v4-fg);
-  border-color: rgba(0,0,0,0.08);
-  opacity: 0.85;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 6px 16px -8px rgba(0,0,0,0.12);
-  cursor: default;
+/* Waiting state — uses aria-disabled (not the HTML `disabled` attr)
+   so the browser still fires hover/focus and the gradient slide from
+   .btn-primary still plays. The click handler no-ops it instead.
+   The button KEEPS its primary look (dark pill) so the user can feel
+   it as a real button — just with cursor: not-allowed + a ticking
+   clock icon to communicate "almost". */
+.v4 .btn.v4-pthanks-cta-btn[aria-disabled="true"],
+.lp-v3 .btn.v4-pthanks-cta-btn[aria-disabled="true"] {
+  cursor: not-allowed;
 }
-.v4 .btn.v4-pthanks-cta-btn:disabled:hover,
-.v4 .btn.v4-pthanks-cta-btn[disabled]:hover,
-.lp-v3 .btn.v4-pthanks-cta-btn:disabled:hover,
-.lp-v3 .btn.v4-pthanks-cta-btn[disabled]:hover {
-  background: rgba(255,255,255,0.88);
-  color: var(--v4-fg);
-  transform: none;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 6px 16px -8px rgba(0,0,0,0.12);
+/* Clock icon ticks once every 2s when the button is waiting — a small
+   reminder that time is moving even though the button can't be clicked
+   yet. Stops as soon as the button activates. */
+.v4 .btn.v4-pthanks-cta-btn[aria-disabled="true"] .v4-pthanks-cta-icon,
+.lp-v3 .btn.v4-pthanks-cta-btn[aria-disabled="true"] .v4-pthanks-cta-icon {
+  animation: v4-pthanks-clock-tick 2s steps(2) infinite;
+  transform-origin: 50% 50%;
+}
+@keyframes v4-pthanks-clock-tick {
+  0%   { transform: rotate(0deg);   }
+  50%  { transform: rotate(14deg);  }
+  100% { transform: rotate(0deg);   }
 }
 .v4-pthanks-cta-eta {
-  /* The "· in 2d 14h" suffix on the disabled button — muted dot
+  /* The "· in 2d 14h" suffix on the waiting button — muted dot
      separator + monospace digits for stability. */
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 12px;
   font-weight: 600;
-  opacity: 0.7;
+  opacity: 0.75;
   margin-left: 6px;
   letter-spacing: 0;
 }
@@ -7922,13 +7921,91 @@ input.v4-settings-input:-webkit-autofill:active {
   align-items: stretch;
   background: #ffffff;
   border-radius: 16px;
-  overflow: hidden;
+  /* overflow:hidden would clip the rising idea-bubble dots — keep
+     overflow visible and clip the band via its own border-radius. */
   box-shadow:
     0 1px 2px rgba(0,0,0,0.05),
     0 10px 28px -8px rgba(0,0,0,0.16);
+  /* Submission-stage animation: each card LANDS from above with a
+     soft scale bounce — like names being placed on the table.
+     Stagger via :nth-child below. The stack of cards as a whole
+     also fades up via .v4-pthanks-receipt's container animation,
+     so the cards land INSIDE the slab's reveal. */
+  animation: v4-pthanks-card-land 0.55s cubic-bezier(0.34, 1.25, 0.64, 1) both;
+  opacity: 0;
+}
+@keyframes v4-pthanks-card-land {
+  0% {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.97);
+    box-shadow:
+      0 1px 2px rgba(0,0,0,0),
+      0 2px 6px -2px rgba(0,0,0,0.04);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(2px) scale(1.005);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    box-shadow:
+      0 1px 2px rgba(0,0,0,0.05),
+      0 10px 28px -8px rgba(0,0,0,0.16);
+  }
+}
+/* Stagger: each card lands a beat after the previous so the user
+   sees the names being filed one at a time, not all at once. Starts
+   after the receipt container's 0.22s fade-up has settled. */
+.v4-pthanks-card-list .v4-pthanks-card:nth-child(1) { animation-delay: 0.40s; }
+.v4-pthanks-card-list .v4-pthanks-card:nth-child(2) { animation-delay: 0.55s; }
+.v4-pthanks-card-list .v4-pthanks-card:nth-child(3) { animation-delay: 0.70s; }
+.v4-pthanks-card-list .v4-pthanks-card:nth-child(4) { animation-delay: 0.85s; }
+.v4-pthanks-card-list .v4-pthanks-card:nth-child(5) { animation-delay: 1.00s; }
+.v4-pthanks-card-list .v4-pthanks-card:nth-child(6) { animation-delay: 1.15s; }
+
+/* ── Idea-bubble rise — small segment-tinted dots drift up out of
+   each card's right edge, fade as they go. Says "ideas released into
+   the world" without competing with the cards' content. Two dots per
+   card via ::before and ::after, offset times. Starts after the
+   landing animation finishes (1.5s). */
+.v4-pthanks-card::before,
+.v4-pthanks-card::after {
+  content: '';
+  position: absolute;
+  right: 22px;
+  top: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--join-bg, #a6dcb3);
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.05);
+  opacity: 0;
+  pointer-events: none;
+  animation: v4-pthanks-idea-rise 5s ease-out 1.5s infinite;
+}
+.v4-pthanks-card::after {
+  right: 38px;
+  width: 4px;
+  height: 4px;
+  animation-delay: 3s;
+}
+@keyframes v4-pthanks-idea-rise {
+  0%   { opacity: 0; transform: translateY(0) scale(0.6); }
+  15%  { opacity: 0.8; transform: translateY(-6px) scale(1); }
+  90%  { opacity: 0; transform: translateY(-52px) scale(0.4); }
+  100% { opacity: 0; transform: translateY(-56px) scale(0.4); }
+}
+/* Respect reduced-motion preferences for both animations. */
+@media (prefers-reduced-motion: reduce) {
+  .v4-pthanks-card { animation: none; opacity: 1; }
+  .v4-pthanks-card::before,
+  .v4-pthanks-card::after { display: none; }
 }
 /* Tinted band on the left — same gradient recipe as .v4-join-prize-band
-   so the band color reads as a continuation of the prize stub. */
+   so the band color reads as a continuation of the prize stub. Has
+   its own left border-radius (parent overflow is no longer hidden so
+   the rising idea bubbles can escape). */
 .v4-pthanks-card-band {
   flex-shrink: 0;
   width: 64px;
@@ -7943,6 +8020,7 @@ input.v4-settings-input:-webkit-autofill:active {
     );
   color: var(--v4-fg);
   position: relative;
+  border-radius: 16px 0 0 16px;
 }
 /* Perforated dashed seam — same pattern as .v4-join-prize-band::after. */
 .v4-pthanks-card-band::after {

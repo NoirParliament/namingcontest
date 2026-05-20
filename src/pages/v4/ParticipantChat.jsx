@@ -703,18 +703,18 @@ function SubmissionCard({
       </label>
       <label className="v4-pchat-card-field">
         <span className="v4-pchat-card-label">
-          Why it fits
+          What it means + why it fits
           <em className="v4-pchat-card-hint">
-            — one sentence the organizer can use as-is
+            — start with the meaning, then why it lands for this brief
           </em>
         </span>
         <textarea
           className="v4-settings-input v4-pchat-textarea"
-          rows={3}
+          rows={4}
           value={draft.whyItFits}
           onChange={(e) => onChange({ ...draft, whyItFits: e.target.value })}
-          placeholder="What makes this name land for this contest?"
-          maxLength={280}
+          placeholder="Heron — the bird that fishes along our river. Single sharp word, easy on a jersey."
+          maxLength={320}
         />
       </label>
       <div className="v4-pchat-card-foot">

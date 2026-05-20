@@ -203,13 +203,16 @@ export default function ParticipantVoteThanks() {
               <button
                 type="button"
                 className="btn btn-primary btn-lg v4-pthanks-cta-btn"
-                disabled={!c.isReady}
-                onClick={() => c.isReady && navigate('/v4/settings')}
+                aria-disabled={!c.isReady}
+                onClick={() => {
+                  if (!c.isReady) return;
+                  navigate('/v4/settings');
+                }}
                 title={
                   c.isReady ? 'See the winner' : 'Winner announced soon'
                 }
               >
-                <Trophy weight="bold" size={14} />
+                <Trophy weight="bold" size={14} className="v4-pthanks-cta-icon" />
                 {c.isReady ? (
                   <>See winner <span className="arrow">→</span></>
                 ) : c.unknown ? (
