@@ -9,7 +9,7 @@
 
 import { useRef } from 'react';
 import { useParams, useNavigate, Link, Navigate } from 'react-router-dom';
-import { Trophy } from '@phosphor-icons/react';
+import { Trophy, LockSimple } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import heroProfile1 from '../../assets/hero-profile-1.png';
 import heroProfile2 from '../../assets/hero-profile-2.png';
@@ -115,10 +115,14 @@ export default function ParticipantVoteThanks() {
         <span className="v4-blob v4-join-blob v4-join-blob-4" aria-hidden="true" />
         <span className="v4-blob v4-join-blob v4-join-blob-5" aria-hidden="true" />
 
-        {/* Drifting voter avatars — same component as the join page. */}
+        {/* Drifting avatars in VOTING mode — crowd shows names
+            already up and votes flying between them. No typing dots,
+            no crown (winner hasn't been picked yet). Reinforces the
+            "votes coming in, waiting for the verdict" mood. */}
         <HeroAvatarsAnimation
           className="hero-anim v4-join-anim"
           bubbleDirection="outward"
+          mode="voting"
           avatars={animAvatars}
         />
 
@@ -212,13 +216,19 @@ export default function ParticipantVoteThanks() {
                   c.isReady ? 'See the winner' : 'Winner announced soon'
                 }
               >
-                <Trophy weight="bold" size={14} className="v4-pthanks-cta-icon" />
                 {c.isReady ? (
-                  <>See winner <span className="arrow">→</span></>
+                  <>
+                    <Trophy weight="bold" size={14} className="v4-pthanks-cta-icon" />
+                    See winner <span className="arrow">→</span>
+                  </>
                 ) : c.unknown ? (
-                  <>Winner <span className="v4-pthanks-cta-eta">· announced soon</span></>
+                  <>
+                    <LockSimple weight="fill" size={14} className="v4-pthanks-cta-icon" />
+                    Winner <span className="v4-pthanks-cta-eta">· announced soon</span>
+                  </>
                 ) : (
                   <>
+                    <LockSimple weight="fill" size={14} className="v4-pthanks-cta-icon" />
                     Winner{' '}
                     <span className="v4-pthanks-cta-eta">
                       · {ctaEta(c)}

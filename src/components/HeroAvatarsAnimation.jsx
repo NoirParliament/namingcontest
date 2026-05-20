@@ -38,6 +38,19 @@ export default function HeroAvatarsAnimation({
   //              keeps the center clear so bubbles don't overlap the
   //              hero / prize / CTA)
   bubbleDirection = 'inward',
+  // 'full'        — typing dots → name bubble → voting flight → crown
+  //                 (homepage hero + /join + any "complete cycle" surface)
+  // 'submissions' — typing dots → name bubble → end / loop. No voting,
+  //                 no crown. Fits a SUBMISSION moment where the user
+  //                 has just contributed their own names (e.g. /thanks)
+  //                 — the crowd is also typing names; we're all in the
+  //                 "names dropping in" phase together.
+  // 'voting'      — name bubble pre-shown (suggesters already named) →
+  //                 voting flight → crown. No typing dots. Fits the
+  //                 VOTE confirmation moment (/vote-thanks) where the
+  //                 names already exist and the crowd is just casting
+  //                 votes on them.
+  mode = 'full',
 }) {
   const [round, setRound] = useState(null);
   const [voteProgress, setVoteProgress] = useState(0);
@@ -78,14 +91,47 @@ export default function HeroAvatarsAnimation({
       };
       const winnerId = winnerSide === 'left' ? leftSugId : rightSugId;
 
-      setRound({ leftSugId, rightSugId, leftName, rightName, voters, phase: 'typing', winnerId, finalTotals });
+      // Voting mode skips the typing phase — start with the name
+      // bubble already showing so the round opens directly into the
+      // voting flight.
+      const initialPhase = mode === 'voting' ? 'name' : 'typing';
+      setRound({ leftSugId, rightSugId, leftName, rightName, voters, phase: initialPhase, winnerId, finalTotals });
 
-      timeouts.push(setTimeout(() => {
-        if (cancelled) return;
-        setRound(prev => prev ? { ...prev, phase: 'name' } : null);
-      }, 700));
+      // Typing → name transition (skipped entirely in voting mode
+      // since we open at 'name'). In submissions mode we still play
+      // the typing → name reveal so the audience sees "names being
+      // typed in" — that's the whole point of this mode.
+      if (mode !== 'voting') {
+        timeouts.push(setTimeout(() => {
+          if (cancelled) return;
+          setRound(prev => prev ? { ...prev, phase: 'name' } : null);
+        }, 700));
+      }
 
-      const voteStart = 1500;
+      // Submissions mode ends the round after the name bubble shows
+      // and lingers for a beat — no voting, no crown. Loop back to
+      // typing dots so the page reads as a continuous "names dropping
+      // in" stream.
+      if (mode === 'submissions') {
+        const nameHoldAt = 700;
+        const submissionsFadeAt = nameHoldAt + 1800;
+        const submissionsEndAt = submissionsFadeAt + 800;
+        timeouts.push(setTimeout(() => {
+          if (cancelled) return;
+          setRound(prev => prev ? { ...prev, phase: 'ending' } : null);
+        }, submissionsFadeAt));
+        timeouts.push(setTimeout(() => {
+          if (cancelled) return;
+          setRound(null);
+          timeouts.push(setTimeout(startRound, 500));
+        }, submissionsEndAt));
+        return;
+      }
+
+      // Voting mode starts the votes immediately (no waiting for the
+      // typing reveal). Full mode keeps the standard 1500ms pause so
+      // the audience reads the names before votes start flying.
+      const voteStart = mode === 'voting' ? 600 : 1500;
       const voteGap = 800;
       const voteFlightDuration = 950;
       voters.forEach((v, idx) => {
@@ -117,6 +163,25 @@ export default function HeroAvatarsAnimation({
         }, voteStart + idx * voteGap + voteFlightDuration));
       });
 
+      // Voting mode skips the crown — the winner hasn't been picked
+      // yet (we're in the "votes coming in" phase). Just fade after
+      // votes finish and restart for a continuous voting stream.
+      if (mode === 'voting') {
+        const votingFadeAt = voteStart + (voters.length - 1) * voteGap + voteFlightDuration + 800;
+        const votingEndAt = votingFadeAt + 800;
+        timeouts.push(setTimeout(() => {
+          if (cancelled) return;
+          setRound(prev => prev ? { ...prev, phase: 'ending' } : null);
+        }, votingFadeAt));
+        timeouts.push(setTimeout(() => {
+          if (cancelled) return;
+          setRound(null);
+          timeouts.push(setTimeout(startRound, 500));
+        }, votingEndAt));
+        return;
+      }
+
+      // Full mode — crown the winner, hold, fade, restart.
       const crownAt = voteStart + (voters.length - 1) * voteGap + voteFlightDuration + 1000;
       timeouts.push(setTimeout(() => {
         if (cancelled) return;
@@ -139,7 +204,7 @@ export default function HeroAvatarsAnimation({
 
     timeouts.push(setTimeout(startRound, 600));
     return () => { cancelled = true; timeouts.forEach(clearTimeout); };
-  }, [avatars, names]);
+  }, [avatars, names, mode]);
 
   const firstVoteCounted = round?.voters?.some(v => v.counted) || false;
   useEffect(() => {
