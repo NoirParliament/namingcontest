@@ -20,6 +20,10 @@ import {
 import { readSetup, writeSetup } from '../../utils/v4Brief';
 import { joinContest, clearParticipation, recordSubmission } from '../../utils/v4Participant';
 import { MOCK_CONTESTS } from '../../data/v4/mockContests';
+// Pull landing-v3 styles in so the modal's .btn-primary / .btn-secondary
+// (and their hover-slide animation) resolve correctly even when the modal
+// is mounted outside the v4 page tree (e.g. triggered from the landing).
+import '../../styles/landing-v3.css';
 
 // Creator destination — the demo flow:
 //   1. If the user already has a real contestId on their setup (because
@@ -153,7 +157,7 @@ export default function SignInModal({ open, onClose }) {
     /* The .v4 wrapper scopes the CSS custom properties (--v4-bg, etc.)
        so the modal renders with the right colors even though it lives
        outside the v4 page tree (e.g. when triggered from the landing). */
-    <div className="v4 v4-signin-overlay" onClick={onClose}>
+    <div className="v4 lp-v3 v4-signin-overlay" onClick={onClose}>
       <div
         className="v4-signin-modal"
         onClick={(e) => e.stopPropagation()}
@@ -195,7 +199,7 @@ export default function SignInModal({ open, onClose }) {
               </label>
               <button
                 type="submit"
-                className="v4-settings-btn v4-settings-btn-primary v4-signin-submit"
+                className="btn btn-primary btn-lg v4-signin-submit"
                 disabled={submitting}
               >
                 {submitting && mode === 'creator' ? (
@@ -215,7 +219,7 @@ export default function SignInModal({ open, onClose }) {
 
             <button
               type="button"
-              className="v4-settings-btn v4-settings-btn-secondary v4-signin-participant"
+              className="btn btn-secondary btn-lg v4-signin-participant"
               onClick={handleSendParticipantLink}
               disabled={submitting}
             >
@@ -252,7 +256,7 @@ export default function SignInModal({ open, onClose }) {
 
             <button
               type="button"
-              className="v4-settings-btn v4-settings-btn-primary v4-signin-submit"
+              className="btn btn-primary btn-lg v4-signin-submit"
               onClick={handleSimulateClick}
             >
               Open the link <ArrowRight weight="bold" size={14} />

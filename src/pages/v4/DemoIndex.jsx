@@ -16,14 +16,17 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
-  ArrowRight, Trash, UsersThree, Megaphone, House,
+  ArrowRight, Trash, UsersThree, Megaphone, House, CheckSquare,
 } from '@phosphor-icons/react';
+import { joinContest, recordSubmission } from '../../utils/v4Participant';
+import { writeSetup } from '../../utils/v4Brief';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
 // Demo contest used as the :id parameter for routes that expect one.
 const DEMO_CONTEST_ID = 'mock_ongoing_1';
+const VOTING_DEMO_CONTEST_ID = 'mock_voting_demo';
 
 const STATUS = {
   LIVE:    { label: 'Live',    color: '#1f5430', bg: '#bce5c8' },
@@ -79,6 +82,19 @@ const CREATOR_SCREENS = [
 
 const PARTICIPANT_SCREENS = [
   {
+    title: 'Vote',
+    path: `/v4/contest/${VOTING_DEMO_CONTEST_ID}/vote`,
+    status: 'LIVE',
+    description: 'Voting interface. Same chat-style scaffold as the submission chat (staged reveal, brief recap, user-bubble replies). Multi-select up to votingLimit favourites with search + sort and sticky bottom submit.',
+    notes: 'Use the "Open voting-stage demo" quick action above to seed state and land on the workspace first.',
+  },
+  {
+    title: 'Post-vote thanks',
+    path: `/v4/contest/${VOTING_DEMO_CONTEST_ID}/vote-thanks`,
+    status: 'LIVE',
+    description: 'Confirmation after voting. Big live d/h/m/s countdown to the winner announcement, 3-step strip with done steps muted and step 3 (Winner picked) active with ticking clock.',
+  },
+  {
     title: 'Join / invitation',
     path: `/v4/join/${DEMO_CONTEST_ID}`,
     status: 'LIVE',
@@ -114,13 +130,6 @@ const PARTICIPANT_SCREENS = [
 ];
 
 const PLANNED_SCREENS = [
-  {
-    title: 'Participant vote',
-    path: `/v4/contest/${DEMO_CONTEST_ID}/vote`,
-    status: 'PLANNED',
-    description: 'The voting interface — shows all submitted names from the contest, lets the participant rank / pick favorites per the creator\'s votingLimit setting.',
-    notes: 'NEXT to build. Will follow the same chat-style scaffold as submit.',
-  },
   {
     title: 'Post-vote confirmation',
     path: `/v4/contest/${DEMO_CONTEST_ID}/vote-thanks`,
@@ -184,6 +193,33 @@ export default function DemoIndex() {
     } catch {}
   };
 
+  // Open the workspace in the VOTING-stage demo. Seeds:
+  //   - identity on setup blob (so AvatarMenu reads a name)
+  //   - participation for mock_voting_demo with 3 submitted names
+  //     (since voting requires the user to have already submitted)
+  //   - clears creator-side state so the workspace shows
+  //     participant-only mode (joined section only)
+  const handleEnterVotingDemo = () => {
+    const email = 'demo@participant.com';
+    const displayName = 'demo';
+    writeSetup({
+      userEmail: email,
+      userName: displayName,
+      contestId: null,
+      workingName: null,
+      subSegmentId: null,
+      group: null,
+      launchedAt: null,
+    });
+    joinContest(VOTING_DEMO_CONTEST_ID, { name: displayName, email });
+    [
+      { text: 'Iron Boots FC',     whyItFits: 'Sounds like Saturday-night football in the mud — and a long bus home.' },
+      { text: 'Brookside Rovers',  whyItFits: 'Local geography wins community loyalty. Easy chant: "ROVERS!"' },
+      { text: 'North Park United', whyItFits: 'Direct, two-syllable, chantable. Names the pitch.' },
+    ].forEach((n) => recordSubmission(VOTING_DEMO_CONTEST_ID, n));
+    navigate('/v4/settings');
+  };
+
   return (
     <div className="v4 lp-v3">
       <div className="v4-screen">
@@ -231,6 +267,15 @@ export default function DemoIndex() {
                 <UsersThree weight="bold" size={14} />
                 Get invited (participant)
               </Link>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleEnterVotingDemo}
+                title="Pre-seeds participation in the voting-stage demo contest and opens the workspace"
+              >
+                <CheckSquare weight="bold" size={14} />
+                Open voting-stage demo
+              </button>
             </section>
 
             {/* Flow walk-throughs (top-level guidance) */}

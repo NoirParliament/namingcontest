@@ -539,38 +539,41 @@
    TIER PICKER MODAL  (deprecated - kept for reference)
    ============================================ */
 
+/* Shell pattern aligned to .v4-signin-modal. Used by TierPickerModal
+   and any other ad-hoc modals reaching for the generic .v4-modal classes. */
 .v4-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(252, 249, 247, 0.85);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  background: rgba(3, 3, 2, 0.42);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
   z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
-  animation: v4-backdrop-in 0.3s ease forwards;
+  animation: v4-modal-overlay-in 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0;
 }
 .v4-modal-backdrop.is-clearing {
-  background: #fcf9f7;
+  background: rgba(3, 3, 2, 0);
   -webkit-backdrop-filter: blur(0px);
   backdrop-filter: blur(0px);
   transition: background 0.5s ease, backdrop-filter 0.5s ease;
 }
-@keyframes v4-backdrop-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
 
 .v4-modal {
   background: #ffffff;
-  border-radius: 24px;
-  padding: 40px 32px 32px;
+  border-radius: 22px;
+  padding: 40px 36px 32px;
   max-width: 520px;
   width: 100%;
-  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.25), 0 6px 24px rgba(0, 0, 0, 0.08);
-  animation: v4-modal-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 16px 36px -10px rgba(0, 0, 0, 0.22),
+    0 36px 90px -24px rgba(0, 0, 0, 0.32);
+  animation: v4-modal-card-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  opacity: 0;
   position: relative;
   font-family: 'Inter', sans-serif;
 }
@@ -579,40 +582,39 @@
   box-shadow: none;
   transition: background 0.4s ease, box-shadow 0.4s ease;
 }
-@keyframes v4-modal-in {
-  from { opacity: 0; transform: translateY(20px) scale(0.96); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
 
 .v4-modal-close {
   position: absolute;
-  top: 16px;
-  right: 16px;
-  background: rgba(3, 3, 2, 0.04);
+  top: 14px;
+  right: 14px;
+  background: transparent;
   border: none;
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: 999px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: rgba(3, 3, 2, 0.6);
-  transition: background 0.2s ease, color 0.2s ease;
+  color: var(--v4-fg);
+  opacity: 0.55;
+  transition: background 0.2s ease, opacity 0.2s ease;
 }
 .v4-modal-close:hover {
-  background: rgba(3, 3, 2, 0.08);
-  color: #030302;
+  background: rgba(0, 0, 0, 0.06);
+  opacity: 1;
 }
 
 .v4-modal-title {
-  font-family: 'Fraunces', ui-serif, Georgia, serif;
-  font-size: 30px;
-  font-weight: 400;
-  letter-spacing: -0.02em;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 32px;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.022em;
+  line-height: 1.1;
   text-align: center;
   margin: 0 0 28px;
-  color: #030302;
+  color: var(--v4-fg);
 }
 
 .v4-modal-tiers {
@@ -1381,10 +1383,13 @@ input.v4-branding-color-input:hover {
 /* ============================================
    AUTH MODAL — magic-link account creation
    ============================================ */
+/* Shell pattern aligned to .v4-signin-modal — used by both AuthModal
+   and LaunchModal (which shares this class set + adds its own
+   width / left-align overrides below). */
 .v4-auth-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(3, 3, 2, 0.5);
+  background: rgba(3, 3, 2, 0.42);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   z-index: 1000;
@@ -1392,88 +1397,98 @@ input.v4-branding-color-input:hover {
   align-items: center;
   justify-content: center;
   padding: 24px;
-  animation: v4-auth-fadein 0.25s ease-out forwards;
-}
-@keyframes v4-auth-fadein {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  animation: v4-modal-overlay-in 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0;
 }
 .v4-auth-modal {
   position: relative;
   width: 100%;
   max-width: 440px;
-  /* Floating card surface — see comment on .v4-pickwinner-modal. */
-  background: var(--v4-card-bg);
+  background: #ffffff;
   border-radius: 22px;
-  padding: 36px 32px 28px;
+  padding: 36px 36px 28px;
   text-align: center;
-  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.3), 0 8px 16px rgba(0, 0, 0, 0.08);
-  animation: v4-auth-slideup 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-@keyframes v4-auth-slideup {
-  from { opacity: 0; transform: translateY(12px) scale(0.98); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 16px 36px -10px rgba(0, 0, 0, 0.22),
+    0 36px 90px -24px rgba(0, 0, 0, 0.32);
+  animation: v4-modal-card-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  opacity: 0;
 }
 .v4-auth-close {
   position: absolute;
-  top: 16px;
-  right: 16px;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
   background: transparent;
-  border: 1px solid var(--v4-faint);
-  color: var(--v4-muted);
+  border: none;
+  color: var(--v4-fg);
+  opacity: 0.55;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   outline: none;
-  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+  transition: background 0.2s ease, opacity 0.2s ease;
 }
 .v4-auth-close:hover {
-  border-color: rgba(3, 3, 2, 0.35);
-  color: var(--v4-fg);
-  background: var(--v4-bubble-bg);
+  background: rgba(0, 0, 0, 0.06);
+  opacity: 1;
 }
 .v4-auth-close:focus-visible {
-  border-color: rgba(3, 3, 2, 0.45);
   box-shadow: 0 0 0 3px var(--v4-ring);
 }
 .v4-auth-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
-  background: var(--v4-bubble-bg);
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: linear-gradient(
+    155deg,
+    color-mix(in srgb, #fadecc 60%, white) 0%,
+    #fadecc 100%
+  );
   color: var(--v4-fg);
-  margin-bottom: 18px;
+  margin: 4px 0 22px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    0 6px 16px -4px rgba(0, 0, 0, 0.08);
 }
 .v4-auth-icon-success {
-  background: #bce5c8;
+  background: linear-gradient(
+    155deg,
+    color-mix(in srgb, #a6dcb3 60%, white) 0%,
+    #a6dcb3 100%
+  );
   color: #1f5430;
 }
 .v4-auth-title {
-  font-family: 'Fraunces', ui-serif, Georgia, serif;
-  font-size: 26px;
-  font-weight: 400;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 32px;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.022em;
+  line-height: 1.1;
   margin: 0 0 10px;
   color: var(--v4-fg);
 }
 .v4-auth-blurb {
-  font-size: 14px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14.5px;
   line-height: 1.55;
-  color: var(--v4-muted);
-  margin: 0 0 22px;
+  color: var(--v4-fg);
+  opacity: 0.85;
+  margin: 0 0 24px;
   letter-spacing: -0.005em;
 }
 .v4-auth-blurb strong {
   color: var(--v4-fg);
   font-weight: 600;
+  opacity: 1;
 }
 .v4-auth-form {
   margin: 0 auto 14px;
@@ -1584,36 +1599,15 @@ input.v4-launch-email-input::placeholder {
   margin-top: 4px;
   letter-spacing: -0.005em;
 }
-.v4-launch-btn-modal {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: var(--v4-fg);
-  color: #ffffff;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: -0.005em;
-  padding: 14px 22px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  outline: none;
+/* Modifier on top of .btn.btn-primary.btn-lg — adds the full-width
+   stretch + .is-loading state for the launch button inside LaunchModal.
+   Base button styling (pill, gradient slide hover, etc.) comes from
+   the landing-v3 .btn family. */
+.lp-v3 .btn.v4-launch-btn-modal {
+  width: 100%;
   margin-top: 4px;
-  transition: opacity 0.2s ease, transform 0.18s ease;
 }
-.v4-launch-btn-modal:hover:not(:disabled) {
-  transform: translateY(-1px);
-}
-.v4-launch-btn-modal:focus-visible {
-  box-shadow: 0 0 0 3px var(--v4-ring), 0 0 0 4px rgba(255, 255, 255, 0.4);
-}
-.v4-launch-btn-modal:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-.v4-launch-btn-modal.is-loading {
+.lp-v3 .btn.v4-launch-btn-modal.is-loading {
   opacity: 0.85;
   cursor: progress;
 }
@@ -1936,27 +1930,10 @@ input.v4-launch-email-input::placeholder {
   margin-bottom: 18px;
   position: relative;
 }
-.v4-manage-share-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #ffffff;
-  border: 1px solid var(--v4-faint);
-  border-radius: 999px;
-  padding: 9px 16px;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--v4-fg);
-  text-decoration: none;
-  cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease, transform 0.18s ease;
-}
-.v4-manage-share-btn:hover {
-  border-color: rgba(3, 3, 2, 0.3);
-  background: var(--v4-bubble-bg);
-  transform: translateY(-1px);
-}
+/* .v4-manage-share-btn removed — migrated to .btn.btn-secondary.btn-sm
+   in ContestManage.jsx (the share chips: Copy link, Email, Message,
+   X, More). All hover behavior now inherits from landing-v3's pill
+   family for consistency. */
 .v4-manage-share-foot {
   display: flex;
   align-items: center;
@@ -2286,6 +2263,13 @@ input.v4-launch-email-input::placeholder {
   letter-spacing: -0.005em;
   max-width: 56ch;
 }
+/* CTA buttons inside the "Now/Up next" step text need breathing room
+   from the paragraph above — otherwise the pill button reads as glued
+   to the text. 16px lift puts it at a natural separation matching
+   the .v4-join-action stagger. */
+.v4-manage-wait-step-text > .btn {
+  margin-top: 16px;
+}
 
 /* Pull-quote callout — Fraunces italic with left-border accent
    (mirrors GuideExpandable callout pattern + design doc quote treatment) */
@@ -2332,37 +2316,23 @@ input.v4-launch-email-input::placeholder {
   gap: 16px;
   padding-top: 8px;
 }
-.v4-manage-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: transparent;
-  border: none;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--v4-muted);
-  text-decoration: none;
-  cursor: pointer;
-  padding: 6px 10px;
-  border-radius: 6px;
-  transition: color 0.2s ease, background 0.2s ease;
-}
-.v4-manage-action:hover {
-  color: var(--v4-fg);
-  background: rgba(3, 3, 2, 0.04);
-}
-.v4-manage-action-danger:hover {
-  color: #bb433a;
-}
+/* .v4-manage-action / .v4-manage-action-danger removed — migrated
+   to .btn.btn-link.v4-btn-danger in ContestManage.jsx (the
+   "Cancel contest" quiet footer action). Now shares the unified
+   hover language with the rest of the .btn family. */
 
-/* ─── Clickable recap rows (each row opens the edit modal) ─── */
+/* ─── Clickable recap rows (each row opens the edit modal) ───
+   Pattern matches the avatar-dropdown menu items: no hairline
+   dividers, rounded corners on the row itself, tiny vertical gap
+   between rows. Hover lights up a soft ink tint with rounded
+   corners that don't fight any borders. */
 .v4-manage-recap-list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 .v4-manage-recap-row {
   display: grid;
@@ -2372,23 +2342,20 @@ input.v4-launch-email-input::placeholder {
   width: 100%;
   background: transparent;
   border: none;
-  border-top: 1px solid var(--v4-faint);
-  padding: 12px 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
   font-family: 'Inter', system-ui, sans-serif;
   text-align: left;
   cursor: pointer;
   outline: none;
-  transition: background 0.15s ease;
-}
-.v4-manage-recap-list li:first-child .v4-manage-recap-row {
-  border-top: none;
+  transition: background 0.2s ease;
 }
 .v4-manage-recap-row:hover {
-  background: rgba(3, 3, 2, 0.03);
+  /* Soft ink tint — single hover language across the internal system. */
+  background: rgba(0, 0, 0, 0.04);
 }
 .v4-manage-recap-row:focus-visible {
-  background: rgba(3, 3, 2, 0.04);
-  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.04);
   box-shadow: 0 0 0 3px var(--v4-ring);
 }
 .v4-manage-recap-row-label {
@@ -2417,16 +2384,22 @@ input.v4-launch-email-input::placeholder {
 }
 
 /* ─── Edit question modal (side modal for inline editing) ─── */
+/* Shell pattern aligned to .v4-signin-modal. EditQuestionModal uses
+   the .v4-auth-backdrop overlay, so animation curve + blur come from
+   the shared overlay class. */
 .v4-edit-modal {
   position: relative;
   width: 100%;
   max-width: 520px;
-  /* Floating card surface — see comment on .v4-pickwinner-modal. */
-  background: var(--v4-card-bg);
+  background: #ffffff;
   border-radius: 22px;
-  padding: 36px 32px 32px;
-  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.3), 0 8px 16px rgba(0, 0, 0, 0.08);
-  animation: v4-auth-slideup 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  padding: 36px 36px 32px;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 16px 36px -10px rgba(0, 0, 0, 0.22),
+    0 36px 90px -24px rgba(0, 0, 0, 0.32);
+  animation: v4-modal-card-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  opacity: 0;
   text-align: left;
 }
 .v4-edit-modal-label {
@@ -3616,35 +3589,10 @@ input.v4-results-search-input::placeholder {
   margin-top: 32px;
   text-align: center;
 }
-.v4-launch-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--v4-fg);
-  color: #ffffff;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: -0.005em;
-  padding: 16px 32px;
-  border: none;
-  border-radius: 999px;
-  cursor: pointer;
-  outline: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-}
-.v4-launch-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 28px -10px rgba(0, 0, 0, 0.3);
-}
-.v4-launch-btn:focus-visible {
-  box-shadow: 0 0 0 3px var(--v4-ring), 0 0 0 4px rgba(255, 255, 255, 0.4);
-}
-.v4-launch-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-.v4-launch-btn.is-launching {
+/* Modifier on top of .btn.btn-primary.btn-lg — adds the .is-launching
+   pulse animation for the ReviewLaunch CTA. Base button styling
+   (pill, hover, etc.) comes from the landing-v3 .btn family. */
+.lp-v3 .btn.v4-launch-btn.is-launching {
   animation: v4-launch-pulse 1.2s ease-in-out infinite;
 }
 @keyframes v4-launch-pulse {
@@ -3679,32 +3627,8 @@ input.v4-results-search-input::placeholder {
    step when the contest is in 'voting-ended' phase. Segment-themed
    bg with a strong contrast so it reads as "the action to take now".
    ───────────────────────────────────────────────────────────────────── */
-.v4-manage-pick-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 14px;
-  padding: 11px 18px;
-  background: var(--v4-fg);
-  color: #ffffff;
-  border: none;
-  border-radius: 12px;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 13.5px;
-  font-weight: 600;
-  letter-spacing: -0.005em;
-  cursor: pointer;
-  outline: none;
-  box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.3);
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
-}
-.v4-manage-pick-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.4);
-}
-.v4-manage-pick-btn:focus-visible {
-  box-shadow: 0 0 0 3px var(--v4-ring), 0 8px 20px -8px rgba(0, 0, 0, 0.3);
-}
+/* .v4-manage-pick-btn removed — migrated to .btn.btn-primary in
+   ContestManage.jsx. Uses landing-v3's gradient-slide hover. */
 
 /* ─────────────────────────────────────────────────────────────────────
    JOURNEY STEPS — clickable on mock contests so the demo viewer can
@@ -4684,18 +4608,20 @@ input.v4-results-search-input::placeholder {
    name preselected, full leaderboard underneath as radio buttons.
    Confirm sets ?winner=<nameId> and the page transforms.
    ───────────────────────────────────────────────────────────────────── */
+/* Shell pattern aligned to .v4-signin-modal (the reference modal). */
 .v4-pickwinner-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(3, 3, 2, 0.55);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(3, 3, 2, 0.42);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 200;
   padding: 24px;
-  animation: v4-fade-in 0.2s ease-out forwards;
+  animation: v4-modal-overlay-in 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0;
 }
 .v4-pickwinner-modal {
   position: relative;
@@ -4704,14 +4630,15 @@ input.v4-results-search-input::placeholder {
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  /* Floating card surface — uses the design-system card-bg token,
-     not the page bg, so the modal reads as a distinct card on top of
-     the cream page beneath. */
-  background: var(--v4-card-bg);
+  background: #ffffff;
   border-radius: 22px;
-  padding: 28px 28px 22px;
-  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.45);
-  animation: v4-fade-in 0.25s ease-out forwards;
+  padding: 32px 32px 24px;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 16px 36px -10px rgba(0, 0, 0, 0.22),
+    0 36px 90px -24px rgba(0, 0, 0, 0.32);
+  animation: v4-modal-card-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  opacity: 0;
 }
 .v4-pickwinner-close {
   position: absolute;
@@ -4720,50 +4647,57 @@ input.v4-results-search-input::placeholder {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   background: transparent;
   border: none;
-  border-radius: 8px;
-  color: var(--v4-muted);
+  border-radius: 999px;
+  color: var(--v4-fg);
+  opacity: 0.55;
   cursor: pointer;
   outline: none;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background 0.2s ease, opacity 0.2s ease;
 }
 .v4-pickwinner-close:hover {
-  background: var(--v4-bubble-bg);
-  color: var(--v4-fg);
+  background: rgba(0, 0, 0, 0.06);
+  opacity: 1;
 }
 
 /* Header */
 .v4-pickwinner-head {
   display: flex;
   align-items: flex-start;
-  gap: 14px;
-  margin-bottom: 18px;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 .v4-pickwinner-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
+  width: 56px;
+  height: 56px;
+  border-radius: 20px;
   flex: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    0 6px 16px -4px rgba(0, 0, 0, 0.08);
 }
 .v4-pickwinner-title {
-  font-family: 'Fraunces', ui-serif, Georgia, serif;
-  font-size: 24px;
-  font-weight: 350;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 28px;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.022em;
+  line-height: 1.1;
   color: var(--v4-fg);
-  margin: 0 0 4px;
+  margin: 0 0 6px;
 }
 .v4-pickwinner-subtitle {
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 13px;
-  color: var(--v4-muted);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--v4-fg);
+  opacity: 0.75;
   margin: 0;
   letter-spacing: -0.005em;
 }
@@ -4923,45 +4857,17 @@ input.v4-results-search-input::placeholder {
   padding-top: 16px;
   border-top: 1px solid var(--v4-faint);
 }
-.v4-pickwinner-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 11px 18px;
-  border-radius: 12px;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 13.5px;
-  font-weight: 600;
-  letter-spacing: -0.005em;
-  cursor: pointer;
-  outline: none;
-  border: 1px solid transparent;
-  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
-}
-.v4-pickwinner-btn-secondary {
-  background: transparent;
-  color: var(--v4-fg);
-  border-color: var(--v4-faint);
-}
-.v4-pickwinner-btn-secondary:hover {
-  border-color: rgba(3, 3, 2, 0.3);
-}
-.v4-pickwinner-btn-primary {
-  background: var(--v4-fg);
-  color: #ffffff;
-  border-color: var(--v4-fg);
+/* Inside the actions row, the primary button stretches to fill so
+   it visually commits as "the action to take" while Cancel stays
+   at content width. */
+.v4-pickwinner-foot .btn.btn-primary {
   flex: 1;
   justify-content: center;
-  box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.3);
 }
-.v4-pickwinner-btn-primary:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.4);
-}
-.v4-pickwinner-btn-primary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+/* .v4-pickwinner-btn family removed entirely — migrated to
+   .btn.btn-primary and .btn.btn-secondary in PickWinnerModal.jsx.
+   Primary's "stretch to fill" behavior now lives inline (flex:1 on
+   the actions row container). */
 
 @media (max-width: 640px) {
   .v4-pickwinner-modal {
@@ -4970,7 +4876,6 @@ input.v4-results-search-input::placeholder {
   }
   .v4-pickwinner-preview-name { font-size: 22px; }
   .v4-pickwinner-row-meta { display: none; }
-  .v4-pickwinner-btn-primary { font-size: 13px; padding: 11px 14px; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────
@@ -5054,60 +4959,89 @@ input.v4-results-search-input::placeholder {
   box-shadow: 0 0 0 3px var(--v4-ring), 0 2px 6px -2px rgba(0, 0, 0, 0.12);
 }
 
+/* AvatarMenu dropdown — small floating panel anchored to the avatar
+   trigger in the top-right. Same design language as the SignInModal
+   (matching radius, shadow stack, animation curve) so the v4 modal
+   layer reads as one consistent family. */
 .v4-avatar-dropdown {
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
-  min-width: 240px;
+  min-width: 260px;
   background: #ffffff;
-  border: 1px solid var(--v4-faint);
-  border-radius: 14px;
+  /* Border-radius matches the modal family. Border removed in favor
+     of the deeper shadow stack — borders look stamped, shadows float. */
+  border-radius: 18px;
   padding: 6px;
-  box-shadow: 0 18px 48px -16px rgba(0, 0, 0, 0.22);
+  /* Three-layer shadow matching .v4-signin-modal, scaled smaller for
+     a small popup so it doesn't dominate the viewport. */
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 12px 28px -8px rgba(0, 0, 0, 0.18),
+    0 24px 56px -16px rgba(0, 0, 0, 0.22);
   z-index: 50;
-  animation: v4-fade-in 0.15s ease-out forwards;
+  /* Origin = top-right corner (where the trigger sits). Settles in
+     with a small scale + slide so the panel feels "lowered" from the
+     avatar rather than fading in flat. */
+  transform-origin: top right;
+  animation: v4-avatar-dropdown-in 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  opacity: 0;
+}
+@keyframes v4-avatar-dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 .v4-avatar-dropdown-head {
-  padding: 12px 14px 10px;
+  padding: 14px 14px 10px;
 }
 .v4-avatar-dropdown-name {
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--v4-fg);
   letter-spacing: -0.005em;
 }
 .v4-avatar-dropdown-email {
   font-size: 12px;
-  color: var(--v4-muted);
+  color: var(--v4-fg);
+  opacity: 0.55;
   margin-top: 2px;
   word-break: break-all;
 }
 .v4-avatar-dropdown-divider {
   height: 1px;
-  background: var(--v4-faint);
+  background: rgba(0, 0, 0, 0.06);
   margin: 4px 0;
 }
 
-/* Active-contest mini-card inside the avatar dropdown. Segment-tinted
-   background, live status pill (pulsing dot), whole row clickable to
-   jump straight to ContestManage. Anchored visually so the user always
-   knows what's "live right now." */
+/* Active-contest mini-card — segment-tinted, the most prominent item
+   in the menu. Border-radius bumped to match the modal language. */
 .v4-avatar-dropdown-contest {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 12px 14px;
   margin: 4px 0;
-  border-radius: 10px;
+  border-radius: 14px;
   text-decoration: none;
   outline: none;
   cursor: pointer;
-  transition: filter 0.15s ease, transform 0.15s ease;
+  transition:
+    box-shadow 0.25s ease,
+    transform 0.25s ease,
+    filter 0.25s ease;
 }
 .v4-avatar-dropdown-contest:hover {
-  filter: brightness(0.97);
+  /* Lift instead of darken — feels more like the join page's
+     interactive elements (which use shadow + translate, not filter). */
   transform: translateY(-1px);
+  box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.12);
 }
 .v4-avatar-dropdown-contest:focus-visible {
   box-shadow: 0 0 0 2px var(--v4-ring);
@@ -5121,23 +5055,28 @@ input.v4-results-search-input::placeholder {
   align-items: center;
   gap: 6px;
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 9.5px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #1f5430;
+  color: var(--v4-fg);
+  opacity: 0.7;
   margin-bottom: 4px;
 }
 .v4-avatar-dropdown-contest-sep {
   opacity: 0.4;
-  color: var(--v4-muted);
-}
-.v4-avatar-dropdown-contest-name {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 13.5px;
-  font-weight: 600;
   color: var(--v4-fg);
-  letter-spacing: -0.005em;
+}
+/* Contest name in the menu — Fraunces italic accent so this card
+   reads with a touch of the celebration typography from the join
+   page hero, instead of looking like a plain list item. */
+.v4-avatar-dropdown-contest-name {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 17px;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  color: var(--v4-fg);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -5145,22 +5084,25 @@ input.v4-results-search-input::placeholder {
 .v4-avatar-dropdown-contest-arrow {
   color: var(--v4-fg);
   flex: none;
-  opacity: 0.6;
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  opacity: 0.5;
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
 .v4-avatar-dropdown-contest:hover .v4-avatar-dropdown-contest-arrow {
   opacity: 1;
-  transform: translateX(2px);
+  transform: translateX(3px);
 }
+
+/* Plain menu items (My workspace, Sign out) — list-row treatment
+   with pill-ish border-radius for hover-feel. */
 .v4-avatar-dropdown-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
-  padding: 10px 14px;
+  padding: 11px 14px;
   background: transparent;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 13.5px;
   font-weight: 500;
@@ -5169,10 +5111,10 @@ input.v4-results-search-input::placeholder {
   text-align: left;
   cursor: pointer;
   outline: none;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 .v4-avatar-dropdown-item:hover {
-  background: var(--v4-bubble-bg);
+  background: rgba(0, 0, 0, 0.04);
 }
 .v4-avatar-dropdown-item:focus-visible {
   box-shadow: 0 0 0 2px var(--v4-ring);
@@ -5181,37 +5123,66 @@ input.v4-results-search-input::placeholder {
   color: #b3401f;
 }
 .v4-avatar-dropdown-item-danger:hover {
-  background: rgba(179, 64, 31, 0.06);
+  background: rgba(179, 64, 31, 0.07);
 }
 
 /* ─────────────────────────────────────────────────────────────────────
    SIGN-IN MODAL — magic-link flow.
-   Single-column centered card with three phases: input / sent / success.
+   Reference implementation for the v4 modal design language. Other
+   modals (Tier picker, Launch, Pick winner, Edit question, Auth) should
+   match this shape: pill .btn family for actions, soft multi-layer
+   shadow matching the join page's .v4-join-prize, Fraunces italic
+   title, segment-tinted icon, smooth fade-up + scale entrance.
    ───────────────────────────────────────────────────────────────────── */
 .v4-signin-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(3, 3, 2, 0.45);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(3, 3, 2, 0.42);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 200;
   padding: 24px;
-  animation: v4-fade-in 0.2s ease-out forwards;
+  /* Smooth backdrop fade so the page behind doesn't flash. */
+  animation: v4-modal-overlay-in 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0;
+}
+@keyframes v4-modal-overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 .v4-signin-modal {
   position: relative;
   width: 100%;
-  max-width: 420px;
-  /* Floating card surface — see comment on .v4-pickwinner-modal. */
-  background: var(--v4-card-bg);
+  max-width: 440px;
+  background: #ffffff;
+  /* Match .v4-join-prize border-radius family + a slightly larger
+     value so this floats more dramatically than the ticket-stub. */
   border-radius: 22px;
-  padding: 32px 32px 28px;
-  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.4);
-  animation: v4-fade-in 0.25s ease-out forwards;
+  padding: 36px 36px 28px;
+  /* Three-layer shadow — hairline + medium drop + atmospheric ambient.
+     Same recipe as .v4-join-prize, scaled up for a floating overlay. */
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 16px 36px -10px rgba(0, 0, 0, 0.22),
+    0 36px 90px -24px rgba(0, 0, 0, 0.32);
+  /* Settle-in: starts slightly small + below center, lands at
+     full size. Same overshoot curve as a Material spring. */
+  animation: v4-modal-card-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  opacity: 0;
   text-align: center;
+}
+@keyframes v4-modal-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 .v4-signin-close {
   position: absolute;
@@ -5220,60 +5191,89 @@ input.v4-results-search-input::placeholder {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   background: transparent;
   border: none;
-  border-radius: 8px;
-  color: var(--v4-muted);
+  /* Pill shape to match the design doc rounding language. */
+  border-radius: 999px;
+  color: var(--v4-fg);
+  opacity: 0.55;
   cursor: pointer;
   outline: none;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background 0.2s ease, opacity 0.2s ease;
 }
 .v4-signin-close:hover {
-  background: var(--v4-bubble-bg);
-  color: var(--v4-fg);
+  background: rgba(0, 0, 0, 0.06);
+  opacity: 1;
 }
 
+/* Icon wrap — rich segment-gradient pill, NOT a boring grey square.
+   Each phase gets its own warm/cool palette so the icon carries a
+   bit of personality (matches how the join prize stub uses gradient). */
 .v4-signin-icon-wrap {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
-  background: var(--v4-bubble-bg);
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: linear-gradient(
+    155deg,
+    color-mix(in srgb, #fadecc 60%, white) 0%,
+    #fadecc 100%
+  );
   color: var(--v4-fg);
-  margin: 4px 0 18px;
+  margin: 4px 0 22px;
+  /* Subtle inset highlight + soft glow ground — gives the icon a
+     dimensional, "lit-from-within" feel rather than a flat fill. */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    0 6px 16px -4px rgba(0, 0, 0, 0.08);
 }
 .v4-signin-icon-wrap-sent {
-  background: rgba(196, 207, 245, 0.5);
+  background: linear-gradient(
+    155deg,
+    color-mix(in srgb, #c4dffb 60%, white) 0%,
+    #c4dffb 100%
+  );
   color: #283b78;
 }
 .v4-signin-icon-wrap-success {
-  background: rgba(166, 220, 179, 0.5);
+  background: linear-gradient(
+    155deg,
+    color-mix(in srgb, #a6dcb3 60%, white) 0%,
+    #a6dcb3 100%
+  );
   color: #1f5430;
 }
 
+/* Title — Fraunces italic, same scale + treatment as the thanks
+   page hero so modals read as part of the same family. */
 .v4-signin-title {
-  font-family: 'Fraunces', ui-serif, Georgia, serif;
-  font-size: 26px;
-  font-weight: 350;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 32px;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.022em;
+  line-height: 1.1;
   color: var(--v4-fg);
-  margin: 0 0 8px;
+  margin: 0 0 10px;
 }
+/* Subtitle — solid ink, not muted. Reads as the actual message
+   ("No password — we'll email you a magic link"), not flavor. */
 .v4-signin-subtitle {
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 13.5px;
-  line-height: 1.5;
-  color: var(--v4-muted);
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--v4-fg);
+  opacity: 0.85;
   margin: 0 0 24px;
 }
 .v4-signin-subtitle strong {
   color: var(--v4-fg);
   font-weight: 600;
+  opacity: 1;
 }
 
 .v4-signin-form {
@@ -5281,7 +5281,7 @@ input.v4-results-search-input::placeholder {
   flex-direction: column;
   gap: 14px;
   text-align: left;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 .v4-signin-field {
   display: flex;
@@ -5292,52 +5292,66 @@ input.v4-results-search-input::placeholder {
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 11.5px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--v4-muted);
+  color: var(--v4-fg);
+  opacity: 0.6;
 }
-.v4-signin-submit {
+
+/* Primary + secondary buttons inside the modal — pulls from
+   .btn .btn-primary .btn-lg (landing-v3 pill family). The two
+   modifier classes below just stretch them full-width. */
+.v4 .btn.v4-signin-submit,
+.lp-v3 .btn.v4-signin-submit,
+.v4 .btn.v4-signin-participant,
+.lp-v3 .btn.v4-signin-participant {
   width: 100%;
   justify-content: center;
-  padding: 12px 18px;
-  font-size: 14px;
 }
 
 .v4-signin-foot {
   font-size: 12.5px;
-  color: var(--v4-muted);
-  margin: 4px 0 0;
+  color: var(--v4-fg);
+  opacity: 0.65;
+  margin: 14px 0 0;
 }
 .v4-signin-foot a {
   color: var(--v4-fg);
+  opacity: 1;
   font-weight: 600;
   text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
 }
 .v4-signin-foot a:hover {
-  text-decoration: underline;
+  border-bottom-color: var(--v4-fg);
 }
 .v4-signin-foot-demo {
-  margin: 14px 0 12px;
-  padding: 10px 14px;
-  background: var(--v4-bubble-bg);
+  margin: 14px 0 4px;
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px dashed rgba(0, 0, 0, 0.12);
   border-radius: 10px;
   font-size: 11.5px;
   font-style: italic;
-  text-align: left;
-  color: var(--v4-muted);
+  text-align: center;
+  color: var(--v4-fg);
+  opacity: 0.55;
 }
 
-/* "or" divider between primary magic-link form and the participant
-   shortcut. Subtle hairline with the word centered. */
+/* "or" divider between primary and secondary action — subtle hairline
+   with the word centered. Uppercase tracker matches the eyebrow
+   typography used elsewhere on the v4 surface. */
 .v4-signin-divider {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 18px 0 14px;
-  color: var(--v4-muted);
+  margin: 20px 0 16px;
+  color: var(--v4-fg);
+  opacity: 0.45;
   font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 .v4-signin-divider::before,
@@ -5345,30 +5359,29 @@ input.v4-results-search-input::placeholder {
   content: '';
   flex: 1;
   height: 1px;
-  background: var(--v4-border);
+  background: rgba(0, 0, 0, 0.08);
 }
 
-/* Participant-mode secondary action — full width so it visually
-   balances the magic-link primary button above it. */
-.v4-signin-participant {
-  width: 100%;
-  justify-content: center;
-}
+/* Small text-link affordance — "Use a different email". Lives at
+   the bottom of the sent state. Subtle, underlined, hover ink-up. */
 .v4-signin-link {
   background: transparent;
   border: none;
-  color: var(--v4-muted);
+  color: var(--v4-fg);
+  opacity: 0.55;
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   outline: none;
   margin-top: 8px;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: opacity 0.2s ease, background 0.2s ease;
 }
 .v4-signin-link:hover {
-  color: var(--v4-fg);
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.04);
 }
 
 /* ─────────────────────────────────────────────────────────────────────
@@ -5719,55 +5732,69 @@ input.v4-settings-input:-webkit-autofill:active {
   margin-top: 4px;
 }
 
-/* Buttons */
-.v4-settings-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 18px;
-  border-radius: 10px;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 13.5px;
-  font-weight: 600;
-  letter-spacing: -0.005em;
-  cursor: pointer;
-  outline: none;
-  border: 1px solid transparent;
-  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
-}
-.v4-settings-btn-primary {
-  background: var(--v4-fg);
-  color: #ffffff;
-  border-color: var(--v4-fg);
-}
-.v4-settings-btn-primary:hover {
-  transform: translateY(-1px);
-}
-.v4-settings-btn-secondary {
-  background: #ffffff;
-  color: var(--v4-fg);
-  border-color: var(--v4-faint);
-}
-.v4-settings-btn-secondary:hover {
-  border-color: rgba(3, 3, 2, 0.3);
-}
-.v4-settings-btn-link {
-  background: transparent;
-  color: var(--v4-fg);
-  padding: 6px 10px;
+/* ─────────────────────────────────────────────────────────────────
+   UNIFIED BUTTON SYSTEM — single pill family across the entire v4 app.
+   Base classes (.btn / .btn-primary / .btn-secondary / .btn-ghost)
+   live in landing-v3.css — the design-doc source of truth. Below are
+   v4-scoped sizing + variant additions that sit on top of the base.
+
+   Sizes:
+     - .btn       default — ~40px tall, padding 12/20, font 14px.
+                  Modals, primary save buttons, mid-density CTAs.
+     - .btn-lg    ~50px tall, padding 16/28, font 15px.
+                  Heroic CTAs on /join, /thanks "Open the link".
+     - .btn-sm    ~32px tall, padding 7/14, font 13px.
+                  Dense dashboard rows ("Manage", "Vote",
+                  "Suggest a name", "Upload photo").
+   Variants:
+     - .btn-link  text-link-style ghost — for inline row affordances
+                  ("View results", "Update payment", "Remove photo").
+                  No shadow, no border, ink-up on hover. Still pill
+                  radius so it matches the family.
+
+   All buttons share: pill (999px) radius, landing-v3 hover language
+   (gradient slide for primary, border darken + shadow for secondary). */
+
+.v4 .btn.btn-sm,
+.lp-v3 .btn.btn-sm {
+  padding: 7px 14px;
+  font-size: 13px;
   font-weight: 500;
 }
-.v4-settings-btn-link:hover {
-  background: var(--v4-bubble-bg);
-}
-.v4-settings-btn-danger {
+
+.v4 .btn.btn-link,
+.lp-v3 .btn.btn-link {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  opacity: 0.7;
   background: transparent;
-  color: #b3401f;
-  border-color: rgba(179, 64, 31, 0.3);
+  border: none;
+  box-shadow: none;
+  border-radius: 999px;
+  transition: background 0.2s ease, opacity 0.2s ease;
 }
-.v4-settings-btn-danger:hover {
-  background: rgba(179, 64, 31, 0.06);
-  border-color: rgba(179, 64, 31, 0.5);
+.v4 .btn.btn-link:hover,
+.lp-v3 .btn.btn-link:hover {
+  background: rgba(0, 0, 0, 0.05);
+  opacity: 1;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Danger color modifier — used on destructive .btn-link affordances
+   like "Cancel contest". Resting state shows the muted ink color of
+   .btn-link; on hover the text shifts to a warm rust + the bg tints
+   that color so the user knows this is a destructive choice. */
+.v4 .btn.v4-btn-danger,
+.lp-v3 .btn.v4-btn-danger {
+  color: #b3401f;
+}
+.v4 .btn.v4-btn-danger:hover,
+.lp-v3 .btn.v4-btn-danger:hover {
+  color: #b3401f;
+  background: rgba(179, 64, 31, 0.08);
 }
 
 /* CURRENT contest card — the prominent card in the billing section.
@@ -5898,16 +5925,20 @@ input.v4-settings-input:-webkit-autofill:active {
 .v4-settings-joined-countdown-time {
   letter-spacing: 0.01em;
 }
-.v4-settings-joined-vote-btn:disabled,
-.v4-settings-joined-vote-btn[disabled] {
-  opacity: 0.45;
+/* Modifier on top of .btn.btn-primary.btn-sm — disables the Vote
+   button until the countdown ends. Boosts specificity (.lp-v3 .btn)
+   to win against the landing-v3 :disabled rule's plain background. */
+.lp-v3 .btn.v4-settings-joined-vote-btn:disabled,
+.lp-v3 .btn.v4-settings-joined-vote-btn[disabled] {
+  opacity: 0.5;
   cursor: not-allowed;
   background: #ffffff;
   color: var(--v4-fg);
-  border-color: var(--v4-faint);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: none;
 }
-.v4-settings-joined-vote-btn:disabled:hover,
-.v4-settings-joined-vote-btn[disabled]:hover {
+.lp-v3 .btn.v4-settings-joined-vote-btn:disabled:hover,
+.lp-v3 .btn.v4-settings-joined-vote-btn[disabled]:hover {
   background: #ffffff;
   color: var(--v4-fg);
   transform: none;
@@ -6392,7 +6423,8 @@ input.v4-settings-input:-webkit-autofill:active {
   flex-direction: column;
   align-items: stretch;
 }
-.v4-join-screen .v4-review > .v4-join-inner {
+.v4-join-screen .v4-review > .v4-join-inner,
+.v4-join-screen .v4-review > .v4-pthanks-inner {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -7067,6 +7099,77 @@ input.v4-settings-input:-webkit-autofill:active {
 .v4-join-flow-step.is-upcoming .v4-join-flow-label em {
   opacity: 0.4;
 }
+/* Done steps — used by the thanks pages for "Suggested" / "Voted"
+   states the user has already completed. Filled-in checkmark dot,
+   muted text so the eye flows past to the current step. */
+.v4-join-flow-step.is-done .v4-join-flow-dot {
+  background: var(--v4-fg);
+  border-color: rgba(255,255,255,0.95);
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.08);
+  opacity: 0.45;
+}
+.v4-join-flow-step.is-done .v4-join-flow-label strong {
+  color: var(--v4-fg);
+  opacity: 0.5;
+  font-weight: 600;
+}
+.v4-join-flow-step.is-done .v4-join-flow-label em {
+  opacity: 0.4;
+}
+
+/* ── Ticket-stub countdown variant ──────────────────────────────────
+   Used by the thanks pages — the same .v4-join-prize ticket stub the
+   join page uses for the prize, but with d/h/m/s digits in the body
+   instead of a prize name. Big tabular-nums Fraunces digits so they
+   sit right where the prize name would (same baseline = visual
+   continuity between join and thanks). */
+.v4-join-countdown-digits {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 4px 0 8px;
+  font-variant-numeric: tabular-nums;
+}
+.v4-join-countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 44px;
+}
+.v4-join-countdown-num {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 30px;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.015em;
+  color: var(--v4-fg);
+}
+.v4-join-countdown-lbl {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v4-fg);
+  opacity: 0.5;
+}
+.v4-join-countdown-sep {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--v4-fg);
+  opacity: 0.35;
+  /* Nudge separators up so they sit between the numerals, not the labels. */
+  align-self: flex-start;
+  padding-top: 4px;
+}
+@media (max-width: 560px) {
+  .v4-join-countdown-num { font-size: 24px; }
+  .v4-join-countdown-unit { min-width: 36px; }
+  .v4-join-countdown-sep { font-size: 22px; }
+}
 @media (max-width: 560px) {
   .v4-join-flow {
     grid-template-columns: 1fr;
@@ -7582,22 +7685,9 @@ input.v4-settings-input:-webkit-autofill:active {
   align-items: flex-start;
   gap: 4px;
 }
-.v4-pchat-finalize-btn {
-  background: #ffffff;
-  border: 1px solid var(--v4-fg);
-  border-radius: 999px;
-  padding: 9px 18px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--v4-fg);
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-.v4-pchat-finalize-btn:hover {
-  background: var(--v4-fg);
-  color: #ffffff;
-}
+/* .v4-pchat-finalize-btn removed — migrated to .btn.btn-secondary.btn-sm
+   in ParticipantChat.jsx (the "That's enough — submit what I have"
+   button at the bottom of the chat). */
 .v4-pchat-finalize-note {
   margin: 0;
   font-size: 11.5px;
@@ -7649,37 +7739,304 @@ input.v4-settings-input:-webkit-autofill:active {
   }
 }
 
-/* ── Participant Thanks page ────────────────────────────────────── */
+/* ── Participant Thanks page ──────────────────────────────────────
+   /thanks and /vote-thanks share the join-page shell (segment color
+   wash, white blobs, footer timeline). What they DO differently:
+     1. Hero is short — "Names locked in." / "Votes counted." — a
+        declarative line, not a question or call.
+     2. The body is a receipt slab listing the user's actual names /
+        votes. White card with numbered rows for /thanks, tone-tinted
+        cards for /vote-thanks.
+     3. No separate countdown element. The countdown lives inside the
+        footer timeline's current step (replacing its <em> hint text).
+     4. No CTA button — the user is waiting; there's nothing to do.
+   This is a receipt + waiting room, not an active step. */
+
+/* Column wrapper — sits inside .v4-join-screen's flex-centered
+   layout. Wider than .v4-join-inner because the receipt slab holds a
+   list and needs room. */
 .v4-pthanks-inner {
   text-align: center;
-  padding-top: 64px;
+  padding: 56px 24px 32px !important;
   max-width: 620px !important;
+  margin: 0 auto !important;
+  position: relative;
+  z-index: 2;
+  width: 100%;
 }
-.v4-pthanks-icon {
-  display: inline-flex;
-  align-items: center;
+/* Children of the inner should stretch to the column width. The
+   join-screen wrapper uses align-items:center which would otherwise
+   shrink the receipt slab to its content width. */
+.v4-pthanks-inner > .v4-pthanks-hero,
+.v4-pthanks-inner > .v4-pthanks-receipt {
+  width: 100%;
+}
+
+/* ── Anticipation CTA — disabled-until-ready pill between the cards
+   and the footer timeline. Shows the next action the user CAN take
+   (Vote, See winner) plus a compact ETA inline. When the countdown
+   reaches zero, the button enables and becomes the natural next
+   step. The nav's top-right pill carries the precise live ticker;
+   this button shows the rounded "in 2d 14h" form so it's calm. */
+.v4-pthanks-cta {
+  display: flex;
   justify-content: center;
-  width: 88px;
-  height: 88px;
-  border-radius: 50%;
-  background: var(--v4-bubble-bg);
-  margin-bottom: 22px;
+  margin: 4px auto 32px;
+  animation: v4-join-fade-up 0.85s ease-out 0.3s both;
+}
+.v4 .btn.v4-pthanks-cta-btn,
+.lp-v3 .btn.v4-pthanks-cta-btn {
+  /* Tabular nums so the embedded ETA digits don't jitter. */
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.005em;
+}
+/* When disabled, override the default .btn:disabled white-on-white
+   from landing-v3 — that disappears against this page's segment
+   wash. Instead: white pill with muted ink so it reads as
+   "available but not yet". */
+.v4 .btn.v4-pthanks-cta-btn:disabled,
+.v4 .btn.v4-pthanks-cta-btn[disabled],
+.lp-v3 .btn.v4-pthanks-cta-btn:disabled,
+.lp-v3 .btn.v4-pthanks-cta-btn[disabled] {
+  background: rgba(255,255,255,0.88);
+  color: var(--v4-fg);
+  border-color: rgba(0,0,0,0.08);
+  opacity: 0.85;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 6px 16px -8px rgba(0,0,0,0.12);
+  cursor: default;
+}
+.v4 .btn.v4-pthanks-cta-btn:disabled:hover,
+.v4 .btn.v4-pthanks-cta-btn[disabled]:hover,
+.lp-v3 .btn.v4-pthanks-cta-btn:disabled:hover,
+.lp-v3 .btn.v4-pthanks-cta-btn[disabled]:hover {
+  background: rgba(255,255,255,0.88);
+  color: var(--v4-fg);
+  transform: none;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 6px 16px -8px rgba(0,0,0,0.12);
+}
+.v4-pthanks-cta-eta {
+  /* The "· in 2d 14h" suffix on the disabled button — muted dot
+     separator + monospace digits for stability. */
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.7;
+  margin-left: 6px;
+  letter-spacing: 0;
+}
+
+/* Hero — same typographic scale as the join page so the participant
+   journey reads as one surface. Eyebrow matches .v4-join-hero-verb
+   (13px Inter 700 uppercase 0.12em). Title matches .v4-join-hero-
+   workingname (56px Fraunces italic 500). Sub matches .v4-join-hero-
+   summary (15px Inter 0.7 opacity). */
+.v4-pthanks-hero {
+  text-align: center;
+  /* Match .v4-join-hero-bold spacing so the hero sits at the same
+     vertical position relative to the nav and the card list below. */
+  margin: 14px 0 32px;
+}
+/* Headline (eyebrow + title) fades in together — same timing as
+   .v4-join-hero-headline on the invitation page (0.7s @ 0.08s).
+   Sub paragraph fades in slightly later, matching the join's
+   .v4-join-hero-summary stagger. */
+.v4-pthanks-eyebrow,
+.v4-pthanks-title {
+  animation: v4-join-fade-up 0.7s ease-out 0.08s both;
+}
+.v4-pthanks-eyebrow {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--v4-fg);
+  opacity: 0.55;
+  margin-bottom: 10px;
+}
+.v4-pthanks-eyebrow strong {
+  font-weight: 700;
+  opacity: 1;
 }
 .v4-pthanks-title {
   font-family: 'Fraunces', Georgia, serif;
-  font-size: 36px;
+  font-size: 56px;
+  font-style: italic;
   font-weight: 500;
-  letter-spacing: -0.018em;
+  letter-spacing: -0.022em;
+  line-height: 1.05;
   color: var(--v4-fg);
-  margin: 0 0 14px;
+  margin: 0;
+}
+@media (max-width: 720px) {
+  .v4-pthanks-title { font-size: 40px; }
+}
+@media (max-width: 480px) {
+  .v4-pthanks-title { font-size: 32px; }
 }
 .v4-pthanks-sub {
-  font-size: 16px;
-  line-height: 1.6;
-  color: var(--v4-muted);
-  margin: 0 auto 36px;
-  max-width: 52ch;
+  margin: 14px auto 0;
+  max-width: 56ch;
+  font-size: 15px;
+  line-height: 1.5;
+  /* Solid ink, no opacity — the sub on these pages reads as the
+     actual confirmation message ("We saved your names…"), not as
+     supporting flavor copy. So full color, not faded. */
+  color: var(--v4-fg);
+  animation: v4-join-fade-up 0.8s ease-out 0.14s both;
 }
+
+/* ── Card list — mini ticket-stubs matching the .v4-join-prize
+   award design on the join page. Each card has a segment-tinted
+   band on the left (containing the rank number / trophy / check),
+   a dashed perforated seam, and a white content slab on the right
+   holding the name + whyItFits. SAME visual grammar as the prize
+   stub, just smaller — so /join, /thanks, /vote-thanks all read as
+   variations of one component.
+
+   Typography matches the prize stub one-to-one:
+     - name = .v4-join-prize-name (Fraunces italic 24px)
+     - why  = .v4-join-prize-desc (13px, opacity 0.75)
+     - by   = small Inter 12px, opacity 0.55 (for vote-thanks bylines) */
+.v4-pthanks-receipt {
+  margin: 0 auto 36px;
+  text-align: left;
+  width: 100%;
+  max-width: 560px;
+  /* Match .v4-join-prize stagger (0.7s @ 0.22s) so the cards land
+     after the headline + sub on the same timeline as the join's
+     prize stub. */
+  animation: v4-join-fade-up 0.7s ease-out 0.22s both;
+}
+.v4-pthanks-card-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.v4-pthanks-card {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.05),
+    0 10px 28px -8px rgba(0,0,0,0.16);
+}
+/* Tinted band on the left — same gradient recipe as .v4-join-prize-band
+   so the band color reads as a continuation of the prize stub. */
+.v4-pthanks-card-band {
+  flex-shrink: 0;
+  width: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(
+      155deg,
+      color-mix(in srgb, var(--join-bg, #a6dcb3) 60%, white) 0%,
+      var(--join-bg, #a6dcb3) 100%
+    );
+  color: var(--v4-fg);
+  position: relative;
+}
+/* Perforated dashed seam — same pattern as .v4-join-prize-band::after. */
+.v4-pthanks-card-band::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -1px;
+  bottom: 0;
+  width: 2px;
+  background-image: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.18) 0,
+    rgba(0,0,0,0.18) 5px,
+    transparent 5px,
+    transparent 10px
+  );
+  background-size: 100% 10px;
+}
+/* Number in the band — italic Fraunces tabular nums. */
+.v4-pthanks-card-band-num {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 24px;
+  font-style: italic;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--v4-fg);
+}
+.v4-pthanks-card-body {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 18px;
+}
+/* Name = Fraunces italic, ink-dark, no opacity. Matches
+   .v4-join-prize-name. */
+.v4-pthanks-card-name {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 22px;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.012em;
+  color: var(--v4-fg);
+  margin-bottom: 5px;
+}
+/* Why = Inter, 13px, opacity 0.75. Matches .v4-join-prize-desc. */
+.v4-pthanks-card-why {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--v4-fg);
+  opacity: 0.75;
+}
+/* Submitter byline — only rendered on /vote-thanks when not anonymous. */
+.v4-pthanks-card-by {
+  font-size: 12px;
+  color: var(--v4-fg);
+  opacity: 0.55;
+  margin-top: 6px;
+}
+.v4-pthanks-card-by strong {
+  font-weight: 600;
+  opacity: 1;
+}
+
+/* ── Timeline countdown — when a footer-timeline step is BOTH the
+   current step AND has a live countdown attached, the <em> hint
+   text becomes a monospace ticker. Lives inside .v4-join-flow-label
+   so it lays out under the step title with the same spacing as the
+   regular hint. */
+.v4-pthanks-step-countdown {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--v4-fg);
+  opacity: 0.85;
+  letter-spacing: 0.01em;
+}
+.v4-pthanks-step-countdown-when {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  opacity: 0.55;
+  letter-spacing: 0;
+  margin-top: 2px;
+}
+
+/* Old .v4-pthanks-icon / .v4-pthanks-title / .v4-pthanks-sub removed
+   here. The active title + sub definitions live earlier in this file
+   (matching the join page's hero scale: 56px Fraunces title, 15px
+   Inter sub). The icon was unused after the receipt-style rewrite. */
 
 /* ── 3-step flow on the thanks page ──────────────────────────────
    Re-uses .v4-join-flow base styles from the invitation page (same
@@ -7702,7 +8059,7 @@ input.v4-settings-input:-webkit-autofill:active {
 }
 .v4-pthanks-flow-step-done .v4-join-flow-label strong,
 .v4-pthanks-flow-step-done .v4-join-flow-label em {
-  opacity: 0.6;
+  opacity: 0.35;
 }
 
 /* Active step — pulsing ring around the dot draws the eye to the
@@ -7769,8 +8126,57 @@ input.v4-settings-input:-webkit-autofill:active {
   opacity: 0.4;
 }
 
-.v4-pthanks-actions {
+/* Big countdown card used by both /thanks (voting countdown) and
+   /vote-thanks (winner countdown). Same visual treatment as the
+   ParticipantStatus page's countdown so the "time until next milestone"
+   reads identically across surfaces. */
+.v4-pvthanks-countdown {
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 18px;
+  padding: 22px 24px;
+  text-align: center;
+  margin: 0 auto 24px;
+  max-width: 480px;
+}
+.v4-pvthanks-countdown-head {
   display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin-bottom: 14px;
+}
+.v4-pvthanks-countdown-digits {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 8px;
+}
+.v4-pvthanks-countdown-sep {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 30px;
+  color: var(--v4-muted);
+  line-height: 1;
+  margin-bottom: 14px;
+}
+.v4-pvthanks-countdown-ready {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  letter-spacing: -0.01em;
+}
+.v4-pvthanks-countdown-unknown {
+  font-size: 14px;
+  color: var(--v4-muted);
+}
+
+.v4-pthanks-actions {
+  display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
@@ -8150,4 +8556,355 @@ input.v4-settings-input:-webkit-autofill:active {
   padding: 1px 6px;
   border-radius: 3px;
   font-size: 12px;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   V4 PARTICIPANT VOTE  (/v4/contest/:id/vote)
+   One consistent UI at any scale: search + sort + multi-select cards
+   + sticky submit bar. Pagination kicks in silently above ~20
+   entries; layout doesn't change shape.
+   ───────────────────────────────────────────────────────────────── */
+.v4-pvote-inner {
+  max-width: 720px !important;
+  padding-bottom: 96px; /* leave room for sticky bottom bar */
+}
+
+/* Brief recap — collapsible card matching the chat's GuideExpandable
+   visual register. */
+.v4-pvote-recap {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 14px;
+  margin: 4px 0 16px;
+  overflow: hidden;
+  opacity: 0;
+  animation: v4-bubble-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;
+}
+.v4-pvote-recap-trigger {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+.v4-pvote-recap-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  flex-shrink: 0;
+}
+.v4-pvote-recap-summary {
+  flex: 1;
+  font-size: 14px;
+  color: var(--v4-fg);
+  line-height: 1.4;
+  font-style: italic;
+}
+.v4-pvote-recap-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--v4-bubble-bg);
+  color: var(--v4-fg);
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.v4-pvote-recap-body {
+  padding: 4px 16px 16px;
+  border-top: 1px solid var(--v4-faint);
+  display: grid;
+  gap: 8px;
+}
+.v4-pvote-recap-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.v4-pvote-recap-row-label {
+  font-weight: 600;
+  color: var(--v4-muted);
+  text-transform: capitalize;
+}
+.v4-pvote-recap-row-value {
+  color: var(--v4-fg);
+}
+
+/* Toolbar — search + sort. Both controls share a fixed 42px height
+   so they visually align as a row. Full-width within the chat column. */
+.v4-pvote-toolbar {
+  display: flex;
+  gap: 10px;
+  margin: 12px 0 14px;
+  align-items: stretch;
+  width: 100%;
+}
+.v4-pvote-search {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 42px;
+}
+.v4-pvote-search-icon {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  color: var(--v4-muted);
+  pointer-events: none;
+  z-index: 1;
+}
+input.v4-pvote-search-input,
+input.v4-pvote-search-input:focus,
+input.v4-pvote-search-input:hover {
+  padding-left: 34px !important;
+  padding-right: 32px !important;
+  height: 42px;
+  box-sizing: border-box;
+}
+.v4-pvote-search-clear {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--v4-bubble-bg);
+  border: none;
+  color: var(--v4-fg);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+/* Sort control — matches search height (42px), white pill background,
+   custom caret. Native <select> with explicit appearance: none
+   AND background: transparent so globals.css's lime focus ring on
+   <select> never paints. */
+.v4-pvote-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 10px;
+  color: var(--v4-muted);
+  height: 42px;
+  flex-shrink: 0;
+}
+select.v4-pvote-sort-select,
+select.v4-pvote-sort-select:focus,
+select.v4-pvote-sort-select:hover {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: transparent;
+  background-image: none;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  cursor: pointer;
+  padding: 0 18px 0 0;
+  height: 100%;
+  width: auto;
+  letter-spacing: -0.005em;
+}
+/* Browser default dropdown markers vary wildly — paint a single
+   consistent caret on the right of the select via background-image
+   on the wrapper so it never bleeds with the native one. */
+.v4-pvote-sort::after {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--v4-muted);
+  pointer-events: none;
+  margin-left: -16px;
+}
+
+/* Vote cards list — full chat-column width so cards match the
+   brief / toolbar / sticky-bar above and below. */
+.v4-pvote-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.v4-pvote-card {
+  width: 100%;
+  background: #ffffff;
+  border: 1.5px solid var(--v4-faint);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease, background 0.2s ease;
+}
+.v4-pvote-card:hover:not(.is-disabled):not(.is-selected) {
+  border-color: rgba(3, 3, 2, 0.25);
+  box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.14);
+}
+.v4-pvote-card.is-selected {
+  /* Gradient + border colors come from inline style (segment-tinted).
+     Add a soft glow + slight lift so picks read as committed. */
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.6) inset,
+    0 10px 24px -10px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+.v4-pvote-card.is-disabled {
+  opacity: 0.55;
+}
+.v4-pvote-card-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 18px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: inherit;
+}
+.v4-pvote-card.is-disabled .v4-pvote-card-btn { cursor: not-allowed; }
+.v4-pvote-card-text {
+  flex: 1;
+  min-width: 0;
+}
+.v4-pvote-card-name {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 19px;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: -0.012em;
+  color: var(--v4-fg);
+  line-height: 1.2;
+}
+.v4-pvote-card-tagline {
+  margin-top: 3px;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--v4-muted);
+}
+.v4-pvote-card-why {
+  margin-top: 6px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--v4-fg);
+  opacity: 0.85;
+}
+.v4-pvote-card-by {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--v4-muted);
+}
+.v4-pvote-card-by strong {
+  font-weight: 600;
+  color: var(--v4-fg);
+}
+.v4-pvote-card-check {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+  color: var(--v4-fg);
+}
+.v4-pvote-card-check-empty {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--v4-faint);
+}
+.v4-pvote-card.is-selected .v4-pvote-card-check-empty {
+  border-color: var(--v4-fg);
+}
+
+/* Load more button */
+.v4-pvote-loadmore {
+  align-self: center;
+  margin: 18px auto 0;
+  background: transparent;
+  border: 1.5px dashed var(--v4-faint);
+  border-radius: 14px;
+  padding: 12px 24px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--v4-muted);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.v4-pvote-loadmore:hover {
+  border-color: var(--v4-muted);
+  color: var(--v4-fg);
+}
+
+.v4-pvote-empty {
+  padding: 32px 24px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--v4-muted);
+  background: var(--v4-bubble-bg);
+  border-radius: 14px;
+  margin-top: 12px;
+}
+
+/* Sticky bottom bar — sits on top of the chat scroll area. */
+.v4-pvote-bottom {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  margin: 0 -24px;
+  background: rgba(252, 249, 247, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid var(--v4-faint);
+}
+.v4-pvote-bottom-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.v4-pvote-bottom-count {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--v4-fg);
+}
+
+@media (max-width: 640px) {
+  .v4-pvote-toolbar { flex-direction: column; }
+  .v4-pvote-recap-row { grid-template-columns: 1fr; gap: 2px; }
+  .v4-pvote-bottom-inner { padding: 12px 20px; gap: 10px; }
 }

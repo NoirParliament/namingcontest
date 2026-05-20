@@ -107,12 +107,7 @@ const PdfReport = forwardRef(function PdfReport({
           <div className="v4-pdf-report-winner-name">
             {winner.text}
           </div>
-          {winner.tagline && (
-            <div className="v4-pdf-report-winner-tagline">
-              <Quotes weight="fill" size={14} />
-              <span>{winner.tagline}</span>
-            </div>
-          )}
+          {/* Tagline removed — not a real participant field. */}
           <div className="v4-pdf-report-winner-credit">
             <strong>{submitter?.name || 'A participant'}</strong> suggested it
             <span className="v4-pdf-report-winner-credit-sep">·</span>

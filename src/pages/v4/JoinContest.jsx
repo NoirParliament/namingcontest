@@ -116,7 +116,7 @@ export default function JoinContest() {
   // ── Bad-link state ──────────────────────────────────────────────────
   if (!contest) {
     return (
-      <div className="v4">
+      <div className="v4 lp-v3">
         <div className="v4-screen v4-join-screen v4-join-screen-error">
           <main className="v4-review" role="main">
             <header className="v4-nav">
@@ -135,7 +135,7 @@ export default function JoinContest() {
                 </p>
                 <button
                   type="button"
-                  className="v4-settings-btn v4-settings-btn-secondary"
+                  className="btn btn-secondary"
                   onClick={() => navigate('/')}
                 >
                   Back to home

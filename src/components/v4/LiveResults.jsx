@@ -236,29 +236,37 @@ function NamesList({ search, expandedId, onToggle, showAll, collapsedCount, onSh
 }
 
 // ── NAME DETAIL — submitter rationale shown on row expand ───────────
+// Same visual shape as before (italic quote at top + dl below + pill
+// at the bottom), but every slot is now backed by a REAL submission
+// field. No more invented taglines / descriptions / inspirations.
 function NameDetail({ name, submitter, tone }) {
+  // Punchy quote = the first sentence of whyItFits (real content,
+  // just truncated for the pull-quote treatment).
+  const firstSentence = name.whyItFits
+    ? (name.whyItFits.match(/[^.!?]+[.!?]/)?.[0] || name.whyItFits).trim()
+    : null;
   return (
     <div className="v4-name-detail">
-      {name.tagline && (
-        <div className="v4-name-detail-tagline">"{name.tagline}"</div>
+      {firstSentence && (
+        <div className="v4-name-detail-tagline">"{firstSentence}"</div>
       )}
       <dl className="v4-name-detail-list">
-        {name.description && (
-          <div className="v4-name-detail-field">
-            <dt>Description</dt>
-            <dd>{name.description}</dd>
-          </div>
-        )}
         {name.whyItFits && (
           <div className="v4-name-detail-field">
             <dt>Why it fits</dt>
             <dd>{name.whyItFits}</dd>
           </div>
         )}
-        {name.inspiration && (
+        {name.submittedAgo && (
           <div className="v4-name-detail-field">
-            <dt>Inspiration</dt>
-            <dd>{name.inspiration}</dd>
+            <dt>Submitted</dt>
+            <dd>{name.submittedAgo}</dd>
+          </div>
+        )}
+        {typeof name.voteCount === 'number' && (
+          <div className="v4-name-detail-field">
+            <dt>Current votes</dt>
+            <dd>{name.voteCount} {name.voteCount === 1 ? 'vote' : 'votes'}</dd>
           </div>
         )}
       </dl>

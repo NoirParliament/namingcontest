@@ -7,6 +7,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { X, Trophy, Gift, Check, ArrowRight } from '@phosphor-icons/react';
 import { NAMES, getParticipantById } from '../../data/v4/mockContestData';
+import '../../styles/landing-v3.css';
 
 export default function PickWinnerModal({ open, onClose, onConfirm, tone, prize }) {
   // Names sorted by votes desc — top vote becomes the pre-selected
@@ -45,7 +46,7 @@ export default function PickWinnerModal({ open, onClose, onConfirm, tone, prize 
   };
 
   return (
-    <div className="v4 v4-pickwinner-overlay" onClick={onClose}>
+    <div className="v4 lp-v3 v4-pickwinner-overlay" onClick={onClose}>
       <div
         className="v4-pickwinner-modal"
         onClick={(e) => e.stopPropagation()}
@@ -152,14 +153,14 @@ export default function PickWinnerModal({ open, onClose, onConfirm, tone, prize 
         <div className="v4-pickwinner-foot">
           <button
             type="button"
-            className="v4-pickwinner-btn v4-pickwinner-btn-secondary"
+            className="btn btn-secondary"
             onClick={onClose}
           >
             Cancel
           </button>
           <button
             type="button"
-            className="v4-pickwinner-btn v4-pickwinner-btn-primary"
+            className="btn btn-primary"
             onClick={handleConfirm}
             disabled={!selectedName}
           >

@@ -12,6 +12,7 @@ import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import { readSetup, writeSetup, getSegmentLabel } from '../../utils/v4Brief';
 import { BRIEF_QUESTIONS, SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
 import LaunchModal from '../../components/v4/LaunchModal';
+import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
 const TIER_ICON = {
@@ -86,7 +87,7 @@ export default function ReviewLaunch() {
   };
 
   return (
-    <div className="v4">
+    <div className="v4 lp-v3">
       <div className="v4-screen">
         <span className="v4-blob v4-blob-1" aria-hidden="true"></span>
         <span className="v4-blob v4-blob-2" aria-hidden="true"></span>
@@ -175,7 +176,7 @@ export default function ReviewLaunch() {
           <div className="v4-review-launch">
             <button
               type="button"
-              className={`v4-launch-btn ${launching ? 'is-launching' : ''}`}
+              className={`btn btn-primary btn-lg v4-launch-btn ${launching ? 'is-launching' : ''}`}
               onClick={handleLaunch}
               disabled={launching}
             >

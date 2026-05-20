@@ -22,6 +22,7 @@ import {
 import {
   X, CheckCircle, EnvelopeSimple, LockKey,
 } from '@phosphor-icons/react';
+import '../../styles/landing-v3.css';
 
 const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 
@@ -168,7 +169,7 @@ function LaunchModalInner({ onClose, onSuccess, contextLabel, tier }) {
   };
 
   return (
-    <div className="v4-auth-backdrop" onClick={onClose}>
+    <div className="v4 lp-v3 v4-auth-backdrop" onClick={onClose}>
       <div
         className="v4-auth-modal v4-launch-modal"
         onClick={(e) => e.stopPropagation()}
@@ -252,7 +253,7 @@ function LaunchModalInner({ onClose, onSuccess, contextLabel, tier }) {
 
               <button
                 type="submit"
-                className={`v4-launch-btn-modal ${submitting ? 'is-loading' : ''}`}
+                className={`btn btn-primary btn-lg v4-launch-btn-modal ${submitting ? 'is-loading' : ''}`}
                 disabled={!canSubmit}
               >
                 {submitting ? (

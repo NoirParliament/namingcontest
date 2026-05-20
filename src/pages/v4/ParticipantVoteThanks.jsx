@@ -1,20 +1,15 @@
-// V4 ParticipantThanks — confirmation after the participant submits.
+// V4 ParticipantVoteThanks — confirmation after the participant votes.
 //
-// URL: /v4/contest/:id/thanks
+// URL: /v4/contest/:id/vote-thanks
 //
-// Receipt + waiting room. Same shell as the join page (segment color
-// wash, white blobs, footer timeline). The body shows the user's
-// actual submitted names back as a numbered receipt slab. The "what's
-// next" countdown lives inside the footer timeline's current step
-// (where it naturally belongs), not as a separate floating element.
-//
-// Deliberately NO primary CTA button — the user is waiting; there's
-// nothing actionable until voting opens. They can leave via the nav
-// logo if they want out.
+// Same shape as ParticipantThanks: receipt + waiting room. The body
+// shows the voted-for cards in their tone-tinted "selected" style so
+// the user's picks visually carry through from /vote. Countdown to
+// the winner lives inside the footer timeline's current step. No CTA.
 
 import { useRef } from 'react';
 import { useParams, useNavigate, Link, Navigate } from 'react-router-dom';
-import { Clock } from '@phosphor-icons/react';
+import { Trophy } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import heroProfile1 from '../../assets/hero-profile-1.png';
 import heroProfile2 from '../../assets/hero-profile-2.png';
@@ -35,18 +30,14 @@ const HERO_PROFILES = [
   heroProfile4, heroProfile5, heroProfile6,
 ];
 
-// Compact nav-pill copy.
 function shortCountdown(c) {
-  if (!c || c.unknown) return 'Voting opens soon';
-  if (c.isReady) return 'Voting is open';
-  if (c.d > 0) return `Voting opens in ${c.d}d ${pad2(c.h)}h`;
-  return `Voting opens in ${pad2(c.h)}:${pad2(c.m)}:${pad2(c.s)}`;
+  if (!c || c.unknown) return 'Winner soon';
+  if (c.isReady) return 'Winner picked';
+  if (c.d > 0) return `Winner in ${c.d}d ${pad2(c.h)}h`;
+  return `Winner in ${pad2(c.h)}:${pad2(c.m)}:${pad2(c.s)}`;
 }
 
-// Compact "in 2d 14h" ETA for the disabled CTA button.
-// Calmer than the precise d hh:mm:ss in the nav pill — this surface
-// doesn't need second-by-second ticking. Shows the largest two units
-// that read clearly.
+// Compact "in 4d 09h" ETA for the disabled CTA button.
 function ctaEta(c) {
   if (!c || c.unknown || c.isReady) return null;
   if (c.d > 0) return `in ${c.d}d ${c.h}h`;
@@ -54,7 +45,7 @@ function ctaEta(c) {
   return `in ${c.m}m`;
 }
 
-export default function ParticipantThanks() {
+export default function ParticipantVoteThanks() {
   const { id: contestId } = useParams();
   const navigate = useNavigate();
   const contest = getMockContestById(contestId);
@@ -63,20 +54,31 @@ export default function ParticipantThanks() {
   const tone = subId ? getSegmentTone(subId) : null;
   const segmentBg = SEGMENT_THEME[subId]?.blobs?.[0] || tone?.bg || '#a6dcb3';
 
-  const submitted = participation?.submittedNames || [];
-  const submittedCount = submitted.length;
   const creatorName = contest?.creator?.name || 'the organizer';
   const contestName = contest?.workingName || contest?.name || 'the contest';
-  const submissionDays = contest?.settings?.submissionDays;
+  const votedIds = participation?.votedFor || [];
+  const votedCount = votedIds.length;
+  const submittedCount = participation?.submittedNames?.length || 0;
+  const isAnonymous = contest?.anonymous === true;
 
+  // Resolve voted ids back to actual submission objects for card rendering.
+  const votedSubs = (() => {
+    if (!contest?.allSubmissions) return [];
+    const byId = new Map(contest.allSubmissions.map((s) => [s.id, s]));
+    return votedIds.map((id) => byId.get(id)).filter(Boolean);
+  })();
+
+  // Winner-announced = launchedAt + (submissionDays + votingDays).
   const day = 86400000;
-  const voteOpensAt =
-    Number.isFinite(contest?.launchedAt) && Number.isFinite(submissionDays)
-      ? contest.launchedAt + submissionDays * day
+  const winnerAt =
+    Number.isFinite(contest?.launchedAt)
+      && Number.isFinite(contest?.settings?.submissionDays)
+      && Number.isFinite(contest?.settings?.votingDays)
+      ? contest.launchedAt + (contest.settings.submissionDays + contest.settings.votingDays) * day
       : null;
-  const c = useCountdown(voteOpensAt);
-  const voteOpensDateStr = voteOpensAt
-    ? new Date(voteOpensAt).toLocaleDateString('en-US', {
+  const c = useCountdown(winnerAt);
+  const winnerDateStr = winnerAt
+    ? new Date(winnerAt).toLocaleDateString('en-US', {
         weekday: 'long', month: 'short', day: 'numeric',
       })
     : 'soon';
@@ -86,8 +88,7 @@ export default function ParticipantThanks() {
   if (!contest) return <Navigate to="/v4/settings" replace />;
   if (!participation) return <Navigate to={`/v4/join/${contestId}`} replace />;
 
-  // Pool of drifting voter avatars for the hero animation — same
-  // recipe as the join page so the crowd carries over visually.
+  // Same drifting voter cast as the join + thanks pages.
   const animAvatars = (() => {
     const inviterIdx = (contest?.creator?.photoIndex || 1) - 1;
     const pool = HERO_PROFILES.filter((_, i) => i !== inviterIdx);
@@ -127,7 +128,7 @@ export default function ParticipantThanks() {
               <img src={namingContestLogo} alt="NamingContest" className="v4-logo" />
             </Link>
             <div className="v4-progress v4-join-nav-inviter">
-              <span className="v4-join-inviter-invites">Submitted to</span>
+              <span className="v4-join-inviter-invites">Voted in</span>
               <strong className="v4-join-inviter-name-inline">
                 {creatorName}
               </strong>
@@ -137,7 +138,7 @@ export default function ParticipantThanks() {
             </div>
             <div className="v4-nav-right">
               <span className="v4-join-nav-deadline">
-                <Clock weight="duotone" size={14} />
+                <Trophy weight="duotone" size={14} />
                 {shortCountdown(c)}
               </span>
             </div>
@@ -146,43 +147,46 @@ export default function ParticipantThanks() {
           <div className="v4-review-inner v4-pthanks-inner">
             {/* ── HERO — matches the join page hero shape exactly:
                 2-word Inter caps eyebrow + Fraunces italic contest
-                name + Inter sub. The three pages (join / thanks /
-                vote-thanks) share this hero structure; only the
-                eyebrow verb changes. */}
+                name + Inter sub. */}
             <section className="v4-pthanks-hero">
               <div className="v4-pthanks-eyebrow">
                 {contestName}
               </div>
               <h1 className="v4-pthanks-title">
-                {submittedCount === 1 ? 'Name locked in.' : 'Names locked in.'}
+                {votedCount === 1 ? 'Vote locked in.' : 'Votes locked in.'}
               </h1>
               <p className="v4-pthanks-sub">
-                We saved your {submittedCount === 1 ? 'suggestion' : 'suggestions'} —
-                you'll get an email the moment voting opens.
+                Your {votedCount === 1 ? 'pick is in' : `${votedCount} picks are in`} —
+                {' '}{creatorName} announces the winner next.
               </p>
             </section>
 
-            {/* ── Cards — mini ticket-stubs matching the join page's
-                .v4-join-prize. Segment-tinted band with rank number,
-                perforated edge, name + why on the body. */}
-            {submittedCount > 0 && (
+            {/* ── Cards — same mini ticket-stub design as /thanks.
+                Segment-tinted band with rank number + perforated
+                edge + name and why on the body. */}
+            {votedSubs.length > 0 && (
               <section
                 className="v4-pthanks-receipt"
-                aria-label="Names you submitted"
+                aria-label="Names you voted for"
               >
                 <ul className="v4-pthanks-card-list">
-                  {submitted.map((n, i) => (
-                    <li key={n.id} className="v4-pthanks-card">
+                  {votedSubs.map((s, i) => (
+                    <li key={s.id} className="v4-pthanks-card">
                       <div className="v4-pthanks-card-band" aria-hidden="true">
                         <span className="v4-pthanks-card-band-num">
                           {i + 1}
                         </span>
                       </div>
                       <div className="v4-pthanks-card-body">
-                        <div className="v4-pthanks-card-name">{n.text}</div>
-                        {n.whyItFits && (
+                        <div className="v4-pthanks-card-name">{s.text}</div>
+                        {s.whyItFits && (
                           <div className="v4-pthanks-card-why">
-                            {n.whyItFits}
+                            {s.whyItFits}
+                          </div>
+                        )}
+                        {!isAnonymous && s.submitterName && (
+                          <div className="v4-pthanks-card-by">
+                            by <strong>{s.submitterName}</strong>
                           </div>
                         )}
                       </div>
@@ -192,30 +196,27 @@ export default function ParticipantThanks() {
               </section>
             )}
 
-            {/* ── Anticipation CTA — disabled until voting opens.
-                Sits after the cards' confirmation, showing the user
-                the next step + how long until it's available.
-                Activates and routes to /vote when ready. */}
+            {/* ── Anticipation CTA — disabled until the winner is
+                announced. When ready it activates and routes to the
+                workspace (where the winner result will surface). */}
             <div className="v4-pthanks-cta">
               <button
                 type="button"
                 className="btn btn-primary btn-lg v4-pthanks-cta-btn"
                 disabled={!c.isReady}
-                onClick={() =>
-                  c.isReady && navigate(`/v4/contest/${contestId}/vote`)
-                }
+                onClick={() => c.isReady && navigate('/v4/settings')}
                 title={
-                  c.isReady ? 'Cast your vote' : 'Voting opens soon'
+                  c.isReady ? 'See the winner' : 'Winner announced soon'
                 }
               >
-                <Clock weight="bold" size={14} />
+                <Trophy weight="bold" size={14} />
                 {c.isReady ? (
-                  <>Vote now <span className="arrow">→</span></>
+                  <>See winner <span className="arrow">→</span></>
                 ) : c.unknown ? (
-                  <>Vote <span className="v4-pthanks-cta-eta">· opens soon</span></>
+                  <>Winner <span className="v4-pthanks-cta-eta">· announced soon</span></>
                 ) : (
                   <>
-                    Vote{' '}
+                    Winner{' '}
                     <span className="v4-pthanks-cta-eta">
                       · {ctaEta(c)}
                     </span>
@@ -225,33 +226,32 @@ export default function ParticipantThanks() {
             </div>
           </div>
 
-          {/* ── Footer timeline — countdown lives INSIDE the current
-              step ("Come back to vote"), as a ticking monospace line. */}
+          {/* ── Footer timeline — countdown inside the "See who won" step */}
           <footer className="v4-join-foot">
             <ol className="v4-join-flow">
               <li className="v4-join-flow-step is-done">
                 <span className="v4-join-flow-dot" aria-hidden="true" />
                 <span className="v4-join-flow-label">
                   <strong>Suggested ✓</strong>
+                  <em>{submittedCount} {submittedCount === 1 ? 'name' : 'names'}</em>
+                </span>
+              </li>
+              <li className="v4-join-flow-step is-done">
+                <span className="v4-join-flow-dot" aria-hidden="true" />
+                <span className="v4-join-flow-label">
+                  <strong>Voted ✓</strong>
                   <em>just now</em>
                 </span>
               </li>
               <li className="v4-join-flow-step is-current">
                 <span className="v4-join-flow-dot" aria-hidden="true" />
                 <span className="v4-join-flow-label">
-                  <strong>Come back to vote</strong>
-                  <em>
-                    {c.unknown ? 'opens soon'
-                      : c.isReady ? 'voting is open'
-                      : `opens ${voteOpensDateStr}`}
-                  </em>
-                </span>
-              </li>
-              <li className="v4-join-flow-step is-upcoming">
-                <span className="v4-join-flow-dot" aria-hidden="true" />
-                <span className="v4-join-flow-label">
                   <strong>See who won</strong>
-                  <em>shoutout if it's yours</em>
+                  <em>
+                    {c.unknown ? 'announced soon'
+                      : c.isReady ? 'winner picked'
+                      : `announced ${winnerDateStr}`}
+                  </em>
                 </span>
               </li>
             </ol>

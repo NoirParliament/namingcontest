@@ -75,12 +75,7 @@ export default function WinnerHero({
           {name.text}
         </h1>
 
-        {/* Tagline pull-quote — the most quotable line from the submitter. */}
-        {name.tagline && (
-          <p className="v4-winner-hero-tagline">
-            "{name.tagline}"
-          </p>
-        )}
+        {/* Tagline removed — not a real participant field. */}
 
         {/* Single combined credit line — who + what + votes. */}
         <div className="v4-winner-hero-credit">

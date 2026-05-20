@@ -6,6 +6,7 @@
 import { useState, useEffect } from 'react';
 import { X } from '@phosphor-icons/react';
 import QuestionInput from './QuestionInput';
+import '../../styles/landing-v3.css';
 
 export default function EditQuestionModal({
   open,
@@ -22,7 +23,7 @@ export default function EditQuestionModal({
   };
 
   return (
-    <div className="v4-auth-backdrop" onClick={onClose}>
+    <div className="v4 lp-v3 v4-auth-backdrop" onClick={onClose}>
       <div
         className="v4-edit-modal"
         onClick={(e) => e.stopPropagation()}

@@ -34,6 +34,8 @@ import V4ParticipantChat  from '@pages/v4/ParticipantChat';
 import V4ParticipantThanks from '@pages/v4/ParticipantThanks';
 import V4ParticipantStatus from '@pages/v4/ParticipantStatus';
 import V4DemoIndex         from '@pages/v4/DemoIndex';
+import V4ParticipantVote   from '@pages/v4/ParticipantVote';
+import V4ParticipantVoteThanks from '@pages/v4/ParticipantVoteThanks';
 
 // ─── FloatingNav ─────────────────────────────────────────────────────────────
 
@@ -412,6 +414,8 @@ function AppInner() {
         <Route path="/v4/contest/:id/thanks"           element={<V4ParticipantThanks />} />
         <Route path="/v4/contest/:id/status"           element={<V4ParticipantStatus />} />
         <Route path="/v4/demo"                         element={<V4DemoIndex />} />
+        <Route path="/v4/contest/:id/vote"             element={<V4ParticipantVote />} />
+        <Route path="/v4/contest/:id/vote-thanks"      element={<V4ParticipantVoteThanks />} />
       </Routes>
       <FloatingNav />
     </>

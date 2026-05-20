@@ -40,6 +40,7 @@ import PickWinnerModal from '../../components/v4/PickWinnerModal';
 import WinnerHero from '../../components/v4/WinnerHero';
 import PdfReport from '../../components/v4/PdfReport';
 import { downloadShareCard, downloadFullReport } from '../../utils/v4ContestExport';
+import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
 const TIER_ICON = {
@@ -236,7 +237,7 @@ export default function ContestManage() {
   };
 
   return (
-    <div className="v4">
+    <div className="v4 lp-v3">
       <div className="v4-screen">
         {/* Per-segment theme decoration (carries identity from setup) */}
         <SegmentThemeBackdrop subId={subId} />
@@ -705,19 +706,19 @@ export default function ContestManage() {
 
               <div className="v4-manage-share-actions">
                 <a
-                  className="v4-manage-share-btn"
+                  className="btn btn-secondary btn-sm"
                   href={`mailto:?subject=${encodeURIComponent(`Help vote for ${setup.workingName}`)}&body=${encodeURIComponent(`Vote on names here: ${shareUrl}`)}`}
                 >
                   <EnvelopeSimple weight="duotone" size={16} /> Email
                 </a>
                 <a
-                  className="v4-manage-share-btn"
+                  className="btn btn-secondary btn-sm"
                   href={`sms:?body=${encodeURIComponent(`Vote on names for ${setup.workingName}: ${shareUrl}`)}`}
                 >
                   <ShareNetwork weight="duotone" size={16} /> Message
                 </a>
                 <a
-                  className="v4-manage-share-btn"
+                  className="btn btn-secondary btn-sm"
                   href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Help me name ${setup.workingName} →`)}&url=${encodeURIComponent(shareUrl)}`}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -727,7 +728,7 @@ export default function ContestManage() {
                 {typeof navigator !== 'undefined' && navigator.share && (
                   <button
                     type="button"
-                    className="v4-manage-share-btn"
+                    className="btn btn-secondary btn-sm"
                     onClick={() => navigator.share({ title: setup.workingName, url: shareUrl })}
                   >
                     <ShareNetwork weight="duotone" size={16} /> More…
@@ -903,7 +904,7 @@ export default function ContestManage() {
                     {phase === 'winner' && !isWinnerPicked && (
                       <button
                         type="button"
-                        className="v4-manage-pick-btn"
+                        className="btn btn-primary"
                         onClick={() => setPickWinnerOpen(true)}
                       >
                         <Trophy weight="bold" size={14} />
@@ -934,7 +935,7 @@ export default function ContestManage() {
             <div className="v4-manage-actions">
               <button
                 type="button"
-                className="v4-manage-action v4-manage-action-danger"
+                className="btn btn-link v4-btn-danger"
                 onClick={() => {
                   if (window.confirm('Cancel this contest? This cannot be undone.')) {
                     navigate('/');

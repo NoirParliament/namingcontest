@@ -36,6 +36,7 @@ import { getQuestionsFor } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
 import GuideExpandable from '../../components/v4/GuideExpandable';
 import AvatarMenu from '../../components/v4/AvatarMenu';
+import celebrate from '../../utils/celebrate';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -332,6 +333,7 @@ export default function ParticipantChat() {
         inspiration: '',
       })
     );
+    celebrate(tone);
     navigate(`/v4/contest/${contestId}/thanks`, { replace: true });
   };
 
@@ -345,9 +347,10 @@ export default function ParticipantChat() {
         inspiration: '',
       })
     );
-    // After submitting names, land on /thanks (celebration + 3-step
-    // strip with ticking clock). replace: true so browser-back doesn't
-    // bounce them into the already-submitted chat.
+    // Confetti burst first (segment-tinted), then land on /thanks.
+    // replace: true so browser-back doesn't bounce into the
+    // already-submitted chat.
+    celebrate(tone);
     navigate(`/v4/contest/${contestId}/thanks`, { replace: true });
   };
 
@@ -732,7 +735,7 @@ function SubmissionCard({
         <div className="v4-pchat-finalize">
           <button
             type="button"
-            className="v4-pchat-finalize-btn"
+            className="btn btn-secondary btn-sm"
             onClick={onSkip}
           >
             That's enough — submit what I have

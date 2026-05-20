@@ -20,6 +20,7 @@ import { readAllParticipations, getParticipantRow } from '../../utils/v4Particip
 import { getMockContestById, MOCK_CONTESTS } from '../../data/v4/mockContests';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
 import AvatarMenu from '../../components/v4/AvatarMenu';
+import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
 // Tier metadata — same source of truth as the launch modal pricing.
@@ -185,9 +186,12 @@ export default function Settings() {
       tierKey: mock?.group || 'group',
       Icon: mock?.Icon,
       subSegmentId: mock?.subSegmentId,
-      // For the inline countdown on the joined row.
+      // For the inline countdowns on the joined row:
+      //   - voting-opens-at = launchedAt + submissionDays
+      //   - winner-announced-at = launchedAt + submissionDays + votingDays
       launchedAt: mock?.launchedAt,
       submissionDays: mock?.settings?.submissionDays,
+      votingDays: mock?.settings?.votingDays,
     };
     return {
       participation: p,
@@ -249,7 +253,7 @@ export default function Settings() {
 
 
   return (
-    <div className="v4">
+    <div className="v4 lp-v3">
       <div className="v4-screen">
         <SegmentThemeBackdrop subId={subId} />
 
@@ -394,7 +398,7 @@ export default function Settings() {
                       </div>
                       <button
                         type="button"
-                        className="v4-settings-btn v4-settings-btn-primary"
+                        className="btn btn-primary btn-sm"
                         onClick={() => navigate(`/v4/contest/${realContest.id}`)}
                       >
                         Manage
@@ -429,7 +433,7 @@ export default function Settings() {
                       </div>
                       <button
                         type="button"
-                        className="v4-settings-btn v4-settings-btn-link"
+                        className="btn btn-link"
                         onClick={() => window.alert('Results page lands when we build it.')}
                       >
                         View results
@@ -442,7 +446,7 @@ export default function Settings() {
                 <div className="v4-settings-newcontest-quiet">
                   <button
                     type="button"
-                    className="v4-settings-btn v4-settings-btn-secondary"
+                    className="btn btn-secondary"
                     onClick={handleStartNewContest}
                   >
                     <Plus weight="bold" size={14} />
@@ -501,7 +505,7 @@ export default function Settings() {
                         different card at checkout.
                       </div>
                     </div>
-                    <button type="button" className="v4-settings-btn v4-settings-btn-link">
+                    <button type="button" className="btn btn-link">
                       Update <ArrowSquareOut weight="bold" size={12} />
                     </button>
                   </div>
@@ -606,7 +610,7 @@ export default function Settings() {
                       <div className="v4-settings-photo-actions">
                         <button
                           type="button"
-                          className="v4-settings-btn v4-settings-btn-secondary"
+                          className="btn btn-secondary btn-sm"
                           onClick={() => fileRef.current?.click()}
                         >
                           <Camera weight="bold" size={14} />
@@ -615,7 +619,7 @@ export default function Settings() {
                         {photo && (
                           <button
                             type="button"
-                            className="v4-settings-btn v4-settings-btn-link"
+                            className="btn btn-link"
                             onClick={handleRemovePhoto}
                           >
                             <Trash weight="bold" size={12} />
@@ -673,7 +677,7 @@ export default function Settings() {
                     <div className="v4-settings-form-foot">
                       <button
                         type="submit"
-                        className="v4-settings-btn v4-settings-btn-primary"
+                        className="btn btn-primary"
                       >
                         {savedFlash ? 'Saved!' : 'Save changes'}
                       </button>
@@ -713,27 +717,36 @@ export default function Settings() {
 function JoinedContestRow({ participation, contest, row, navigate }) {
   const tier = TIER_INFO[contest.tierKey] || TIER_INFO.group;
   const JoinedIcon = contest.Icon || tier.Icon;
+  const day = 86400000;
   const votingOpensAt =
     Number.isFinite(contest.launchedAt) && Number.isFinite(contest.submissionDays)
-      ? contest.launchedAt + contest.submissionDays * 86400000
+      ? contest.launchedAt + contest.submissionDays * day
       : null;
-  const countdown = useCountdown(votingOpensAt);
+  // Winner announced when the full submit+vote window has passed.
+  const winnerAnnouncedAt =
+    Number.isFinite(contest.launchedAt)
+      && Number.isFinite(contest.submissionDays)
+      && Number.isFinite(contest.votingDays)
+      ? contest.launchedAt + (contest.submissionDays + contest.votingDays) * day
+      : null;
+  const voteCountdown = useCountdown(votingOpensAt);
+  const winnerCountdown = useCountdown(winnerAnnouncedAt);
   const submittedCount = participation?.submittedNames?.length || 0;
   const votedCount = participation?.votedFor?.length || 0;
   const hasSubmitted = submittedCount > 0;
   const hasVoted = votedCount > 0;
 
-  // What action lives on the right side of the row:
+  // Row states (in order of precedence):
   //   - No submissions yet → "Suggest a name" → /submit
-  //   - Submitted, voting not open → greyed Vote button + countdown
-  //   - Voting open, not voted → enabled Vote button
-  //   - Voted → no button (just status)
+  //   - Voted → "Voted ✓" pill + countdown to winner announcement
+  //   - Voting open (countdown done), not voted → enabled "Vote now"
+  //   - Submitted, voting NOT open yet → greyed Vote + countdown
   let actionUI = null;
   if (!hasSubmitted) {
     actionUI = (
       <button
         type="button"
-        className="v4-settings-btn v4-settings-btn-secondary"
+        className="btn btn-primary btn-sm"
         onClick={() => navigate(`/v4/contest/${contest.id}/submit`)}
       >
         Suggest a name
@@ -741,30 +754,45 @@ function JoinedContestRow({ participation, contest, row, navigate }) {
       </button>
     );
   } else if (hasVoted) {
+    const showWinnerCountdown =
+      !winnerCountdown.isReady && !winnerCountdown.unknown;
     actionUI = (
-      <span className="v4-settings-joined-voted">Voted ✓</span>
+      <div className="v4-settings-joined-vote">
+        {showWinnerCountdown && (
+          <div
+            className="v4-settings-joined-countdown"
+            title="Time until winner is announced"
+          >
+            <Clock weight="duotone" size={11} />
+            <span className="v4-settings-joined-countdown-time">
+              {winnerCountdown.d}d {pad2(winnerCountdown.h)}:{pad2(winnerCountdown.m)}:{pad2(winnerCountdown.s)}
+            </span>
+          </div>
+        )}
+        <span className="v4-settings-joined-voted">Voted ✓</span>
+      </div>
     );
   } else {
-    const showCountdown = !countdown.isReady && !countdown.unknown;
+    const showCountdown = !voteCountdown.isReady && !voteCountdown.unknown;
     actionUI = (
       <div className="v4-settings-joined-vote">
         {showCountdown && (
           <div className="v4-settings-joined-countdown" title="Time until voting opens">
             <Clock weight="duotone" size={11} />
             <span className="v4-settings-joined-countdown-time">
-              {countdown.d}d {pad2(countdown.h)}:{pad2(countdown.m)}:{pad2(countdown.s)}
+              {voteCountdown.d}d {pad2(voteCountdown.h)}:{pad2(voteCountdown.m)}:{pad2(voteCountdown.s)}
             </span>
           </div>
         )}
         <button
           type="button"
-          className="v4-settings-btn v4-settings-btn-primary v4-settings-joined-vote-btn"
+          className="btn btn-primary btn-sm v4-settings-joined-vote-btn"
           onClick={() => navigate(`/v4/contest/${contest.id}/vote`)}
-          disabled={!countdown.isReady}
-          title={countdown.isReady ? 'Cast your vote' : 'Voting opens soon'}
+          disabled={!voteCountdown.isReady}
+          title={voteCountdown.isReady ? 'Cast your vote' : 'Voting opens soon'}
         >
-          {countdown.isReady ? 'Vote now' : 'Vote'}
-          {countdown.isReady && <ArrowRight weight="bold" size={14} />}
+          {voteCountdown.isReady ? 'Vote now' : 'Vote'}
+          {voteCountdown.isReady && <ArrowRight weight="bold" size={14} />}
         </button>
       </div>
     );
