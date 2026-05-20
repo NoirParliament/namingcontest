@@ -16,7 +16,7 @@
 
 import { useState, useMemo, useEffect, useRef, Fragment } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
-import { PaperPlaneTilt } from '@phosphor-icons/react';
+import { PaperPlaneTilt, PencilSimple } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 // Default participant avatar — used if the user hasn't uploaded a
 // photo from Settings. Pick profile-3 (Marcus is profile-4, so this
@@ -162,7 +162,12 @@ const TURN_RESPONSE_OVERRIDES = [
   `Five — diminishing returns from here. Last one?`,    // after #5
 ];
 function getSystemResponse(submittedCount, isFinalTurn) {
-  if (isFinalTurn) return `Got it. Quick check before you send →`;
+  // Hitting the creator-set limit lands on a "thank you + next move"
+  // bubble. Two doors: tap any name above to edit it inline, or hit
+  // submit. No "add another" since they've used their last slot.
+  if (isFinalTurn) {
+    return `That's your last one — thanks! Tap any name above to edit, or send them when you're ready.`;
+  }
   const override = TURN_RESPONSE_OVERRIDES[submittedCount];
   if (override) return override;
   const ack = ACK_PHRASES[submittedCount % ACK_PHRASES.length];
@@ -226,6 +231,12 @@ export default function ParticipantChat() {
   // sequenced separately via `introStage` below — it ALL types in
   // staged bubbles instead of dumping everything on mount.
   const [typingFor, setTypingFor] = useState(null);
+  // Inline draft editing — index of the draft currently in edit mode
+  // (null = none). Click any draft bubble to enter; Save replaces the
+  // entry in place; Cancel exits without changes. Mirrors BriefChat's
+  // edit-in-place pattern so the participant flow feels consistent
+  // with the creator flow.
+  const [editingDraftIndex, setEditingDraftIndex] = useState(null);
   // Intro reveal stages:
   //   0 = typing for welcome bubble
   //   1 = welcome shown + typing for the "ready to see brief?" prompt
@@ -319,6 +330,25 @@ export default function ParticipantChat() {
         setShowForm(true);
       }
     }, SUBMIT_BUBBLE_DELAY);
+  };
+
+  const handleStartEditDraft = (i) => {
+    // Pull the user out of the "submitted/done" gate while editing —
+    // editing is a parallel flow, not the active turn. Same idea as
+    // BriefChat: editing pauses the rest of the chat machinery.
+    setEditingDraftIndex(i);
+  };
+
+  const handleEditDraftSave = (updated) => {
+    if (editingDraftIndex == null) return;
+    setDrafts((d) =>
+      d.map((entry, i) => (i === editingDraftIndex ? updated : entry))
+    );
+    setEditingDraftIndex(null);
+  };
+
+  const handleCancelEditDraft = () => {
+    setEditingDraftIndex(null);
   };
 
   const handleImDone = () => {
@@ -518,9 +548,22 @@ export default function ParticipantChat() {
                   // state is active. Older drafts always show their
                   // resolved response.
                   const showTyping = isLastDraft && typingFor === 'response';
+                  const isEditingThis = editingDraftIndex === i;
                   return (
                     <Fragment key={`turn-${i}`}>
-                      <DraftBubble index={i} draft={d} />
+                      <DraftBubble
+                        index={i}
+                        draft={d}
+                        isEditing={isEditingThis}
+                        segmentExample={
+                          contest.subSegmentId === 't1'
+                            ? 'e.g. Iron Boots FC'
+                            : 'A name…'
+                        }
+                        onStartEdit={() => handleStartEditDraft(i)}
+                        onEditSave={handleEditDraftSave}
+                        onEditCancel={handleCancelEditDraft}
+                      />
                       {showTyping ? (
                         <div className="v4-typing" aria-hidden="true">
                           <span></span><span></span><span></span>
@@ -545,7 +588,7 @@ export default function ParticipantChat() {
                     Tip and form follow either way. No "Suggestion N
                     of M" counter — it pressures people to fill all
                     slots when the creator allowed many. */}
-                {!submittedDone && showForm && (
+                {!submittedDone && showForm && editingDraftIndex === null && (
                   <>
                     {/* Initial prompt bubble — appears at intro stage 4
                         (after typing dots from stage 3). The article
@@ -595,7 +638,7 @@ export default function ParticipantChat() {
                     or chooses "submit what I have". Also offers a
                     "keep adding" escape hatch so they can back out
                     and add more before locking in. */}
-                {submittedDone && drafts.length > 0 && (
+                {submittedDone && drafts.length > 0 && editingDraftIndex === null && (
                   <>
                     <ChecklistCard items={checklist} />
                     <div className="v4-pchat-submit-row">
@@ -741,7 +784,7 @@ function SubmissionCard({
             That's enough — submit what I have
           </button>
           <p className="v4-pchat-finalize-note">
-            You can't add or edit names after this.
+            You can still tap any name above to edit it before sending.
           </p>
         </div>
       )}
@@ -749,16 +792,99 @@ function SubmissionCard({
   );
 }
 
-// ── Drafted name appears as a right-aligned user-bubble ────────────
-function DraftBubble({ index, draft }) {
+// ── Drafted name — right-aligned user-bubble, click to edit inline.
+// Pattern mirrors BriefChat's HistoryTurn: the bubble itself is the
+// click target (pencil + Edit hint floating top-right); when editing
+// it swaps to an inline edit form with Save / Cancel. Saves replace
+// the entry in-place; cancels exit without changes.
+function DraftBubble({
+  index, draft, isEditing, segmentExample,
+  onStartEdit, onEditSave, onEditCancel,
+}) {
+  const [edit, setEdit] = useState(draft);
+  // Reset the local edit state every time we re-enter edit mode so
+  // a previous half-typed edit doesn't bleed across draft rows.
+  useEffect(() => {
+    if (isEditing) setEdit(draft);
+  }, [isEditing, draft]);
+
+  if (isEditing) {
+    const canSave =
+      edit.text.trim().length > 0 && edit.whyItFits.trim().length > 0;
+    return (
+      <div className="v4-pchat-draft-edit">
+        <div className="v4-pchat-draft-edit-head">
+          Editing <strong>#{index + 1}</strong>
+        </div>
+        <label className="v4-pchat-card-field">
+          <span className="v4-pchat-card-label">The name</span>
+          <input
+            type="text"
+            className="v4-settings-input"
+            value={edit.text}
+            onChange={(e) => setEdit({ ...edit, text: e.target.value })}
+            placeholder={segmentExample}
+            maxLength={48}
+            autoFocus
+          />
+        </label>
+        <label className="v4-pchat-card-field">
+          <span className="v4-pchat-card-label">
+            What it means + why it fits
+          </span>
+          <textarea
+            className="v4-settings-input v4-pchat-textarea"
+            rows={4}
+            value={edit.whyItFits}
+            onChange={(e) => setEdit({ ...edit, whyItFits: e.target.value })}
+            placeholder="Heron — the bird that fishes along our river. Single sharp word, easy on a jersey."
+            maxLength={320}
+          />
+        </label>
+        <div className="v4-pchat-draft-edit-foot">
+          <button
+            type="button"
+            className="btn btn-primary btn-sm"
+            onClick={() =>
+              onEditSave({
+                text: edit.text.trim(),
+                whyItFits: edit.whyItFits.trim(),
+              })
+            }
+            disabled={!canSave}
+          >
+            Save changes
+          </button>
+          <button
+            type="button"
+            className="btn btn-link"
+            onClick={onEditCancel}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="v4-pchat-draft" style={{ animationDelay: '0.05s' }}>
+    <button
+      type="button"
+      className="v4-pchat-draft v4-pchat-draft-editable"
+      style={{ animationDelay: '0.05s' }}
+      onClick={onStartEdit}
+      aria-label={`Edit name #${index + 1}: ${draft.text}`}
+    >
       <div className="v4-pchat-draft-head">
         <span className="v4-pchat-draft-num">#{index + 1}</span>
         <strong className="v4-pchat-draft-name">{draft.text}</strong>
       </div>
       <div className="v4-pchat-draft-why">{draft.whyItFits}</div>
-    </div>
+      <span className="v4-pchat-draft-edit-hint" aria-hidden="true">
+        <PencilSimple weight="bold" size={12} />
+        Edit
+      </span>
+    </button>
   );
 }
 
