@@ -14,15 +14,15 @@
 // Sections: Creator flow · Participant flow · Additional pages ·
 // Simulations (every group × segment, creator + participant).
 
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  ArrowSquareOut, Trash, House, Megaphone, UsersThree, ArrowRight,
+  ArrowSquareOut, House, Megaphone, UsersThree, ArrowRight,
 } from '@phosphor-icons/react';
 import { writeSetup } from '../../utils/v4Brief';
 import { joinContest, recordSubmission, recordVotes, clearParticipation } from '../../utils/v4Participant';
 import { getMockContestById } from '../../data/v4/mockContests';
 import { SIM_CONTESTS, SIM_GROUPS } from '../../data/v4/simContests';
+import { getSegmentTone } from '../../data/v4/segmentTheme';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import heroProfile4 from '../../assets/hero-profile-4.png';
 import heroProfile5 from '../../assets/hero-profile-5.png';
@@ -212,13 +212,13 @@ const PARTICIPANT_STEPS = [
 
 const ADDITIONAL = {
   legal: [
-    { title: 'Privacy Policy', desc: 'What data we collect, why, sub-processors, and your rights.', url: '/privacy' },
-    { title: 'Terms of Service', desc: 'The contract: fees, user content, name-legality disclaimers, liability.', url: '/terms' },
-    { title: 'Cookie Policy', desc: 'Strictly-necessary storage only; no consent banner needed.', url: '/cookies' },
+    { title: 'Privacy policy', desc: 'What data we collect, why, sub-processors, and your rights.', url: '/privacy' },
+    { title: 'Terms of service', desc: 'The contract: fees, user content, name-legality disclaimers, liability.', url: '/terms' },
+    { title: 'Cookie policy', desc: 'Strictly-necessary storage only; no consent banner needed.', url: '/cookies' },
   ],
   resources: [
-    { title: 'Help center', desc: 'Guides and FAQs for creators and participants.', soon: true },
-    { title: 'Contact us', desc: 'Get in touch with the team.', soon: true },
+    { title: 'Frequently asked', desc: 'Common questions for creators and participants.', url: '/#faq' },
+    { title: 'Contact us', desc: 'Get in touch with the team.', url: '/contact' },
     { title: 'Catchword Branding', desc: 'The naming agency behind NamingContest.', url: 'https://catchwordbranding.com/' },
   ],
   errors: [
@@ -228,14 +228,17 @@ const ADDITIONAL = {
 };
 
 // ── Page ─────────────────────────────────────────────────────────
-export default function PlatformMap() {
-  const [resetFlash, setResetFlash] = useState(false);
+// Jump-nav targets — section ids on the page.
+const MAP_SECTIONS = [
+  { id: 'map-creator', label: 'Creator flow' },
+  { id: 'map-participant', label: 'Participant flow' },
+  { id: 'map-additional', label: 'Additional pages' },
+  { id: 'map-simulations', label: 'Simulations' },
+];
 
-  const handleReset = () => {
-    wipeAll();
-    setResetFlash(true);
-    setTimeout(() => setResetFlash(false), 1600);
-  };
+export default function PlatformMap() {
+  const jumpTo = (id) =>
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   return (
     <div className="v4 lp-v3">
@@ -260,18 +263,23 @@ export default function PlatformMap() {
                 with the Sunday football club example). The in-app menu on
                 each screen lands on the matching workspace stage.
               </p>
-              <button
-                type="button"
-                className="btn btn-secondary btn-sm v4-map-reset"
-                onClick={handleReset}
-                title="Wipe all demo state so the next walkthrough starts clean"
-              >
-                <Trash weight="bold" size={14} />
-                {resetFlash ? 'Reset ✓' : 'Reset all demo state'}
-              </button>
+              {/* Jump-nav — quick links to each section. */}
+              <nav className="v4-map-nav" aria-label="Jump to section">
+                {MAP_SECTIONS.map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    className="v4-map-nav-link"
+                    onClick={() => jumpTo(s.id)}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </nav>
             </div>
 
             <FlowSection
+              id="map-creator"
               icon={<Megaphone weight="duotone" size={18} />}
               title="Creator flow"
               subtitle="From landing to crowning the winning name."
@@ -279,6 +287,7 @@ export default function PlatformMap() {
             />
 
             <FlowSection
+              id="map-participant"
               icon={<UsersThree weight="duotone" size={18} />}
               title="Participant flow"
               subtitle="Two ways in — an invite link (new) or a returning sign-in — through to seeing who won."
@@ -286,7 +295,7 @@ export default function PlatformMap() {
             />
 
             {/* Additional pages */}
-            <section className="v4-map-section">
+            <section id="map-additional" className="v4-map-section">
               <div className="v4-map-section-head">
                 <House weight="duotone" size={18} />
                 <div>
@@ -302,7 +311,7 @@ export default function PlatformMap() {
             </section>
 
             {/* Simulations */}
-            <section className="v4-map-section">
+            <section id="map-simulations" className="v4-map-section">
               <div className="v4-map-section-head">
                 <ArrowsIcon />
                 <div>
@@ -320,8 +329,17 @@ export default function PlatformMap() {
                     {grp.segments.map((id) => {
                       const c = SIM_CONTESTS[id];
                       if (!c) return null;
+                      const tone = getSegmentTone(c.subSegmentId);
+                      const SegIcon = c.Icon;
                       return (
                         <li key={id} className="v4-map-sim-row">
+                          <span
+                            className="v4-map-sim-icon"
+                            style={{ background: tone.bg, color: tone.fg }}
+                            aria-hidden="true"
+                          >
+                            {SegIcon && <SegIcon weight="duotone" size={18} />}
+                          </span>
                           <div className="v4-map-sim-text">
                             <span className="v4-map-sim-name">{c.subSegmentTitle}</span>
                             <span className="v4-map-sim-eg">e.g. &ldquo;{c.workingName}&rdquo;</span>
@@ -371,9 +389,9 @@ export default function PlatformMap() {
 }
 
 // ── Flow section (numbered steps) ────────────────────────────────
-function FlowSection({ icon, title, subtitle, steps }) {
+function FlowSection({ id, icon, title, subtitle, steps }) {
   return (
-    <section className="v4-map-section">
+    <section id={id} className="v4-map-section">
       <div className="v4-map-section-head">
         {icon}
         <div>

@@ -42,6 +42,7 @@ import TermsOfService      from '@pages/legal/TermsOfService';
 import CookiePolicy        from '@pages/legal/CookiePolicy';
 import NotFound            from '@pages/system/NotFound';
 import ErrorState         from '@pages/system/ErrorState';
+import ContactPage        from '@pages/system/ContactPage';
 
 // ─── FloatingNav ─────────────────────────────────────────────────────────────
 
@@ -441,6 +442,7 @@ function AppInner() {
         <Route path="/terms"                           element={<TermsOfService />} />
         <Route path="/cookies"                         element={<CookiePolicy />} />
         <Route path="/error"                           element={<ErrorState />} />
+        <Route path="/contact"                         element={<ContactPage />} />
         <Route path="*"                                element={<NotFound />} />
       </Routes>
       <FloatingNav />

@@ -9278,7 +9278,29 @@ select.v4-pvote-sort-select:hover {
   max-width: 64ch;
   margin: 0 0 16px;
 }
-.v4-map-reset { margin-top: 4px; }
+/* Jump-nav — quick links to each section. */
+.v4-map-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+.v4-map-nav-link {
+  padding: 7px 15px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.v4-map-nav-link:hover {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.18);
+}
 
 /* Section */
 .v4-map-section { margin: 40px 0 0; }
@@ -9482,6 +9504,12 @@ select.v4-pvote-sort-select:hover {
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.07);
   border-radius: 14px;
+}
+.v4-map-sim-icon {
+  flex-shrink: 0;
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
 }
 .v4-map-sim-text { flex: 1; min-width: 0; }
 .v4-map-sim-name {

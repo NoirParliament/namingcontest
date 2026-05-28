@@ -1,0 +1,147 @@
+/* Contact page — "Say hello."
+   Matches the homepage design logic: warm off-white page (--bg-page),
+   dark ink, pastel accents, dark footer. No colored wash, no blobs. */
+
+.contact-page { background: var(--bg-page); position: relative; }
+
+/* ── Background decoration (behind content) ───────────────────────── */
+.contact-decor {
+  position: fixed; inset: 0;
+  overflow: hidden; pointer-events: none; z-index: 0;
+}
+/* Soft pastel orbs fill the empty side rails. */
+.contact-orb { position: absolute; border-radius: 50%; filter: blur(2px); }
+.contact-orb-1 { width: 300px; height: 300px; left: -120px; top: 16%;  background: var(--panel-blush);      opacity: 0.5; }
+.contact-orb-2 { width: 360px; height: 360px; right: -150px; top: 26%; background: var(--panel-periwinkle); opacity: 0.4; }
+.contact-orb-3 { width: 200px; height: 200px; left: 4%;   bottom: 12%;  background: var(--panel-butter);     opacity: 0.45; }
+.contact-orb-4 { width: 150px; height: 150px; right: 8%;  bottom: 20%;  background: var(--panel-blush);      opacity: 0.4; }
+/* Small accent dots, gently floating. */
+.contact-dot { position: absolute; border-radius: 50%; animation: contact-float 12s ease-in-out infinite; }
+.contact-dot-1 { width: 12px; height: 12px; left: 13%;  top: 32%;     background: var(--accent-purple); opacity: 0.5;  animation-delay: 0s; }
+.contact-dot-2 { width: 9px;  height: 9px;  right: 14%; top: 22%;     background: var(--accent-orange); opacity: 0.5;  animation-delay: -3s; }
+.contact-dot-3 { width: 10px; height: 10px; left: 8%;   bottom: 30%;  background: var(--accent-blue);   opacity: 0.45; animation-delay: -6s; }
+.contact-dot-4 { width: 8px;  height: 8px;  right: 11%; bottom: 34%;  background: var(--accent-pink);   opacity: 0.45; animation-delay: -2s; }
+.contact-dot-5 { width: 7px;  height: 7px;  left: 22%;  top: 70%;     background: var(--accent-yellow); opacity: 0.5;  animation-delay: -8s; }
+@keyframes contact-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-14px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-dot { animation: none; }
+}
+
+/* ── Split layout ─────────────────────────────────────────────────── */
+.contact-main {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: start;
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  /* Generous top space below the pill nav. */
+  padding: 96px 0 110px;
+}
+@media (max-width: 860px) {
+  .contact-main { grid-template-columns: 1fr; gap: 32px; padding: 56px 0 72px; }
+}
+
+/* ── Left rail — the human pitch ──────────────────────────────────── */
+.contact-eyebrow {
+  font-family: var(--font-text);
+  font-size: 12px; font-weight: 600;
+  letter-spacing: var(--tr-widest); text-transform: uppercase;
+  color: var(--fg-muted); margin: 0 0 16px;
+}
+.contact-title {
+  font-family: var(--font-display); font-weight: 400;
+  font-size: 64px; line-height: 1.04; letter-spacing: var(--tr-tight);
+  color: var(--fg); margin: 0 0 18px;
+}
+@media (max-width: 860px) { .contact-title { font-size: 46px; } }
+.contact-lede {
+  font-size: 17px; line-height: 1.55;
+  color: var(--fg-faint); max-width: 420px; margin: 0 0 26px;
+}
+
+.contact-promise {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 14px; border-radius: var(--r-pill);
+  background: var(--bg-inset); color: var(--fg);
+  font-size: 13.5px; margin-bottom: 18px;
+}
+.contact-promise strong { font-weight: 700; }
+
+.contact-alt { font-size: 14px; line-height: 1.5; color: var(--fg-faint); margin: 0 0 18px; }
+.contact-alt a { color: var(--fg); font-weight: 600; text-decoration: none; border-bottom: 1.5px solid var(--border); }
+.contact-alt a:hover { border-bottom-color: var(--fg); }
+
+.contact-ps { font-size: 13.5px; line-height: 1.55; color: var(--fg-muted); max-width: 410px; margin: 0; }
+.contact-ps strong { font-weight: 700; color: var(--fg); }
+
+/* ── Right rail — mail-led form ───────────────────────────────────── */
+.contact-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  padding: 32px;
+  box-shadow: var(--shadow-card);
+}
+
+.contact-form-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 48px; height: 48px; border-radius: 14px;
+  background: var(--panel-blush); color: var(--fg); margin-bottom: 16px;
+}
+.contact-form-head {
+  font-family: var(--font-display); font-weight: 400;
+  font-size: 26px; letter-spacing: var(--tr-tight);
+  color: var(--fg); margin: 0 0 4px;
+}
+.contact-form-sub { font-size: 14px; color: var(--fg-muted); margin: 0 0 22px; }
+
+.contact-field { display: block; margin-bottom: 16px; }
+.contact-field-label { display: block; font-size: 13px; font-weight: 600; color: var(--fg); margin-bottom: 7px; }
+/* Scoped under .contact-page so these beat globals.css's element rules
+   `input[type="..."]:focus` (which apply a GREEN ring). */
+.contact-page .contact-input {
+  width: 100%; box-sizing: border-box; height: auto;
+  padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--r-md);
+  font-family: var(--font-text); font-size: 15px; line-height: 1.4;
+  color: var(--fg); background: var(--bg-card);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.contact-page .contact-input::placeholder { color: rgba(3, 3, 2, 0.32); }
+.contact-page .contact-input:focus {
+  outline: none; border-color: var(--fg);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+.contact-page .contact-textarea { resize: vertical; min-height: 104px; }
+.contact-input-icon-wrap { position: relative; display: block; }
+.contact-input-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--fg-muted); pointer-events: none; z-index: 1; }
+.contact-page .contact-input.contact-input-padded { padding-left: 40px; }
+
+.contact-send { width: 100%; margin-top: 6px; }
+
+/* ── Received confirmation ────────────────────────────────────────── */
+.contact-received {
+  text-align: center; padding: 8px 4px 6px;
+  animation: contact-received-in 0.4s cubic-bezier(0.34, 1.4, 0.5, 1) both;
+}
+@keyframes contact-received-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.contact-received-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--panel-blush); color: var(--fg); margin-bottom: 16px;
+}
+.contact-received-title { font-family: var(--font-display); font-size: 26px; color: var(--fg); margin-bottom: 8px; }
+.contact-received-sub { font-size: 14.5px; line-height: 1.55; color: var(--fg-faint); max-width: 360px; margin: 0 auto 18px; }
+.contact-received-sub strong { color: var(--fg); font-weight: 700; }
+.contact-received-again { background: none; border: none; padding: 0; color: var(--fg); font-weight: 600; font-size: 14px; cursor: pointer; }
+.contact-received-again:hover { opacity: 0.75; }

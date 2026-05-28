@@ -96,9 +96,9 @@ export function Nav() {
             <img src={namingContestLogo} alt="NamingContest" className="brand-logo" />
           </a>
           <div className="links">
-            <a href="/#pricing" onClick={goToSection('pricing')}>Pricing</a>
             <a href="/#how" onClick={goToSection('how')}>How it works</a>
             <a href="/#testimonials" onClick={goToSection('testimonials')}>Testimonials</a>
+            <a href="/#pricing" onClick={goToSection('pricing')}>Pricing</a>
           </div>
           <div className="nav-actions">
             {isAuthed ? (
@@ -864,8 +864,8 @@ export function Footer() {
           <h6>Resources</h6>
           <ul>
             <li><a href="https://catchwordbranding.com/" target="_blank" rel="noopener noreferrer">Catchword Branding</a></li>
-            <li><a href="#" onClick={(e) => e.preventDefault()}>Help center</a></li>
-            <li><a href="#" onClick={(e) => e.preventDefault()}>Contact us</a></li>
+            <li><a href="/#faq">Frequently asked</a></li>
+            <li><Link to="/contact">Contact us</Link></li>
           </ul>
         </div>
         <div>
@@ -902,6 +902,18 @@ export default function LandingPage() {
       navigate('/v4/settings', { replace: true });
     }
   }, [navigate]);
+
+  // Honor a #hash on load (e.g. arriving at /#faq from another page's
+  // footer) — the browser's native hash-scroll fires before the long
+  // page has laid out, so do it ourselves once content has settled.
+  useEffect(() => {
+    const id = window.location.hash.slice(1);
+    if (!id) return;
+    const t = setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'auto', block: 'start' });
+    }, 320);
+    return () => clearTimeout(t);
+  }, []);
 
   // Tier CTAs route into the unified V4 setup flow.
   // - Card CTAs (Personal/Group/Business) → persist tier + jump straight

@@ -497,7 +497,7 @@
 .lp-v3 .closing .cmeta{margin-top:18px;font-size:14px;color:rgba(0,0,0,.6)}
 
 /* === Footer === */
-.lp-v3 .footer{background:var(--bg-ink);color:var(--fg-on-ink);border-radius:var(--r-2xl);padding:64px 56px 40px;margin-top:var(--s-30)}
+.lp-v3 .footer{position:relative;z-index:3;background:var(--bg-ink);color:var(--fg-on-ink);border-radius:var(--r-2xl);padding:64px 56px 40px;margin-top:var(--s-30)}
 .lp-v3 .footer-grid{display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr;gap:48px}
 .lp-v3 .footer .brand-block .brand-mark{display:inline-flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:600;font-size:22px;letter-spacing:-0.02em;color:var(--fg-on-ink);text-decoration:none;margin-bottom:20px}
 .lp-v3 .footer .brand-block .brand-dot{width:18px;height:18px;border-radius:50%;background:var(--panel-mint);box-shadow:inset 0 0 0 2px var(--bg-ink)}
