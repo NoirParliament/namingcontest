@@ -236,7 +236,7 @@ export default function ParticipantVoteThanks() {
                 aria-disabled={!c.isReady}
                 onClick={() => {
                   if (!c.isReady) return;
-                  navigate('/v4/settings');
+                  navigate(`/v4/contest/${contestId}/winner`);
                 }}
                 title={
                   c.isReady ? 'See the winner' : 'Winner announced soon'
@@ -279,7 +279,7 @@ export default function ParticipantVoteThanks() {
                 <span className="v4-join-flow-dot" aria-hidden="true" />
                 <span className="v4-join-flow-label">
                   <strong>Voted ✓</strong>
-                  <em>just now</em>
+                  <em>Just now</em>
                 </span>
               </li>
               <li className="v4-join-flow-step is-current">
@@ -287,9 +287,9 @@ export default function ParticipantVoteThanks() {
                 <span className="v4-join-flow-label">
                   <strong>See who won</strong>
                   <em>
-                    {c.unknown ? 'announced soon'
-                      : c.isReady ? 'winner picked'
-                      : `announced ${winnerDateStr}`}
+                    {c.unknown ? 'Announced soon'
+                      : c.isReady ? 'Winner picked'
+                      : `Announced ${winnerDateStr}`}
                   </em>
                 </span>
               </li>

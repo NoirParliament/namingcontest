@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import '@styles/tokens.css';
 import '@styles/globals.css';
 import { getJourneyMeta, buildJourneySteps, detectStep, PHASE_COLORS } from './utils/journey';
@@ -33,9 +33,15 @@ import V4JoinContest      from '@pages/v4/JoinContest';
 import V4ParticipantChat  from '@pages/v4/ParticipantChat';
 import V4ParticipantThanks from '@pages/v4/ParticipantThanks';
 import V4ParticipantStatus from '@pages/v4/ParticipantStatus';
-import V4DemoIndex         from '@pages/v4/DemoIndex';
+import V4PlatformMap       from '@pages/v4/PlatformMap';
 import V4ParticipantVote   from '@pages/v4/ParticipantVote';
 import V4ParticipantVoteThanks from '@pages/v4/ParticipantVoteThanks';
+import V4ParticipantWinner from '@pages/v4/ParticipantWinner';
+import PrivacyPolicy       from '@pages/legal/PrivacyPolicy';
+import TermsOfService      from '@pages/legal/TermsOfService';
+import CookiePolicy        from '@pages/legal/CookiePolicy';
+import NotFound            from '@pages/system/NotFound';
+import ErrorState         from '@pages/system/ErrorState';
 
 // ─── FloatingNav ─────────────────────────────────────────────────────────────
 
@@ -119,7 +125,19 @@ function FloatingNav() {
   }, []);
 
   // ── Hide on hub pages and all V4 routes ───────────────────────────────────
-  if (path === '/wireframe' || path === '/' || path.startsWith('/v4/')) return null;
+  // The journey tracker belongs ONLY to the legacy v0–v3 wireframe
+  // flow. Whitelist those paths and hide everywhere else — landing,
+  // all /v4/* screens, legal pages, the platform map, /error, and any
+  // unmatched 404 route.
+  const JOURNEY_PREFIXES = [
+    '/select', '/contest-type', '/brief', '/upload-names', '/invite',
+    '/contest/', '/vote/', '/results/', '/dashboard', '/contest-detail',
+    '/auth',
+  ];
+  const onJourneyPath = JOURNEY_PREFIXES.some(
+    (p) => path === p || path.startsWith(p)
+  );
+  if (!onJourneyPath) return null;
 
   // ── Fresh meta (read after URL extraction effects have fired) ────────────
   const meta  = getJourneyMeta();
@@ -413,9 +431,17 @@ function AppInner() {
         <Route path="/v4/contest/:id/submit"           element={<V4ParticipantChat />} />
         <Route path="/v4/contest/:id/thanks"           element={<V4ParticipantThanks />} />
         <Route path="/v4/contest/:id/status"           element={<V4ParticipantStatus />} />
-        <Route path="/v4/demo"                         element={<V4DemoIndex />} />
+        <Route path="/v4/map"                          element={<V4PlatformMap />} />
+        {/* Old demo index → new platform map. */}
+        <Route path="/v4/demo"                         element={<Navigate to="/v4/map" replace />} />
         <Route path="/v4/contest/:id/vote"             element={<V4ParticipantVote />} />
         <Route path="/v4/contest/:id/vote-thanks"      element={<V4ParticipantVoteThanks />} />
+        <Route path="/v4/contest/:id/winner"           element={<V4ParticipantWinner />} />
+        <Route path="/privacy"                         element={<PrivacyPolicy />} />
+        <Route path="/terms"                           element={<TermsOfService />} />
+        <Route path="/cookies"                         element={<CookiePolicy />} />
+        <Route path="/error"                           element={<ErrorState />} />
+        <Route path="*"                                element={<NotFound />} />
       </Routes>
       <FloatingNav />
     </>

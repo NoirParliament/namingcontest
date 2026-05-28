@@ -8,6 +8,7 @@
 // id → fully formed contest record. Look up via getMockContestById(id).
 
 import { SoccerBall } from '@phosphor-icons/react';
+import { SIM_CONTESTS } from './simContests';
 
 export const MOCK_CONTESTS = {
   mock_ongoing_1: {
@@ -33,9 +34,9 @@ export const MOCK_CONTESTS = {
       // Not anonymous by default — submitter names show under each
       // entry on the vote page. Creator can flip this to hide them.
       anonymous: false,
-      // Bumped from 3 → 5 so the participant chat can naturally test
-      // the overflow case (where /thanks renders "+ N more names").
-      submissionLimit: 5,
+      // Default cap of 3 — the participant chat hard-stops here and
+      // shows the submit checklist; you can't add a fourth.
+      submissionLimit: 3,
       // How many votes each participant can cast on the vote page.
       votingLimit: 3,
       customRequirements: {
@@ -162,7 +163,23 @@ export const MOCK_CONTESTS = {
 };
 
 export function getMockContestById(id) {
-  return MOCK_CONTESTS[id] || null;
+  const base = MOCK_CONTESTS[id] || SIM_CONTESTS[id] || null;
+  if (!base) return null;
+  // Optional per-contest stage override (written by the Platform Map to
+  // flip a sim contest's launchedAt/phase so it renders at the right
+  // lifecycle stage without duplicating the contest). Never set in
+  // normal product flows, so the canonical mock + real contests are
+  // completely unaffected.
+  try {
+    const raw = localStorage.getItem('v4_contest_override_' + id);
+    if (raw) {
+      const o = JSON.parse(raw);
+      if (o && typeof o === 'object') return { ...base, ...o };
+    }
+  } catch {
+    // localStorage unavailable — fall through to base.
+  }
+  return base;
 }
 
 export function isMockContestId(id) {

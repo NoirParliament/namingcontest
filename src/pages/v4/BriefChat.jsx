@@ -183,8 +183,30 @@ export default function BriefChat() {
     return list;
   }, [subId, initial]);
 
-  const [history, setHistory] = useState([]);
-  const [idx, setIdx] = useState(0);
+  // If we arrive with a sub-segment already chosen (e.g. opened straight
+  // into a specific segment's chat from the Platform Map), hydrate the
+  // segment pick into history and start at the working-name question —
+  // so the chat opens mid-flow "in action" rather than re-asking the
+  // pick (or, when no group is set, rendering blank).
+  const preSeededSegment = (() => {
+    if (!initial.subSegmentId || !initial.group) return null;
+    const segment = SUB_SEGMENTS[initial.group];
+    const option = segment?.options.find((o) => o.id === initial.subSegmentId);
+    if (!option) return null;
+    return { question: makeSubSegmentQuestion(initial.group), option };
+  })();
+
+  const [history, setHistory] = useState(
+    preSeededSegment
+      ? [{
+          question: preSeededSegment.question,
+          answer: preSeededSegment.option,
+          display: preSeededSegment.option.title,
+          article: null,
+        }]
+      : []
+  );
+  const [idx, setIdx] = useState(preSeededSegment ? 1 : 0);
   const [phase, setPhase] = useState(0);
   const [userReply, setUserReply] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);

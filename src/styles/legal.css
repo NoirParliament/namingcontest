@@ -1,0 +1,143 @@
+/* Legal document pages — Privacy, Terms, Cookies.
+   These render inside the landing-v3 shell (.lp-v3 .frame .wrap) with
+   the real pill Nav + Footer, so this file only styles the long-form
+   reading column + typography between them. */
+
+/* Reading column — narrower than the marketing content for legibility.
+   Sits below the sticky pill nav (which takes its own layout space). */
+.legal-page .legal-main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px 24px 72px;
+}
+.legal-page .legal-title {
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-size: 44px;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: -0.022em;
+  line-height: 1.08;
+  margin: 0 0 8px;
+  color: var(--fg, #030302);
+}
+.legal-page .legal-updated {
+  font-family: var(--font-text, 'Inter', system-ui, sans-serif);
+  font-size: 13.5px;
+  color: var(--fg, #030302);
+  opacity: 0.55;
+  margin: 0 0 36px;
+}
+
+/* ── Body typography ── */
+.legal-page .legal-body {
+  font-family: var(--font-text, 'Inter', system-ui, sans-serif);
+  font-size: 15.5px;
+  line-height: 1.7;
+  color: var(--fg, #030302);
+}
+.legal-page .legal-body h2 {
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  margin: 42px 0 12px;
+  color: var(--fg);
+}
+.legal-page .legal-body h3 {
+  font-family: var(--font-text, 'Inter', system-ui, sans-serif);
+  font-size: 16px;
+  font-weight: 700;
+  margin: 26px 0 8px;
+  color: var(--fg);
+}
+.legal-page .legal-body p {
+  margin: 0 0 14px;
+}
+.legal-page .legal-body ul,
+.legal-page .legal-body ol {
+  margin: 0 0 14px;
+  padding-left: 22px;
+}
+.legal-page .legal-body li {
+  margin-bottom: 8px;
+}
+.legal-page .legal-body a {
+  color: var(--fg);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.legal-page .legal-body strong {
+  font-weight: 700;
+}
+.legal-page .legal-body .legal-lede {
+  font-size: 17px;
+  line-height: 1.6;
+  opacity: 0.85;
+  margin-bottom: 28px;
+}
+.legal-page .legal-body .legal-defn {
+  font-weight: 600;
+}
+
+/* ── Sub-processor / cookie tables ──────────────────────────────────
+   Styled to match the site's card language: rounded white container
+   with a hairline border + soft shadow, a warm panel-tinted header
+   row, horizontal-only separators (no harsh grid), and the same
+   rgba(0,0,0,0.04) ink-tint row hover used by the avatar dropdown
+   and brief-recap rows. */
+.legal-page .legal-table-wrap {
+  margin: 8px 0 22px;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 10px 28px -12px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+.legal-page .legal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.legal-page .legal-table th,
+.legal-page .legal-table td {
+  text-align: left;
+  vertical-align: top;
+  padding: 13px 16px;
+  border: none;
+}
+/* Header — warm panel tint + small uppercase label matching the
+   site's eyebrow style. */
+.legal-page .legal-table thead th {
+  font-family: var(--font-text, 'Inter', system-ui, sans-serif);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg);
+  opacity: 0.65;
+  background: rgba(0, 0, 0, 0.045);
+}
+/* Body rows — horizontal hairline separators only, ink-tint hover. */
+.legal-page .legal-table tbody tr {
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  transition: background 0.2s ease;
+}
+.legal-page .legal-table tbody tr:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+.legal-page .legal-table td {
+  color: var(--fg);
+  line-height: 1.5;
+}
+/* First column reads as the row label — slightly stronger. */
+.legal-page .legal-table td:first-child {
+  font-weight: 600;
+}
+
+@media (max-width: 560px) {
+  .legal-page .legal-title { font-size: 32px; }
+  .legal-page .legal-body h2 { font-size: 20px; }
+  .legal-page .legal-main { padding: 32px 20px 56px; }
+}

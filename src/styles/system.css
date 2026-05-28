@@ -1,0 +1,70 @@
+/* 404 / error system pages — centered message inside the landing-v3
+   shell (pill nav + footer come from the shared chrome). */
+
+.legal-page .sys-main {
+  flex: 1;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 80px 24px 96px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.legal-page .sys-code {
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-size: 96px;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--fg, #030302);
+  opacity: 0.12;
+  margin-bottom: 8px;
+}
+.legal-page .sys-code-error {
+  font-size: 40px;
+  opacity: 0.18;
+  text-transform: none;
+}
+.legal-page .sys-title {
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-size: 40px;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.022em;
+  line-height: 1.1;
+  color: var(--fg, #030302);
+  margin: 0 0 12px;
+}
+.legal-page .sys-sub {
+  font-family: var(--font-text, 'Inter', system-ui, sans-serif);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--fg, #030302);
+  opacity: 0.7;
+  max-width: 46ch;
+  margin: 0 0 32px;
+}
+.legal-page .sys-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.legal-page .sys-contact {
+  margin-top: 28px;
+  font-size: 14px;
+  color: var(--fg, #030302);
+  opacity: 0.65;
+}
+.legal-page .sys-contact a {
+  color: var(--fg);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+@media (max-width: 560px) {
+  .legal-page .sys-code { font-size: 72px; }
+  .legal-page .sys-title { font-size: 30px; }
+}

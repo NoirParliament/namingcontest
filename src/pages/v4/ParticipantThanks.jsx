@@ -277,7 +277,7 @@ export default function ParticipantThanks() {
                 <span className="v4-join-flow-dot" aria-hidden="true" />
                 <span className="v4-join-flow-label">
                   <strong>Suggested ✓</strong>
-                  <em>just now</em>
+                  <em>Just now</em>
                 </span>
               </li>
               <li className="v4-join-flow-step is-current">
@@ -285,9 +285,9 @@ export default function ParticipantThanks() {
                 <span className="v4-join-flow-label">
                   <strong>Come back to vote</strong>
                   <em>
-                    {c.unknown ? 'opens soon'
-                      : c.isReady ? 'voting is open'
-                      : `opens ${voteOpensDateStr}`}
+                    {c.unknown ? 'Opens soon'
+                      : c.isReady ? 'Voting is open'
+                      : `Opens ${voteOpensDateStr}`}
                   </em>
                 </span>
               </li>
@@ -295,7 +295,7 @@ export default function ParticipantThanks() {
                 <span className="v4-join-flow-dot" aria-hidden="true" />
                 <span className="v4-join-flow-label">
                   <strong>See who won</strong>
-                  <em>shoutout if it's yours</em>
+                  <em>Shoutout if it's yours</em>
                 </span>
               </li>
             </ol>

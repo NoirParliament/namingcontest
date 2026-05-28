@@ -94,7 +94,7 @@ export default function JoinContest() {
     };
     const row = getParticipantRow(phaseShape, existing);
     // Routes shipped today. Update this list as we build the rest.
-    const SUFFIXES = ['/submit', '/status', '/thanks'];
+    const SUFFIXES = ['/submit', '/status', '/thanks', '/vote', '/vote-thanks', '/winner'];
     const shouldRoute = row?.actionRoute && (
       row.actionRoute === '/v4/settings' ||
       SUFFIXES.some(s => row.actionRoute.endsWith(s))
@@ -442,21 +442,21 @@ export default function JoinContest() {
                 <span className="v4-join-flow-dot" aria-hidden="true" />
                 <span className="v4-join-flow-label">
                   <strong>Suggest names</strong>
-                  <em>you're here · ~5 minutes</em>
+                  <em>You're here · ~5 minutes</em>
                 </span>
               </li>
               <li className="v4-join-flow-step is-upcoming">
                 <span className="v4-join-flow-dot" aria-hidden="true" />
                 <span className="v4-join-flow-label">
                   <strong>Come back to vote</strong>
-                  <em>when names close</em>
+                  <em>When names close</em>
                 </span>
               </li>
               <li className="v4-join-flow-step is-upcoming">
                 <span className="v4-join-flow-dot" aria-hidden="true" />
                 <span className="v4-join-flow-label">
                   <strong>See who won</strong>
-                  <em>shoutout if it's yours</em>
+                  <em>Shoutout if it's yours</em>
                 </span>
               </li>
             </ol>

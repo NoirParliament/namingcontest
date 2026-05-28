@@ -16,7 +16,7 @@
 
 import { useState, useMemo, useEffect, useRef, Fragment } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
-import { PaperPlaneTilt, PencilSimple } from '@phosphor-icons/react';
+import { PaperPlaneTilt, PencilSimple, CheckCircle } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 // Default participant avatar — used if the user hasn't uploaded a
 // photo from Settings. Pick profile-3 (Marcus is profile-4, so this
@@ -36,7 +36,6 @@ import { getQuestionsFor } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
 import GuideExpandable from '../../components/v4/GuideExpandable';
 import AvatarMenu from '../../components/v4/AvatarMenu';
-import celebrate from '../../utils/celebrate';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -181,7 +180,13 @@ export default function ParticipantChat() {
   const contest = getMockContestById(contestId);
   const participation = readParticipation(contestId);
 
-  const submissionLimit = contest?.settings?.submissionLimit || 3;
+  // Resolve the creator-set cap. Numbers are used as-is; 'Unlimited'
+  // (a valid numberChips option) maps to a high ceiling so the slot
+  // math never goes NaN; anything missing/odd falls back to 3.
+  const rawLimit = contest?.settings?.submissionLimit;
+  const submissionLimit = Number.isFinite(rawLimit)
+    ? rawLimit
+    : (rawLimit === 'Unlimited' ? 99 : 3);
   const tone = contest ? getSegmentTone(contest.subSegmentId) : null;
   const creatorName = contest?.creator?.name || 'the organizer';
 
@@ -363,7 +368,6 @@ export default function ParticipantChat() {
         inspiration: '',
       })
     );
-    celebrate(tone);
     navigate(`/v4/contest/${contestId}/thanks`, { replace: true });
   };
 
@@ -377,10 +381,8 @@ export default function ParticipantChat() {
         inspiration: '',
       })
     );
-    // Confetti burst first (segment-tinted), then land on /thanks.
     // replace: true so browser-back doesn't bounce into the
     // already-submitted chat.
-    celebrate(tone);
     navigate(`/v4/contest/${contestId}/thanks`, { replace: true });
   };
 

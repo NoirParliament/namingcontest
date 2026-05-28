@@ -3,7 +3,7 @@
 // in the creator setup flow before the contest goes live.
 
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import {
   X, PencilSimple, CheckCircle, Rocket,
   Heart, UsersThree, Briefcase,
@@ -65,7 +65,12 @@ export default function ReviewLaunch() {
   const filledBrief = briefQuestions.filter((q) => briefAnswers[q.id] !== undefined);
   const filledSettings = SHARED_SETTINGS_QUESTIONS.filter((q) => settingsAnswers[q.id] !== undefined);
 
-  const [launchOpen, setLaunchOpen] = useState(false);
+  // ?launch=1 (from the platform map) auto-opens the launch/checkout
+  // modal so that flow step lands directly on it.
+  const [searchParams] = useSearchParams();
+  const [launchOpen, setLaunchOpen] = useState(
+    () => searchParams.get('launch') === '1'
+  );
 
   const handleLaunch = () => {
     if (launching) return;

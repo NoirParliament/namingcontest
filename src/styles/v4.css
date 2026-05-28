@@ -2718,6 +2718,12 @@ input.v4-results-search-input::placeholder {
 .v4-results-row-trigger:hover {
   background: rgba(3, 3, 2, 0.03);
 }
+/* Submission phase: rank + name + caret, but no vote column (no votes
+   yet). Drop the votes track so the name keeps its full width and the
+   caret stays flush right. */
+.v4-results-row-trigger.is-novotes {
+  grid-template-columns: 28px 1fr 16px;
+}
 .v4-results-rank {
   font-family: 'Fraunces', ui-serif, Georgia, serif;
   font-size: 18px;
@@ -8180,6 +8186,96 @@ button.v4-pchat-draft.v4-pchat-draft-editable:focus-visible .v4-pchat-draft-edit
   min-width: 0;
   padding: 14px 18px;
 }
+
+/* ── Participant winner reveal — champion card, badge, prize ─────── */
+/* Gold band + lift for the winning name's ticket-stub. */
+.v4-pthanks-card-champion .v4-pthanks-card-band {
+  width: 72px;
+  background: linear-gradient(155deg, #fbe7a6 0%, #f4c64b 100%);
+  color: #6b4e08;
+}
+.v4-pthanks-card-champion .v4-pthanks-card-band svg { color: #6b4e08; }
+.v4-pthanks-card-champion {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 14px 36px -8px rgba(180, 140, 20, 0.35);
+}
+
+/* "You won" badge — gold pill above the hero title. */
+.v4-pwinner-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  padding: 6px 15px;
+  border-radius: 999px;
+  background: linear-gradient(155deg, #fbe7a6 0%, #f4c64b 100%);
+  color: #6b4e08;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  box-shadow: 0 6px 18px -6px rgba(180, 140, 20, 0.5);
+}
+/* Prize folded into the "You won" badge — normal case + lighter weight
+   so YOU WON keeps the emphasis and the prize reads as the reward. */
+.v4-pwinner-badge-prize {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 600;
+  opacity: 0.92;
+}
+
+/* Small self-serve nudge — quiet, single line, link emphasised. */
+.v4-pwinner-own {
+  margin: 22px auto 0;
+  text-align: center;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13.5px;
+  color: var(--join-fg, var(--v4-fg));
+}
+.v4-pwinner-own-lead { opacity: 0.62; }
+.v4-pwinner-own-link {
+  font-weight: 700;
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1.5px solid currentColor;
+  white-space: nowrap;
+}
+.v4-pwinner-own-link:hover { opacity: 0.75; }
+
+/* Confetti canvas — fixed full-viewport, IN FRONT of the content
+   (z-index 6 > .v4-review's 5) so the glass nav never blurs it. A
+   vertical mask shapes where it shows: clear over the top menu bar,
+   full just below it, FADED across the central card/title band (so the
+   gold is still visible there but doesn't obscure the content), then
+   full again at the bottom. */
+.v4-pwinner-confetti-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  /* BEHIND the content (.v4-review is z-index 5) so the gold sits behind
+     the central text / pill / card. Full at the very top, sides, and
+     bottom — only the central ELLIPSE (where the info is) is dimmed. */
+  z-index: 4;
+  --pwinner-mask: radial-gradient(
+    ellipse 34% 30% at 50% 46%,
+    rgba(0, 0, 0, 0.18) 0%,
+    rgba(0, 0, 0, 0.18) 45%,
+    #000 100%
+  );
+  -webkit-mask-image: var(--pwinner-mask);
+  mask-image: var(--pwinner-mask);
+}
+/* Drop the nav's glass blur on the winner page only, so the confetti
+   that sits behind the top nav bar isn't smeared. */
+.v4-pwinner-screen .v4-nav {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
 /* Name = Fraunces italic, ink-dark, no opacity. Matches
    .v4-join-prize-name. */
 .v4-pthanks-card-name {
@@ -9150,4 +9246,278 @@ select.v4-pvote-sort-select:hover {
   .v4-pvote-toolbar { flex-direction: column; }
   .v4-pvote-recap-row { grid-template-columns: 1fr; gap: 2px; }
   .v4-pvote-bottom-inner { padding: 12px 20px; gap: 10px; }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   PLATFORM MAP  (/v4/map)
+   Clickable flow-map / sitemap. Numbered steps, additional-pages
+   grid, and the group×segment simulations grid.
+   ───────────────────────────────────────────────────────────────── */
+.v4-map-inner {
+  max-width: 920px !important;
+  padding-bottom: 64px;
+}
+.v4-map-head {
+  margin: 8px 0 36px;
+}
+.v4-map-title {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 38px;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.022em;
+  line-height: 1.1;
+  color: var(--v4-fg);
+  margin: 0 0 10px;
+}
+.v4-map-sub {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--v4-fg);
+  opacity: 0.72;
+  max-width: 64ch;
+  margin: 0 0 16px;
+}
+.v4-map-reset { margin-top: 4px; }
+
+/* Section */
+.v4-map-section { margin: 40px 0 0; }
+.v4-map-section-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+  color: var(--v4-fg);
+}
+.v4-map-section-title {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 24px;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  color: var(--v4-fg);
+  margin: 0;
+}
+.v4-map-section-sub {
+  font-size: 13.5px;
+  color: var(--v4-fg);
+  opacity: 0.6;
+  margin: 2px 0 0;
+}
+
+/* Numbered steps */
+.v4-map-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.v4-map-step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+.v4-map-step:hover {
+  transform: translateY(-1px);
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.14);
+}
+.v4-map-step-num {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--v4-fg);
+  color: #ffffff;
+  font-family: 'Fraunces', Georgia, serif;
+  font-style: italic;
+  font-size: 15px;
+  font-weight: 500;
+}
+.v4-map-step-body { flex: 1; min-width: 0; }
+.v4-map-step-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  letter-spacing: -0.005em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.v4-map-step-desc {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--v4-fg);
+  opacity: 0.62;
+  margin: 3px 0 0;
+}
+.v4-map-step-pay {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 8px 0 0;
+  padding: 5px 10px 5px 6px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.04);
+  font-size: 12px;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  letter-spacing: -0.01em;
+  color: var(--v4-fg);
+  opacity: 0.82;
+}
+.v4-map-step-pay-tag {
+  font-family: inherit;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #bce5c8;
+  color: #1f5430;
+}
+.v4-map-step-open { flex: none; }
+.v4-map-step-disabled {
+  flex: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  opacity: 0.4;
+  padding: 6px 12px;
+}
+.v4-map-soon {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #283b78;
+  background: #c4cff5;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+/* Additional pages grid */
+.v4-map-extra-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.v4-map-extra {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 14px;
+  padding: 16px 16px 8px;
+}
+.v4-map-extra-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v4-fg);
+  opacity: 0.55;
+  margin: 0 0 10px;
+}
+.v4-map-extra-list { list-style: none; margin: 0; padding: 0; }
+.v4-map-extra-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+.v4-map-extra-list li:first-child { border-top: none; }
+.v4-map-extra-text { flex: 1; min-width: 0; }
+.v4-map-extra-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--v4-fg);
+}
+.v4-map-extra-desc {
+  display: block;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--v4-fg);
+  opacity: 0.6;
+  margin-top: 2px;
+}
+
+/* Simulations grid */
+.v4-map-sim-group { margin-top: 18px; }
+.v4-map-sim-group-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v4-fg);
+  opacity: 0.55;
+  margin: 0 0 10px;
+}
+.v4-map-sim-list {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.v4-map-sim-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 14px;
+}
+.v4-map-sim-text { flex: 1; min-width: 0; }
+.v4-map-sim-name {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  letter-spacing: -0.005em;
+}
+.v4-map-sim-eg {
+  display: block;
+  font-size: 12.5px;
+  color: var(--v4-fg);
+  opacity: 0.55;
+  margin-top: 1px;
+}
+.v4-map-sim-actions { display: inline-flex; gap: 8px; flex: none; }
+
+.v4-map-foot {
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  font-size: 12.5px;
+  color: var(--v4-fg);
+  opacity: 0.55;
+}
+.v4-map-foot code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11.5px;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+@media (max-width: 720px) {
+  .v4-map-extra-grid { grid-template-columns: 1fr; }
+  .v4-map-sim-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .v4-map-step { flex-wrap: wrap; }
 }

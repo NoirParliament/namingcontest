@@ -6,16 +6,21 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { X, Trophy, Gift, Check, ArrowRight } from '@phosphor-icons/react';
-import { NAMES, getParticipantById } from '../../data/v4/mockContestData';
 import '../../styles/landing-v3.css';
 
-export default function PickWinnerModal({ open, onClose, onConfirm, tone, prize }) {
-  // Names sorted by votes desc — top vote becomes the pre-selected
-  // winner. The list is what the radio buttons render below.
+export default function PickWinnerModal({
+  open, onClose, onConfirm, tone, prize,
+  names = [], participants = [],
+}) {
+  // Leaderboard comes from THIS contest's own names (passed in), so the
+  // id we hand back on confirm matches what ContestManage resolves the
+  // winner from. Sorted by votes desc — top vote is pre-selected.
   const sortedNames = useMemo(
-    () => [...NAMES].sort((a, b) => b.voteCount - a.voteCount),
-    []
+    () => [...names].sort((a, b) => b.voteCount - a.voteCount),
+    [names]
   );
+  const getParticipantById = (id) =>
+    participants.find((p) => p.id === id) || null;
   const topName = sortedNames[0];
   const [selectedId, setSelectedId] = useState(topName?.id || null);
 

@@ -25,7 +25,7 @@ import heroProfile4 from '../../assets/hero-profile-4.png';
 import {
   readSetup, writeSetup, getSegmentLabel,
 } from '../../utils/v4Brief';
-import { PARTICIPANTS, NAMES as MOCK_NAMES, getParticipantById } from '../../data/v4/mockContestData';
+import { buildLiveData } from '../../utils/v4LiveData';
 import { getMockContestById } from '../../data/v4/mockContests';
 import {
   BRIEF_QUESTIONS, SHARED_SETTINGS_QUESTIONS,
@@ -88,6 +88,25 @@ function formatDate(launchedAt, daysOffset) {
   return target.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
+// Two-corner confetti burst for the winner reveal. Shared by the
+// pick-winner flow AND a first-load fire, so arriving at the winner
+// screen directly (e.g. from the Platform Map) still celebrates.
+// Gold confetti — same rich gold shades as the participant winner
+// screen (the `accent` arg is no longer used, kept for call-site compat).
+function burstWinnerConfetti(accent) {
+  const burst = (opts) => confetti({
+    particleCount: 80,
+    startVelocity: 55,
+    spread: 70,
+    ticks: 220,
+    scalar: 0.9,
+    colors: ['#f4c64b', '#e8b923', '#d4a017', '#c99700'],
+    ...opts,
+  });
+  burst({ origin: { x: 0.1, y: 0.9 }, angle: 60 });
+  burst({ origin: { x: 0.9, y: 0.9 }, angle: 120 });
+}
+
 // Three one-word stages that mirror the real contest lifecycle.
 // URL ?phase= drives the view in demo (mock) mode. The "winner" stage
 // has two sub-states: pre-pick (CTA to pick) and post-pick (celebration).
@@ -127,16 +146,25 @@ export default function ContestManage() {
   // demo. In production this would come from setup.winner.
   const winnerNameId = searchParams.get('winner') || setup.winner?.nameId || null;
   const isWinnerPicked = phase === 'winner' && !!winnerNameId;
+  // Per-contest live dataset — derived from THIS contest's own
+  // submissions (not a shared football set), with vote counts gated by
+  // phase (zero/hidden during the submission window).
+  const liveData = useMemo(
+    () => buildLiveData(mockContest, phase),
+    [mockContest, phase]
+  );
+  const getLiveParticipantById = (pid) =>
+    liveData.participants.find((p) => p.id === pid) || null;
   // Resolve winner data (only meaningful when isWinnerPicked).
   const winnerName = isWinnerPicked
-    ? MOCK_NAMES.find((n) => n.id === winnerNameId)
+    ? liveData.names.find((n) => n.id === winnerNameId)
     : null;
   const winnerSubmitter = winnerName
-    ? getParticipantById(winnerName.submittedBy)
+    ? getLiveParticipantById(winnerName.submittedBy)
     : null;
   // Runners-up: top 5 names that AREN'T the winner, sorted by votes.
   const runnersUp = isWinnerPicked
-    ? [...MOCK_NAMES]
+    ? [...liveData.names]
         .filter((n) => n.id !== winnerNameId)
         .sort((a, b) => b.voteCount - a.voteCount)
         .slice(0, 5)
@@ -158,6 +186,25 @@ export default function ContestManage() {
   // and participant pills so the segment's identity color carries through.
   const segmentTone = getSegmentTone(subId);
 
+  // Fire the confetti burst the first time the page is in the
+  // winner-picked state — covers BOTH crowning a winner in-session and
+  // landing on the winner screen directly (e.g. from the Platform Map),
+  // where the pick-winner modal's burst never runs. Ref-guarded so it
+  // only celebrates once per mount.
+  const winnerConfettiFired = useRef(false);
+  useEffect(() => {
+    if (!isWinnerPicked || !winnerName) return;
+    if (winnerConfettiFired.current) return;
+    // Mark fired INSIDE the timeout (not before) so StrictMode's
+    // mount→cleanup→remount in dev doesn't cancel the only scheduled
+    // burst and then skip rescheduling.
+    const t = setTimeout(() => {
+      winnerConfettiFired.current = true;
+      burstWinnerConfetti(segmentTone.fg);
+    }, 420);
+    return () => clearTimeout(t);
+  }, [isWinnerPicked, winnerName, segmentTone.fg]);
+
   // Brief + settings answers (for the recap collapser)
   const briefQuestions = BRIEF_QUESTIONS[subId]?.questions || [];
   const briefAnswers = setup.brief || {};
@@ -171,7 +218,11 @@ export default function ContestManage() {
   const votingDays = settingsAnswers.votingDays || 3;
 
   const [copied, setCopied] = useState(false);
-  const [pickWinnerOpen, setPickWinnerOpen] = useState(false);
+  // ?pick=1 (from the platform map) auto-opens the pick-winner modal so
+  // that flow step lands directly on the modal.
+  const [pickWinnerOpen, setPickWinnerOpen] = useState(
+    () => searchParams.get('pick') === '1'
+  );
   // Winner-card customization (only meaningful on winner-picked state).
   // Color & logo override the defaults on WinnerHero so the creator can
   // brand the share card. hideBranding strips the NamingContest marks.
@@ -184,17 +235,12 @@ export default function ContestManage() {
   const winnerHeroRef = useRef(null);
   // Ref to the hidden PdfReport DOM node — used by the PDF export.
   const pdfReportRef = useRef(null);
-  // Hardcoded simulated stats — currently showing VOTING-phase state
-  // so we can see how the page reads when the contest is mid-voting.
-  // When backend is wired, replace this with realtime data + auto-switch
-  // tile labels based on actual phase.
-  const [stats] = useState({
-    submissions: 47,
-    participants: 23,
-    votes: 89,
-    lastActivity: '32 sec ago',
-    leadingName: 'Lighthouse',
-  });
+  // Stats derived from the live dataset so they match the names shown
+  // (and the segment). lastActivity is cosmetic flavour.
+  const stats = useMemo(
+    () => ({ ...liveData.stats, lastActivity: '32 sec ago' }),
+    [liveData]
+  );
 
   // Edit modal state
   const [editingQuestion, setEditingQuestion] = useState(null);  // {question, section}
@@ -644,7 +690,7 @@ export default function ContestManage() {
                   </header>
                   <ul className="v4-winner-runners-list">
                     {runnersUp.map((n, i) => {
-                      const sub = getParticipantById(n.submittedBy);
+                      const sub = getLiveParticipantById(n.submittedBy);
                       return (
                         <li key={n.id} className="v4-winner-runners-row">
                           <span className="v4-winner-runners-rank">#{i + 2}</span>
@@ -668,7 +714,12 @@ export default function ContestManage() {
                 an empty state until backend submissions are wired.
                 Hidden when a winner has been picked. */}
             {!isWinnerPicked && (
-              <LiveResults tone={segmentTone} isMock={!!mockContest} />
+              <LiveResults
+                tone={segmentTone}
+                names={liveData.names}
+                participants={liveData.participants}
+                phase={phase}
+              />
             )}
 
             {/* ── Share card (PRIMARY action) — hidden when winner
@@ -746,9 +797,11 @@ export default function ContestManage() {
                 </div>
                 <span className="v4-manage-share-meta-bold">
                   {(() => {
-                    const featured = PARTICIPANTS.slice(0, 3).map((p) => p.name);
-                    const remaining = stats.participants - featured.length;
-                    return `${featured.join(', ')} and ${remaining} others joined`;
+                    const featured = liveData.participants.slice(0, 3).map((p) => p.name);
+                    const remaining = Math.max(0, stats.participants - featured.length);
+                    return remaining > 0
+                      ? `${featured.join(', ')} and ${remaining} others joined`
+                      : `${featured.join(', ')} joined`;
                   })()}
                 </span>
               </div>
@@ -979,7 +1032,7 @@ export default function ContestManage() {
             winner={winnerName}
             submitter={winnerSubmitter}
             prize={liveSettingsAnswers.submitterPrize}
-            names={MOCK_NAMES}
+            names={liveData.names}
             stats={stats}
             durationDays={submissionDays + votingDays}
             hideBranding={hideBranding}
@@ -993,6 +1046,8 @@ export default function ContestManage() {
           onClose={() => setPickWinnerOpen(false)}
           tone={segmentTone}
           prize={liveSettingsAnswers.submitterPrize}
+          names={liveData.names}
+          participants={liveData.participants}
           onConfirm={(nameId) => {
             // Close the modal first so the celebration is unobstructed,
             // then flip the URL into the picked sub-state. ContestManage
@@ -1010,23 +1065,10 @@ export default function ContestManage() {
               params.set('phase', 'winner');
               params.set('winner', nameId);
               setSearchParams(params, { replace: true });
-              // Ensure we're at top after the re-render lands too.
+              // Ensure we're at top after the re-render lands too. The
+              // confetti burst itself is fired by the winner-state effect
+              // above (so it also runs when arriving from the map).
               scroller?.scrollTo({ top: 0, behavior: 'smooth' });
-              // Confetti burst from both bottom corners — fires after
-              // the new hero starts animating in.
-              setTimeout(() => {
-                const burst = (opts) => confetti({
-                  particleCount: 80,
-                  startVelocity: 55,
-                  spread: 70,
-                  ticks: 220,
-                  scalar: 0.9,
-                  colors: ['#fadecc', '#fceebc', '#a6dcb3', '#c4dffb', '#c4cff5', segmentTone.fg],
-                  ...opts,
-                });
-                burst({ origin: { x: 0.1, y: 0.9 }, angle: 60 });
-                burst({ origin: { x: 0.9, y: 0.9 }, angle: 120 });
-              }, 350);
             }, 250);
           }}
         />

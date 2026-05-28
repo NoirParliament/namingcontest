@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import personalDog from '../assets/personal-dog.png';
 import teamPlayers from '../assets/team-players.png';
 import businessWoman from '../assets/business-woman.png';
@@ -25,16 +25,50 @@ const Star = () => <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.
 const Check = () => <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M3 8.5l3 3 7-7.5"/></svg>;
 
 /* ========== NAV ========== */
-function Nav() {
+export function Nav() {
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [signinOpen, setSigninOpen] = useState(false);
+  // ?signin=creator|participant (from the platform map) auto-opens the
+  // sign-in modal in that mode so those flow steps land directly on it.
+  const [signinMode, setSigninMode] = useState('creator');
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const s = params.get('signin');
+    if (s === 'creator' || s === 'participant') {
+      setSigninMode(s);
+      setSigninOpen(true);
+    }
+  }, []);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // Logo + section links are context-aware: on the landing page they
+  // smooth-scroll to the target section; from any other page (e.g. the
+  // legal pages) they first route home, then scroll once it mounts.
+  const onLanding = () =>
+    typeof window !== 'undefined' && window.location.pathname === '/';
+  const goHome = (e) => {
+    e.preventDefault();
+    if (onLanding()) window.scrollTo({ top: 0, behavior: 'smooth' });
+    else navigate('/');
+  };
+  const goToSection = (id) => (e) => {
+    e.preventDefault();
+    if (onLanding()) {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      navigate('/');
+      setTimeout(
+        () => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }),
+        140
+      );
+    }
+  };
 
   // If the visitor already has a saved v4 setup (returning user with
   // an active or in-progress contest), swap the "Sign In" link for
@@ -58,13 +92,13 @@ function Nav() {
     <>
       <div className="nav-row">
         <nav className={`nav-pill${scrolled ? ' is-scrolled' : ''}`} aria-label="Primary">
-          <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="brand-mark">
+          <a href="/" onClick={goHome} className="brand-mark">
             <img src={namingContestLogo} alt="NamingContest" className="brand-logo" />
           </a>
           <div className="links">
-            <a href="#pricing">Pricing</a>
-            <a href="#how">How it works</a>
-            <a href="#testimonials">Testimonials</a>
+            <a href="/#pricing" onClick={goToSection('pricing')}>Pricing</a>
+            <a href="/#how" onClick={goToSection('how')}>How it works</a>
+            <a href="/#testimonials" onClick={goToSection('testimonials')}>Testimonials</a>
           </div>
           <div className="nav-actions">
             {isAuthed ? (
@@ -97,7 +131,7 @@ function Nav() {
         </nav>
       </div>
 
-      <SignInModal open={signinOpen} onClose={() => setSigninOpen(false)} />
+      <SignInModal open={signinOpen} initialMode={signinMode} onClose={() => setSigninOpen(false)} />
     </>
   );
 }
@@ -787,7 +821,17 @@ function ClosingCTA({ onStart }) {
 }
 
 /* ========== FOOTER ========== */
-function Footer() {
+export function Footer() {
+  // Highlight the active legal page in the footer (continuing the
+  // "you are here" visual language used by the nav + journey steps).
+  const { pathname } = useLocation();
+  const legalLink = (to, label) => (
+    <li>
+      <Link to={to} className={pathname === to ? 'is-active' : undefined}>
+        {label}
+      </Link>
+    </li>
+  );
   return (
     <footer className="footer">
       <div className="footer-grid">
@@ -819,7 +863,7 @@ function Footer() {
         <div>
           <h6>Resources</h6>
           <ul>
-            <li><a href="#" onClick={(e) => e.preventDefault()}>Catchword Branding</a></li>
+            <li><a href="https://catchwordbranding.com/" target="_blank" rel="noopener noreferrer">Catchword Branding</a></li>
             <li><a href="#" onClick={(e) => e.preventDefault()}>Help center</a></li>
             <li><a href="#" onClick={(e) => e.preventDefault()}>Contact us</a></li>
           </ul>
@@ -827,9 +871,9 @@ function Footer() {
         <div>
           <h6>Legal</h6>
           <ul>
-            <li><a href="#" onClick={(e) => e.preventDefault()}>Privacy policy</a></li>
-            <li><a href="#" onClick={(e) => e.preventDefault()}>Terms of service</a></li>
-            <li><a href="#" onClick={(e) => e.preventDefault()}>Cookie policy</a></li>
+            {legalLink('/privacy', 'Privacy policy')}
+            {legalLink('/terms', 'Terms of service')}
+            {legalLink('/cookies', 'Cookie policy')}
           </ul>
         </div>
       </div>

@@ -90,10 +90,10 @@ function applyParticipantSignIn(email) {
   return '/v4/settings';
 }
 
-export default function SignInModal({ open, onClose }) {
+export default function SignInModal({ open, onClose, initialMode = 'creator' }) {
   const [email, setEmail] = useState('');
   const [phase, setPhase] = useState('input'); // 'input' | 'sent' | 'success'
-  const [mode, setMode] = useState('creator'); // 'creator' | 'participant'
+  const [mode, setMode] = useState(initialMode); // 'creator' | 'participant'
   const [submitting, setSubmitting] = useState(false);
   const inputRef = useRef(null);
   const navigate = useNavigate();
@@ -102,7 +102,7 @@ export default function SignInModal({ open, onClose }) {
   useEffect(() => {
     if (!open) return;
     setPhase('input');
-    setMode('creator');
+    setMode(initialMode);
     setSubmitting(false);
     setEmail(readSetup().userEmail || '');
     const t = setTimeout(() => inputRef.current?.focus(), 80);
@@ -112,7 +112,7 @@ export default function SignInModal({ open, onClose }) {
       clearTimeout(t);
       document.removeEventListener('keydown', onKey);
     };
-  }, [open, onClose]);
+  }, [open, onClose, initialMode]);
 
   if (!open) return null;
 

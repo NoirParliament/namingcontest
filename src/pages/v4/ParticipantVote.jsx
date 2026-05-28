@@ -29,7 +29,6 @@ import { readSetup, getQuestionsFor } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
 import { readParticipation, recordVotes } from '../../utils/v4Participant';
 import AvatarMenu from '../../components/v4/AvatarMenu';
-import celebrate from '../../utils/celebrate';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -204,7 +203,6 @@ export default function ParticipantVote() {
   const handleSubmitVotes = () => {
     if (selectedIds.length === 0) return;
     recordVotes(contestId, selectedIds);
-    celebrate(tone);
     navigate(`/v4/contest/${contestId}/vote-thanks`, { replace: true });
   };
 

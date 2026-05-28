@@ -140,8 +140,8 @@ export function getParticipantRow(contest, participation) {
       description: contest.winnerName
         ? `Winner picked: "${contest.winnerName}"`
         : 'Winner picked',
-      actionLabel: 'See results',
-      actionRoute: `/v4/contest/${contest.id}/thanks`,
+      actionLabel: 'See who won',
+      actionRoute: `/v4/contest/${contest.id}/winner`,
     };
   }
 

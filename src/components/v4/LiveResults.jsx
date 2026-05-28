@@ -1,28 +1,43 @@
-// V4 Live Results panel — main results surface during voting phase.
-// Two views (Names / Participants), search box, click any row to expand
-// and see the submitter's rationale (Names) or what they submitted /
-// voted on (Participants). Names are always sorted by vote count.
+// V4 Live Results panel — the main results surface on the creator
+// dashboard. Two views (Names / Participants), search box, click any row
+// to expand and see the submitter's rationale (Names) or what they
+// submitted (Participants).
+//
+// Data is passed in per-contest (derived from the contest's OWN
+// allSubmissions via buildLiveData) so every segment shows ITS names,
+// not a shared set. Vote counts only appear once the contest is past
+// the submission phase — during submissions we show names + recency
+// only, since no one has voted yet.
 
 import { useState, useMemo, useRef, useEffect } from 'react';
 import {
   CaretDown, CaretRight, MagnifyingGlass,
 } from '@phosphor-icons/react';
-import {
-  NAMES, PARTICIPANTS, getParticipantById, getParticipantStats,
-} from '../../data/v4/mockContestData';
+import { participantStatsFrom } from '../../utils/v4LiveData';
 
 const COLLAPSED_COUNT = 5;
 
-// Tone is driven by the contest's sub-segment (passed from ContestManage
-// via getSegmentTone). Keeps participant avatars + accents cohesive with
-// the rest of the page rather than a random rainbow.
 const FALLBACK_TONE = { bg: '#fadecc', fg: '#9c4818' };
 
-export default function LiveResults({ tone = FALLBACK_TONE, isMock = false }) {
+export default function LiveResults({
+  tone = FALLBACK_TONE,
+  names = [],
+  participants = [],
+  phase = 'voting',
+}) {
   const [view, setView] = useState('names');     // 'names' | 'participants'
   const [search, setSearch] = useState('');
   const [expandedId, setExpandedId] = useState(null);
   const [showAll, setShowAll] = useState(false);
+
+  const showVotes = phase !== 'submission';
+  const totalVotes = useMemo(
+    () => names.reduce((sum, n) => sum + (n.voteCount || 0), 0),
+    [names]
+  );
+
+  const getParticipantById = (id) =>
+    participants.find((p) => p.id === id) || { name: 'Someone', initials: '··' };
 
   const handleViewChange = (newView) => {
     setView(newView);
@@ -31,11 +46,9 @@ export default function LiveResults({ tone = FALLBACK_TONE, isMock = false }) {
     setShowAll(false);
   };
 
-  // For real (user-launched) contests we don't have submissions wired
-  // yet — show a charming empty state instead of pretending. The
-  // football mock data only renders for the demo "Sunday football crew"
-  // contest (where isMock=true).
-  if (!isMock) {
+  // No submissions yet (real user contest before backend is wired) —
+  // a charming empty state instead of pretending.
+  if (names.length === 0) {
     return (
       <section className="v4-results">
         <div className="v4-results-head">
@@ -63,7 +76,9 @@ export default function LiveResults({ tone = FALLBACK_TONE, isMock = false }) {
         <div>
           <div className="v4-results-eyebrow">Live results</div>
           <div className="v4-results-stats">
-            {NAMES.length} names · {PARTICIPANTS.length} voters · 89 votes
+            {showVotes
+              ? `${names.length} names · ${participants.length} voters · ${totalVotes} votes`
+              : `${names.length} names submitted · ${participants.length} people`}
           </div>
         </div>
 
@@ -107,6 +122,9 @@ export default function LiveResults({ tone = FALLBACK_TONE, isMock = false }) {
       {/* List */}
       {view === 'names' ? (
         <NamesList
+          names={names}
+          getParticipantById={getParticipantById}
+          showVotes={showVotes}
           search={search}
           expandedId={expandedId}
           onToggle={(id) => setExpandedId(expandedId === id ? null : id)}
@@ -117,6 +135,9 @@ export default function LiveResults({ tone = FALLBACK_TONE, isMock = false }) {
         />
       ) : (
         <ParticipantsList
+          names={names}
+          participants={participants}
+          showVotes={showVotes}
           search={search}
           expandedId={expandedId}
           onToggle={(id) => setExpandedId(expandedId === id ? null : id)}
@@ -130,30 +151,30 @@ export default function LiveResults({ tone = FALLBACK_TONE, isMock = false }) {
   );
 }
 
-// Scroll trapping is handled by CSS `overscroll-behavior: contain` on
-// .v4-results-scroller.is-scrolling — once the inner list hits its
-// top/bottom, scroll won't bleed to the page. Native wheel handling
-// stays in charge, so the feel matches the rest of the page.
-
 // ── NAMES VIEW ──────────────────────────────────────────────────────
-function NamesList({ search, expandedId, onToggle, showAll, collapsedCount, onShowAllChange, tone }) {
+function NamesList({
+  names, getParticipantById, showVotes, search, expandedId, onToggle,
+  showAll, collapsedCount, onShowAllChange, tone,
+}) {
   const scrollerRef = useRef(null);
   const expandedRowRef = useRef(null);
 
-  // Always sorted by vote count (top voted first)
+  // Past submission: rank by votes. During submission: keep submission
+  // order (most recent first), which is how the list arrives.
   const filtered = useMemo(() => {
-    let list = NAMES;
+    let list = names;
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter((n) => n.text.toLowerCase().includes(q));
     }
-    list = [...list].sort((a, b) => b.voteCount - a.voteCount);
+    if (showVotes) {
+      list = [...list].sort((a, b) => b.voteCount - a.voteCount);
+    }
     return list;
-  }, [search]);
+  }, [names, search, showVotes]);
 
   const isScrolling = showAll && filtered.length > collapsedCount;
 
-  // When a row expands inside the scroller, scroll it into view
   useEffect(() => {
     if (showAll && expandedId && expandedRowRef.current && scrollerRef.current) {
       expandedRowRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -176,22 +197,23 @@ function NamesList({ search, expandedId, onToggle, showAll, collapsedCount, onSh
           {visible.map((name, i) => {
             const submitter = getParticipantById(name.submittedBy);
             const isExpanded = expandedId === name.id;
-            // Top 3 get a fading wash of the segment tone — strongest at
-            // rank 1, lightest at rank 3, none from rank 4 onward.
-            const tintAlphas = ['CC', '66', '26']; // ~80% / ~40% / ~15%
-            const rowTint = i < 3
+            // Top-3 segment wash ONLY during voting — that's when a
+            // ranking exists. In the submission phase every name is
+            // equal (no votes yet), so rows stay plain white.
+            const tintAlphas = ['CC', '66', '26'];
+            const rowTint = showVotes && i < 3
               ? { background: `${tone.bg}${tintAlphas[i]}` }
               : undefined;
             return (
               <li
                 key={name.id}
                 ref={isExpanded ? expandedRowRef : null}
-                className={`v4-results-row ${isExpanded ? 'is-expanded' : ''} ${i < 3 ? `v4-results-row-tier-${i + 1}` : ''}`}
+                className={`v4-results-row ${isExpanded ? 'is-expanded' : ''} ${showVotes && i < 3 ? `v4-results-row-tier-${i + 1}` : ''}`}
                 style={rowTint}
               >
                 <button
                   type="button"
-                  className="v4-results-row-trigger"
+                  className={`v4-results-row-trigger ${showVotes ? '' : 'is-novotes'}`}
                   onClick={() => onToggle(name.id)}
                 >
                   <div className="v4-results-rank">#{i + 1}</div>
@@ -202,19 +224,21 @@ function NamesList({ search, expandedId, onToggle, showAll, collapsedCount, onSh
                       {' · '}{name.submittedAgo}
                     </div>
                   </div>
-                  <div className="v4-results-votes">
-                    <div className="v4-results-votes-value">{name.voteCount}</div>
-                    <div className="v4-results-votes-label">
-                      {name.voteCount === 1 ? 'vote' : 'votes'}
+                  {showVotes && (
+                    <div className="v4-results-votes">
+                      <div className="v4-results-votes-value">{name.voteCount}</div>
+                      <div className="v4-results-votes-label">
+                        {name.voteCount === 1 ? 'vote' : 'votes'}
+                      </div>
                     </div>
-                  </div>
+                  )}
                   <span className="v4-results-caret" aria-hidden="true">
                     {isExpanded ? <CaretDown size={14} weight="bold" /> : <CaretRight size={14} weight="bold" />}
                   </span>
                 </button>
                 {isExpanded && (
                   <div className="v4-results-row-body">
-                    <NameDetail name={name} submitter={submitter} tone={tone} />
+                    <NameDetail name={name} submitter={submitter} tone={tone} showVotes={showVotes} />
                   </div>
                 )}
               </li>
@@ -236,12 +260,7 @@ function NamesList({ search, expandedId, onToggle, showAll, collapsedCount, onSh
 }
 
 // ── NAME DETAIL — submitter rationale shown on row expand ───────────
-// Same visual shape as before (italic quote at top + dl below + pill
-// at the bottom), but every slot is now backed by a REAL submission
-// field. No more invented taglines / descriptions / inspirations.
-function NameDetail({ name, submitter, tone }) {
-  // Punchy quote = the first sentence of whyItFits (real content,
-  // just truncated for the pull-quote treatment).
+function NameDetail({ name, submitter, tone, showVotes }) {
   const firstSentence = name.whyItFits
     ? (name.whyItFits.match(/[^.!?]+[.!?]/)?.[0] || name.whyItFits).trim()
     : null;
@@ -263,7 +282,7 @@ function NameDetail({ name, submitter, tone }) {
             <dd>{name.submittedAgo}</dd>
           </div>
         )}
-        {typeof name.voteCount === 'number' && (
+        {showVotes && typeof name.voteCount === 'number' && (
           <div className="v4-name-detail-field">
             <dt>Current votes</dt>
             <dd>{name.voteCount} {name.voteCount === 1 ? 'vote' : 'votes'}</dd>
@@ -284,21 +303,24 @@ function NameDetail({ name, submitter, tone }) {
 }
 
 // ── PARTICIPANTS VIEW ───────────────────────────────────────────────
-function ParticipantsList({ search, expandedId, onToggle, showAll, collapsedCount, onShowAllChange, tone }) {
+function ParticipantsList({
+  names, participants, showVotes, search, expandedId, onToggle,
+  showAll, collapsedCount, onShowAllChange, tone,
+}) {
   const scrollerRef = useRef(null);
   const expandedRowRef = useRef(null);
 
-  // Always sorted by submitted count (most active first)
+  // Sorted by submitted count (most active first).
   const filtered = useMemo(() => {
-    let list = PARTICIPANTS;
+    let list = participants;
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter((p) => p.name.toLowerCase().includes(q));
     }
-    list = list.map((p) => ({ ...p, stats: getParticipantStats(p.id) }));
+    list = list.map((p) => ({ ...p, stats: participantStatsFrom(names, p) }));
     list.sort((a, b) => b.stats.submittedCount - a.stats.submittedCount);
     return list;
-  }, [search]);
+  }, [participants, names, search]);
 
   const isScrolling = showAll && filtered.length > collapsedCount;
 
@@ -344,7 +366,9 @@ function ParticipantsList({ search, expandedId, onToggle, showAll, collapsedCoun
                   <div className="v4-results-name">
                     <div className="v4-results-name-text">{p.name}</div>
                     <div className="v4-results-name-meta">
-                      Submitted {p.stats.submittedCount} · Voted on {p.stats.votedOnCount}
+                      {showVotes
+                        ? `Submitted ${p.stats.submittedCount} · Voted on ${p.stats.votedOnCount}`
+                        : `Submitted ${p.stats.submittedCount}`}
                     </div>
                   </div>
                   <span className="v4-results-caret" aria-hidden="true">
@@ -362,16 +386,18 @@ function ParticipantsList({ search, expandedId, onToggle, showAll, collapsedCoun
                           {p.stats.submittedNames.map((name) => (
                             <li key={name.id} className="v4-results-sub-row">
                               <span className="v4-results-sub-name">{name.text}</span>
-                              <span className="v4-results-sub-votes">
-                                {name.voteCount} {name.voteCount === 1 ? 'vote' : 'votes'}
-                              </span>
+                              {showVotes && (
+                                <span className="v4-results-sub-votes">
+                                  {name.voteCount} {name.voteCount === 1 ? 'vote' : 'votes'}
+                                </span>
+                              )}
                             </li>
                           ))}
                         </ul>
                       </>
                     ) : (
                       <div className="v4-results-sub-empty">
-                        {p.name} hasn't submitted any names — but voted on {p.stats.votedOnCount}.
+                        {p.name} hasn't submitted any names yet.
                       </div>
                     )}
                   </div>

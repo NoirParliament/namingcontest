@@ -93,13 +93,21 @@ const MOCK_CLOSED = [
 export default function Settings() {
   const navigate = useNavigate();
   const setup = readSetup();
-  // subId follows whichever contest is showing as the colored "current"
-  // card — the user's real one if they have it, the mock sports one
-  // otherwise. This keeps the SegmentThemeBackdrop + accent colors in
-  // sync with the contest the user is looking at.
-  const subId = setup.subSegmentId || MOCK_ONGOING.subSegmentId;
+  // Every contest the user has joined (most-recent first) — read up here
+  // so the page background can follow a participant's joined contest.
+  const participations = useMemo(() => readAllParticipations(), []);
+  // The SegmentThemeBackdrop + accent follow, in priority order:
+  //   1. the user's own launched contest (creator), else
+  //   2. the contest they most recently joined (participant), else
+  //   3. the mock ongoing contest (demo fallback).
+  // Without (2) a participant who joined e.g. a baby contest would get
+  // the football mock's green wash — info right, background wrong.
+  const primaryJoined = participations[0]
+    ? getMockContestById(participations[0].contestId)
+    : null;
+  const subId = setup.subSegmentId || primaryJoined?.subSegmentId || MOCK_ONGOING.subSegmentId;
   const segmentTone = getSegmentTone(subId);
-  const tierKey = setup.group || MOCK_ONGOING.tierKey;
+  const tierKey = setup.group || primaryJoined?.group || MOCK_ONGOING.tierKey;
 
   // Account form state — photo + name + email, persisted to setup blob.
   const [photo, setPhoto] = useState(setup.userPhoto || null);
@@ -166,7 +174,6 @@ export default function Settings() {
   // they were invited to. The "Contests you've joined" section reads
   // every v4_participant_* localStorage entry and pairs each with the
   // referenced contest's current phase to derive a row.
-  const participations = useMemo(() => readAllParticipations(), []);
   const joinedRows = participations.map((p) => {
     const mock = getMockContestById(p.contestId);
     // Build a minimal contest descriptor for the row helper.
