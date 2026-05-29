@@ -20,6 +20,7 @@ import {
 } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import heroProfile1 from '../../assets/hero-profile-1.png';
+import creatorProfile from '../../assets/creator-profile.png';
 import heroProfile2 from '../../assets/hero-profile-2.png';
 import heroProfile4 from '../../assets/hero-profile-4.png';
 import {
@@ -307,7 +308,7 @@ export default function ContestManage() {
               <AvatarMenu
                 email={setup.userEmail}
                 name={setup.userName}
-                photo={setup.userPhoto}
+                photo={creatorProfile}
                 tone={segmentTone}
                 activeContest={
                   setup.contestId

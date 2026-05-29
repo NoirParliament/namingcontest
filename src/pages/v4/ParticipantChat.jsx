@@ -24,7 +24,7 @@ import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 // Default participant avatar. hero-profile-5 reads as a woman in the
 // illustration set — keeps the participant identity distinct from the
 // creator side's default (heroProfile1) and Marcus the inviter (profile-4).
-import heroProfile3 from '../../assets/hero-profile-3.png';
+import participantProfile from '../../assets/participant-profile.png';
 import { getMockContestById } from '../../data/v4/mockContests';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
 import { readSetup } from '../../utils/v4Brief';
@@ -411,8 +411,7 @@ export default function ParticipantChat() {
               <AvatarMenu
                 email={userEmail}
                 name={userName}
-                photo={userPhoto}
-                defaultPhoto={heroProfile3}
+                photo={participantProfile}
                 tone={tone}
                 activeContest={{
                   id: contest.id,

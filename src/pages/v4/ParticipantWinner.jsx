@@ -19,7 +19,7 @@ import { useParams, Link, Navigate } from 'react-router-dom';
 import { Trophy } from '@phosphor-icons/react';
 import confetti from 'canvas-confetti';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
-import heroProfile3 from '../../assets/hero-profile-3.png';
+import participantProfile from '../../assets/participant-profile.png';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import { getMockContestById } from '../../data/v4/mockContests';
 import { getSegmentTone, SEGMENT_THEME } from '../../data/v4/segmentTheme';
@@ -174,8 +174,7 @@ export default function ParticipantWinner() {
               <AvatarMenu
                 email={userEmail}
                 name={userName}
-                photo={userPhoto}
-                defaultPhoto={heroProfile3}
+                photo={participantProfile}
                 tone={tone}
                 activeContest={{
                   id: contest.id,

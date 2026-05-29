@@ -19,6 +19,7 @@ import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import heroProfile1 from '../../assets/hero-profile-1.png';
 import heroProfile2 from '../../assets/hero-profile-2.png';
 import heroProfile3 from '../../assets/hero-profile-3.png';
+import participantProfile from '../../assets/participant-profile.png';
 import heroProfile4 from '../../assets/hero-profile-4.png';
 import heroProfile5 from '../../assets/hero-profile-5.png';
 import heroProfile6 from '../../assets/hero-profile-6.png';
@@ -150,8 +151,7 @@ export default function ParticipantThanks() {
               <AvatarMenu
                 email={userEmail}
                 name={userName}
-                photo={userPhoto}
-                defaultPhoto={heroProfile3}
+                photo={participantProfile}
                 tone={tone}
                 activeContest={{
                   id: contest.id,

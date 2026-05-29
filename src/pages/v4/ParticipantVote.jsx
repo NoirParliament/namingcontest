@@ -22,7 +22,7 @@ import {
   MagnifyingGlass, ArrowsDownUp, CheckCircle, X, PaperPlaneTilt,
 } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
-import heroProfile3 from '../../assets/hero-profile-3.png';
+import participantProfile from '../../assets/participant-profile.png';
 import { getMockContestById } from '../../data/v4/mockContests';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
 import { readSetup, getQuestionsFor } from '../../utils/v4Brief';
@@ -232,8 +232,7 @@ export default function ParticipantVote() {
               <AvatarMenu
                 email={userEmail}
                 name={userName}
-                photo={userPhoto}
-                defaultPhoto={heroProfile3}
+                photo={participantProfile}
                 tone={tone}
                 activeContest={{
                   id: contest.id,

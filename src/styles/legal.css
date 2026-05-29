@@ -8,8 +8,19 @@
 .legal-page .legal-main {
   max-width: 760px;
   margin: 0 auto;
-  /* Generous top gap below the floating pill nav. */
-  padding: 88px 24px 88px;
+  /* Top gap below the floating pill nav; the footer's own margin-top (120px)
+     provides the bottom gap — matching the homepage (no extra bottom padding). */
+  padding: 88px 24px 0;
+}
+/* Eyebrow — matches the site-wide .eyebrow used on every other section. */
+.legal-page .legal-eyebrow {
+  font-family: var(--font-text, 'Inter', system-ui, sans-serif);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: var(--tr-widest, 0.10em);
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin: 0 0 16px;
 }
 .legal-page .legal-title {
   font-family: var(--font-display, 'Fraunces', Georgia, serif);
@@ -24,17 +35,17 @@
 .legal-page .legal-updated {
   font-family: var(--font-text, 'Inter', system-ui, sans-serif);
   font-size: 13.5px;
-  color: var(--fg, #030302);
-  opacity: 0.55;
+  color: var(--fg-muted);
   margin: 0 0 36px;
 }
 
-/* ── Body typography ── */
+/* ── Body typography — muted reading colour (matches FAQ / lede tone),
+   headings + emphasis stay full ink. ── */
 .legal-page .legal-body {
   font-family: var(--font-text, 'Inter', system-ui, sans-serif);
   font-size: 15.5px;
   line-height: 1.7;
-  color: var(--fg, #030302);
+  color: var(--fg-faint);
 }
 .legal-page .legal-body h2 {
   font-family: var(--font-display, 'Fraunces', Georgia, serif);
@@ -69,11 +80,11 @@
 }
 .legal-page .legal-body strong {
   font-weight: 700;
+  color: var(--fg);
 }
 .legal-page .legal-body .legal-lede {
   font-size: 17px;
   line-height: 1.6;
-  opacity: 0.85;
   margin-bottom: 28px;
 }
 .legal-page .legal-body .legal-defn {
@@ -140,5 +151,5 @@
 @media (max-width: 560px) {
   .legal-page .legal-title { font-size: 40px; }
   .legal-page .legal-body h2 { font-size: 20px; }
-  .legal-page .legal-main { padding: 60px 20px 56px; }
+  .legal-page .legal-main { padding: 60px 20px 0; }
 }

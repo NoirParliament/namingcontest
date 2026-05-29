@@ -12,7 +12,9 @@ import heroProfile3 from '../assets/hero-profile-3.png';
 import heroProfile4 from '../assets/hero-profile-4.png';
 import heroProfile5 from '../assets/hero-profile-5.png';
 import heroProfile6 from '../assets/hero-profile-6.png';
+import creatorProfile from '../assets/creator-profile.png';
 import namingContestLogo from '../assets/namingcontestlogo-cropped.svg';
+import namingContestLogoWhite from '../assets/namingcontestlogo-white.svg';
 import '../styles/landing-v3.css';
 import '../styles/v4.css';
 import { readSetup } from '../utils/v4Brief';
@@ -105,7 +107,7 @@ export function Nav() {
               <AvatarMenu
                 email={setup.userEmail}
                 name={setup.userName}
-                photo={setup.userPhoto}
+                photo={creatorProfile}
                 tone={segmentTone}
                 activeContest={activeContest}
               />
@@ -441,7 +443,7 @@ function Offerings({ onStart }) {
       cta: 'Start a personal contest',
       img: personalDog,
       pillA: { text: 'Olly', meta: '8 votes', color: '#b25620', icon: <path d="M8 14s-5-3.2-5-7a3 3 0 0 1 5-2 3 3 0 0 1 5 2c0 3.8-5 7-5 7z" /> },
-      pillB: { text: 'Closes Sunday', color: '#b25620', icon: <><circle cx="8" cy="8" r="6" /><path d="M8 4v4l2.5 1.5" /></> },
+      pillB: { text: 'Closes', meta: 'Sunday', color: '#b25620', icon: <><circle cx="8" cy="8" r="6" /><path d="M8 4v4l2.5 1.5" /></> },
     },
     {
       tier: 'team',
@@ -451,7 +453,7 @@ function Offerings({ onStart }) {
       price: '$29',
       cta: 'Start a group contest',
       img: teamPlayers,
-      pillA: { text: '23 names in', color: '#4b68c3', icon: <><path d="M3 4h10M3 8h10M3 12h6" /></> },
+      pillA: { text: '23', meta: 'names in', color: '#4b68c3', icon: <><path d="M3 4h10M3 8h10M3 12h6" /></> },
       pillB: { text: 'Riverside FC', meta: '49 voted', color: '#4b68c3', icon: <><path d="M3 12V5l5-2 5 2v7" /><path d="M3 12h10" /></> },
     },
     {
@@ -462,7 +464,7 @@ function Offerings({ onStart }) {
       price: '$89',
       cta: 'Start a business contest',
       img: businessWoman,
-      pillA: { text: 'Quality', meta: '92/100', color: '#3f8850', icon: <><circle cx="8" cy="8" r="6" /><path d="M5 8l2 2 4-4" /></> },
+      pillA: { text: 'Name by', meta: 'Maya', color: '#3f8850', icon: <><circle cx="8" cy="6" r="2.5" /><path d="M3.5 13.5a4.5 4.5 0 0 1 9 0" /></> },
       pillB: { text: 'Winner', meta: 'EvoPay', color: '#3f8850', icon: <><path d="M5 3h6v3a3 3 0 0 1-6 0V3z" /><path d="M3 4v1a2 2 0 0 0 2 2M13 4v1a2 2 0 0 1-2 2" /><path d="M8 9v3M5 12h6" /></> },
     },
   ];
@@ -494,13 +496,13 @@ function Offerings({ onStart }) {
                 {t.pillA.dot ? <span className="dot"></span> : (
                   <span className="ic"><svg viewBox="0 0 16 16" fill="none" stroke={t.pillA.color} strokeWidth="1.6" strokeLinecap="round">{t.pillA.icon}</svg></span>
                 )}
-                {t.pillA.text} {t.pillA.meta && <span className="v">{t.pillA.meta}</span>}
+                <span className="pill-label">{t.pillA.text}{t.pillA.meta && <span className="v">{t.pillA.meta}</span>}</span>
               </div>
               <div className="float-pill pill-b">
                 {t.pillB.dot ? <span className="dot"></span> : (
                   <span className="ic"><svg viewBox="0 0 16 16" fill="none" stroke={t.pillB.color} strokeWidth="1.6" strokeLinecap="round">{t.pillB.icon}</svg></span>
                 )}
-                {t.pillB.text} {t.pillB.meta && <span className="v">{t.pillB.meta}</span>}
+                <span className="pill-label">{t.pillB.text}{t.pillB.meta && <span className="v">{t.pillB.meta}</span>}</span>
               </div>
             </div>
           </article>
@@ -572,7 +574,7 @@ function HowItWorks() {
           </div>
           <div className="why-art">
             <div className="artifact art-vote">
-              <div className="a-head">Live · Ranked vote</div>
+              <div className="a-head">Live · Users Voting</div>
               <div className="v-block" data-leader="true">
                 <div className="v-row"><span className="name">Daily Bean</span><span className="meta">19 votes</span></div>
                 <div className="bar-wrap"><div className="bar-track"><div className="bar-fill" style={{ width: '76%' }}></div></div></div>
@@ -837,7 +839,7 @@ export function Footer() {
       <div className="footer-grid">
         <div className="brand-block">
           <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="brand-mark">
-            <img src={namingContestLogo} alt="NamingContest" className="brand-logo brand-logo-footer" />
+            <img src={namingContestLogoWhite} alt="NamingContest" className="brand-logo brand-logo-footer" />
           </a>
           <p>Powered by Catchword, the #1 ranked naming agency worldwide.</p>
           <div className="socials" aria-label="Social links">
@@ -863,9 +865,9 @@ export function Footer() {
         <div>
           <h6>Resources</h6>
           <ul>
-            <li><a href="https://catchwordbranding.com/" target="_blank" rel="noopener noreferrer">Catchword Branding</a></li>
-            <li><a href="/#faq">Frequently asked</a></li>
-            <li><Link to="/contact">Contact us</Link></li>
+            <li><a href="https://catchwordbranding.com/" target="_blank" rel="noopener noreferrer">Catchword</a></li>
+            <li><Link to="/contact">Get in touch</Link></li>
+            <li><a href="/#faq">Learn more</a></li>
           </ul>
         </div>
         <div>

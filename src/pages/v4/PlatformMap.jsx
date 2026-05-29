@@ -26,6 +26,8 @@ import { getSegmentTone } from '../../data/v4/segmentTheme';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import heroProfile4 from '../../assets/hero-profile-4.png';
 import heroProfile5 from '../../assets/hero-profile-5.png';
+import creatorProfile from '../../assets/creator-profile.png';
+import participantProfile from '../../assets/participant-profile.png';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -36,8 +38,10 @@ const SUBMIT_ID = 'mock_ongoing_1';
 const VOTE_ID = 'mock_voting_demo';
 
 // Seeded identities (logged-in, with profile pictures).
-const CREATOR = { userEmail: 'marcus@brookside.fc', userName: 'Marcus', userPhoto: heroProfile4 };
-const PARTICIPANT = { userEmail: 'sam@brookside.fc', userName: 'Sam', userPhoto: heroProfile5 };
+// Creator persona is a WOMAN (matches creator-profile.png); participant is a
+// MAN (matches participant-profile.png) — names must agree with the pictures.
+const CREATOR = { userEmail: 'maya@brookside.fc', userName: 'Maya', userPhoto: creatorProfile };
+const PARTICIPANT = { userEmail: 'sam@brookside.fc', userName: 'Sam', userPhoto: participantProfile };
 
 // ── localStorage helpers ─────────────────────────────────────────
 function wipeAll() {

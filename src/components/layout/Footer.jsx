@@ -69,7 +69,7 @@ export default function Footer() {
           <div>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#d2e823', marginBottom: 16 }}>Powered by</div>
             {[
-              { label: 'Catchword Branding', href: '#' },
+              { label: 'Catchword', href: '#' },
               { label: 'Help Center', href: '#' },
               { label: 'Contact Us', href: '#' },
             ].map(l => (

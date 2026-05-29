@@ -11,9 +11,8 @@ import {
   ArrowRight, ListBullets, Trophy, Clock,
 } from '@phosphor-icons/react';
 import useCountdown, { pad2 } from '../../utils/useCountdown';
-import heroProfile3 from '../../assets/hero-profile-3.png';
-// Heart/UsersThree/Briefcase still used by TIER_INFO below for billing rows.
-import heroProfile1 from '../../assets/hero-profile-1.png';
+import participantProfile from '../../assets/participant-profile.png';
+import creatorProfile from '../../assets/creator-profile.png';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import { readSetup, writeSetup } from '../../utils/v4Brief';
 import { readAllParticipations, getParticipantRow } from '../../utils/v4Participant';
@@ -278,11 +277,10 @@ export default function Settings() {
                 email={email}
                 name={name}
                 photo={photo}
-                /* Participant-only mode: no launched contest, but has
-                   joined contests → use the same default illustration
-                   the participant chat / status pages use, so the
-                   identity stays consistent across surfaces. */
-                defaultPhoto={!realContest && joinedRows.length > 0 ? heroProfile3 : undefined}
+                /* Side-specific default profile picture: participant-profile
+                   when in participant mode (joined, no launched contest),
+                   creator-profile otherwise. A real upload still wins. */
+                defaultPhoto={!realContest && joinedRows.length > 0 ? participantProfile : creatorProfile}
                 tone={segmentTone}
                 activeContest={
                   currentContest
@@ -560,7 +558,7 @@ export default function Settings() {
               >
                 <span className="v4-settings-account-photo" aria-hidden="true">
                   <img
-                    src={photo || (!realContest && joinedRows.length > 0 ? heroProfile3 : heroProfile1)}
+                    src={photo || (!realContest && joinedRows.length > 0 ? participantProfile : creatorProfile)}
                     alt=""
                     className={`v4-settings-account-photo-img ${photo ? 'is-custom' : 'is-default'}`}
                   />
@@ -597,7 +595,7 @@ export default function Settings() {
                       aria-label="Change profile photo"
                     >
                       <img
-                        src={photo || (!realContest && joinedRows.length > 0 ? heroProfile3 : heroProfile1)}
+                        src={photo || (!realContest && joinedRows.length > 0 ? participantProfile : creatorProfile)}
                         alt=""
                         className={`v4-settings-photo-img ${photo ? 'is-custom' : 'is-default'}`}
                       />

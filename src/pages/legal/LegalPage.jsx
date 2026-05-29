@@ -12,7 +12,7 @@ import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 import '../../styles/legal.css';
 
-export default function LegalPage({ title, updated, children }) {
+export default function LegalPage({ title, updated, eyebrow = 'Legal', children }) {
   const { pathname } = useLocation();
   // Land at the top whenever you arrive on (or switch between) legal
   // pages — clicking Privacy from the Terms footer should start you at
@@ -29,6 +29,7 @@ export default function LegalPage({ title, updated, children }) {
 
           <main className="legal-main" role="main">
             <article className="legal-article">
+              <p className="legal-eyebrow">{eyebrow}</p>
               <h1 className="legal-title">{title}</h1>
               {updated && (
                 <p className="legal-updated">Last updated: {updated}</p>
