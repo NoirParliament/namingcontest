@@ -2,6 +2,10 @@ import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import '@styles/tokens.css';
 import '@styles/globals.css';
+// Mobile/tablet layer — every rule inside @media queries, so the
+// desktop experience is byte-identical. Loaded LAST so its media
+// queries can override surface-specific rules at small sizes.
+import '@styles/mobile.css';
 import { getJourneyMeta, buildJourneySteps, detectStep, PHASE_COLORS } from './utils/journey';
 import { getGroupTheme } from './data/themeConfig';
 import { CurrencyDollar, Handshake, BookOpen, User, Wrench } from '@phosphor-icons/react';
@@ -37,6 +41,7 @@ import V4PlatformMap       from '@pages/v4/PlatformMap';
 import V4ParticipantVote   from '@pages/v4/ParticipantVote';
 import V4ParticipantVoteThanks from '@pages/v4/ParticipantVoteThanks';
 import V4ParticipantWinner from '@pages/v4/ParticipantWinner';
+import V4PublicWinnerReveal from '@pages/v4/PublicWinnerReveal';
 import PrivacyPolicy       from '@pages/legal/PrivacyPolicy';
 import TermsOfService      from '@pages/legal/TermsOfService';
 import CookiePolicy        from '@pages/legal/CookiePolicy';
@@ -438,6 +443,7 @@ function AppInner() {
         <Route path="/v4/contest/:id/vote"             element={<V4ParticipantVote />} />
         <Route path="/v4/contest/:id/vote-thanks"      element={<V4ParticipantVoteThanks />} />
         <Route path="/v4/contest/:id/winner"           element={<V4ParticipantWinner />} />
+        <Route path="/v4/contest/:id/reveal"           element={<V4PublicWinnerReveal />} />
         <Route path="/privacy"                         element={<PrivacyPolicy />} />
         <Route path="/terms"                           element={<TermsOfService />} />
         <Route path="/cookies"                         element={<CookiePolicy />} />

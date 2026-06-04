@@ -12,7 +12,12 @@ import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 import '../../styles/legal.css';
 
-export default function LegalPage({ title, updated, eyebrow = 'Legal', children }) {
+// `decor` accepts a variant name: "warm" | "cool" | "fresh" — or any falsy
+// value to disable. Variants pick their own gradient palette + a randomised
+// set of dot positions/shapes (defined in legal.css).
+export default function LegalPage({ title, updated, eyebrow = 'Legal', decor = '', children }) {
+  // Backward-compat: `decor` used to be a boolean. true → "warm".
+  const variant = decor === true ? 'warm' : decor;
   const { pathname } = useLocation();
   // Land at the top whenever you arrive on (or switch between) legal
   // pages — clicking Privacy from the Terms footer should start you at
@@ -22,8 +27,31 @@ export default function LegalPage({ title, updated, eyebrow = 'Legal', children 
   }, [pathname]);
 
   return (
-    <div className="lp-v3 legal-page">
+    <div className={`lp-v3 legal-page ${variant ? `legal-decor-on legal-decor-${variant}` : ''}`}>
       <div className="frame">
+        {variant && (
+          <div className="legal-decor" aria-hidden="true">
+            <span className="legal-decor-gradient" />
+            <span className="ldot ldot-1" />
+            <span className="ldot ldot-2" />
+            <span className="ldot ldot-3" />
+            <span className="ldot ldot-4" />
+            <span className="ldot ldot-5" />
+            <span className="ldot ldot-6" />
+            {/* Sparse trail scattered down the page toward the footer. */}
+            <span className="ldot ldot-7" />
+            <span className="ldot ldot-8" />
+            <span className="ldot ldot-9" />
+            <span className="ldot ldot-10" />
+            <span className="ldot ldot-11" />
+            <span className="ldot ldot-12" />
+            <span className="ldot ldot-13" />
+            <span className="ldot ldot-14" />
+            <span className="ldot ldot-15" />
+            <span className="ldot ldot-16" />
+            <span className="ldot ldot-17" />
+          </div>
+        )}
         <div className="wrap">
           <Nav />
 

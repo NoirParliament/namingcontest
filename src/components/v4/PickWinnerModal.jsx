@@ -8,8 +8,36 @@ import { useState, useEffect, useMemo } from 'react';
 import { X, Trophy, Gift, Check, ArrowRight } from '@phosphor-icons/react';
 import '../../styles/landing-v3.css';
 
+// Re-seed each time the modal opens so the scattered shapes land in
+// slightly different positions / drift phases / sizes. Same recipe
+// used by EditQuestionModal — subtle enough to read as "same family,"
+// distinct enough that two opens never look identical.
+function useShapeSeeds(open) {
+  return useMemo(() => {
+    if (!open) return null;
+    return Array.from({ length: 8 }, () => ({
+      dx: Math.round((Math.random() - 0.5) * 20),   // ±10px lateral
+      dy: Math.round((Math.random() - 0.5) * 28),   // ±14px vertical
+      scale: 0.85 + Math.random() * 0.4,            // 0.85x – 1.25x
+      delay: -Math.random() * 10,                   // 0 → -10s float offset
+    }));
+  }, [open]);
+}
+
+// Translate a segment palette into CSS vars the shapes read.
+function paletteVars(palette) {
+  if (!palette || !palette.length) return undefined;
+  return {
+    '--shape-c1': palette[0],
+    '--shape-c2': palette[1],
+    '--shape-c3': palette[2],
+    '--shape-c4': palette[3],
+    '--shape-c5': palette[4],
+  };
+}
+
 export default function PickWinnerModal({
-  open, onClose, onConfirm, tone, prize,
+  open, onClose, onConfirm, tone, prize, palette,
   names = [], participants = [],
 }) {
   // Leaderboard comes from THIS contest's own names (passed in), so the
@@ -23,6 +51,9 @@ export default function PickWinnerModal({
     participants.find((p) => p.id === id) || null;
   const topName = sortedNames[0];
   const [selectedId, setSelectedId] = useState(topName?.id || null);
+  // Hooks must run unconditionally — call useShapeSeeds before the
+  // early-return below so React's hook order stays stable.
+  const shapeSeeds = useShapeSeeds(open);
 
   // Reset selection to the top vote each time the modal re-opens.
   useEffect(() => {
@@ -52,12 +83,17 @@ export default function PickWinnerModal({
 
   return (
     <div className="v4 lp-v3 v4-pickwinner-overlay" onClick={onClose}>
+      {/* Soft blush halo behind the modal — same warm NamingContest
+          glow used by the sign-in and edit modals, ties this surface
+          into the same family. */}
+      <span className="v4-pickwinner-halo" aria-hidden="true" />
       <div
         className="v4-pickwinner-modal"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-labelledby="v4-pickwinner-title"
+        style={paletteVars(palette)}
       >
         <button
           type="button"
@@ -67,6 +103,23 @@ export default function PickWinnerModal({
         >
           <X weight="regular" size={16} />
         </button>
+
+        {/* Scattered decorative shapes — same five-shape recipe as
+            the sign-in / edit modals, re-seeded on each open so two
+            picks never look identical. */}
+        {shapeSeeds && shapeSeeds.map((s, i) => (
+          <span
+            key={i}
+            className={`v4-pickwinner-shape v4-pickwinner-shape-${i + 1}`}
+            style={{
+              marginLeft: `${s.dx}px`,
+              marginTop: `${s.dy}px`,
+              '--jitter-scale': s.scale,
+              animationDelay: `${s.delay}s`,
+            }}
+            aria-hidden="true"
+          />
+        ))}
 
         {/* Header */}
         <div className="v4-pickwinner-head">

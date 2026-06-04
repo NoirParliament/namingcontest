@@ -5,8 +5,10 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import ExitLink from '../../components/v4/ExitLink';
 import { X } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
+import BrandLink from '../../components/v4/BrandLink';
 import { readSetup, writeSetup, getSegmentLabel } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
 import QuestionInput from '../../components/v4/QuestionInput';
@@ -99,9 +101,7 @@ export default function SettingsChat() {
     <div className="v4">
       <div className="v4-screen">
         <header className="v4-nav">
-          <Link to="/" className="v4-brand">
-            <img src={namingContestLogo} alt="NamingContest" className="v4-logo" />
-          </Link>
+          <BrandLink />
           <div className="v4-progress">
             <span className="v4-step-dot is-done"></span>
             <span className="v4-step-dot is-done"></span>
@@ -110,10 +110,7 @@ export default function SettingsChat() {
             <span className="v4-step-dot"></span>
             <span className="v4-step-label">Settings · {segmentLabel}</span>
           </div>
-          <Link to="/" className="v4-exit" aria-label="Exit">
-            <X weight="regular" size={14} />
-            <span>Exit</span>
-          </Link>
+          <ExitLink to="/" aria-label="Exit" />
         </header>
 
         <span className="v4-blob v4-blob-1" aria-hidden="true"></span>

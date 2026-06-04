@@ -18,11 +18,10 @@ import {
   FacebookLogo, LinkedinLogo, InstagramLogo,
   Palette, CaretDown, UploadSimple,
 } from '@phosphor-icons/react';
+import Avatar from 'boring-avatars';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
-import heroProfile1 from '../../assets/hero-profile-1.png';
+import BrandLink from '../../components/v4/BrandLink';
 import creatorProfile from '../../assets/creator-profile.png';
-import heroProfile2 from '../../assets/hero-profile-2.png';
-import heroProfile4 from '../../assets/hero-profile-4.png';
 import {
   readSetup, writeSetup, getSegmentLabel,
 } from '../../utils/v4Brief';
@@ -31,7 +30,7 @@ import { getMockContestById } from '../../data/v4/mockContests';
 import {
   BRIEF_QUESTIONS, SHARED_SETTINGS_QUESTIONS,
 } from '../../data/v4/briefQuestions';
-import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
+import { SegmentThemeBackdrop, getSegmentTone, getSegmentPalette, getSegmentIcon } from '../../data/v4/segmentTheme';
 import confetti from 'canvas-confetti';
 import EditQuestionModal from '../../components/v4/EditQuestionModal';
 import ActivityFlyOver from '../../components/v4/ActivityFlyOver';
@@ -39,6 +38,7 @@ import LiveResults from '../../components/v4/LiveResults';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import PickWinnerModal from '../../components/v4/PickWinnerModal';
 import WinnerHero from '../../components/v4/WinnerHero';
+import CatchwordConsultBlock from '../../components/v4/CatchwordConsultBlock';
 import PdfReport from '../../components/v4/PdfReport';
 import { downloadShareCard, downloadFullReport } from '../../utils/v4ContestExport';
 import '../../styles/landing-v3.css';
@@ -186,6 +186,8 @@ export default function ContestManage() {
   // Per-sub-segment accent — used for the hero badge, journey active step,
   // and participant pills so the segment's identity color carries through.
   const segmentTone = getSegmentTone(subId);
+  const segmentPalette = getSegmentPalette(subId);
+  const SegmentIcon = getSegmentIcon(subId);
 
   // Fire the confetti burst the first time the page is in the
   // winner-picked state — covers BOTH crowning a winner in-session and
@@ -295,9 +297,7 @@ export default function ContestManage() {
         <main className="v4-review" role="main">
           {/* Glass nav — same as other v4 surfaces */}
           <header className="v4-nav">
-            <Link to="/" className="v4-brand">
-              <img src={namingContestLogo} alt="NamingContest" className="v4-logo" />
-            </Link>
+            <BrandLink />
             <div className="v4-progress">
               <span className="v4-step-dot is-done"></span>
               <span className="v4-step-dot is-done"></span>
@@ -345,19 +345,21 @@ export default function ContestManage() {
             )}
             {!isWinnerPicked && (
             <div className="v4-manage-hero">
-              <span
-                className="v4-review-badge"
-                style={{ background: segmentTone.bg, color: segmentTone.fg }}
-                aria-hidden="true"
-              >
-                {/* Segment-specific icon override (e.g. SoccerBall for
-                    the sports mock). Falls back to the generic tier
-                    icon for real user contests. */}
-                {(() => {
-                  const HeroIcon = mockContest?.Icon || tierMeta.Icon;
-                  return <HeroIcon weight="duotone" size={20} />;
-                })()}
-              </span>
+              {/* Segment-icon badge — uses the segment-LEVEL icon
+                  (e.g. Trophy for any sports team, PawPrint for any
+                  pet, House for any home/property) instead of a
+                  sport-specific glyph that would mis-cue when the
+                  working name doesn't match (a basketball club in
+                  the Sports segment shouldn't show SoccerBall). */}
+              {SegmentIcon && (
+                <span
+                  className="v4-review-badge"
+                  style={{ background: segmentTone.bg, color: segmentTone.fg }}
+                  aria-hidden="true"
+                >
+                  <SegmentIcon weight="duotone" size={20} />
+                </span>
+              )}
               <h1 className="v4-review-title">
                 {setup.workingName || 'Your contest'}
               </h1>
@@ -717,6 +719,7 @@ export default function ContestManage() {
             {!isWinnerPicked && (
               <LiveResults
                 tone={segmentTone}
+                palette={segmentPalette}
                 names={liveData.names}
                 participants={liveData.participants}
                 phase={phase}
@@ -790,9 +793,26 @@ export default function ContestManage() {
 
               <div className="v4-manage-share-foot">
                 <div className="v4-manage-share-avatars" aria-hidden="true">
-                  {[heroProfile1, heroProfile2, heroProfile4].map((src, i) => (
-                    <span key={i} className="v4-manage-share-avatar">
-                      <img src={src} alt="" />
+                  {/* Boring Avatars of the first 3 actual participants
+                      — same vocabulary used in Live Results, so the
+                      faces stay consistent across surfaces. Falls
+                      back to the demo names if no participants yet. */}
+                  {(liveData.participants.slice(0, 3).length > 0
+                    ? liveData.participants.slice(0, 3).map((p) => p.name)
+                    : ['Sam O\'Brien', 'Marcus Wright', 'Dan Patel']
+                  ).map((nm, i) => (
+                    <span
+                      key={i}
+                      className="v4-manage-share-avatar"
+                      style={{ '--avatar-feature': '#030302' }}
+                    >
+                      <Avatar
+                        name={nm}
+                        size={30}
+                        variant="beam"
+                        colors={segmentPalette}
+                        square={false}
+                      />
                     </span>
                   ))}
                 </div>
@@ -985,20 +1005,53 @@ export default function ContestManage() {
               />
             )}
 
-            {/* ── Quiet actions ────────────────────────────────────── */}
-            <div className="v4-manage-actions">
-              <button
-                type="button"
-                className="btn btn-link v4-btn-danger"
-                onClick={() => {
-                  if (window.confirm('Cancel this contest? This cannot be undone.')) {
-                    navigate('/');
-                  }
-                }}
-              >
-                Cancel contest
-              </button>
-            </div>
+            {/* ── Footer actions ────────────────────────────────────
+                Winner phase shows the Catchword consult block instead
+                of the Cancel button (contest is already over —
+                cancelling doesn't apply, but a "didn't find what you
+                wanted? hire the pros" nudge does). */}
+            {isWinnerPicked ? (
+              <CatchwordConsultBlock
+                headline="Still hunting for the perfect name?"
+                body={<>The crowd voted, but if it's not <em>quite</em> there — Catchword is the naming agency NamingContest is built on top of. Book a session for a deeper look.</>}
+              />
+            ) : (
+              <div className="v4-manage-actions">
+                <button
+                  type="button"
+                  className="btn btn-link v4-btn-danger"
+                  onClick={() => {
+                    if (window.confirm('Cancel this contest? This cannot be undone.')) {
+                      // Mark the contest as cancelled in setup +
+                      // record an entry the workspace can render
+                      // under a "Cancelled" section. Then send the
+                      // creator to workspace where they'll see it.
+                      const cur = readSetup();
+                      const cancelledList = Array.isArray(cur.cancelledContests)
+                        ? cur.cancelledContests
+                        : [];
+                      writeSetup({
+                        cancelledContests: [
+                          ...cancelledList,
+                          {
+                            id: cur.contestId || id,
+                            workingName: cur.workingName || mockContest?.workingName || 'Your contest',
+                            subSegmentId: cur.subSegmentId || mockContest?.subSegmentId,
+                            cancelledAt: Date.now(),
+                          },
+                        ],
+                        contestId: null,
+                        workingName: null,
+                        launchedAt: null,
+                      });
+                      navigate('/v4/settings');
+                    }
+                  }}
+                >
+                  Cancel contest
+                </button>
+              </div>
+            )}
 
           </div>
         </main>
@@ -1014,6 +1067,7 @@ export default function ContestManage() {
           }
           onClose={() => setEditingQuestion(null)}
           onSave={handleEditSave}
+          palette={segmentPalette}
         />
 
         {/* Hidden off-screen PDF report — captured by the export
@@ -1030,6 +1084,7 @@ export default function ContestManage() {
             tone={customColor
               ? { bg: customColor, fg: segmentTone.fg }
               : segmentTone}
+            customColor={customColor}
             winner={winnerName}
             submitter={winnerSubmitter}
             prize={liveSettingsAnswers.submitterPrize}
@@ -1046,6 +1101,7 @@ export default function ContestManage() {
           open={pickWinnerOpen}
           onClose={() => setPickWinnerOpen(false)}
           tone={segmentTone}
+          palette={segmentPalette}
           prize={liveSettingsAnswers.submitterPrize}
           names={liveData.names}
           participants={liveData.participants}

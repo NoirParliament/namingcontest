@@ -1,45 +1,43 @@
-// V4 ParticipantWinner — the winner reveal a participant sees once the
-// creator has crowned a name.
+// V4 PublicWinnerReveal — the post-contest reveal that ANYONE can see
+// when they click a share link after the contest is already over.
 //
-// URL: /v4/contest/:id/winner
+// URL: /v4/contest/:id/reveal
 //
-// Same v4-join-* shell as the invitation / submission-thanks /
-// vote-thanks pages, so the journey stays visually whole end-to-end —
-// except the drifting-people animation is swapped for a gentle, ongoing
-// confetti fall (the white blobs stay). Two states, no CTA (the avatar
-// menu + footer timeline carry navigation away):
-//   • "your name won"    — YOU WON badge (+ prize), an extra opening pop
-//   • "someone else won" — the winning name + who suggested it
+// Visually identical to ParticipantWinner (same hero + champion card +
+// gold confetti + footer timeline) so the journey reads as one family,
+// but the copy is neutral — no "you won" branch, no participation
+// shape required, no AvatarMenu (the visitor may be logged out).
 //
-// Winner resolution: contest.winnerSubId (may arrive via the per-contest
-// localStorage override) with a top-voted fallback from buildLiveData.
+// Differences vs ParticipantWinner:
+//   - drops the `participation` gate (random visitors land here)
+//   - drops the `iWon` branch entirely
+//   - adds a row of social-share buttons (copy link / email / SMS / X /
+//     LinkedIn) — the whole point of this page is "share the result"
+//   - footer timeline shows the contest's lifecycle (not the
+//     visitor's own submitted/voted counts)
+//
+// Routing: /v4/join/:id auto-redirects non-participating visitors here
+// when contest.winnerSubId is set. Participants keep going to the
+// existing /winner page.
 
 import { useRef, useState, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { Trophy } from '@phosphor-icons/react';
+import { Trophy, ShareNetwork, Check, X } from '@phosphor-icons/react';
+import ExitLink from '../../components/v4/ExitLink';
 import confetti from 'canvas-confetti';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
-import participantProfile from '../../assets/participant-profile.png';
-import AvatarMenu from '../../components/v4/AvatarMenu';
 import { getMockContestById } from '../../data/v4/mockContests';
 import { getSegmentTone, SEGMENT_THEME } from '../../data/v4/segmentTheme';
-import { readSetup } from '../../utils/v4Brief';
-import { readParticipation } from '../../utils/v4Participant';
 import { buildLiveData } from '../../utils/v4LiveData';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
-// Real gold confetti — RICH golds only (no pale cream shades, which read
-// as near-white when the falling flecks are small). Anchored on the
-// pill's deep gold (#f4c64b) so the burst and the fall both clearly read
-// gold against the segment wash.
+// Same RICH golds as ParticipantWinner so the burst reads as the same
+// celebration regardless of which page a visitor lands on.
 const GOLD = ['#f4c64b', '#e8b923', '#d4a017', '#c99700'];
 
-// Opening boom — two cannons from the bottom corners, thrown hard enough
-// to reach the TOP before gravity pulls them down, so it flows straight
-// into the ongoing fall-from-top. Same gold as the fall so the burst and
-// the drizzle read as one continuous moment.
+// Opening boom — two corner cannons. Identical to ParticipantWinner.
 function launchBoom(fire) {
   const cannon = (opts) => fire({
     particleCount: 90,
@@ -55,10 +53,9 @@ function launchBoom(fire) {
   cannon({ origin: { x: 0.94, y: 1 }, angle: 108 });
 }
 
-export default function ParticipantWinner() {
+export default function PublicWinnerReveal() {
   const { id: contestId } = useParams();
   const contest = getMockContestById(contestId);
-  const participation = readParticipation(contestId);
   const subId = contest?.subSegmentId;
   const tone = subId ? getSegmentTone(subId) : null;
   const segmentBg = SEGMENT_THEME[subId]?.blobs?.[0] || tone?.bg || '#a6dcb3';
@@ -67,34 +64,17 @@ export default function ParticipantWinner() {
   const contestName = contest?.workingName || contest?.name || 'the contest';
   const isAnonymous = contest?.anonymous === true;
 
-  // Authed user.
-  const setup = readSetup();
-  const userEmail = setup.userEmail || '';
-  const userName = setup.userName || (userEmail.split('@')[0] || 'You');
-  const userPhoto = setup.userPhoto || null;
-
-  // Resolve the winning name: explicit winnerSubId (possibly from the
-  // per-contest override) else the top-voted name.
-  const live = contest ? buildLiveData(contest, 'winner') : { names: [], stats: { votes: 0 } };
+  // Resolve the winning name from contest.winnerSubId or top vote.
+  const live = contest ? buildLiveData(contest, 'winner') : { names: [], stats: { votes: 0, participants: 0 } };
   const winner =
     live.names.find((n) => n.id === contest?.winnerSubId) ||
     [...live.names].sort((a, b) => b.voteCount - a.voteCount)[0] ||
     null;
   const totalVotes = live.stats.votes;
+  const totalNames = live.names.length;
+  const totalParticipants = live.stats.participants;
 
-  // Did the participant's own name win? Submitted names carry psub_ ids,
-  // so match on the text instead.
-  const submitted = participation?.submittedNames || [];
-  const submittedCount = submitted.length;
-  const iWon = !!winner && submitted.some((s) => s.text === winner.text);
-
-  const prize = contest?.settings?.submitterPrize?.enabled
-    ? contest?.settings?.submitterPrize
-    : null;
-
-  // ONE opening boom, then a steady gold rain top→bottom. Rendered onto
-  // our OWN canvas (canvasRef) so it sits BEHIND the central content
-  // (the canvas z-index is below .v4-review) instead of over the card.
+  // ── Confetti (identical to ParticipantWinner) ────────────────────
   const canvasRef = useRef(null);
   useEffect(() => {
     if (!winner || !canvasRef.current) return;
@@ -116,8 +96,6 @@ export default function ParticipantWinner() {
             scalar: 1,
             drift: (Math.random() - 0.5) * 0.6,
             origin: { x: Math.random(), y: -0.05 },
-            // particleCount:1 always takes colors[0], so pick a RANDOM
-            // gold per fleck for the full range like the boom.
             colors: [GOLD[(Math.random() * GOLD.length) | 0]],
             disableForReducedMotion: true,
           });
@@ -135,13 +113,30 @@ export default function ParticipantWinner() {
     };
   }, [contestId, winner?.id]);
 
+  // ── Share state ──────────────────────────────────────────────────
+  // The share URL is THIS public reveal page — anyone clicking the
+  // shared link lands right back here.
+  // One button, one job: copy this page's URL to the clipboard so the
+  // visitor can paste it anywhere (DM, email, slack, whatever).
+  const shareUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}/v4/contest/${contestId}/reveal`
+    : `/v4/contest/${contestId}/reveal`;
+  const [copied, setCopied] = useState(false);
+  const handleShare = () => {
+    try {
+      navigator.clipboard?.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      // clipboard blocked — silently no-op
+    }
+  };
+
   const scrollRef = useRef(null);
 
-  if (!contest) return <Navigate to="/v4/settings" replace />;
-  if (!participation) return <Navigate to={`/v4/join/${contestId}`} replace />;
-  // No winner resolvable (e.g. empty contest) — fall back to the
-  // vote-thanks waiting room rather than render an empty reveal.
-  if (!winner) return <Navigate to={`/v4/contest/${contestId}/vote-thanks`} replace />;
+  if (!contest) return <Navigate to="/" replace />;
+  // No winner resolvable — the reveal makes no sense, kick to landing.
+  if (!winner) return <Navigate to="/" replace />;
 
   const voteLine = `${winner.voteCount}${typeof totalVotes === 'number' ? ` of ${totalVotes}` : ''} votes`;
 
@@ -157,66 +152,43 @@ export default function ParticipantWinner() {
         <span className="v4-blob v4-join-blob v4-join-blob-4" aria-hidden="true" />
         <span className="v4-blob v4-join-blob v4-join-blob-5" aria-hidden="true" />
 
-        {/* Confetti renders here — z-index below the content so it falls
-            BEHIND the central card + title. */}
         <canvas ref={canvasRef} className="v4-pwinner-confetti-canvas" aria-hidden="true" />
 
         <main className="v4-review" role="main" ref={scrollRef}>
           <header className="v4-nav v4-join-nav">
             <BrandLink />
             <div className="v4-progress v4-join-nav-inviter">
-              <span className="v4-join-inviter-invites">Crowned by</span>
+              <span className="v4-join-inviter-invites">Hosted by</span>
               <strong className="v4-join-inviter-name-inline">{creatorName}</strong>
               <span className="v4-join-inviter-role-inline">({contestName})</span>
             </div>
+            {/* No AvatarMenu — the visitor may be signed out. Exit
+                takes them to the MARKETING homepage. We use `/#top`
+                (not `/`) so the LandingPage's auth-redirect bypass
+                (already in place for hashes like /#faq) fires here
+                too — otherwise authed creators sharing the link
+                would get bounced into their workspace. */}
             <div className="v4-nav-right">
-              <AvatarMenu
-                email={userEmail}
-                name={userName}
-                photo={participantProfile}
-                tone={tone}
-                activeContest={{
-                  id: contest.id,
-                  name: contestName,
-                  phase: 'WINNER',
-                  tone,
-                  to: '/v4/settings',
-                }}
-              />
+              <ExitLink to="/#top" aria-label="Exit" />
             </div>
           </header>
 
           <div className="v4-review-inner v4-pthanks-inner">
-            {/* ── HERO — same shape as the other participant pages. */}
+            {/* ── HERO — neutral framing, no "you" pronouns. */}
             <section className="v4-pthanks-hero">
-              {iWon ? (
-                <div className="v4-pwinner-badge">
-                  <span>You won</span>
-                  {prize && (
-                    <span className="v4-pwinner-badge-prize">· {prize.name}</span>
-                  )}
-                </div>
-              ) : (
-                <div className="v4-pthanks-eyebrow">{contestName}</div>
-              )}
+              <div className="v4-pthanks-eyebrow">{contestName}</div>
               <h1 className="v4-pthanks-title v4-pwinner-title">
                 {winner.text}
               </h1>
               <p className="v4-pthanks-sub">
-                {iWon ? (
-                  <>Your name took the crown — {voteLine} in.</>
-                ) : (
-                  <>
-                    {isAnonymous || !winner.submitterName
-                      ? 'Crowned the winner'
-                      : <><strong>{winner.submitterName}</strong> suggested it</>}
-                    {' · '}{voteLine}
-                  </>
-                )}
+                {isAnonymous || !winner.submitterName
+                  ? 'Crowned the winner'
+                  : <><strong>{winner.submitterName}</strong> suggested it</>}
+                {' · '}{voteLine}
               </p>
             </section>
 
-            {/* ── Champion card — gold ticket-stub with the trophy band. */}
+            {/* ── Champion card — identical to ParticipantWinner. */}
             <section className="v4-pthanks-receipt" aria-label="The winning name">
               <ul className="v4-pthanks-card-list">
                 <li className="v4-pthanks-card v4-pthanks-card-champion">
@@ -229,39 +201,53 @@ export default function ParticipantWinner() {
                       <div className="v4-pthanks-card-why">{winner.whyItFits}</div>
                     )}
                     <div className="v4-pthanks-card-by">
-                      {iWon
-                        ? <>Submitted by <strong>you</strong></>
-                        : (!isAnonymous && winner.submitterName
-                            ? <>Submitted by <strong>{winner.submitterName}</strong></>
-                            : null)}
+                      {(!isAnonymous && winner.submitterName)
+                        ? <>Submitted by <strong>{winner.submitterName}</strong></>
+                        : null}
                     </div>
                   </div>
                 </li>
               </ul>
             </section>
 
-            {/* Small, quiet self-serve nudge — the only CTA on the page. */}
+            {/* Share — one button, copies this page's URL. */}
+            <div className="v4-preveal-share-wrap">
+              <button
+                type="button"
+                className={`v4-preveal-share-btn ${copied ? 'is-copied' : ''}`}
+                onClick={handleShare}
+              >
+                {copied ? (
+                  <><Check weight="bold" size={16} /> Link copied</>
+                ) : (
+                  <><ShareNetwork weight="bold" size={16} /> Share</>
+                )}
+              </button>
+            </div>
+
+            {/* Quiet self-serve nudge. Same wording as ParticipantWinner. */}
             <p className="v4-pwinner-own">
               <span className="v4-pwinner-own-lead">Want to name something of your own?</span>{' '}
               <Link to="/" className="v4-pwinner-own-link">Start a contest →</Link>
             </p>
           </div>
 
-          {/* ── Footer timeline — all three steps done. */}
+          {/* ── Footer timeline — generic lifecycle, not visitor's
+              participation counts (since they may have none). */}
           <footer className="v4-join-foot">
             <ol className="v4-join-flow">
               <li className="v4-join-flow-step is-done">
                 <span className="v4-join-flow-dot" aria-hidden="true" />
                 <span className="v4-join-flow-label">
-                  <strong>Suggested ✓</strong>
-                  <em>{submittedCount} {submittedCount === 1 ? 'name' : 'names'}</em>
+                  <strong>Submissions ✓</strong>
+                  <em>{totalNames} {totalNames === 1 ? 'name' : 'names'}</em>
                 </span>
               </li>
               <li className="v4-join-flow-step is-done">
                 <span className="v4-join-flow-dot" aria-hidden="true" />
                 <span className="v4-join-flow-label">
-                  <strong>Voted ✓</strong>
-                  <em>Done</em>
+                  <strong>Voting ✓</strong>
+                  <em>{totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}{totalParticipants ? ` · ${totalParticipants} ${totalParticipants === 1 ? 'person' : 'people'}` : ''}</em>
                 </span>
               </li>
               <li className="v4-join-flow-step is-done">

@@ -10,12 +10,14 @@
 
 import { useState, useEffect, useRef } from 'react';
 import {
-  PaperPlaneTilt, CheckCircle, EnvelopeSimple, ChatCircleDots, Sparkle, Heart,
+  PaperPlaneTilt, CheckCircle, EnvelopeSimple, ChatCircleDots, Sparkle, Heart, X,
 } from '@phosphor-icons/react';
 import { Nav, Footer } from '../LandingPage';
 import mailboxImg from '../../assets/mailbox.png';
 import letterImg from '../../assets/letter.png';
+import messageImg from '../../assets/message.png';
 import '../../styles/landing-v3.css';
+import '../../styles/v4.css';
 import '../../styles/contact.css';
 
 const SUPPORT_EMAIL = 'hello@namingcontest.com';
@@ -70,6 +72,10 @@ export default function ContactPage() {
   const [botTyping, setBotTyping] = useState(true); // first question is "typing" on load
   const [draft, setDraft] = useState('');
   const [answers, setAnswers] = useState({});
+  // Past-answer edit popup (BriefChat / ContestManage pattern): user
+  // clicks a finished user-bubble → modal opens with the same Q/A
+  // shape so they can fix a typo without re-running the whole chat.
+  const [editing, setEditing] = useState(null);   // { stepIndex, currentValue } | null
 
   const answersRef = useRef({});
   const timers = useRef([]);
@@ -150,6 +156,32 @@ export default function ContactPage() {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit(); }
   };
 
+  // Open the edit modal for an already-answered step. Only past
+  // (completed) answers are editable; the row for the CURRENT step
+  // (still open via the composer/chips) isn't shown as user-text yet.
+  const handleEditMessage = (msg) => {
+    if (msg.from !== 'user') return;
+    // user ids are stamped `u-<stepIndex>` in submit() below.
+    const idx = parseInt(String(msg.id).replace(/^u-/, ''), 10);
+    if (!Number.isFinite(idx)) return;
+    setEditing({ stepIndex: idx, currentValue: msg.text });
+  };
+
+  const handleEditSave = (newValue) => {
+    if (!editing) return;
+    const { stepIndex: idx } = editing;
+    const step = STEPS[idx];
+    if (!step) return;
+    const v = (newValue ?? '').trim();
+    if (step.valid && !step.valid(v)) return;
+    // Update both the answers store and the visible bubble text.
+    const next = { ...answersRef.current, [step.id]: v };
+    answersRef.current = next;
+    setAnswers(next);
+    setMessages((m) => m.map((msg) => (msg.id === `u-${idx}` ? { ...msg, text: v } : msg)));
+    setEditing(null);
+  };
+
   const step = stepIndex >= 0 ? STEPS[stepIndex] : null;
   const showChoices = phase === 'chat' && active && step && step.type === 'choice';
   const showComposer = phase === 'chat' && active && step && step.type !== 'choice';
@@ -208,13 +240,25 @@ export default function ContactPage() {
             <section className="contact-panel contact-chat-panel">
               {phase === 'sent' ? (
                 <div className="contact-received">
-                  <span className="contact-received-icon" aria-hidden="true">
-                    <CheckCircle weight="duotone" size={30} />
-                  </span>
-                  <div className="contact-received-title">Message received.</div>
+                  {/* Scattered shape decoration — matches the sign-in /
+                      join-sent / pickwinner modal vocabulary so this
+                      success card reads as part of the same family. */}
+                  <span className="contact-received-shape contact-received-shape-1" aria-hidden="true" />
+                  <span className="contact-received-shape contact-received-shape-2" aria-hidden="true" />
+                  <span className="contact-received-shape contact-received-shape-3" aria-hidden="true" />
+                  <span className="contact-received-shape contact-received-shape-4" aria-hidden="true" />
+                  <span className="contact-received-shape contact-received-shape-5" aria-hidden="true" />
+
+                  <img
+                    src={messageImg}
+                    alt=""
+                    aria-hidden="true"
+                    className="contact-received-hero"
+                  />
+                  <h2 className="contact-received-title">Message received</h2>
                   <p className="contact-received-sub">
                     Thanks{answers.name ? `, ${firstName(answers.name)}` : ''} —
-                    we’ll reply to <strong>{answers.email}</strong> within a
+                    we'll reply to <strong>{answers.email}</strong> within a
                     business day. Keep an eye on your inbox.
                   </p>
                   <button type="button" className="contact-received-again" onClick={handleReset}>
@@ -233,7 +277,19 @@ export default function ContactPage() {
                   <div className="contact-chat-thread" role="log" aria-live="polite">
                     {messages.map((msg) => (
                       <div key={msg.id} className={`contact-chat-row ${msg.from}`}>
-                        <div className="contact-chat-bubble">{msg.text}</div>
+                        {msg.from === 'user' ? (
+                          <button
+                            type="button"
+                            className="contact-chat-bubble contact-chat-bubble-editable"
+                            onClick={() => handleEditMessage(msg)}
+                            aria-label="Edit answer"
+                            title="Click to edit"
+                          >
+                            {msg.text}
+                          </button>
+                        ) : (
+                          <div className="contact-chat-bubble">{msg.text}</div>
+                        )}
                       </div>
                     ))}
                     {botTyping && (
@@ -298,6 +354,138 @@ export default function ContactPage() {
         </div>
 
         <Footer />
+      </div>
+
+      {/* Edit modal — same v4-edit-modal shell as BriefChat / Manage
+          (scattered shape decoration, halo, 440px width, ink-pill
+          buttons) so the popup reads as part of the same family. */}
+      <ContactEditModal
+        editing={editing}
+        answers={answers}
+        onSave={handleEditSave}
+        onClose={() => setEditing(null)}
+      />
+    </div>
+  );
+}
+
+// ── Edit modal ──────────────────────────────────────────────────────
+// Reuses the v4-edit-modal CSS shell (scattered shapes + halo) so the
+// look matches BriefChat's edit popup. Renders the input that fits the
+// step type — chips for choice, textarea for longtext, plain input
+// otherwise — and saves the trimmed value via onSave.
+function ContactEditModal({ editing, answers, onSave, onClose }) {
+  const [value, setValue] = useState('');
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (!editing) return;
+    setValue(editing.currentValue || '');
+    const t = setTimeout(() => inputRef.current?.focus(), 80);
+    const onKey = (e) => { if (e.key === 'Escape') onClose?.(); };
+    document.addEventListener('keydown', onKey);
+    return () => { clearTimeout(t); document.removeEventListener('keydown', onKey); };
+  }, [editing, onClose]);
+
+  if (!editing) return null;
+  const step = STEPS[editing.stepIndex];
+  if (!step) return null;
+
+  const valid = !step.valid || step.valid(value.trim());
+
+  const handleSubmit = (rawVal) => {
+    const v = (rawVal ?? value).trim();
+    if (step.valid && !step.valid(v)) return;
+    onSave?.(v);
+  };
+
+  return (
+    <div className="v4 lp-v3 v4-auth-backdrop" onClick={onClose}>
+      <span className="v4-edit-halo" aria-hidden="true" />
+      <div
+        className="v4-edit-modal"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="contact-edit-title"
+      >
+        <button
+          type="button"
+          className="v4-auth-close"
+          onClick={onClose}
+          aria-label="Close"
+        >
+          <X weight="regular" size={16} />
+        </button>
+
+        {/* Scattered shapes — same five-shape recipe as BriefChat's
+            edit popup. Fixed positions (no re-seed jitter here since
+            this modal is opened less often than the brief one). */}
+        <span className="v4-edit-shape v4-edit-shape-1" aria-hidden="true" />
+        <span className="v4-edit-shape v4-edit-shape-2" aria-hidden="true" />
+        <span className="v4-edit-shape v4-edit-shape-3" aria-hidden="true" />
+        <span className="v4-edit-shape v4-edit-shape-4" aria-hidden="true" />
+        <span className="v4-edit-shape v4-edit-shape-5" aria-hidden="true" />
+
+        <div className="v4-edit-modal-label">Edit your answer</div>
+        <h2 id="contact-edit-title" className="v4-edit-modal-prompt">
+          {step.ask(answers)}
+        </h2>
+
+        <div className="v4-edit-modal-input">
+          {step.type === 'choice' ? (
+            <div className="contact-chat-choices" style={{ marginTop: 0 }}>
+              {step.choices.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  className={`contact-chip ${value === c ? 'is-selected' : ''}`}
+                  onClick={() => handleSubmit(c)}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          ) : step.type === 'longtext' ? (
+            <textarea
+              ref={inputRef}
+              className="contact-chat-input"
+              rows={3}
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey && valid) { e.preventDefault(); handleSubmit(); } }}
+              placeholder={step.placeholder}
+              autoComplete={step.autoComplete}
+            />
+          ) : (
+            <input
+              ref={inputRef}
+              type={step.type === 'email' ? 'email' : 'text'}
+              className="contact-chat-input"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter' && valid) { e.preventDefault(); handleSubmit(); } }}
+              placeholder={step.placeholder}
+              autoComplete={step.autoComplete}
+            />
+          )}
+        </div>
+
+        {step.type !== 'choice' && (
+          <div className="contact-edit-actions">
+            <button type="button" className="btn btn-secondary btn-sm" onClick={onClose}>
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary btn-sm"
+              onClick={() => handleSubmit()}
+              disabled={!valid}
+            >
+              Save
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

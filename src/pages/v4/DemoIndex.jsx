@@ -21,6 +21,7 @@ import {
 import { joinContest, recordSubmission } from '../../utils/v4Participant';
 import { writeSetup } from '../../utils/v4Brief';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
+import BrandLink from '../../components/v4/BrandLink';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -225,9 +226,7 @@ export default function DemoIndex() {
       <div className="v4-screen">
         <main className="v4-review" role="main">
           <header className="v4-nav">
-            <Link to="/" className="v4-brand">
-              <img src={namingContestLogo} alt="NamingContest" className="v4-logo" />
-            </Link>
+            <BrandLink />
             <div className="v4-progress">
               <span className="v4-step-label">Demo index</span>
             </div>

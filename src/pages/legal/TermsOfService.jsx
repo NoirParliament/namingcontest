@@ -2,44 +2,44 @@ import LegalPage from './LegalPage';
 
 export default function TermsOfService() {
   return (
-    <LegalPage title="Terms of service" updated="May 28, 2026">
+    <LegalPage title="Terms of service" updated="May 28, 2026" decor="cool">
       <p className="legal-lede">
         These Terms of Service (&ldquo;Terms&rdquo;) govern your access
-        to and use of NamingContest.com (&ldquo;NamingContest&rdquo; or
-        the &ldquo;Service&rdquo;), operated by The Cypher Group, LLC
+        to and use of NamingContest.com (&ldquo;NamingContest&rdquo;),
+        operated by The Cypher Group, LLC
         (&ldquo;Cypher,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or
-        &ldquo;our&rdquo;). By accessing or using the Service, you agree
-        to be bound by these Terms. If you do not agree, do not use the
-        Service.
+        &ldquo;our&rdquo;). By accessing or using NamingContest, you agree
+        to be bound by these Terms. If you do not agree, do not use
+        NamingContest.
       </p>
 
       <h2>1. Definitions</h2>
       <ul>
         <li><span className="legal-defn">&ldquo;Creator&rdquo;</span> means a user who creates and administers a contest.</li>
         <li><span className="legal-defn">&ldquo;Participant&rdquo;</span> means a user who joins a contest to submit names and/or vote.</li>
-        <li><span className="legal-defn">&ldquo;User Content&rdquo;</span> means any content submitted to the Service, including proposed names, explanations, briefs, settings, and votes.</li>
-        <li><span className="legal-defn">&ldquo;Contest&rdquo;</span> means a naming campaign hosted on the Service.</li>
+        <li><span className="legal-defn">&ldquo;User Content&rdquo;</span> means any content submitted to NamingContest, including proposed names, explanations, briefs, settings, and votes.</li>
+        <li><span className="legal-defn">&ldquo;Contest&rdquo;</span> means a naming campaign hosted on NamingContest.</li>
       </ul>
 
       <h2>2. Eligibility and accounts</h2>
       <p>
         You must be capable of forming a legally binding contract in your
-        jurisdiction to use the Service. The Service is not directed to
+        jurisdiction to use NamingContest. NamingContest is not directed to
         children under 13, and where you reside in a jurisdiction that
         sets a higher age of digital consent, you must meet that age or
         have the consent of a parent or legal guardian.
       </p>
       <p>
-        The Service uses passwordless &ldquo;magic link&rdquo;
+        NamingContest uses passwordless &ldquo;magic link&rdquo;
         authentication. You are responsible for maintaining the
         confidentiality of, and for all activity that occurs through,
         the email account associated with your access. You agree to
         provide accurate information and to keep it current.
       </p>
 
-      <h2>3. The Service</h2>
+      <h2>3. NamingContest</h2>
       <p>
-        The Service enables Creators to run naming contests and
+        NamingContest enables Creators to run naming contests and
         Participants to submit names and vote. We provide the platform
         only; we do not author, endorse, or vet User Content, and we do
         not select winning names. Contest outcomes, including the
@@ -73,7 +73,7 @@ export default function TermsOfService() {
         submitting User Content, you grant Cypher a worldwide,
         non-exclusive, royalty-free license to host, store, reproduce,
         display, and use that content solely to operate, provide, and
-        maintain the Service, including making submissions visible to
+        maintain NamingContest, including making submissions visible to
         the relevant Creator and Participants of a contest.
       </p>
       <p>
@@ -84,8 +84,8 @@ export default function TermsOfService() {
 
       <h2>6. No warranty as to name availability or legality</h2>
       <p>
-        Names generated, proposed, suggested, or selected through the
-        Service are provided for ideation purposes only. Neither
+        Names generated, proposed, suggested, or selected through
+        NamingContest are provided for ideation purposes only. Neither
         The Cypher Group, LLC nor NamingContest makes any
         representation or warranty that any name is available for use,
         registrable as a trademark, free from conflicting third-party
@@ -93,7 +93,7 @@ export default function TermsOfService() {
         solely responsible for conducting your own trademark, legal, and
         availability clearance before adopting or using any name. You
         assume all risk arising from your use of any name obtained
-        through the Service.
+        through NamingContest.
       </p>
 
       <h2>7. Responsibility for submissions</h2>
@@ -113,15 +113,15 @@ export default function TermsOfService() {
       <ul>
         <li>submit content that is unlawful, infringing, defamatory, harassing, hateful, or obscene;</li>
         <li>impersonate any person or misrepresent your affiliation;</li>
-        <li>interfere with, disrupt, or attempt to gain unauthorized access to the Service or its systems;</li>
-        <li>use the Service to send spam or to harvest others&rsquo; personal information;</li>
+        <li>interfere with, disrupt, or attempt to gain unauthorized access to NamingContest or its systems;</li>
+        <li>use NamingContest to send spam or to harvest others&rsquo; personal information;</li>
         <li>manipulate voting or contest results through fraudulent means;</li>
-        <li>use the Service in violation of any applicable law.</li>
+        <li>use NamingContest in violation of any applicable law.</li>
       </ul>
 
       <h2>9. Intellectual property</h2>
       <p>
-        The Service, including its software, design, text, and branding
+        NamingContest, including its software, design, text, and branding
         (excluding User Content), is owned by or licensed to The Cypher
         Group, LLC and is protected by intellectual property laws. No
         rights are granted to you except as expressly set out in these
@@ -130,11 +130,11 @@ export default function TermsOfService() {
 
       <h2>10. Disclaimers</h2>
       <p>
-        The Service is provided on an &ldquo;as is&rdquo; and &ldquo;as
+        NamingContest is provided on an &ldquo;as is&rdquo; and &ldquo;as
         available&rdquo; basis, without warranties of any kind, whether
         express, implied, or statutory, including any implied warranties
         of merchantability, fitness for a particular purpose, title, and
-        non-infringement. We do not warrant that the Service will be
+        non-infringement. We do not warrant that NamingContest will be
         uninterrupted, secure, or error-free. Some jurisdictions do not
         allow the exclusion of certain warranties, so some of the above
         exclusions may not apply to you.
@@ -147,9 +147,9 @@ export default function TermsOfService() {
         or agents be liable for any indirect, incidental, special,
         consequential, or punitive damages, or for any loss of profits,
         revenues, data, or goodwill, arising out of or in connection
-        with your use of the Service. To the maximum extent permitted by
-        law, our aggregate liability arising out of or relating to the
-        Service will not exceed the amount you paid to us in the twelve
+        with your use of NamingContest. To the maximum extent permitted by
+        law, our aggregate liability arising out of or relating to
+        NamingContest will not exceed the amount you paid to us in the twelve
         (12) months preceding the event giving rise to the claim.
         Nothing in these Terms excludes or limits liability that cannot
         be excluded or limited under applicable law.
@@ -160,17 +160,17 @@ export default function TermsOfService() {
         You agree to indemnify and hold harmless The Cypher Group, LLC
         and its affiliates from and against any claims, damages,
         liabilities, and expenses (including reasonable legal fees)
-        arising out of or related to your User Content, your use of the
-        Service, or your violation of these Terms or any law or
+        arising out of or related to your User Content, your use of
+        NamingContest, or your violation of these Terms or any law or
         third-party right.
       </p>
 
       <h2>13. Termination</h2>
       <p>
-        We may suspend or terminate your access to the Service at any
+        We may suspend or terminate your access to NamingContest at any
         time, with or without notice, if we reasonably believe you have
-        violated these Terms or to protect the Service or other users.
-        You may stop using the Service at any time. Provisions that by
+        violated these Terms or to protect NamingContest or other users.
+        You may stop using NamingContest at any time. Provisions that by
         their nature should survive termination will survive.
       </p>
 
@@ -179,7 +179,7 @@ export default function TermsOfService() {
         These Terms are governed by the laws of the State of California,
         United States, without regard to its conflict-of-laws rules. You
         agree that any dispute arising out of or relating to these Terms
-        or the Service will be subject to the exclusive jurisdiction of
+        or NamingContest will be subject to the exclusive jurisdiction of
         the state and federal courts located in Alameda County,
         California, except where applicable consumer-protection law
         entitles you to bring proceedings in your local courts.
@@ -190,8 +190,8 @@ export default function TermsOfService() {
         We may modify these Terms from time to time. The &ldquo;Last
         updated&rdquo; date at the top of this page indicates when they
         were last revised. Material changes will be communicated through
-        the Service or by email where appropriate. Your continued use of
-        the Service after the effective date constitutes acceptance of
+        NamingContest or by email where appropriate. Your continued use of
+        NamingContest after the effective date constitutes acceptance of
         the revised Terms.
       </p>
 

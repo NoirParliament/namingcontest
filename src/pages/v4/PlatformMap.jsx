@@ -16,7 +16,7 @@
 
 import { Link } from 'react-router-dom';
 import {
-  ArrowSquareOut, House, Megaphone, UsersThree, ArrowRight,
+  ArrowSquareOut, House, Megaphone, UsersThree, ArrowRight, ShareNetwork,
 } from '@phosphor-icons/react';
 import { writeSetup } from '../../utils/v4Brief';
 import { joinContest, recordSubmission, recordVotes, clearParticipation } from '../../utils/v4Participant';
@@ -24,6 +24,7 @@ import { getMockContestById } from '../../data/v4/mockContests';
 import { SIM_CONTESTS, SIM_GROUPS } from '../../data/v4/simContests';
 import { getSegmentTone } from '../../data/v4/segmentTheme';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
+import BrandLink from '../../components/v4/BrandLink';
 import heroProfile4 from '../../assets/hero-profile-4.png';
 import heroProfile5 from '../../assets/hero-profile-5.png';
 import creatorProfile from '../../assets/creator-profile.png';
@@ -160,6 +161,23 @@ function seedParticipantWinnerOther(contestId, winnerSubId) {
   } catch {}
 }
 
+// Seed a logged-OUT random visitor landing on the post-contest share
+// link. No participation row, no auth — they're a stranger who got
+// the URL after the contest closed. Sets the winner override so the
+// reveal page resolves with a crowned name.
+function seedNeutralReveal(contestId, winnerSubId) {
+  wipeAll();
+  const c = getMockContestById(contestId);
+  const totalDays =
+    (c?.settings?.submissionDays || 7) + (c?.settings?.votingDays || 3) + 1;
+  try {
+    localStorage.setItem(
+      'v4_contest_override_' + contestId,
+      JSON.stringify({ launchedAt: Date.now() - totalDays * DAY, winnerSubId })
+    );
+  } catch {}
+}
+
 // Seed a logged-in creator dropped straight into the brief chat for a
 // specific segment (group + sub-segment pre-picked from the contest).
 // BriefChat hydrates the pick into history and opens at the working-name
@@ -214,6 +232,14 @@ const PARTICIPANT_STEPS = [
   { n: 10, title: 'Workspace (post-vote)', desc: '"Voted ✓" status with a countdown to the winner announcement.', seed: () => seedParticipant(VOTE_ID, 'voted'), url: '/v4/settings' },
 ];
 
+// Neutral flow — a single page (for now): a stranger who clicked the
+// share link after the contest is already over. They didn't submit,
+// didn't vote, may not even be logged in. The public reveal page
+// hosts the result + a single Share button + an "Exit" out.
+const NEUTRAL_STEPS = [
+  { n: 1, title: 'Public winner reveal', desc: "What anyone sees if they click the share link after the contest closed — winning name, who suggested it, vote count, and a Share button that copies the page URL. No auth required. Exit returns to the homepage.", seed: () => seedNeutralReveal(VOTE_ID, 'vsub_2'), url: `/v4/contest/${VOTE_ID}/reveal` },
+];
+
 const ADDITIONAL = {
   legal: [
     { title: 'Privacy policy', desc: 'What data we collect, why, sub-processors, and your rights.', url: '/privacy' },
@@ -236,6 +262,7 @@ const ADDITIONAL = {
 const MAP_SECTIONS = [
   { id: 'map-creator', label: 'Creator flow' },
   { id: 'map-participant', label: 'Participant flow' },
+  { id: 'map-neutral', label: 'Neutral flow' },
   { id: 'map-additional', label: 'Additional pages' },
   { id: 'map-simulations', label: 'Simulations' },
 ];
@@ -249,9 +276,7 @@ export default function PlatformMap() {
       <div className="v4-screen">
         <main className="v4-review" role="main">
           <header className="v4-nav">
-            <Link to="/" className="v4-brand">
-              <img src={namingContestLogo} alt="NamingContest" className="v4-logo" />
-            </Link>
+            <BrandLink />
             <div className="v4-progress">
               <span className="v4-step-label">Platform map</span>
             </div>
@@ -296,6 +321,14 @@ export default function PlatformMap() {
               title="Participant flow"
               subtitle="Two ways in — an invite link (new) or a returning sign-in — through to seeing who won."
               steps={PARTICIPANT_STEPS}
+            />
+
+            <FlowSection
+              id="map-neutral"
+              icon={<ShareNetwork weight="duotone" size={18} />}
+              title="Neutral flow"
+              subtitle="What a random visitor sees when they click the share link after the contest is already over — no auth, no participation, just the result."
+              steps={NEUTRAL_STEPS}
             />
 
             {/* Additional pages */}

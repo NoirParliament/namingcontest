@@ -31,6 +31,7 @@ const PdfReport = forwardRef(function PdfReport({
   durationDays,
   hideBranding = false,
   customLogo,
+  customColor, // optional override — when set, paints the ENTIRE doc
 }, ref) {
   if (!winner) return null;
   const theme = SEGMENT_THEME[subId] || {};
@@ -38,6 +39,13 @@ const PdfReport = forwardRef(function PdfReport({
   const sortedNames = [...names].sort((a, b) => b.voteCount - a.voteCount);
   const topNames = sortedNames.slice(0, MAX_NAMES_ON_REPORT);
   const remainingNames = Math.max(0, sortedNames.length - MAX_NAMES_ON_REPORT);
+
+  // When a customColor is supplied (the user picked one from the
+  // customizer), it should cascade to EVERY tinted element in the
+  // doc — winner card AND the three decorative background blobs.
+  // Otherwise the blobs stay segment-tinted (the original look).
+  const blobColor = customColor || t.bg;
+  const useCustomBlobs = !!customColor;
 
   return (
     <div
@@ -47,11 +55,13 @@ const PdfReport = forwardRef(function PdfReport({
         '--report-tint-bg': t.bg,
         '--report-tint-fg': t.fg,
         '--report-tint-border': t.fg + '33',
-        // Set segment blob colors via the same CSS vars the backdrop uses
-        '--v4-blob-1-color': theme.blobs?.[0] || t.bg,
-        '--v4-blob-2-color': theme.blobs?.[1] || t.bg,
-        '--v4-blob-3-color': theme.blobs?.[2] || t.bg,
-        '--v4-blob-4-color': theme.blobs?.[0] || t.bg,
+        // Blob colors — fall back to segment palette ONLY when no
+        // custom colour was picked. When the user customises, every
+        // blob inherits the chosen colour so the whole doc shifts.
+        '--v4-blob-1-color': useCustomBlobs ? blobColor : (theme.blobs?.[0] || t.bg),
+        '--v4-blob-2-color': useCustomBlobs ? blobColor : (theme.blobs?.[1] || t.bg),
+        '--v4-blob-3-color': useCustomBlobs ? blobColor : (theme.blobs?.[2] || t.bg),
+        '--v4-blob-4-color': useCustomBlobs ? blobColor : (theme.blobs?.[0] || t.bg),
       }}
     >
       {/* Decorative blobs — segment-tinted, soft */}
@@ -59,8 +69,19 @@ const PdfReport = forwardRef(function PdfReport({
       <span className="v4-pdf-report-blob v4-pdf-report-blob-2" aria-hidden="true"></span>
       <span className="v4-pdf-report-blob v4-pdf-report-blob-3" aria-hidden="true"></span>
 
-      {/* Scattered segment icons (smaller scale, low opacity) */}
-      {theme.iconPositions?.map((pos, i) => {
+      {/* Scattered segment icons (smaller scale, low opacity).
+          Filter out anything that would overlap the brand-bar +
+          title zone in the top-left of the doc (top < 28% AND
+          left < 20%) — those collide with text and read as "icon
+          stuck behind the logo / title." Keep the rest. */}
+      {theme.iconPositions?.filter((pos) => {
+        const topPct = parseFloat(pos.top);
+        const leftPct = parseFloat(pos.left);
+        // Drop only if BOTH top AND left are in the brandbar zone.
+        // Right-aligned, mid, and bottom icons all pass through.
+        if (!Number.isFinite(topPct) || !Number.isFinite(leftPct)) return true;
+        return !(topPct < 28 && leftPct < 20);
+      }).map((pos, i) => {
         const { Icon, size, rotate, ...positionStyle } = pos;
         return (
           <span

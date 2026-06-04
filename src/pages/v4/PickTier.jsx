@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { X } from '@phosphor-icons/react';
+import ExitLink from '../../components/v4/ExitLink';
 import personalDog from '../../assets/personal-dog.png';
 import teamPlayers from '../../assets/team-players.png';
 import businessWoman from '../../assets/business-woman.png';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
+import BrandLink from '../../components/v4/BrandLink';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -84,9 +86,7 @@ export default function PickTier() {
 
       {/* Slim v4-style nav — matches the chat screens */}
       <header className="v4-nav">
-        <Link to="/" className="v4-brand">
-          <img src={namingContestLogo} alt="NamingContest" className="v4-logo" />
-        </Link>
+        <BrandLink />
         <div className="v4-progress">
           <span className="v4-step-dot is-active"></span>
           <span className="v4-step-dot"></span>
@@ -95,10 +95,7 @@ export default function PickTier() {
             Setup<span className="v4-step-counter"> · 1/16</span>
           </span>
         </div>
-        <Link to="/" className="v4-exit" aria-label="Exit">
-          <X weight="regular" size={14} />
-          <span>Exit</span>
-        </Link>
+        <ExitLink to="/" aria-label="Exit" />
       </header>
 
       <div className="frame">

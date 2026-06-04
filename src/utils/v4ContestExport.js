@@ -11,18 +11,42 @@
 import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 
+// Fixed pixel width the share card always renders at when captured,
+// regardless of the user's viewport. Matches the desktop layout width
+// of the WinnerHero card (max-width 740 minus a hair of padding), so a
+// PNG exported from a 375px phone looks pixel-identical to one
+// exported from a 1440px desktop.
+const SHARE_CARD_EXPORT_WIDTH = 720;
+
 // ─────────────────────────────────────────────────────────────────────
 // PNG: snapshot the share card.
+//
+// The on-screen WinnerHero is responsive (mobile @media rules shrink
+// the title to 44px, tighten padding, and the card fills whatever
+// width the parent container gives it). Capturing the LIVE element on
+// a 375px phone therefore produced a tiny PNG with cramped mobile
+// typography — a completely different artifact than the desktop one.
+//
+// Fix: deep-clone the element into a fixed-width off-screen host and
+// snapshot the clone. The body picks up `.is-exporting-card` for the
+// duration of capture, which scopes a set of !important overrides
+// (see styles/v4.css) that re-assert the desktop font sizes / padding
+// regardless of the surrounding @media queries. On-screen layout is
+// untouched (the clone is at left:-10000px, opacity:0 host); the
+// resulting PNG matches desktop exactly.
 // ─────────────────────────────────────────────────────────────────────
 export async function downloadShareCard(element, contestName = 'winner') {
   if (!element) {
     console.warn('downloadShareCard: no element provided');
     return;
   }
+  const restore = mountDesktopExportClone(element);
   try {
-    const dataUrl = await toPng(element, {
+    const clone = restore.clone;
+    const dataUrl = await toPng(clone, {
       pixelRatio: 2,
       cacheBust: true,
+      width: SHARE_CARD_EXPORT_WIDTH,
       // Transparent so the card's rounded corners stay rounded in the
       // PNG — no white rectangle bleeding outside the card edges.
       backgroundColor: undefined,
@@ -38,7 +62,48 @@ export async function downloadShareCard(element, contestName = 'winner') {
   } catch (err) {
     console.error('PNG export failed', err);
     window.alert('Could not generate the share card image.');
+  } finally {
+    restore();
   }
+}
+
+// Deep-clone `source` into a fixed-width off-screen host so the export
+// always renders at desktop dimensions. Adds `.is-exporting-card` to
+// the body so the override stylesheet kicks in for the clone. Returns
+// a restore function; the function also carries `.clone` as a property
+// so the caller can capture from the clone directly.
+function mountDesktopExportClone(source) {
+  const clone = source.cloneNode(true);
+  // Strip the entrance animation on the clone — html-to-image captures
+  // a single frame and `opacity: 0` from `animation-fill-mode: forwards`
+  // on the very first frame yields a blank PNG.
+  clone.style.animation = 'none';
+  clone.style.opacity = '1';
+  clone.style.transform = 'none';
+
+  const host = document.createElement('div');
+  host.setAttribute('data-export-host', '1');
+  host.style.cssText = [
+    'position: fixed',
+    'left: -10000px',
+    'top: 0',
+    `width: ${SHARE_CARD_EXPORT_WIDTH}px`,
+    'background: transparent',
+    'z-index: -1',
+    'pointer-events: none',
+    // Force a layout context so the clone resolves its dimensions.
+    'contain: layout',
+  ].join('; ');
+  host.appendChild(clone);
+  document.body.appendChild(host);
+  document.body.classList.add('is-exporting-card');
+
+  const restore = () => {
+    if (host.parentNode) host.parentNode.removeChild(host);
+    document.body.classList.remove('is-exporting-card');
+  };
+  restore.clone = clone;
+  return restore;
 }
 
 // ─────────────────────────────────────────────────────────────────────

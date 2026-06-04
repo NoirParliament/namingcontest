@@ -18,9 +18,9 @@ import {
   SoccerBall, Trophy, Lightning, Medal, Flag,
   MusicNote, Guitar, Microphone, Headphones, VinylRecord,
   Broadcast, ChatCircle,
-  GraduationCap, HandHeart, UsersThree,
-  GameController, Sword, Crown,
-  Buildings, Compass, Target, Lightbulb, Rocket,
+  GraduationCap, HandHeart, HandsClapping, HandFist, UsersThree, UsersFour,
+  GameController, Sword, Crown, PencilSimple,
+  Buildings, Briefcase, Compass, Target, Lightbulb, Rocket,
   Package, ChartLine,
   ClipboardText, CheckCircle,
   ArrowsClockwise as RebrandIcon, PaintBrushBroad,
@@ -34,8 +34,8 @@ import baby1Png      from '../../assets/baby 1.png';
 import baby2Png      from '../../assets/baby 2.png';
 import home1Png      from '../../assets/home 1.png';
 import home2Png      from '../../assets/home 2.png';
-import sports1Png    from '../../assets/sports 1.png';
-import sports2Png    from '../../assets/sports 2.png';
+import sports1Png    from '../../assets/sportsteam1.png';
+import sports2Png    from '../../assets/sportsteam2.png';
 import band1Png      from '../../assets/band 1.png';
 import band2Png      from '../../assets/band 2.png';
 import podcast1Png   from '../../assets/podcast 1.png';
@@ -118,7 +118,15 @@ export const SEGMENT_THEME = {
       { Icon: Medal,      top: '72%', right: '12%', size: 36, rotate: '-8deg'},
       { Icon: Flag,       bottom: '8%', left: '18%', size: 32, rotate: '18deg'},
     ],
-    images: [{ ...ANCHOR_POS, src: sports1Png }, { ...ACCENT_POS, src: sports2Png }],
+    // Sports team huddle PNG fills its frame edge-to-edge (no transparent
+    // margin like the other illustrations), so push the anchor inward
+    // ~36px extra to match the visual breathing room other segments get.
+    // Trophy accent is nudged down + further left so it climbs onto the
+    // bottom-left mint blob, the way other segments sit on theirs.
+    images: [
+      { ...ANCHOR_POS, right: '60px', src: sports1Png },
+      { ...ACCENT_POS, left: '8px', src: sports2Png },
+    ],
   },
   t2: { // Band
     blobs: ['#b3c4f0', '#b3c4f0', '#b3c4f0', '#fadecc'],
@@ -253,6 +261,69 @@ export function getSegmentTone(subId) {
   const theme = subId ? SEGMENT_THEME[subId] : null;
   const primary = theme?.blobs?.[0];
   return TONE_BY_BG[primary] || TONE_BY_BG['#fadecc'];
+}
+
+// 5-color Boring Avatars palette per segment family. The first colour
+// in each palette is the segment's dominant tone (so faces lean into
+// the same family the page is washed in), followed by the other NC
+// panel colours. We deliberately exclude --accent-purple (#4b68c3):
+// in the design system it only appears as a tiny faded decor dot
+// (opacity 0.45), never as a full block of colour. Big bauhaus discs
+// of it read as a foreign brand. The 5 panel pastels are the only
+// colours that exist as solid surfaces in the design system.
+const PALETTE_BY_PRIMARY = {
+  '#fadecc': ['#fadecc', '#fceebc', '#a6dcb3', '#b3c4f0', '#c4dffb'], // blush-led
+  '#fceebc': ['#fceebc', '#fadecc', '#a6dcb3', '#c4dffb', '#b3c4f0'], // butter-led
+  '#a6dcb3': ['#a6dcb3', '#fceebc', '#c4dffb', '#fadecc', '#b3c4f0'], // mint-led
+  '#bce5c8': ['#bce5c8', '#fceebc', '#c4dffb', '#fadecc', '#b3c4f0'], // mint-lighter
+  '#b3c4f0': ['#b3c4f0', '#c4dffb', '#fadecc', '#a6dcb3', '#fceebc'], // periwinkle-led
+  '#c4cff5': ['#c4cff5', '#c4dffb', '#fadecc', '#a6dcb3', '#fceebc'], // periwinkle-lighter
+  '#c4dffb': ['#c4dffb', '#b3c4f0', '#a6dcb3', '#fceebc', '#fadecc'], // sky-led
+};
+const DEFAULT_PALETTE = ['#fadecc', '#fceebc', '#a6dcb3', '#c4dffb', '#b3c4f0'];
+
+// Returns the 5-color Boring Avatars palette tied to a segment's
+// primary blob color. Falls back to a balanced NC palette for
+// unknown segments. Same input → same output (memoizable upstream).
+export function getSegmentPalette(subId) {
+  const theme = subId ? SEGMENT_THEME[subId] : null;
+  const primary = theme?.blobs?.[0];
+  return PALETTE_BY_PRIMARY[primary] || DEFAULT_PALETTE;
+}
+
+// Per-segment hero icon — shows up in the .v4-review-badge slot on
+// the Review & Launch screen and the Manage hero. Picked to evoke
+// the category WITHOUT locking in a specific instance — so Sports
+// uses Trophy (every sport has a trophy) instead of SoccerBall
+// (which would mis-cue a basketball or hockey contest). Pet uses
+// PawPrint instead of Dog, etc.
+export const SEGMENT_ICON = {
+  // Personal
+  p1: Baby,           // Baby
+  p2: PawPrint,       // Pet — any species
+  p3: House,          // Home / property
+  p4: PencilSimple,   // Other personal — matches the segment picker.
+  // Team
+  t1: UsersThree,     // Sports team — matches the team-tier icon used
+                      //   in the workspace, so it reads as the same
+                      //   "team" everywhere. Sport-agnostic. Trophy
+                      //   stays reserved for the winner reveal.
+  t2: Guitar,         // Band
+  t3: Microphone,     // Podcast
+  t4: GraduationCap,  // School / club / nonprofit — matches picker.
+  t5: GameController, // Gaming
+  t6: PencilSimple,   // Other team — distinct from t1's UsersThree;
+                      //   matches the segment picker icon.
+  // Business
+  b1: Buildings,      // Company / startup
+  b2: Package,        // Product
+  b3: Target,         // Project / initiative — matches picker.
+  b4: RebrandIcon,    // Rebrand
+  b5: PencilSimple,   // Other business — matches the segment picker.
+};
+
+export function getSegmentIcon(subId) {
+  return SEGMENT_ICON[subId] || null;
 }
 
 // Convenience component renderer for all theme decoration (blobs + icons + images).

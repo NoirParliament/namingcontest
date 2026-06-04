@@ -14,11 +14,13 @@ import useCountdown, { pad2 } from '../../utils/useCountdown';
 import participantProfile from '../../assets/participant-profile.png';
 import creatorProfile from '../../assets/creator-profile.png';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
+import BrandLink from '../../components/v4/BrandLink';
 import { readSetup, writeSetup } from '../../utils/v4Brief';
 import { readAllParticipations, getParticipantRow } from '../../utils/v4Participant';
 import { getMockContestById, MOCK_CONTESTS } from '../../data/v4/mockContests';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
 import AvatarMenu from '../../components/v4/AvatarMenu';
+import CatchwordConsultBlock from '../../components/v4/CatchwordConsultBlock';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -266,9 +268,7 @@ export default function Settings() {
         <main className="v4-review" role="main">
           {/* Glass nav — matches ContestManage pattern */}
           <header className="v4-nav">
-            <Link to="/" className="v4-brand">
-              <img src={namingContestLogo} alt="NamingContest" className="v4-logo" />
-            </Link>
+            <BrandLink />
             <div className="v4-progress">
               <span className="v4-step-label">Workspace</span>
             </div>
@@ -447,6 +447,39 @@ export default function Settings() {
                   );
                 })}
 
+                {/* CANCELLED contests — only shown when the user has
+                    cancelled at least one. Sits below the running
+                    contest + the closed ones so the chronology reads
+                    naturally. Each row is muted and followed by the
+                    Catchword consultation block: "couldn't find a
+                    name? book the pros." */}
+                {Array.isArray(setup.cancelledContests) && setup.cancelledContests.length > 0 && (
+                  <>
+                    {setup.cancelledContests.map((c) => (
+                      <div
+                        key={c.id}
+                        className="v4-settings-contest-row v4-settings-contest-row-cancelled"
+                      >
+                        <span className="v4-settings-contest-row-icon" aria-hidden="true">
+                          <X weight="bold" size={16} />
+                        </span>
+                        <div className="v4-settings-contest-row-text">
+                          <div className="v4-settings-contest-row-eyebrow">
+                            <span>Cancelled</span>
+                          </div>
+                          <div className="v4-settings-contest-row-name">
+                            {c.workingName || 'Untitled contest'}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    <CatchwordConsultBlock
+                      headline="Couldn't find the right name?"
+                      body={<>Naming is hard. Catchword — the agency NamingContest is built on top of — runs deeper, one-on-one sessions when the crowd doesn't crack it.</>}
+                    />
+                  </>
+                )}
+
                 {/* Quiet "start another" footer. */}
                 <div className="v4-settings-newcontest-quiet">
                   <button
@@ -461,6 +494,38 @@ export default function Settings() {
                     One-time fee · Personal $9 · Group $29 · Business $89
                   </span>
                 </div>
+              </section>
+            ) : Array.isArray(setup.cancelledContests) && setup.cancelledContests.length > 0 ? (
+              /* No running contest but cancelled ones exist — show
+                 them in their own section so the workspace isn't
+                 silent about the user's recent action. */
+              <section className="v4-settings-section">
+                <header className="v4-settings-section-head">
+                  <X weight="bold" size={18} />
+                  <h2>Cancelled contests</h2>
+                </header>
+                {setup.cancelledContests.map((c) => (
+                  <div
+                    key={c.id}
+                    className="v4-settings-contest-row v4-settings-contest-row-cancelled"
+                  >
+                    <span className="v4-settings-contest-row-icon" aria-hidden="true">
+                      <X weight="bold" size={16} />
+                    </span>
+                    <div className="v4-settings-contest-row-text">
+                      <div className="v4-settings-contest-row-eyebrow">
+                        <span>Cancelled</span>
+                      </div>
+                      <div className="v4-settings-contest-row-name">
+                        {c.workingName || 'Untitled contest'}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                <CatchwordConsultBlock
+                  headline="Couldn't find the right name?"
+                  body={<>Naming is hard. Catchword — the agency NamingContest is built on top of — runs deeper, one-on-one sessions when the crowd doesn't crack it.</>}
+                />
               </section>
             ) : null /* Quiet "Start a contest" nudge lives at the
                         very bottom of the page (after the Account

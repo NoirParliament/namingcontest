@@ -39,7 +39,18 @@ export default function AvatarMenu({ email, name, photo, defaultPhoto, tone, act
   const handleSignOut = () => {
     // Prototype: clears the v4 setup blob. Real auth call lands here later.
     try { localStorage.removeItem('v4_contest_setup'); } catch {}
-    navigate('/');
+    // Same body-fade exit treatment as ExitLink/BrandLink, so signing
+    // out has the gentle "leaving" feel instead of a jump-cut to the
+    // marketing homepage.
+    document.body.classList.add('is-exiting');
+    window.setTimeout(() => {
+      document.body.style.transition = 'none';
+      document.body.classList.remove('is-exiting');
+      navigate('/');
+      window.requestAnimationFrame(() => {
+        document.body.style.transition = '';
+      });
+    }, 180);
   };
 
   return (

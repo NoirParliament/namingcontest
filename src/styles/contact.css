@@ -183,15 +183,47 @@
   border-radius: 18px;
   animation: contact-bubble-in 0.42s cubic-bezier(0.34, 1.45, 0.5, 1) both;
 }
+
+/* User bubbles are clickable buttons (open the edit modal on click).
+   Strip the default button chrome so it looks identical to the
+   non-editable variant, then add a subtle hover hint so the
+   affordance is discoverable without being noisy. */
+.contact-chat-bubble-editable {
+  appearance: none;
+  border: none;
+  font-family: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s ease, filter 0.18s ease;
+}
+.contact-chat-bubble-editable:hover {
+  filter: brightness(0.97);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+.contact-chat-bubble-editable:active {
+  transform: scale(0.97);
+  transition-duration: 0.08s;
+}
+.contact-chat-bubble-editable:focus-visible {
+  box-shadow: 0 0 0 3px var(--v4-ring, rgba(75, 104, 195, 0.35));
+}
+
+/* Edit-modal footer (Cancel + Save) on the contact-page edit popup. */
+.contact-edit-actions {
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
 /* Bot prompts read as warm questions — Fraunces, pastel, tail bottom-left. */
 .contact-chat-row.bot .contact-chat-bubble {
   background: var(--bg-inset);
   color: var(--fg);
   border-bottom-left-radius: 6px;
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: 16.5px;
-  letter-spacing: var(--tr-tight);
+  /* Inter (from the base .contact-chat-bubble) — Fraunces is reserved for
+     titles/headings per the design spec. */
 }
 /* User replies — dark ink, off-white text, tail bottom-right. */
 .contact-chat-row.user .contact-chat-bubble {
@@ -289,21 +321,120 @@
 }
 
 /* ── Received confirmation ────────────────────────────────────────── */
+/* Success state — sits INSIDE the existing .contact-chat-panel card,
+   so we don't add a second card chrome (background, border,
+   shadow). The panel already provides those. We just lay out the
+   icon → title → copy → CTA centered vertically inside the panel's
+   520px height, and let the scattered shapes float over the panel
+   bg. */
 .contact-received {
-  text-align: center; padding: 8px 4px 6px;
-  animation: contact-received-in 0.4s cubic-bezier(0.34, 1.4, 0.5, 1) both;
+  position: relative;
+  text-align: center;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 12px;
+  animation: contact-received-in 0.5s cubic-bezier(0.34, 1.4, 0.5, 1) both;
 }
 @keyframes contact-received-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+/* Scattered shapes — same five-shape recipe as the v4 modals. */
+.contact-received-shape {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.55;
+  animation: decorFloat 12s ease-in-out infinite;
+  z-index: 0;
+}
+.contact-received-shape-1 { top: 22px;  left: 22px;  width: 10px; height: 10px; background: var(--panel-mint, #a6dcb3); }
+.contact-received-shape-2 { top: 56px;  right: 26px; width: 22px; height: 10px; background: var(--panel-periwinkle, #b3c4f0); border-radius: 12px 4px 14px 4px; transform: rotate(-12deg); animation-name: decorFloat2; animation-delay: -3s; }
+.contact-received-shape-3 { bottom: 28px; left: 30px; width: 12px; height: 12px; background: var(--panel-blush, #fadecc); animation-delay: -5s; }
+.contact-received-shape-4 { bottom: 60px; right: 28px; width: 8px; height: 8px; background: var(--panel-butter, #fceebc); animation-delay: -2s; }
+.contact-received-shape-5 { top: 50%;   left: 18px;  width: 6px; height: 6px; background: var(--accent-purple, #4b68c3); opacity: 0.4; animation-delay: -7s; }
+
+/* Lift content above the shapes. */
+.contact-received > *:not(.contact-received-shape) {
+  position: relative;
+  z-index: 1;
+}
+
 .contact-received-icon {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 56px; height: 56px; border-radius: 50%;
-  background: var(--panel-blush); color: var(--fg); margin-bottom: 16px;
+  width: 64px; height: 64px; border-radius: 20px;
+  background: linear-gradient(155deg, color-mix(in srgb, #a6dcb3 60%, white) 0%, #a6dcb3 100%);
+  color: #1f5430;
+  margin: 0 auto 22px;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.08));
 }
-.contact-received-title { font-family: var(--font-display); font-size: 26px; color: var(--fg); margin-bottom: 8px; }
-.contact-received-sub { font-size: 14.5px; line-height: 1.55; color: var(--fg-faint); max-width: 360px; margin: 0 auto 18px; }
-.contact-received-sub strong { color: var(--fg); font-weight: 700; }
-.contact-received-again { background: none; border: none; padding: 0; color: var(--fg); font-weight: 600; font-size: 14px; cursor: pointer; }
-.contact-received-again:hover { opacity: 0.75; }
+
+/* Message-received hero illustration — uses message.png the same
+   way signup.png / key.png are used in sign-in / launch modals.
+   Tilt + drop-shadow + soft entrance to match the family. */
+.contact-received-hero {
+  display: block;
+  width: 110px;
+  height: auto;
+  margin: 0 auto 18px;
+  transform: rotate(-6deg);
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.10));
+  animation: contact-received-hero-in 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes contact-received-hero-in {
+  from { opacity: 0; transform: rotate(-6deg) translateY(-10px) scale(0.88); }
+  to   { opacity: 1; transform: rotate(-6deg) translateY(0)     scale(1);    }
+}
+.contact-received-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 30px;
+  letter-spacing: -0.022em;
+  line-height: 1.15;
+  color: var(--fg);
+  margin: 0 0 10px;
+}
+.contact-received-sub {
+  font-family: var(--font-text);
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--fg-faint);
+  max-width: 380px;
+  margin: 0 auto 24px;
+}
+.contact-received-sub strong { color: var(--fg); font-weight: 600; }
+/* Same gradient-flip animation used by .v4-join-cta / .btn-primary —
+   ink slides to white on hover. Keeps every black-pill CTA on the
+   same language across the product. */
+.contact-received-again {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 13px 24px;
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  line-height: 1;
+  color: #ffffff;
+  background: linear-gradient(to top, #ffffff 50%, #030302 50%);
+  background-size: 100% 200%;
+  background-position: top;
+  border: 1px solid #030302;
+  border-radius: 999px;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 4px 14px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-position 0.55s cubic-bezier(0.65, 0, 0.35, 1),
+    color 0.35s ease;
+}
+.contact-received-again:hover { background-position: bottom; color: #030302; }
+.contact-received-again:active { transform: scale(0.97); transition-duration: 0.08s; }

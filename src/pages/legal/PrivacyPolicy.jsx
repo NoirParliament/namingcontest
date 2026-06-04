@@ -2,7 +2,7 @@ import LegalPage from './LegalPage';
 
 export default function PrivacyPolicy() {
   return (
-    <LegalPage title="Privacy policy" updated="May 28, 2026">
+    <LegalPage title="Privacy policy" updated="May 28, 2026" decor="warm">
       <p className="legal-lede">
         This Privacy Policy explains how The Cypher Group, LLC
         (&ldquo;Cypher,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or
@@ -180,10 +180,10 @@ export default function PrivacyPolicy() {
       <h2>8. Data retention</h2>
       <p>
         We retain personal information for as long as your account
-        remains active and for up to twenty-four (24) months following
-        your last activity, after which it is deleted or anonymized,
-        unless a longer retention period is required to comply with our
-        legal obligations, resolve disputes, or enforce our agreements.
+        remains active and for a reasonable period following your last
+        activity, after which it is deleted or anonymized, unless a
+        longer retention period is required to comply with our legal
+        obligations, resolve disputes, or enforce our agreements.
         Payment and transaction records may be retained by our payment
         processor for up to seven (7) years to satisfy tax and
         accounting obligations. You may request deletion of your

@@ -20,6 +20,8 @@ import {
   CheckCircle, Trophy, Clock,
 } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
+import BrandLink from '../../components/v4/BrandLink';
+import messageImg from '../../assets/message.png';
 
 // Inviter avatars — hero-profile-1 through 6. Indexed by contest.creator.photoIndex.
 import heroProfile1 from '../../assets/hero-profile-1.png';
@@ -82,6 +84,19 @@ export default function JoinContest() {
   useEffect(() => {
     if (!contest) return;
     const existing = readParticipation(contestId);
+
+    // ── Post-contest: late arrivals see the public reveal ──────────
+    // If the creator has crowned a winner and this visitor never
+    // participated, they're a random share-link clicker who arrived
+    // after the dust settled. Send them to the neutral public reveal
+    // (with social-share buttons) instead of the now-meaningless
+    // invitation. Participants still go to /winner via the row
+    // mapper below — that's their "you/your teammate won" view.
+    if (contest.winnerSubId && !existing) {
+      navigate(`/v4/contest/${contestId}/reveal`, { replace: true });
+      return;
+    }
+
     if (!existing) return;
     const phaseShape = {
       ...contest,
@@ -120,9 +135,7 @@ export default function JoinContest() {
         <div className="v4-screen v4-join-screen v4-join-screen-error">
           <main className="v4-review" role="main">
             <header className="v4-nav">
-              <Link to="/" className="v4-brand">
-                <img src={namingContestLogo} alt="NamingContest" className="v4-logo" />
-              </Link>
+              <BrandLink />
             </header>
             <div className="v4-review-inner">
               <div className="v4-join-error">
@@ -256,9 +269,7 @@ export default function JoinContest() {
               breadcrumb plays elsewhere — top-of-page context), deadline
               pill right. */}
           <header className="v4-nav v4-join-nav">
-            <Link to="/" className="v4-brand">
-              <img src={namingContestLogo} alt="NamingContest" className="v4-logo" />
-            </Link>
+            <BrandLink />
             <div className="v4-progress v4-join-nav-inviter">
               <strong className="v4-join-inviter-name-inline">
                 {creatorName}
@@ -343,6 +354,13 @@ export default function JoinContest() {
 
               {(phase === 'form' || phase === 'sending') && (
                 <form className="v4-join-form-reveal" onSubmit={handleSendLink}>
+                  {/* Scattered shape decoration — matches the sign-in
+                      / sent-card / pickwinner modal vocabulary. */}
+                  <span className="v4-join-form-shape v4-join-form-shape-1" aria-hidden="true" />
+                  <span className="v4-join-form-shape v4-join-form-shape-2" aria-hidden="true" />
+                  <span className="v4-join-form-shape v4-join-form-shape-3" aria-hidden="true" />
+                  <span className="v4-join-form-shape v4-join-form-shape-4" aria-hidden="true" />
+                  <span className="v4-join-form-shape v4-join-form-shape-5" aria-hidden="true" />
                   <div className="v4-join-form-head">
                     Quick — what's your email?
                   </div>
@@ -384,9 +402,20 @@ export default function JoinContest() {
 
               {phase === 'sent' && (
                 <div className="v4-join-sent-card">
-                  <div className="v4-signin-icon-wrap v4-signin-icon-wrap-sent">
-                    <PaperPlaneTilt weight="duotone" size={28} />
-                  </div>
+                  {/* Scattered shape decoration — matches the sign-in /
+                      edit / pickwinner modals so this card reads as
+                      part of the same family. */}
+                  <span className="v4-join-sent-shape v4-join-sent-shape-1" aria-hidden="true" />
+                  <span className="v4-join-sent-shape v4-join-sent-shape-2" aria-hidden="true" />
+                  <span className="v4-join-sent-shape v4-join-sent-shape-3" aria-hidden="true" />
+                  <span className="v4-join-sent-shape v4-join-sent-shape-4" aria-hidden="true" />
+                  <span className="v4-join-sent-shape v4-join-sent-shape-5" aria-hidden="true" />
+                  <img
+                    src={messageImg}
+                    alt=""
+                    aria-hidden="true"
+                    className="v4-join-sent-hero"
+                  />
                   <h3 className="v4-join-sent-title">Magic link sent</h3>
                   <p className="v4-join-sent-sub">
                     Check <strong>{email}</strong> — open the link to
@@ -415,6 +444,11 @@ export default function JoinContest() {
 
               {phase === 'success' && (
                 <div className="v4-join-sent-card">
+                  <span className="v4-join-sent-shape v4-join-sent-shape-1" aria-hidden="true" />
+                  <span className="v4-join-sent-shape v4-join-sent-shape-2" aria-hidden="true" />
+                  <span className="v4-join-sent-shape v4-join-sent-shape-3" aria-hidden="true" />
+                  <span className="v4-join-sent-shape v4-join-sent-shape-4" aria-hidden="true" />
+                  <span className="v4-join-sent-shape v4-join-sent-shape-5" aria-hidden="true" />
                   <div className="v4-signin-icon-wrap v4-signin-icon-wrap-success">
                     <CheckCircle weight="duotone" size={28} />
                   </div>

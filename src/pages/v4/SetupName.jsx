@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowRight, X, PencilSimple } from '@phosphor-icons/react';
+import ExitLink from '../../components/v4/ExitLink';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
+import BrandLink from '../../components/v4/BrandLink';
 import '../../styles/v4.css';
 
 // Reads the in-progress contest setup state from localStorage.
@@ -75,9 +77,7 @@ export default function SetupName() {
       <div className="v4-screen">
         {/* Slim nav */}
         <header className="v4-nav">
-          <Link to="/" className="v4-brand">
-            <img src={namingContestLogo} alt="NamingContest" className="v4-logo" />
-          </Link>
+          <BrandLink />
           <div className="v4-progress">
             <span className="v4-step-dot is-done"></span>
             <span className="v4-step-dot is-active"></span>
@@ -86,10 +86,7 @@ export default function SetupName() {
             <span className="v4-step-dot"></span>
             <span className="v4-step-label">Step 2 of 5</span>
           </div>
-          <Link to="/" className="v4-exit" aria-label="Exit">
-            <X weight="regular" size={14} />
-            <span>Exit</span>
-          </Link>
+          <ExitLink to="/" aria-label="Exit" />
         </header>
 
         {/* Decorative pastel blobs */}

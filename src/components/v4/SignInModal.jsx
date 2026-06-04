@@ -15,11 +15,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  X, EnvelopeSimple, PaperPlaneTilt, ArrowRight, CheckCircle, UsersThree,
+  X, PaperPlaneTilt, ArrowRight, CheckCircle, UsersThree,
 } from '@phosphor-icons/react';
 import { readSetup, writeSetup } from '../../utils/v4Brief';
 import { joinContest, clearParticipation, recordSubmission } from '../../utils/v4Participant';
 import { MOCK_CONTESTS } from '../../data/v4/mockContests';
+import keyImg from '../../assets/key.png';
 // Pull landing-v3 styles in so the modal's .btn-primary / .btn-secondary
 // (and their hover-slide animation) resolve correctly even when the modal
 // is mounted outside the v4 page tree (e.g. triggered from the landing).
@@ -158,6 +159,10 @@ export default function SignInModal({ open, onClose, initialMode = 'creator' }) 
        so the modal renders with the right colors even though it lives
        outside the v4 page tree (e.g. when triggered from the landing). */
     <div className="v4 lp-v3 v4-signin-overlay" onClick={onClose}>
+      {/* Soft blush halo glow behind the modal — ties to the homepage warm
+          palette so the modal reads as part of NamingContest, not a generic
+          auth popup. */}
+      <span className="v4-signin-halo" aria-hidden="true" />
       <div
         className="v4-signin-modal"
         onClick={(e) => e.stopPropagation()}
@@ -174,14 +179,25 @@ export default function SignInModal({ open, onClose, initialMode = 'creator' }) 
           <X weight="regular" size={16} />
         </button>
 
+        {/* Scattered decorative shapes around the corners — same vocabulary
+            as the homepage hero dots, no gradient inside the modal. */}
+        <span className="v4-signin-shape v4-signin-shape-1" aria-hidden="true" />
+        <span className="v4-signin-shape v4-signin-shape-2" aria-hidden="true" />
+        <span className="v4-signin-shape v4-signin-shape-3" aria-hidden="true" />
+        <span className="v4-signin-shape v4-signin-shape-4" aria-hidden="true" />
+        <span className="v4-signin-shape v4-signin-shape-5" aria-hidden="true" />
+
         {phase === 'input' && (
           <>
-            <div className="v4-signin-icon-wrap">
-              <EnvelopeSimple weight="duotone" size={28} />
-            </div>
-            <h2 id="v4-signin-title" className="v4-signin-title">Sign in</h2>
+            <img
+              className="v4-signin-hero-key"
+              src={keyImg}
+              alt=""
+              aria-hidden="true"
+            />
+            <h2 id="v4-signin-title" className="v4-signin-title">Welcome back</h2>
             <p className="v4-signin-subtitle">
-              No password — we'll email you a magic link.
+              Drop your email — we'll send a magic link. No password to remember.
             </p>
 
             <form className="v4-signin-form" onSubmit={handleSendCreatorLink}>

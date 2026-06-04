@@ -13,7 +13,27 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import {
   CaretDown, CaretRight, MagnifyingGlass,
 } from '@phosphor-icons/react';
+import Avatar from 'boring-avatars';
+import AnimatedCount from './AnimatedCount';
 import { participantStatsFrom } from '../../utils/v4LiveData';
+
+// Default Boring Avatars palette — only used if the caller doesn't
+// supply a segment-specific palette via the `palette` prop. The
+// segment palette comes from getSegmentPalette() so each contest's
+// avatars sit inside its own colour family (sports = mint-led,
+// baby = blush-led, band = periwinkle-led, etc.).
+// Only the 5 NC panel pastels — accent-purple intentionally excluded
+// because it only exists in the design as a faded decor dot, never
+// as a solid block of colour.
+const DEFAULT_AVATAR_PALETTE = ['#fadecc', '#fceebc', '#a6dcb3', '#c4dffb', '#b3c4f0'];
+
+// Feature colour for the eyes/mouth of every beam avatar: the design
+// system's primary ink (--fg, #030302). It's the same colour used for
+// all body text and titles across NamingContest — heavily documented
+// and used everywhere — just not as a "panel" colour. Black-out
+// pastels would blend into the pastel faces, ink gives the faces real
+// readable features without introducing a new colour.
+const FEATURE_INK = '#030302';
 
 const COLLAPSED_COUNT = 5;
 
@@ -21,6 +41,7 @@ const FALLBACK_TONE = { bg: '#fadecc', fg: '#9c4818' };
 
 export default function LiveResults({
   tone = FALLBACK_TONE,
+  palette = DEFAULT_AVATAR_PALETTE,
   names = [],
   participants = [],
   phase = 'voting',
@@ -132,6 +153,7 @@ export default function LiveResults({
           collapsedCount={COLLAPSED_COUNT}
           onShowAllChange={setShowAll}
           tone={tone}
+          palette={palette}
         />
       ) : (
         <ParticipantsList
@@ -145,6 +167,7 @@ export default function LiveResults({
           collapsedCount={COLLAPSED_COUNT}
           onShowAllChange={setShowAll}
           tone={tone}
+          palette={palette}
         />
       )}
     </section>
@@ -154,13 +177,48 @@ export default function LiveResults({
 // ── NAMES VIEW ──────────────────────────────────────────────────────
 function NamesList({
   names, getParticipantById, showVotes, search, expandedId, onToggle,
-  showAll, collapsedCount, onShowAllChange, tone,
+  showAll, collapsedCount, onShowAllChange, tone, palette,
 }) {
   const scrollerRef = useRef(null);
   const expandedRowRef = useRef(null);
 
-  // Past submission: rank by votes. During submission: keep submission
-  // order (most recent first), which is how the list arrives.
+  // ── Ambient tick (voting phase only) ─────────────────────────────
+  // Every ~12s pick a random name and increment its vote count by 1,
+  // briefly pulse the row, and let the list re-sort naturally. Reads
+  // as a live broadcast — votes arriving while you watch.
+  const [bonusVotes, setBonusVotes] = useState({}); // { nameId: +N }
+  const [pulsedId, setPulsedId] = useState(null);
+  useEffect(() => {
+    if (!showVotes) return;          // submission phase has no votes yet
+    if (!names || names.length === 0) return;
+    if (typeof window === 'undefined') return;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    const interval = setInterval(() => {
+      // Weight selection slightly toward already-voted names (~2x)
+      // so ticks feel like momentum, not pure random scatter.
+      const weighted = names.flatMap((n) =>
+        Array((n.voteCount || 0) > 0 ? 2 : 1).fill(n.id)
+      );
+      const pickId = weighted[Math.floor(Math.random() * weighted.length)];
+      if (!pickId) return;
+      setBonusVotes((prev) => ({ ...prev, [pickId]: (prev[pickId] || 0) + 1 }));
+      setPulsedId(pickId);
+      window.setTimeout(() => setPulsedId((cur) => (cur === pickId ? null : cur)), 1100);
+    }, 12000);
+    return () => clearInterval(interval);
+  }, [showVotes, names]);
+
+  // Combined vote = mock baseline + simulated ticks. The filtered
+  // sort below uses this, so the leaderboard re-orders as votes
+  // arrive (snap re-order — keeps it CSS-only).
+  const liveVotes = useMemo(() => {
+    const map = new Map();
+    for (const n of names) map.set(n.id, (n.voteCount || 0) + (bonusVotes[n.id] || 0));
+    return map;
+  }, [names, bonusVotes]);
+
+  // Past submission: rank by combined votes. During submission: keep
+  // submission order (most recent first), which is how the list arrives.
   const filtered = useMemo(() => {
     let list = names;
     if (search.trim()) {
@@ -168,10 +226,12 @@ function NamesList({
       list = list.filter((n) => n.text.toLowerCase().includes(q));
     }
     if (showVotes) {
-      list = [...list].sort((a, b) => b.voteCount - a.voteCount);
+      list = [...list].sort(
+        (a, b) => (liveVotes.get(b.id) || 0) - (liveVotes.get(a.id) || 0)
+      );
     }
     return list;
-  }, [names, search, showVotes]);
+  }, [names, search, showVotes, liveVotes]);
 
   const isScrolling = showAll && filtered.length > collapsedCount;
 
@@ -197,26 +257,53 @@ function NamesList({
           {visible.map((name, i) => {
             const submitter = getParticipantById(name.submittedBy);
             const isExpanded = expandedId === name.id;
+            const isPulsing = pulsedId === name.id;
+            const liveCount = liveVotes.get(name.id) ?? (name.voteCount || 0);
             // Top-3 segment wash ONLY during voting — that's when a
-            // ranking exists. In the submission phase every name is
-            // equal (no votes yet), so rows stay plain white.
+            // ranking exists. In submission phase every name is equal
+            // (no votes yet), so rows stay plain white. The wash is
+            // delivered via a CSS variable on the row + a delayed
+            // pseudo-element animation so the top-3 colour "reveals
+            // last" after the cascade lands.
             const tintAlphas = ['CC', '66', '26'];
-            const rowTint = showVotes && i < 3
-              ? { background: `${tone.bg}${tintAlphas[i]}` }
-              : undefined;
+            const tierColor = showVotes && i < 3 ? `${tone.bg}${tintAlphas[i]}` : null;
+            // Two cascade groups:
+            //   - First `collapsedCount` rows (initial scoreboard view):
+            //     60ms stagger, the dramatic "names loading in" reveal.
+            //   - Rows past that (only visible when user clicks "Show all
+            //     names"): faster 20ms stagger starting from 0, so the
+            //     expansion arrives as a quick group rather than 10 rows
+            //     all popping in at the same capped delay.
+            const enterDelay = i < collapsedCount
+              ? i * 0.06
+              : (i - collapsedCount) * 0.02;
+            const rowStyle = {
+              '--enter-delay': `${enterDelay}s`,
+              ...(tierColor && { '--tier-tint': tierColor }),
+            };
             return (
               <li
                 key={name.id}
                 ref={isExpanded ? expandedRowRef : null}
-                className={`v4-results-row ${isExpanded ? 'is-expanded' : ''} ${showVotes && i < 3 ? `v4-results-row-tier-${i + 1}` : ''}`}
-                style={rowTint}
+                className={[
+                  'v4-results-row',
+                  'v4-results-row-cascade',
+                  isExpanded ? 'is-expanded' : '',
+                  showVotes && i < 3 ? `v4-results-row-tier-${i + 1}` : '',
+                  isPulsing ? 'is-pulsing' : '',
+                ].filter(Boolean).join(' ')}
+                style={rowStyle}
               >
                 <button
                   type="button"
                   className={`v4-results-row-trigger ${showVotes ? '' : 'is-novotes'}`}
                   onClick={() => onToggle(name.id)}
                 >
-                  <div className="v4-results-rank">#{i + 1}</div>
+                  {/* Ranking number only makes sense once there are
+                      votes to rank by — during submission we hide it
+                      so the list reads as "names coming in," not "1st
+                      place / 2nd place." */}
+                  {showVotes && <div className="v4-results-rank">#{i + 1}</div>}
                   <div className="v4-results-name">
                     <div className="v4-results-name-text">{name.text}</div>
                     <div className="v4-results-name-meta">
@@ -226,9 +313,25 @@ function NamesList({
                   </div>
                   {showVotes && (
                     <div className="v4-results-votes">
-                      <div className="v4-results-votes-value">{name.voteCount}</div>
+                      <div className="v4-results-votes-value">
+                        {/* Start the count-up AFTER the row's cascade
+                            entrance lands. Initial-cascade rows wait
+                            for their stagger + 420ms cascade duration;
+                            expansion rows (clicked "Show all") use the
+                            fast 20ms stagger + same cascade duration
+                            so their numbers tick up quickly together. */}
+                        <AnimatedCount
+                          value={liveCount}
+                          durationMs={1600}
+                          startDelayMs={(
+                            i < collapsedCount
+                              ? i * 60 + 420
+                              : (i - collapsedCount) * 20 + 420
+                          )}
+                        />
+                      </div>
                       <div className="v4-results-votes-label">
-                        {name.voteCount === 1 ? 'vote' : 'votes'}
+                        {liveCount === 1 ? 'vote' : 'votes'}
                       </div>
                     </div>
                   )}
@@ -305,7 +408,7 @@ function NameDetail({ name, submitter, tone, showVotes }) {
 // ── PARTICIPANTS VIEW ───────────────────────────────────────────────
 function ParticipantsList({
   names, participants, showVotes, search, expandedId, onToggle,
-  showAll, collapsedCount, onShowAllChange, tone,
+  showAll, collapsedCount, onShowAllChange, tone, palette,
 }) {
   const scrollerRef = useRef(null);
   const expandedRowRef = useRef(null);
@@ -358,10 +461,16 @@ function ParticipantsList({
                 >
                   <span
                     className="v4-results-avatar"
-                    style={{ background: tone.bg, color: tone.fg }}
+                    style={{ '--avatar-feature': FEATURE_INK }}
                     aria-hidden="true"
                   >
-                    {p.initials}
+                    <Avatar
+                      name={p.name || p.id}
+                      size={32}
+                      variant="beam"
+                      colors={palette}
+                      square={false}
+                    />
                   </span>
                   <div className="v4-results-name">
                     <div className="v4-results-name-text">{p.name}</div>

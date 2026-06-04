@@ -1,3 +1,4 @@
+import BrandLink from '../../components/v4/BrandLink';
 // V4 unified setup chat — walks the user through:
 //   1. Working name (replaces the old SetupName screen)
 //   2. Sub-segment-specific brief questions
@@ -18,6 +19,7 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import ExitLink from '../../components/v4/ExitLink';
 import {
   X, PencilSimple,
   // Segment user-reply icons (mirrors the picked card)
@@ -51,6 +53,7 @@ import { SUB_SEGMENTS } from '../../data/v4/subSegments';
 import GuideExpandable from '../../components/v4/GuideExpandable';
 import QuestionInput from '../../components/v4/QuestionInput';
 import AuthModal from '../../components/v4/AuthModal';
+import EditQuestionModal from '../../components/v4/EditQuestionModal';
 import '../../styles/v4.css';
 
 // Per-question reveal timings (ms from when this question becomes current)
@@ -270,11 +273,25 @@ export default function BriefChat() {
   // Skip during edit to keep view stable while user is typing.
   const chatRef = useRef(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  // Guard so the auto-scroll skips the FIRST history change (the
+  // moment the very first bot bubble + segment cards render). On
+  // tiers with more options (group has 6 cards vs personal's 4), the
+  // content overflows the viewport — auto-scrolling to the bottom
+  // here shoves the bot bubble out of view as soon as it appears,
+  // which reads as "chat changes position after loading."
+  const hasInitialScrolled = useRef(false);
 
   useEffect(() => {
     if (isEditing) return;
     const el = chatRef.current;
     if (!el) return;
+    if (!hasInitialScrolled.current) {
+      // Skip the first run — the user should see the bot bubble + the
+      // first set of choices land in place without an immediate scroll
+      // away from them.
+      hasInitialScrolled.current = true;
+      return;
+    }
     el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
   }, [phase, history.length, userReply, isEditing]);
 
@@ -413,9 +430,7 @@ export default function BriefChat() {
           {/* Glass nav — sticky inside the chat scroll container so
               chat content slides UNDER it as user scrolls. */}
           <header className={`v4-nav ${isScrolled ? 'is-scrolled' : ''}`}>
-          <Link to="/" className="v4-brand">
-            <img src={namingContestLogo} alt="NamingContest" className="v4-logo" />
-          </Link>
+          <BrandLink />
           {(() => {
             // Active dot based on current section
             const inSettings =
@@ -434,10 +449,7 @@ export default function BriefChat() {
               </div>
             );
           })()}
-          <Link to="/" className="v4-exit" aria-label="Exit">
-            <X weight="regular" size={14} />
-            <span>Exit</span>
-          </Link>
+          <ExitLink to="/" aria-label="Exit" />
         </header>
 
           <div className="v4-chat-inner">
@@ -475,6 +487,19 @@ export default function BriefChat() {
           </div>
         </main>
       </div>
+
+      {/* Edit-answer popup — same EditQuestionModal pattern used by
+          ReviewLaunch and ContestManage so the editing experience is
+          one consistent overlay across the product, on any viewport.
+          The chat stays legible behind the modal so the user retains
+          context for what they're editing. */}
+      <EditQuestionModal
+        open={isEditing}
+        question={isEditing ? history[editingIndex]?.question : null}
+        currentAnswer={isEditing ? history[editingIndex]?.answer : undefined}
+        onClose={cancelEditing}
+        onSave={handleEditSubmit}
+      />
     </div>
   );
 }
@@ -556,7 +581,13 @@ function HistoryTurn({ turn, isEditing, onStartEdit, onEditSubmit, onCancelEdit,
       {article && <GuideExpandable article={article} compact />}
 
 
-      {!isEditing && isSegment && (
+      {/* Editable user reply — stays visible at all times (including
+          while editing) so the chat stays legible behind the edit
+          popup. Tapping it opens EditQuestionModal, matching the
+          desktop "popup to change answer" pattern that ReviewLaunch
+          and ContestManage already use — single editing UX across
+          the whole product. */}
+      {isSegment && (
         <SegmentReply
           option={answer}
           editable
@@ -565,7 +596,7 @@ function HistoryTurn({ turn, isEditing, onStartEdit, onEditSubmit, onCancelEdit,
         />
       )}
 
-      {!isEditing && !isSegment && (
+      {!isSegment && (
         <button
           type="button"
           className="v4-bubble-user v4-bubble-editable"
@@ -578,23 +609,6 @@ function HistoryTurn({ turn, isEditing, onStartEdit, onEditSubmit, onCancelEdit,
             Edit
           </span>
         </button>
-      )}
-
-      {isEditing && (
-        <div className="v4-edit-block">
-          <QuestionInput
-            question={question}
-            onSubmit={onEditSubmit}
-            autoFocus
-          />
-          <button
-            type="button"
-            className="v4-edit-cancel"
-            onClick={onCancelEdit}
-          >
-            Cancel
-          </button>
-        </div>
       )}
     </>
   );

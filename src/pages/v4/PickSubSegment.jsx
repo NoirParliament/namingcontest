@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   Baby, PawPrint, House, PencilSimple,
-  SoccerBall, MusicNote, Microphone, GraduationCap, GameController,
+  Guitar, Microphone, GraduationCap, GameController,
   Buildings, Package, Target, ArrowsClockwise,
   Heart, UsersThree, Briefcase,
   X,
 } from '@phosphor-icons/react';
+import ExitLink from '../../components/v4/ExitLink';
 
 const TIER_META = {
   personal: { Icon: Heart,      tone: { bg: '#fadecc', fg: '#9c4818' }, label: 'Personal contest' },
@@ -14,6 +15,7 @@ const TIER_META = {
   business: { Icon: Briefcase,  tone: { bg: '#bce5c8', fg: '#1f5430' }, label: 'Business contest' },
 };
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
+import BrandLink from '../../components/v4/BrandLink';
 import '../../styles/v4.css';
 
 // Pastel tones drawn from homepage palette — each option gets its own warm color.
@@ -40,8 +42,8 @@ const SUB_SEGMENTS = {
   group: {
     label: 'group',
     options: [
-      { id: 't1', Icon: SoccerBall,    tone: TONES.mint,       title: 'A sports team',                            body: 'Local league, school squad, recreational team.' },
-      { id: 't2', Icon: MusicNote,     tone: TONES.lavender,   title: 'A band or music group',                    body: 'Whatever the genre.' },
+      { id: 't1', Icon: UsersThree,    tone: TONES.mint,       title: 'A sports team',                            body: 'Local league, school squad, recreational team.' },
+      { id: 't2', Icon: Guitar,        tone: TONES.lavender,   title: 'A band or music group',                    body: 'Whatever the genre.' },
       { id: 't3', Icon: Microphone,    tone: TONES.sky,        title: 'A podcast, channel, or creative project',  body: 'Audio, video, or anything in between.' },
       { id: 't4', Icon: GraduationCap, tone: TONES.blush,      title: 'A school, club, or nonprofit',             body: 'Civic, community, or institutional.' },
       { id: 't5', Icon: GameController,tone: TONES.butter,     title: 'A gaming group',                           body: 'Team, guild, or clan.' },
@@ -118,19 +120,14 @@ export default function PickSubSegment() {
       <div className="v4-screen">
         {/* Slim nav */}
         <header className="v4-nav">
-          <Link to="/" className="v4-brand">
-            <img src={namingContestLogo} alt="NamingContest" className="v4-logo" />
-          </Link>
+          <BrandLink />
           <div className="v4-progress">
             <span className="v4-step-dot is-active"></span>
             <span className="v4-step-dot"></span>
             <span className="v4-step-dot"></span>
             <span className="v4-step-label">Step 1 of 3</span>
           </div>
-          <Link to="/" className="v4-exit" aria-label="Exit">
-            <X weight="regular" size={14} />
-            <span>Exit</span>
-          </Link>
+          <ExitLink to="/" aria-label="Exit" />
         </header>
 
         {/* Decorative pastel blobs */}

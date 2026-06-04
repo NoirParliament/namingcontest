@@ -2,7 +2,7 @@ import LegalPage from './LegalPage';
 
 export default function CookiePolicy() {
   return (
-    <LegalPage title="Cookie policy" updated="May 28, 2026">
+    <LegalPage title="Cookie policy" updated="May 28, 2026" decor="fresh">
       <p className="legal-lede">
         This Cookie Policy explains how NamingContest.com
         (&ldquo;NamingContest,&rdquo; the &ldquo;Service&rdquo;),

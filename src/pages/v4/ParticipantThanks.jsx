@@ -16,6 +16,7 @@ import { useRef, useState } from 'react';
 import { useParams, useNavigate, Link, Navigate } from 'react-router-dom';
 import { Clock, LockSimple } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
+import BrandLink from '../../components/v4/BrandLink';
 import heroProfile1 from '../../assets/hero-profile-1.png';
 import heroProfile2 from '../../assets/hero-profile-2.png';
 import heroProfile3 from '../../assets/hero-profile-3.png';
@@ -135,9 +136,7 @@ export default function ParticipantThanks() {
 
         <main className="v4-review" role="main" ref={scrollRef}>
           <header className="v4-nav v4-join-nav">
-            <Link to="/" className="v4-brand">
-              <img src={namingContestLogo} alt="NamingContest" className="v4-logo" />
-            </Link>
+            <BrandLink />
             <div className="v4-progress v4-join-nav-inviter">
               <span className="v4-join-inviter-invites">Submitted to</span>
               <strong className="v4-join-inviter-name-inline">

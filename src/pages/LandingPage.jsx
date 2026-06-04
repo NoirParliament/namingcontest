@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link, Navigate } from 'react-router-dom';
 import personalDog from '../assets/personal-dog.png';
 import teamPlayers from '../assets/team-players.png';
 import businessWoman from '../assets/business-woman.png';
@@ -34,6 +34,23 @@ export function Nav() {
   // ?signin=creator|participant (from the platform map) auto-opens the
   // sign-in modal in that mode so those flow steps land directly on it.
   const [signinMode, setSigninMode] = useState('creator');
+  // Mobile burger menu — opens a sheet with all nav links + actions.
+  // The desktop pill stays exactly as-is at ≥ 700px; the burger is
+  // only visible (via CSS in mobile.css) on small screens.
+  const [menuOpen, setMenuOpen] = useState(false);
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e) => { if (e.key === 'Escape') setMenuOpen(false); };
+    document.addEventListener('keydown', onKey);
+    // Lock body scroll while the sheet is open
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [menuOpen]);
+  const closeMenu = () => setMenuOpen(false);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const s = params.get('signin');
@@ -56,8 +73,24 @@ export function Nav() {
     typeof window !== 'undefined' && window.location.pathname === '/';
   const goHome = (e) => {
     e.preventDefault();
-    if (onLanding()) window.scrollTo({ top: 0, behavior: 'smooth' });
-    else navigate('/');
+    if (onLanding()) {
+      // Already on the landing page — just smooth-scroll to top.
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    // Coming FROM another page (legal, contact, etc.) → fade the
+    // body out before navigating, same treatment ExitLink and
+    // BrandLink use elsewhere in the product. Without this, clicking
+    // the logo jump-cuts to the homepage.
+    document.body.classList.add('is-exiting');
+    window.setTimeout(() => {
+      document.body.style.transition = 'none';
+      document.body.classList.remove('is-exiting');
+      navigate('/');
+      window.requestAnimationFrame(() => {
+        document.body.style.transition = '';
+      });
+    }, 180);
   };
   const goToSection = (id) => (e) => {
     e.preventDefault();
@@ -130,8 +163,97 @@ export function Nav() {
               </>
             )}
           </div>
+
+          {/* Burger trigger — only visible on phone (CSS in mobile.css).
+              Replaces .links + .nav-actions which are CSS-hidden on
+              phone, so the nav-pill on phone is just: logo (left) +
+              burger (right). Three lines so it reads as "menu" at a
+              glance; click opens the mobile sheet below. */}
+          {!isAuthed && (
+            <button
+              type="button"
+              className="nav-burger"
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((v) => !v)}
+            >
+              <span aria-hidden="true" />
+              <span aria-hidden="true" />
+              <span aria-hidden="true" />
+            </button>
+          )}
         </nav>
       </div>
+
+      {/* Mobile menu sheet — slides down from the top of the screen
+          when the burger is tapped. Carries the same scatter +
+          halo vocabulary as the sign-in / edit / launch modals so it
+          reads as part of the same family rather than a generic
+          dropdown. */}
+      {!isAuthed && menuOpen && (
+        <div
+          className="nav-mobile-menu"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Menu"
+        >
+          <div
+            className="nav-mobile-menu-backdrop"
+            onClick={closeMenu}
+            aria-hidden="true"
+          />
+          <div className="nav-mobile-menu-sheet">
+            {/* Scattered shape decoration — 4 dots tucked into the
+                corners, matching the modal family vocabulary. */}
+            <span className="nav-mobile-menu-shape nav-mobile-menu-shape-1" aria-hidden="true" />
+            <span className="nav-mobile-menu-shape nav-mobile-menu-shape-2" aria-hidden="true" />
+            <span className="nav-mobile-menu-shape nav-mobile-menu-shape-3" aria-hidden="true" />
+            <span className="nav-mobile-menu-shape nav-mobile-menu-shape-4" aria-hidden="true" />
+
+            <div className="nav-mobile-menu-eyebrow">Explore</div>
+            <a
+              href="/#how"
+              onClick={(e) => { closeMenu(); goToSection('how')(e); }}
+              className="nav-mobile-menu-link"
+            >
+              How it works
+            </a>
+            <a
+              href="/#testimonials"
+              onClick={(e) => { closeMenu(); goToSection('testimonials')(e); }}
+              className="nav-mobile-menu-link"
+            >
+              Testimonials
+            </a>
+            <a
+              href="/#pricing"
+              onClick={(e) => { closeMenu(); goToSection('pricing')(e); }}
+              className="nav-mobile-menu-link"
+            >
+              Pricing
+            </a>
+            <div className="nav-mobile-menu-actions">
+              <div className="nav-mobile-menu-eyebrow nav-mobile-menu-eyebrow-actions">
+                Get started
+              </div>
+              <button
+                type="button"
+                className="nav-mobile-menu-signin"
+                onClick={() => { closeMenu(); setSigninOpen(true); }}
+              >
+                Sign In
+              </button>
+              <button
+                type="button"
+                className="nav-mobile-menu-cta"
+                onClick={() => { closeMenu(); navigate('/v4/pick'); }}
+              >
+                Start a contest →
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <SignInModal open={signinOpen} initialMode={signinMode} onClose={() => setSigninOpen(false)} />
     </>
@@ -890,20 +1012,30 @@ export function Footer() {
 export default function LandingPage() {
   const navigate = useNavigate();
 
-  // Signed-in users don't belong on the marketing page. Redirect them
-  // to their workspace home — their active contest if they have one,
-  // otherwise Settings (where the prominent CTA lets them launch one).
-  // To revisit the marketing page they need to sign out first.
-  useEffect(() => {
+  // Signed-in users don't belong on the marketing page by default —
+  // redirect them to their workspace home (active contest if they
+  // have one, otherwise Settings). EXCEPT when the URL carries a
+  // hash anchor like /#faq or /#pricing — those are intentional
+  // deep-links into marketing sections (e.g. from the platform map's
+  // "Frequently asked" link), and we honour them so authed users
+  // can still read FAQ / pricing / how-it-works without signing out.
+  //
+  // We do this SYNCHRONOUSLY during render (via <Navigate />) rather
+  // than in a useEffect — otherwise the landing page paints for one
+  // frame before the effect fires the redirect, flashing the
+  // marketing hero briefly. Returning <Navigate> from the function
+  // bails out of render before any of that DOM exists.
+  const location = useLocation();
+  if (!location.hash) {
     const setup = readSetup();
     const isAuthed = !!(setup.userEmail || setup.contestId);
-    if (!isAuthed) return;
-    if (setup.contestId) {
-      navigate(`/v4/contest/${setup.contestId}`, { replace: true });
-    } else {
-      navigate('/v4/settings', { replace: true });
+    if (isAuthed) {
+      const dest = setup.contestId
+        ? `/v4/contest/${setup.contestId}`
+        : '/v4/settings';
+      return <Navigate to={dest} replace />;
     }
-  }, [navigate]);
+  }
 
   // Honor a #hash on load (e.g. arriving at /#faq from another page's
   // footer) — the browser's native hash-scroll fires before the long

@@ -1,0 +1,1160 @@
+/* ════════════════════════════════════════════════════════════════════
+   Base rules (OUTSIDE @media) — visual styles for the mobile-only
+   burger button + menu sheet. These elements live in markup at all
+   sizes (so JSX can stay simple), but they're DISPLAY:NONE on desktop
+   and only become visible inside the @media block below. Splitting
+   "what they look like" (here) from "when they show" (in @media)
+   keeps the structure clean — same look on tablet + phone, no
+   duplicated rules between breakpoints.
+   ════════════════════════════════════════════════════════════════════ */
+.nav-burger,
+.nav-mobile-menu { display: none; }
+
+/* Burger button — three lines, ink, 44×44 tap area. */
+.nav-burger {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  pointer-events: auto;
+  border-radius: 12px;
+  transition: background 0.18s ease, transform 0.08s ease;
+}
+.nav-burger:hover { background: rgba(0, 0, 0, 0.05); }
+.nav-burger:active { transform: scale(0.94); }
+.nav-burger span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: var(--fg, #030302);
+  border-radius: 2px;
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
+}
+/* X transformation when open */
+.nav-burger[aria-expanded="true"] span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+.nav-burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.nav-burger[aria-expanded="true"] span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* Mobile menu sheet — slides down from the top, dims the page */
+.nav-mobile-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: auto;
+  animation: nav-mobile-menu-fade-in 0.2s ease-out both;
+}
+.nav-mobile-menu-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(3, 3, 2, 0.36);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.nav-mobile-menu-sheet {
+  position: absolute;
+  top: 68px;
+  left: 12px;
+  right: 12px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 18px 16px 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 14px 36px -10px rgba(0, 0, 0, 0.22);
+  animation: nav-mobile-menu-sheet-in 0.32s cubic-bezier(0.34, 1.4, 0.5, 1) both;
+}
+
+/* Scattered shapes — 4 dots tucked into corners, same vocabulary as
+   .v4-signin-shape / .v4-edit-shape (mint, periwinkle pill, blush,
+   butter). Skip the purple accent — keeps the menu lighter than
+   modals. */
+.nav-mobile-menu-shape {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.55;
+  animation: decorFloat 12s ease-in-out infinite;
+  z-index: 0;
+}
+.nav-mobile-menu-shape-1 { top: 18px;  left: 18px;  width: 10px; height: 10px; background: var(--panel-mint, #a6dcb3); }
+.nav-mobile-menu-shape-2 { top: 22px;  right: 22px; width: 22px; height: 10px; background: var(--panel-periwinkle, #b3c4f0); border-radius: 12px 4px 14px 4px; transform: rotate(-12deg); animation-name: decorFloat2; animation-delay: -3s; }
+.nav-mobile-menu-shape-3 { bottom: 18px; left: 22px; width: 12px; height: 12px; background: var(--panel-blush, #fadecc); animation-delay: -5s; }
+.nav-mobile-menu-shape-4 { bottom: 22px; right: 18px; width: 8px;  height: 8px;  background: var(--panel-butter, #fceebc); animation-delay: -2s; }
+
+/* Lift content above the shapes */
+.nav-mobile-menu-sheet > *:not(.nav-mobile-menu-shape) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Section eyebrow — "EXPLORE" / "GET STARTED" labels, matches the
+   footer's PRODUCT/RESOURCES/LEGAL labels. */
+.nav-mobile-menu-eyebrow {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(3, 3, 2, 0.45);
+  padding: 4px 14px 8px;
+}
+.nav-mobile-menu-eyebrow-actions {
+  padding-top: 0;
+}
+@keyframes nav-mobile-menu-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes nav-mobile-menu-sheet-in {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.nav-mobile-menu-link {
+  display: block;
+  padding: 16px 14px;
+  border-radius: 12px;
+  font-family: var(--font-text);
+  font-size: 15.5px;
+  font-weight: 500;
+  color: var(--fg, #030302);
+  text-decoration: none;
+  transition: background 0.18s ease;
+}
+.nav-mobile-menu-link:hover,
+.nav-mobile-menu-link:active {
+  background: rgba(0, 0, 0, 0.04);
+}
+.nav-mobile-menu-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+.nav-mobile-menu-signin {
+  background: transparent;
+  border: 1.5px solid rgba(3, 3, 2, 0.16);
+  border-radius: 999px;
+  padding: 13px 18px;
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fg);
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+.nav-mobile-menu-signin:hover { border-color: rgba(3, 3, 2, 0.4); }
+.nav-mobile-menu-cta {
+  background: var(--fg, #030302);
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  padding: 14px 18px;
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.08s ease;
+}
+.nav-mobile-menu-cta:hover { background: #1a1a1a; }
+.nav-mobile-menu-cta:active { transform: scale(0.97); }
+
+
+/* ════════════════════════════════════════════════════════════════════
+   NamingContest — mobile + tablet responsiveness layer.
+
+   Every rule in this file is INSIDE a @media query (max-width). The
+   desktop experience is byte-identical to before this file existed.
+   Two breakpoints, matching the codebase's existing patterns:
+
+     • tablet  ≤ 900px   — stacked layouts, scaled decor
+     • phone   ≤ 560px   — sheets-not-modals, sticky CTAs, smaller decor
+
+   Goal: keep the personality (decor, illustrations, warmth) but make
+   the product usable on a thumb. Decor isn't deleted — it's reduced
+   and rebalanced so it never crowds content at small sizes.
+
+   Touch targets: 44×44 minimum on any interactive element.
+   Modals: full-width bottom sheets on phone; centered cards on tablet
+   shrunk to fit. Modal halos hidden on phone (no purpose at that size).
+   Hero illustrations: scaled smaller, never below 60% of original.
+   Floating decor blobs: kept at reduced opacity + scale.
+
+   To revert: delete this file + remove the import in App.jsx.
+   ════════════════════════════════════════════════════════════════════ */
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   NAV BREAKPOINT (≤ 980px) — single threshold, no tablet middle
+   ground. Above 980px: full desktop pill (logo + links + Sign In +
+   Start a contest). At or below 980px: burger only (logo + ☰). The
+   mobile menu sheet handles all the actions when opened.
+
+   This threshold MATCHES landing-v3.css's existing
+   `@media(max-width:980px){.lp-v3 .nav-pill .links{display:none}}`
+   so the marketing links don't disappear before the burger kicks
+   in — that gap (901–980px) was the broken middle.
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@media (max-width: 980px) {
+  /* Reveal the burger + mobile-menu sheet (visual styling lives in
+     the base rules above; here we only flip display). */
+  .nav-burger { display: inline-flex; }
+  .nav-mobile-menu { display: block; }
+
+  /* Hide the desktop pill contents and rebalance the pill itself
+     so it's just logo (left) + burger (right). Double-class trick
+     to overcome landing-v3.css's same-specificity rules. */
+  .lp-v3 .nav-pill .links.links,
+  .lp-v3 .nav-pill .nav-actions.nav-actions { display: none; }
+  .lp-v3 .nav-pill.nav-pill {
+    width: 100%;
+    max-width: 100%;
+    padding: 8px 12px 8px 16px;
+    gap: 8px;
+    justify-content: space-between;
+  }
+  .lp-v3 .nav-row.nav-row { padding: 10px 8px 0; }
+  .lp-v3 .nav-pill .brand-mark .brand-logo { height: 16px; }
+}
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   TABLET (≤ 900px) — content layout tweaks only (nav handled above)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@media (max-width: 900px) {
+
+  /* ── Nav: tighten ─────────────────────────────────────────────── */
+  .v4-nav {
+    padding: 14px 18px;
+  }
+  .v4-nav .v4-step-counter { display: none; }
+
+  /* ── Decor: scale blobs slightly so they don't dominate ──────── */
+  .v4-blob {
+    transform: scale(0.7);
+  }
+
+  /* ── Review/Hero text ─────────────────────────────────────────── */
+  .v4-review-title { font-size: 36px; }
+  .v4-review-inner,
+  .v4-pthanks-inner { padding-left: 24px; padding-right: 24px; }
+
+  /* ── ContestManage hero / phase journey ──────────────────────── */
+  .v4-manage-hero { padding-top: 32px; }
+  .v4-manage-phases { gap: 10px; }
+
+  /* ── Share card actions wrap ─────────────────────────────────── */
+  .v4-manage-share-actions { flex-wrap: wrap; }
+  .v4-manage-share-actions .btn { flex: 1 1 calc(50% - 6px); }
+
+  /* ── Workspace billing row stacks horizontal headers ─────────── */
+  .v4-settings-billing-row {
+    grid-template-columns: 1fr auto;
+  }
+  .v4-settings-billing-date { grid-column: 1 / -1; }
+  .v4-settings-billing-status { grid-column: 2; grid-row: 2; }
+
+  /* ── Brief / setup chat bubbles cap at panel width ───────────── */
+  .v4-bubble { max-width: 92%; }
+
+  /* ── Modals: cap width slightly ──────────────────────────────── */
+  .v4-signin-modal,
+  .v4-auth-modal,
+  .v4-launch-modal,
+  .v4-edit-modal,
+  .v4-pickwinner-modal {
+    max-width: 88vw;
+  }
+
+  /* ── PdfReport is a fixed A4 capture; leave it alone ─────────── */
+}
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PHONE (≤ 560px)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@media (max-width: 560px) {
+
+  /* ────────────────────────────────────────────────────────────────
+     TOUCH TARGETS — every clickable thing gets 44×44 minimum
+     ──────────────────────────────────────────────────────────────── */
+  .lp-v3 .btn,
+  .v4 .btn,
+  .v4-exit,
+  .v4-auth-close,
+  .v4-signin-close,
+  .v4-pickwinner-close,
+  .v4-results-toggle-btn,
+  .v4-results-row-trigger,
+  .v4-manage-recap-trigger,
+  .v4-pwinner-own-link {
+    min-height: 44px;
+  }
+  .v4-auth-close,
+  .v4-signin-close,
+  .v4-pickwinner-close {
+    min-width: 44px;
+    width: 44px;
+    height: 44px;
+  }
+
+
+  /* ────────────────────────────────────────────────────────────────
+     TOP NAV — compact, drop the verbose progress label
+     ──────────────────────────────────────────────────────────────── */
+  .v4-nav {
+    padding: 12px 14px;
+    gap: 8px;
+  }
+  .v4-nav .v4-progress {
+    /* Keep just the counter ("Setup · 2/16") and drop the dot row +
+       step label so the bar doesn't wrap. */
+    gap: 4px;
+  }
+  .v4-nav .v4-step-dot { display: none; }
+  .v4-nav .v4-step-label {
+    font-size: 11.5px;
+    letter-spacing: -0.005em;
+  }
+  .v4-logo {
+    height: 22px;
+    width: auto;
+  }
+  .v4-exit span { display: none; } /* icon-only Exit on phone */
+  .v4-exit { padding: 10px; gap: 0; }
+
+
+  /* ────────────────────────────────────────────────────────────────
+     DECOR — scaled down, opacity reduced, but kept for personality
+     ──────────────────────────────────────────────────────────────── */
+  .v4-blob {
+    transform: scale(0.55);
+    opacity: 0.55;
+  }
+  /* The big floating illustration PNGs (sportsteam1, team-players,
+     dog, etc.) are too large for phone — they overlap content. Hide
+     them but keep the blob halos so the page is still atmospheric. */
+  .v4-theme-img { display: none; }
+  /* Phosphor theme icons stay, smaller + fewer — hide every other one
+     so 5 scattered icons become 2-3 quiet accents. */
+  .v4-theme-icon:nth-child(2n) { display: none; }
+  .v4-theme-icon { transform: scale(0.7) rotate(var(--rot, 0deg)); }
+
+
+  /* ────────────────────────────────────────────────────────────────
+     LANDING / MARKETING — hero scales, tier cards stack
+     ──────────────────────────────────────────────────────────────── */
+  /* `.lp-v3 .section { margin-top: var(--s-30) }` resolves to 120px
+     between every landing section — generous on desktop, too much
+     dead air between bands on a 375px phone where each section
+     barely fills the viewport. Tighten the inter-section gap to
+     56px so the page reads as a continuous scroll, not isolated
+     islands of content. */
+  .lp-v3 .section { margin-top: 56px; scroll-margin-top: 80px; }
+  .lp-v3 .section-head { margin-bottom: 28px; }
+  .lp-v3 .footer { margin-top: 56px; padding: 40px 22px 28px; }
+
+  .lp-v3 .hero { margin-top: 14px; padding: 20px 18px 28px; }
+  .lp-v3 .hero h1,
+  .lp-v3 .closing h2 {
+    font-size: 30px;
+    line-height: 1.06;
+    letter-spacing: -0.02em;
+  }
+  .lp-v3 .hero .lede { font-size: 15.5px; line-height: 1.5; }
+  .lp-v3 .offerings {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .lp-v3 .offering { padding: 22px 20px; }
+  .lp-v3 .why-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .lp-v3 .closing-cta-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .lp-v3 .closing-cta-row .btn { width: 100%; }
+  .lp-v3 .footer .footer-cols {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  /* Nav burger styles live OUTSIDE @media (in the base section above)
+     so they're identical across tablet + phone — only display is
+     toggled here. */
+
+  /* Hero floating people — hide on phone, the hero card alone carries
+     the warmth via gradient + serif title. */
+  .lp-v3 .hero .hero-av,
+  .lp-v3 .hero .hero-av-circle,
+  .lp-v3 .hero .hero-people,
+  .lp-v3 .hero .hero-avatar { display: none; }
+
+  /* Tier card illustrations — DO NOT redefine layout, just trust the
+     desktop CSS. Cards stack 1-col (from .offerings rule above) and
+     each card retains its native body + scene structure. Photo +
+     pills render as they do on desktop, just at the wider mobile
+     card size. */
+  .lp-v3 .offering.offering {
+    min-height: 480px;
+    padding: 0;
+  }
+  .lp-v3 .offering .offer-body { padding: 30px 26px 18px; }
+  .lp-v3 .offering .scene { height: 220px; padding: 18px 22px; }
+
+  /* Hero CTA row — "Start a contest" + "See how it works" were
+     side-by-side on desktop, but "See how it works" overflows the
+     viewport on phone. Stack them vertically, both full-width. */
+  .lp-v3 .cta-row {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  .lp-v3 .cta-row .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+
+  /* ────────────────────────────────────────────────────────────────
+     SETUP CHAT (BriefChat, SettingsChat, ParticipantChat)
+     ──────────────────────────────────────────────────────────────── */
+  .v4-chat-inner {
+    margin-top: 36px;
+    padding: 0 14px 100px;
+    max-width: 100%;
+  }
+  .v4-bubble {
+    max-width: 88%;
+    padding: 12px 14px;
+    font-size: 14.5px;
+  }
+  .v4-bubble-user { max-width: 88%; }
+
+  /* Hero title at the top of brief / review */
+  .v4-review-title,
+  .v4-pthanks-title,
+  .v4-pwinner-title {
+    font-size: 30px;
+    line-height: 1.1;
+  }
+  .v4-review-subtitle,
+  .v4-pthanks-sub { font-size: 13.5px; }
+  /* Double-class specificity bump — v4.css line ~3923 ships a base
+     `.v4-review-inner { padding: 0 24px 120px }` that loads AFTER
+     mobile.css, so a single-class selector loses the cascade tie.
+     Pair-class wins specificity. Tightened to 28px to kill the
+     dead air under "Cancel contest" on phones. */
+  .v4-review-inner.v4-review-inner,
+  .v4-pthanks-inner.v4-pthanks-inner { padding: 0 16px 28px; }
+  .v4-review-inner.v4-review-inner { margin-top: 24px; }
+
+  /* v4.css:4141 sets `.v4-review { margin-top: 36px }` at ≤640px,
+     which pushes the entire scroll container DOWN — and that
+     dead band shows above the sticky nav inside it, so the
+     blurry frosted-glass header doesn't sit flush with the
+     viewport top. Zero the margin so the nav pins to top:0. */
+  .v4-review.v4-review { margin-top: 0; }
+
+  /* Choice cards (sub-segment picker, etc.) — full-width, stacked */
+  .v4-choices { margin-top: 22px; }
+  .v4-choice { padding: 16px 16px; }
+
+  /* Inline composer */
+  .v4-input-row { gap: 8px; }
+  .v4-input { font-size: 16px; }   /* 16px prevents iOS Safari zoom */
+  .v4-input-submit { min-width: 44px; min-height: 44px; }
+
+
+  /* ────────────────────────────────────────────────────────────────
+     PICKTIER — three tier cards stack vertically with breathing room
+     ──────────────────────────────────────────────────────────────── */
+  .lp-v3 .lp-v3-pick-tier .pick-tier-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .lp-v3 .lp-v3-pick-tier .pick-tier-card { padding: 22px 20px; }
+  .lp-v3 .lp-v3-pick-tier .pick-tier-card .scene img,
+  .lp-v3 .lp-v3-pick-tier .scene img { max-height: 180px; }
+
+
+  /* ────────────────────────────────────────────────────────────────
+     REVIEW & LAUNCH — section list stacks, recap rows go single-col
+     ──────────────────────────────────────────────────────────────── */
+  .v4-review-section { padding: 20px 18px; }
+  .v4-review-row,
+  .v4-review-row-edit {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .v4-review-row-edit-icon {
+    /* Edit icon goes inline with the label on collapsed grid */
+    position: absolute;
+    top: 12px;
+    right: 12px;
+  }
+  .v4-review-row-edit {
+    position: relative;
+    padding-right: 36px;
+  }
+  .v4-review-section-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+
+  /* ────────────────────────────────────────────────────────────────
+     CONTESTMANAGE / DASHBOARD
+     ──────────────────────────────────────────────────────────────── */
+  .v4-manage-hero {
+    padding-top: 24px;
+  }
+  .v4-manage-status { flex-wrap: wrap; justify-content: center; gap: 6px; }
+  .v4-manage-stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px;
+  }
+  .v4-manage-stat { padding: 14px 14px; }
+  .v4-manage-phases { gap: 10px; }
+
+  /* Share card: stack URL + Copy stacked; actions wrap; foot stacks */
+  .v4-manage-share { padding: 22px 18px; }
+  .v4-manage-share-bigrow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .v4-manage-share-url {
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    padding: 10px;
+  }
+  /* On desktop the button inherits its height from the flex row's
+     stretch alignment (sibling URL field is ~52px tall). When we
+     stack to column above, the button collapses to text height —
+     so add explicit vertical padding so it stays a tappable bar. */
+  .v4-manage-copy-btn-big {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 20px;
+    min-height: 44px;
+  }
+  .v4-manage-share-actions {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .v4-manage-share-actions .btn {
+    flex: 1 1 calc(50% - 3px);
+    justify-content: center;
+  }
+  .v4-manage-share-foot {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  /* Live Results — row paddings tighten, vote count smaller, tier
+     row keeps its mint wash (the moment). */
+  .v4-results { padding: 18px 16px; }
+  .v4-results-head { gap: 12px; }
+  .v4-results-toggle-btn { padding: 8px 14px; }
+  .v4-results-list { margin: 0 -6px; }
+  .v4-results-row { padding: 0; }
+  /* 4-column grid matching desktop (rank · name · votes · caret).
+     Earlier this dropped to 3 columns to save width, which forced
+     the votes block to land in the caret slot and bumped the
+     caret onto a second row below the name — that's the "arrow
+     below when should be aligned" / "votes don't fit" the user
+     hit. Keep all four columns, just tighter. */
+  .v4-results-row-trigger {
+    grid-template-columns: 24px minmax(0, 1fr) auto 14px !important;
+    gap: 10px;
+    padding: 12px 10px;
+  }
+  .v4-results-row-trigger.is-novotes {
+    grid-template-columns: minmax(0, 1fr) 14px !important;
+  }
+  .v4-results-votes-value { font-size: 17px; }
+  .v4-results-name-text { font-size: 14.5px; }
+
+  /* On phone, show vote count as a small chip next to the name
+     (since the right-side column is dropped above). Reuse the
+     name-meta line. */
+  @media (orientation: portrait) {
+    /* No additional rule — handled above by grid swap. */
+  }
+
+  /* Brief recap collapser — stack rows */
+  .v4-manage-recap-row {
+    grid-template-columns: 1fr !important;
+    gap: 4px;
+  }
+  .v4-manage-recap-row-edit {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+  }
+  .v4-manage-recap-row {
+    position: relative;
+    padding-right: 36px;
+  }
+
+  /* Customizer + branding go full-width single-column */
+  .v4-branding-block { padding: 18px; }
+  .v4-branding-colors {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .v4-winner-customizer-swatches {
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-start;
+  }
+
+  /* Winner hero brand bar — desktop logo is 18px tall + "NAMING
+     CONTEST RESULT" eyebrow on the right. On a 343px-wide phone the
+     logo eats too much width and the eyebrow text wraps to two
+     lines. Shrink the logo, tighten the bar padding, and drop the
+     eyebrow text size so the whole strip stays on one line.
+
+     Double-class specificity bump — v4.css base values load AFTER
+     mobile.css so single-class rules here lose the tie. */
+  .v4-winner-hero-brandbar.v4-winner-hero-brandbar {
+    padding: 10px 14px;
+    gap: 8px;
+  }
+  .v4-winner-hero-brand-logo.v4-winner-hero-brand-logo {
+    height: 13px;
+  }
+  .v4-winner-hero-trophy-inline.v4-winner-hero-trophy-inline {
+    font-size: 9.5px;
+    letter-spacing: 0.06em;
+    gap: 4px;
+  }
+
+  /* Winner action row — desktop is `flex-wrap: wrap` with the social
+     icon group floated right via `margin-left: auto`. On phones, that
+     left two narrow Download buttons squeezed into row 1 and the
+     social icons crammed to the right edge of row 2 with a left-
+     border separator dangling. Stack everything full-width: two
+     download buttons (each their own row), then a centered social
+     icon row with the separator dropped. */
+  .v4-winner-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .v4-winner-action {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 18px;
+    min-height: 44px;
+  }
+  /* Social share row — flat icons, no chrome, sitting under the two
+     download buttons. The desktop pattern (white circle + border per
+     icon, vertical separator before the group) reads as fussy
+     dashboard chrome when stacked on phone. Strip the per-icon
+     background/border and the top-of-row divider; the icons live as
+     bare glyphs in a tight centered group, like the social row in
+     the page footer. */
+  /* Double-class specificity bump — v4.css's base
+     `.v4-winner-share-icons { border-left: 1px solid ... }` loads
+     AFTER mobile.css, so a single-class `border: none` here would
+     lose the cascade tie and the divider would still draw. The
+     pair-class selector wins specificity and finally kills the
+     line. */
+  .v4-winner-share-icons.v4-winner-share-icons {
+    display: flex;
+    margin: 4px auto 0;
+    padding: 0;
+    border: none;
+    justify-content: center;
+    gap: 22px;
+  }
+  .v4-winner-share-icon {
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    color: var(--v4-fg);
+    opacity: 0.7;
+  }
+  .v4-winner-share-icon:hover {
+    background: transparent;
+    border-color: transparent;
+    color: var(--v4-fg);
+    opacity: 1;
+    transform: none;
+  }
+
+
+  /* ────────────────────────────────────────────────────────────────
+     SETTINGS / WORKSPACE
+     ──────────────────────────────────────────────────────────────── */
+  /* Double-class specificity bump — v4.css:7020 ships an
+     `@media (max-width: 640px) .v4-settings-current { flex-wrap: wrap;
+     align-items: flex-start }` that loads AFTER mobile.css. With
+     `align-items: flex-start`, the inner text column collapses to
+     its content width and snaps to the card's LEFT edge — so the
+     status / title / meta read as off-center even though they have
+     `text-align: center` inside that narrow column. Force the column
+     flex to stretch so children fill the card width; the icon then
+     uses `align-self: center` to override stretch for itself. */
+  .v4-settings-current.v4-settings-current {
+    flex-direction: column;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    text-align: center;
+    gap: 12px;
+  }
+  .v4-settings-current.v4-settings-current .v4-settings-current-icon {
+    align-self: center;
+  }
+  .v4-settings-current .btn { width: 100%; justify-content: center; }
+  .v4-settings-account-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+  .v4-settings-section { padding: 22px 18px; }
+  .v4-settings-section-head h2 { font-size: 14px; }
+
+  /* Compact section triggers (Billing, Account) — let the meta line
+     shrink + ellipsis instead of wrapping awkwardly. */
+  .v4-settings-account-trigger {
+    gap: 12px;
+  }
+  .v4-settings-account-meta {
+    min-width: 0;
+    flex: 1 1 0;
+  }
+  .v4-settings-account-name,
+  .v4-settings-account-email {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .v4-settings-row-meta {
+    /* "· 2 purchases" tail — drop on phone to save space */
+    display: none;
+  }
+  .v4-settings-account-action {
+    flex-shrink: 0;
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  /* Billing history rows — collapse the 4-col grid */
+  .v4-settings-billing-row {
+    grid-template-columns: 1fr auto !important;
+    gap: 4px 12px;
+  }
+  .v4-settings-billing-date { grid-column: 1 / -1; font-size: 11.5px; }
+  .v4-settings-billing-desc { grid-column: 1 / 2; }
+  .v4-settings-billing-amount { grid-column: 2 / 3; }
+  .v4-settings-billing-status { grid-column: 1 / -1; font-size: 10px; }
+
+  /* Closed / cancelled contest rows — text was wrapping word-by-word
+     because the "View results" button took its full intrinsic width.
+     Let the text column flex + ellipsis. Action button shrinks. */
+  .v4-settings-contest-row {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+  .v4-settings-contest-row-text {
+    min-width: 0;
+    flex: 1 1 0;
+  }
+  .v4-settings-contest-row-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* The eyebrow is `display: inline-flex` (icon + span), which sizes
+     to content and ignores the parent's width — its text was bleeding
+     250px past the row and visually crashing into "View results."
+     Switch to block-level flex + ellipsis on the inner span so the
+     line truncates inside the text column. */
+  .v4-settings-contest-row-eyebrow {
+    display: flex;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .v4-settings-contest-row-eyebrow > span {
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .v4-settings-contest-row .btn,
+  .v4-settings-contest-row .btn-link {
+    flex-shrink: 0;
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+
+  /* ────────────────────────────────────────────────────────────────
+     MODALS — full-width bottom sheets on phone
+     Sign-in / Launch / PickWinner become sheets. Edit stays a
+     centered small modal (single-field input).
+     ──────────────────────────────────────────────────────────────── */
+  .v4-signin-overlay,
+  .v4-auth-backdrop,
+  .v4-pickwinner-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+  .v4-signin-modal,
+  .v4-auth-modal,
+  .v4-launch-modal,
+  .v4-pickwinner-modal {
+    max-width: 100%;
+    width: 100%;
+    max-height: 92vh;
+    border-radius: 22px 22px 0 0;
+    padding: 28px 22px 24px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  /* The edit modal stays centered + width 92vw — single-field popup */
+  .v4-edit-modal {
+    max-width: 92vw;
+    padding: 28px 22px 22px;
+  }
+  .v4-auth-backdrop:has(.v4-edit-modal),
+  .v4 .v4-auth-backdrop:has(.v4-edit-modal) {
+    /* When the backdrop hosts EditQuestionModal specifically, center it. */
+    align-items: center;
+    padding: 16px;
+  }
+
+  /* Halos serve no purpose on a sheet that fills the screen */
+  .v4-signin-halo,
+  .v4-launch-halo,
+  .v4-edit-halo,
+  .v4-pickwinner-halo { display: none; }
+
+  /* Scattered shapes stay (cheap, atmospheric) but pulled to corners */
+  .v4-signin-shape-2,
+  .v4-edit-shape-2,
+  .v4-pickwinner-shape-2 { right: 14px; }
+
+  /* Modal headlines / inputs sized for phone reading */
+  .v4-signin-title,
+  .v4-auth-title { font-size: 26px; }
+  .v4-signin-subtitle,
+  .v4-auth-blurb { font-size: 14px; }
+  .v4-settings-input { font-size: 16px; }   /* iOS no-zoom */
+
+  /* PickWinner specifically: the leaderboard list cap */
+  .v4-pickwinner-modal { padding: 22px 16px 16px; }
+  .v4-pickwinner-list { max-height: 40vh; }
+
+  /* Launch modal: payment fields */
+  .v4-launch-card-wrapper { padding: 12px 10px; }
+
+
+  /* ────────────────────────────────────────────────────────────────
+     PARTICIPANT FLOW — Join, vote, status, winner
+     ──────────────────────────────────────────────────────────────── */
+  .v4-join-inner { padding: 24px 16px 80px; }
+  /* The participant nav (join / thanks / vote / winner / reveal) uses a
+     3-column grid (brand · inviter · right) where the middle inviter
+     sentence is the visual center. On a 375px phone there's no room
+     for the inviter — but hiding it left the avatar/deadline pill
+     drifting into the middle column instead of pinning to the right
+     edge. Collapse to a 2-column `[brand · right]` grid so the right
+     slot always sits flush against the page edge. */
+  .v4-nav.v4-join-nav {
+    grid-template-columns: 1fr auto;
+    padding: 12px 14px;
+    gap: 8px;
+  }
+  .v4-join-nav-inviter { display: none; }
+  .v4-nav.v4-join-nav .v4-nav-right { justify-self: end; grid-column: 2; }
+
+  /* Deadline pill — actual class on the JSX is `.v4-join-nav-deadline`
+     (the old `.v4-join-deadline` rule below never matched). Shrink
+     font + padding + nowrap so it fits without clipping. */
+  .v4-join-nav-deadline {
+    font-size: 11.5px;
+    padding: 6px 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    line-height: 1.2;
+  }
+  /* Trim the verbose "Submissions close" prefix on phones — the pill
+     reads as "🕒 in 7 days" instead. (The deadline value itself sits
+     in a <strong>, so we hide via :not(strong) text via a flex hack
+     below.) The JSX currently puts the prefix as raw text; we mute
+     it by zeroing the parent font-size and re-asserting it on the
+     icon + strong. */
+  .v4-join-nav-deadline { font-size: 0; }
+  .v4-join-nav-deadline svg,
+  .v4-join-nav-deadline strong { font-size: 11.5px; }
+  .v4-join-nav-deadline strong { margin-left: 4px; font-weight: 600; }
+  .v4-join-prize {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  /* Double-class specificity bump — v4.css ships `.v4-join-prize-band
+     { width: 88px }` which loads after mobile.css, so a single-class
+     `width: 100%` here would lose the cascade tie and the band would
+     keep its tiny 88px column inside the now-stacked card. */
+  .v4-join-prize-band.v4-join-prize-band {
+    width: 100%;
+    border-radius: 18px 18px 0 0;
+    height: 56px;
+    justify-content: center;
+  }
+  .v4-join-form-reveal { padding: 20px 18px; }
+  .v4-join-form-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .v4-join-form-row .btn { width: 100%; justify-content: center; }
+  .v4-join-sent-card { padding: 24px 20px; }
+
+  /* Vote page composer + sticky submit */
+  .v4-pvote-bottom-inner { padding: 12px 16px; }
+  .v4-pvote-recap-row {
+    grid-template-columns: 1fr !important;
+    gap: 2px;
+  }
+
+  /* Footer flow timeline stacks */
+  .v4-join-flow {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    max-width: 320px;
+  }
+  .v4-join-flow::before { display: none; }  /* drop the horizontal line */
+  .v4-join-foot { padding: 18px 20px; }
+
+
+  /* ────────────────────────────────────────────────────────────────
+     WINNER PAGES — PublicWinnerReveal + ParticipantWinner
+     ──────────────────────────────────────────────────────────────── */
+  .v4-pthanks-card { padding: 18px 16px; }
+  .v4-pthanks-card-name { font-size: 22px; }
+  .v4-pthanks-card-band { height: 56px; padding: 0 14px; }
+
+
+  /* ────────────────────────────────────────────────────────────────
+     PUBLIC REVEAL — share button + CTA
+     ──────────────────────────────────────────────────────────────── */
+  .v4-preveal-share-btn { width: 100%; justify-content: center; min-width: auto; }
+  .v4-preveal-share-wrap { padding: 0 18px; }
+
+
+  /* ────────────────────────────────────────────────────────────────
+     CATCHWORD CONSULT BLOCK — already had a phone rule; reinforce
+     ──────────────────────────────────────────────────────────────── */
+  .v4-catchword-block {
+    margin: 18px 16px 0;
+    padding: 16px;
+    grid-template-columns: 44px 1fr;
+    text-align: left;
+  }
+  .v4-catchword-block-cta {
+    grid-column: 1 / -1;
+    justify-content: center;
+    width: 100%;
+    margin-top: 4px;
+  }
+
+
+  /* ────────────────────────────────────────────────────────────────
+     PLATFORM MAP — stacked rows, full-width action buttons
+     ──────────────────────────────────────────────────────────────── */
+  .v4-map { padding: 20px 16px 60px; }
+  .v4-map-header h1 { font-size: 28px; line-height: 1.1; }
+  .v4-map-jumpnav { flex-wrap: wrap; gap: 6px; }
+  .v4-map-jumpnav button { padding: 8px 12px; font-size: 12px; }
+  .v4-map-step {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .v4-map-step .v4-map-step-num { align-self: flex-start; }
+  .v4-map-step .btn,
+  .v4-map-step-action .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .v4-map-sim-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .v4-map-sim-actions {
+    display: flex;
+    gap: 6px;
+  }
+  .v4-map-sim-actions .btn { flex: 1 1 50%; justify-content: center; }
+  .v4-map-extra-grid { grid-template-columns: 1fr; gap: 10px; }
+
+
+  /* ────────────────────────────────────────────────────────────────
+     CONTACT PAGE — stack left+right panels
+     ──────────────────────────────────────────────────────────────── */
+  .contact-page .wrap { padding: 20px 16px; }
+  .contact-main {
+    grid-template-columns: 1fr !important;
+    gap: 22px;
+    padding: 60px 0 0;
+  }
+  .contact-intro h1 { font-size: 36px; line-height: 1.05; }
+  .contact-panel { padding: 22px 18px; }
+  .contact-chat-panel { height: 480px; }
+  .contact-chat-bubble { max-width: 90%; font-size: 14px; }
+  .contact-chat-choices { flex-wrap: wrap; gap: 6px; }
+  .contact-chip { flex: 1 1 calc(50% - 3px); text-align: center; }
+  .contact-chat-input { font-size: 16px; }
+  .contact-deco-mailbox,
+  .contact-deco-letter { display: none; } /* decor too big for phone */
+
+
+  /* ────────────────────────────────────────────────────────────────
+     LEGAL PAGES — narrower padding, tighten section spacing.
+     IMPORTANT: padding goes on .legal-main, NOT on .legal-page —
+     otherwise we offset .legal-decor (which sits inside .frame, a
+     child of .legal-page) and the warm gradient no longer starts
+     at the very top of the viewport.
+     ──────────────────────────────────────────────────────────────── */
+  .legal-page .legal-main { padding: 60px 18px 0; }
+  .legal-page h1 { font-size: 32px; }
+  .legal-page h2 { font-size: 16px; margin-top: 26px; }
+  .legal-page .legal-lede { font-size: 14.5px; }
+  .legal-table-wrap { overflow-x: auto; }
+  .legal-table { min-width: 480px; }
+  /* Drop the heaviest decor on legal pages */
+  .legal-decor span:nth-child(n+9) { display: none; }
+
+
+  /* ────────────────────────────────────────────────────────────────
+     SAFE-AREA — respect iOS notch / home indicator on sticky CTAs
+     ──────────────────────────────────────────────────────────────── */
+  .v4-pvote-bottom,
+  .v4-pchat-composer-bottom {
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+
+  /* ────────────────────────────────────────────────────────────────
+     CARDS / TABLES — never overflow horizontally
+     ──────────────────────────────────────────────────────────────── */
+  body, html {
+    overflow-x: hidden;
+  }
+  .legal-table-wrap,
+  .v4-results-scroller {
+    max-width: 100%;
+  }
+  /* .v4-pdf-report is intentionally EXCLUDED from the max-width:100%
+     overflow guard — it's the off-screen 794×1123 capture target for
+     the PDF export. Constraining it to viewport width on phones made
+     the exported PDF look squashed to mobile dimensions instead of
+     A4. Its `overflow-x: hidden` parent (set above on `body, html`)
+     already clips any visual bleed; the report just stays at its
+     intrinsic desktop size for capture. */
+
+
+  /* ────────────────────────────────────────────────────────────────
+     TYPE — body slightly smaller, line-heights generous
+     ──────────────────────────────────────────────────────────────── */
+  body { font-size: 14.5px; }
+
+
+  /* ────────────────────────────────────────────────────────────────
+     ANIMATION — reduce / skip on weaker phones (perf safety net)
+     ──────────────────────────────────────────────────────────────── */
+  /* Decor floats keep going (they're cheap). The heavy gold confetti
+     on winner pages is left intact — it's the moment of the page. */
+
+
+  /* ────────────────────────────────────────────────────────────────
+     UTILITIES — hide things explicitly marked "desktop only"
+     ──────────────────────────────────────────────────────────────── */
+  .desktop-only { display: none !important; }
+  .v4-signin-shape-5 { display: none; } /* purple accent — fewer shapes on phone */
+  .v4-edit-shape-5,
+  .v4-pickwinner-shape-5 { display: none; }
+
+}
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   EXTRA-SMALL (≤ 380px) — fine-tune for tiny phones (older iPhones)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@media (max-width: 380px) {
+  .v4-review-title,
+  .v4-pthanks-title { font-size: 26px; }
+  .lp-v3 .hero h1 { font-size: 30px; }
+  .v4-manage-stats {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .v4-results-row-trigger {
+    padding: 10px 8px;
+  }
+}
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   TOUCH / NARROW VIEWPORTS — make hover-gated affordances persistent.
+   On desktop, the "✏ EDIT" hint on editable chat bubbles reveals on
+   :hover. Touch devices never fire hover and resized browser windows
+   on mobile/tablet ranges don't either in practice — so the editable
+   bubble reads as a static reply and the user can't tell that chat
+   options are editable. We force the hint visible whenever the
+   pointer is coarse OR the viewport is at-or-below the nav-burger
+   threshold, so chat editing functions identically to the desktop
+   experience (the affordance the desktop user sees on hover is the
+   one the mobile/tablet user sees at rest).
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@media (hover: none), (max-width: 980px) {
+  /* Double-class on .v4-bubble-edit-hint and parent selector bumps
+     specificity above v4.css's own `.v4-bubble-edit-hint { opacity: 0 }`
+     base rule — mobile.css loads before per-page v4.css imports, so
+     equal-specificity rules in v4.css would otherwise win. */
+  .v4-bubble-editable .v4-bubble-edit-hint {
+    opacity: 1;
+    color: rgba(255, 255, 255, 0.85);
+  }
+  /* The segment-reply bubble carries an icon + title and the hint —
+     when the title wraps on phones the hint shouldn't drop to a
+     new line. Keep the whole row inline-wrap-aware. */
+  .v4-bubble-editable {
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+  /* The transform-on-hover lift is unreachable without a cursor, so
+     swap it for a tap-down press so editing FEELS like the action
+     it is on touch. */
+  .v4-bubble-editable:active {
+    transform: scale(0.985);
+  }
+}

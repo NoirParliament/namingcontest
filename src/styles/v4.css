@@ -67,6 +67,18 @@
   align-items: center;
   flex: none;
   text-decoration: none;
+  /* Soft press feedback when clicked — the logo is a nav link to /
+     but had no visual response to clicks before, so it felt dead.
+     Tiny scale + opacity dip makes the click register. */
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.18s ease;
+}
+.v4-brand:hover { opacity: 0.82; }
+/* Stronger press — scale + opacity dip together so the click is
+   unmistakably visible even though navigation fires right after. */
+.v4-brand:active {
+  transform: scale(0.9);
+  opacity: 0.5;
+  transition-duration: 0.1s;
 }
 /* When the brand is a <button> (scroll-to-top trigger) instead of
    a <Link>, strip the default button chrome so it looks identical. */
@@ -126,7 +138,9 @@
   font-weight: 500;
   color: var(--v4-muted);
   text-decoration: none;
-  transition: color 0.2s ease;
+  /* Press feedback bundled with the existing color/bg transition —
+     click registers visually instead of just snap-navigating. */
+  transition: color 0.2s ease, background 0.2s ease, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
   flex: none;
   padding: 6px 10px;
   border-radius: 8px;
@@ -134,6 +148,118 @@
 .v4-exit:hover {
   color: var(--v4-fg);
   background: rgba(3, 3, 2, 0.04);
+}
+/* Stronger press — scale + opacity so the click reads as a real
+   tap even on the brief window before navigation fires. */
+.v4-exit:active {
+  transform: scale(0.9);
+  opacity: 0.55;
+  background: rgba(3, 3, 2, 0.08);
+  transition-duration: 0.1s;
+}
+
+/* When <ExitLink> is clicked, the body briefly fades out before
+   react-router navigates to / so leaving a v4 screen doesn't feel
+   like a jump-cut. Pure CSS — JS just adds/removes the class. */
+body.is-exiting {
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+/* ── Catchword consultation block ─────────────────────────────────
+   Quiet pitch panel: "couldn't find the right name? book the
+   pros." Used on the winner-phase Manage page (in place of the
+   Cancel button) and under cancelled contests in the workspace. */
+.v4-catchword-block {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  align-items: center;
+  gap: 16px;
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 16px;
+  padding: 18px 20px;
+  margin: 24px auto 0;
+  max-width: 720px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+.v4-catchword-block-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  /* Plain background so the actual cwlogo.png reads cleanly — the
+     logo provides its own shape and colour. */
+  background: transparent;
+  flex: none;
+  overflow: hidden;
+}
+.v4-catchword-block-text { min-width: 0; }
+.v4-catchword-block-title {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  margin: 0 0 3px;
+  letter-spacing: -0.005em;
+}
+.v4-catchword-block-body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--v4-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+.v4-catchword-block-body strong {
+  color: var(--v4-fg);
+  font-weight: 600;
+}
+/* Same gradient-flip animation as .v4-join-cta / .btn.btn-primary —
+   ink → white on hover via background-position slide. Keeps all
+   black-pill CTAs across the product on one visual language. */
+.v4-catchword-block-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  color: #ffffff;
+  background: linear-gradient(to top, #ffffff 50%, #030302 50%);
+  background-size: 100% 200%;
+  background-position: top;
+  border: 1px solid #030302;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 4px 14px rgba(0, 0, 0, 0.08);
+  transition:
+    background-position 0.55s cubic-bezier(0.65, 0, 0.35, 1),
+    color 0.35s ease;
+  flex: none;
+}
+.v4-catchword-block-cta:hover { background-position: bottom; color: #030302; }
+.v4-catchword-block-cta:active { transform: scale(0.97); transition-duration: 0.08s; }
+
+/* Catchword logo inside the icon-wrap — fills it with no padding,
+   replacing the briefcase glyph. `brightness(0)` flattens any
+   colour in the source PNG to pure black so the mark reads as
+   inked-on-card. */
+.v4-catchword-block-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  filter: brightness(0);
+}
+@media (max-width: 560px) {
+  .v4-catchword-block { grid-template-columns: 44px 1fr; }
+  .v4-catchword-block-cta { grid-column: 1 / -1; justify-content: center; }
 }
 
 /* ---------- DECORATIVE BLOBS ---------- */
@@ -345,6 +471,36 @@
   flex-direction: column;
   gap: 10px;
   margin-top: 32px;
+}
+
+/* Per-card cascade on segment choice cards — each child fades in
+   70ms after the previous, matching the chat-bubble entrance feel.
+   OPACITY-ONLY: we deliberately don't animate transform because
+   .v4-choice:hover uses translateY(-2px), and an animation that
+   also touches transform with fill-mode `both` would lock the
+   element at translateY(0) forever, killing the hover lift. Keeping
+   transform off the cascade keeps both behaviours intact.
+   The explicit `opacity: 0` initial state guarantees the card is
+   invisible from frame 1 — without it, cards briefly flash at full
+   opacity before the animation kicks in. */
+.v4-choices .v4-choice {
+  opacity: 0;
+  animation: v4-choice-fade-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes v4-choice-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.v4-choices .v4-choice:nth-child(1) { animation-delay: 0s; }
+.v4-choices .v4-choice:nth-child(2) { animation-delay: 0.07s; }
+.v4-choices .v4-choice:nth-child(3) { animation-delay: 0.14s; }
+.v4-choices .v4-choice:nth-child(4) { animation-delay: 0.21s; }
+.v4-choices .v4-choice:nth-child(5) { animation-delay: 0.28s; }
+.v4-choices .v4-choice:nth-child(6) { animation-delay: 0.35s; }
+.v4-choices .v4-choice:nth-child(7) { animation-delay: 0.42s; }
+.v4-choices .v4-choice:nth-child(8) { animation-delay: 0.49s; }
+@media (prefers-reduced-motion: reduce) {
+  .v4-choices .v4-choice { animation: none; }
 }
 
 .v4-choice {
@@ -1063,8 +1219,28 @@ textarea.v4-input::placeholder {
   margin-top: 6px;
   max-width: 560px;
   width: 100%;
-  animation: v4-bubble-in 0.5s ease-out forwards;
-  opacity: 0;
+  /* Container stays at opacity 1 — each CHILD card cascades in
+     individually below, so the segments arrive one by one like the
+     bubbles before them, not as a single block. */
+}
+/* Per-card cascade — same fade-up timing the chat bubbles use, with
+   a 70ms stagger between rows so 4–6 cards complete in well under
+   half a second and the user can clearly see the parade. */
+.v4-radiocards .v4-radiocard {
+  animation: v4-bubble-in 0.45s cubic-bezier(0.34, 1.4, 0.5, 1) both;
+}
+.v4-radiocards .v4-radiocard:nth-child(1) { animation-delay: 0s; }
+.v4-radiocards .v4-radiocard:nth-child(2) { animation-delay: 0.07s; }
+.v4-radiocards .v4-radiocard:nth-child(3) { animation-delay: 0.14s; }
+.v4-radiocards .v4-radiocard:nth-child(4) { animation-delay: 0.21s; }
+.v4-radiocards .v4-radiocard:nth-child(5) { animation-delay: 0.28s; }
+.v4-radiocards .v4-radiocard:nth-child(6) { animation-delay: 0.35s; }
+.v4-radiocards .v4-radiocard:nth-child(7) { animation-delay: 0.42s; }
+.v4-radiocards .v4-radiocard:nth-child(8) { animation-delay: 0.49s; }
+@media (prefers-reduced-motion: reduce) {
+  .v4-radiocards .v4-radiocard {
+    animation: none;
+  }
 }
 .v4-radiocard {
   display: flex;
@@ -1510,18 +1686,84 @@ input.v4-branding-color-input:hover {
 /* ============================================
    LAUNCH MODAL — wider variant for email + Stripe payment
    ============================================ */
+/* Launch modal — proportions mirror .v4-signin-modal so the two
+   checkout-style cards (sign-in / launch) read as the same family. */
 .v4-launch-modal {
-  max-width: 480px;
-  text-align: left;
-  padding: 36px 32px 28px;
+  max-width: 440px;
+  text-align: center;
+  padding: 36px 36px 28px;
+  overflow: hidden;
 }
 .v4-launch-modal .v4-auth-title {
-  text-align: left;
-  margin-bottom: 8px;
+  text-align: center;
+  margin-bottom: 10px;
 }
 .v4-launch-modal .v4-auth-blurb {
-  text-align: left;
+  text-align: center;
   margin-bottom: 24px;
+}
+/* Form contents stay left-aligned for legibility, even though the
+   modal frame and headline are centered. */
+.v4-launch-modal .v4-launch-form { text-align: left; }
+.v4-launch-modal .v4-launch-secure { justify-content: center; }
+
+/* Rocket hero — same shape language as the sign-in modal's key,
+   slightly larger because the launch action carries more weight
+   ("you're going live") than sign-in. */
+.v4-launch-hero-rocket {
+  display: block;
+  width: 120px;
+  height: auto;
+  margin: -4px auto 18px;
+  transform: rotate(8deg);
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.12));
+  animation: v4-launch-rocket-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes v4-launch-rocket-in {
+  from { opacity: 0; transform: rotate(8deg) translateY(14px) scale(0.85); }
+  to   { opacity: 1; transform: rotate(8deg) translateY(0)    scale(1);    }
+}
+
+/* Scattered shapes — mirror .v4-signin-shape but scoped to the
+   launch modal so we can tune positions independently. */
+.v4-launch-shape {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.55;
+  animation: decorFloat 12s ease-in-out infinite;
+  z-index: 0;
+}
+/* Same five-shape recipe as sign-in: mint dot, tilted periwinkle pill,
+   blush dot, butter dot, purple accent. Tucked at the corners well
+   away from the close button (top: 14, right: 14, 32x32). */
+.v4-launch-shape-1 { top: 130px;  left: 22px;   width: 10px; height: 10px; background: var(--shape-c1, var(--panel-mint, #a6dcb3)); }
+.v4-launch-shape-2 { top: 220px;  right: 22px;  width: 24px; height: 10px; background: var(--shape-c2, var(--panel-periwinkle, #b3c4f0)); border-radius: 12px 4px 14px 4px; transform: rotate(-12deg); animation-name: decorFloat2; animation-delay: -3s; }
+.v4-launch-shape-3 { bottom: 28px; left: 30px;  width: 12px; height: 12px; background: var(--shape-c3, var(--panel-blush, #fadecc));  animation-delay: -5s; }
+.v4-launch-shape-4 { bottom: 110px; right: 26px; width: 8px;  height: 8px;  background: var(--shape-c4, var(--panel-butter, #fceebc)); animation-delay: -2s; }
+.v4-launch-shape-5 { top: 58%;    left: 20px;   width: 6px;  height: 6px;  background: var(--shape-c5, var(--accent-purple, #4b68c3)); opacity: 0.4; animation-delay: -7s; }
+
+/* Lift content above the shapes — but explicitly exclude the
+   absolutely-positioned close button so it stays in the top-right
+   corner instead of being pulled into the flow. */
+.v4-launch-modal > *:not(.v4-launch-shape):not(.v4-auth-close) { position: relative; z-index: 1; }
+.v4-launch-modal .v4-auth-close { z-index: 3; }
+
+/* Soft blush halo behind the modal — identical recipe to the sign-in
+   halo so both modals project the same warm NamingContest glow. */
+.v4-launch-halo {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 620px; height: 620px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+              color-mix(in srgb, #fadecc 90%, #fceebc 10%) 0%,
+              rgba(250, 222, 204, 0) 65%);
+  filter: blur(8px);
+  opacity: 0.55;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: v4-signin-halo-in 0.7s ease-out both;
 }
 .v4-launch-form {
   display: flex;
@@ -1970,6 +2212,23 @@ input.v4-launch-email-input::placeholder {
   transform-origin: center 25%;
   display: block;
 }
+/* Boring-avatar SVG variant — fills the circle, no zoom needed. */
+.v4-manage-share-avatar svg { display: block; }
+/* Same #000/#FFF → ink override pattern as the results-list avatars,
+   so the eyes/mouth render in NamingContest ink, not raw library
+   black. */
+.v4-manage-share-avatar svg g[mask] [fill="#000000"],
+.v4-manage-share-avatar svg g[mask] [fill="#000"] {
+  fill: var(--avatar-feature, #030302);
+}
+.v4-manage-share-avatar svg g[mask] [stroke="#000000"],
+.v4-manage-share-avatar svg g[mask] [stroke="#000"] {
+  stroke: var(--avatar-feature, #030302);
+}
+.v4-manage-share-avatar svg g[mask] [fill="#FFFFFF"],
+.v4-manage-share-avatar svg g[mask] [fill="#fff"] {
+  fill: var(--avatar-feature, #030302);
+}
 .v4-manage-share-meta-bold {
   font-size: 12.5px;
   font-weight: 500;
@@ -2384,14 +2643,17 @@ input.v4-launch-email-input::placeholder {
 }
 
 /* ─── Edit question modal (side modal for inline editing) ─── */
-/* Shell pattern aligned to .v4-signin-modal. EditQuestionModal uses
-   the .v4-auth-backdrop overlay, so animation curve + blur come from
-   the shared overlay class. */
+/* Shell pattern aligned to .v4-signin-modal — same proportions
+   (440px, 36/36/32 padding, 22px radius, three-layer shadow,
+   identical settle-in spring), same scattered decoration, same
+   warm halo. No hero icon: this is an in-context edit popup, not
+   a destination flow. */
 .v4-edit-modal {
   position: relative;
   width: 100%;
-  max-width: 520px;
+  max-width: 440px;
   background: #ffffff;
+  overflow: hidden;
   border-radius: 22px;
   padding: 36px 36px 32px;
   box-shadow:
@@ -2401,6 +2663,54 @@ input.v4-launch-email-input::placeholder {
   animation: v4-modal-card-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   opacity: 0;
   text-align: left;
+}
+
+/* Scattered shapes — same five-shape recipe as .v4-signin-shape
+   (mint dot, tilted periwinkle pill, blush dot, butter dot, purple
+   accent). Tucked into the corners away from the close button. */
+.v4-edit-shape {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.55;
+  animation: decorFloat 12s ease-in-out infinite;
+  z-index: 0;
+  /* Per-open scale jitter from JS (`--jitter-scale`), folded into the
+     base transform here so each modal opening renders shapes at
+     slightly different sizes. Defaults to 1 when JS isn't driving it. */
+  transform: scale(var(--jitter-scale, 1));
+}
+/* Each shape pulls its background from a CSS variable set on the
+   modal container (--shape-c1…c5) so callers can tint the whole
+   set with the active segment's palette. Falls back to the
+   universal NC palette if no per-segment palette is supplied. */
+.v4-edit-shape-1 { top: 80px;   left: 20px;   width: 10px; height: 10px; background: var(--shape-c1, var(--panel-mint, #a6dcb3)); }
+.v4-edit-shape-2 { top: 160px;  right: 20px;  width: 24px; height: 10px; background: var(--shape-c2, var(--panel-periwinkle, #b3c4f0)); border-radius: 12px 4px 14px 4px; transform: rotate(-12deg) scale(var(--jitter-scale, 1)); animation-name: decorFloat2; animation-delay: -3s; }
+.v4-edit-shape-3 { bottom: 28px; left: 28px;  width: 12px; height: 12px; background: var(--shape-c3, var(--panel-blush, #fadecc));  animation-delay: -5s; }
+.v4-edit-shape-4 { bottom: 80px; right: 24px; width: 8px;  height: 8px;  background: var(--shape-c4, var(--panel-butter, #fceebc)); animation-delay: -2s; }
+.v4-edit-shape-5 { top: 56%;    left: 18px;   width: 6px;  height: 6px;  background: var(--shape-c5, var(--accent-purple, #4b68c3)); opacity: 0.4; animation-delay: -7s; }
+
+/* Lift content above the decorative shapes — exclude the close button
+   so its absolute top-right position isn't overridden by the
+   `position: relative` cascade. */
+.v4-edit-modal > *:not(.v4-edit-shape):not(.v4-auth-close) { position: relative; z-index: 1; }
+.v4-edit-modal .v4-auth-close { z-index: 3; }
+
+/* Soft blush halo — same recipe as the sign-in halo, projecting a
+   warm NamingContest glow onto the dimmed backdrop. */
+.v4-edit-halo {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 620px; height: 620px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+              color-mix(in srgb, #fadecc 90%, #fceebc 10%) 0%,
+              rgba(250, 222, 204, 0) 65%);
+  filter: blur(8px);
+  opacity: 0.55;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: v4-signin-halo-in 0.7s ease-out both;
 }
 .v4-edit-modal-label {
   font-family: 'Inter', system-ui, sans-serif;
@@ -2603,8 +2913,12 @@ input.v4-results-search-input::placeholder {
   padding: 0 4px;
 }
 .v4-results-scroller.is-scrolling {
-  /* Cap at ~10 rows tall when expanded; the rest scrolls */
-  max-height: 620px;
+  /* Cap at exactly 10 rows tall when expanded; the rest scrolls.
+     Top-3 tier rows render at 66.5px, regular rows at 67.5px, so
+     the bottom of row 10 lands at exactly 684px (measured). Setting
+     max-height to that means rows 1–10 are fully visible, row 11+
+     are reached by scrolling — no partial-row sliver peeking. */
+  max-height: 684px;
   overflow-y: auto;
   /* Trap wheel scroll inside the list — never bubble to page */
   overscroll-behavior: contain;
@@ -2668,7 +2982,37 @@ input.v4-results-search-input::placeholder {
   padding: 0;
 }
 .v4-results-row {
+  position: relative;
   border-top: 1px solid var(--v4-faint);
+}
+
+/* ── Cascade entrance — each row fades + rises in on mount, 60ms
+   apart up to row 7 (rest land together so a 15-name list doesn't
+   have a 1s+ tail). `--enter-delay` is set inline per row. */
+.v4-results-row-cascade {
+  animation: v4-row-enter 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--enter-delay, 0s);
+}
+@keyframes v4-row-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Pulsed row — fired when ambient ticking gives this name a vote.
+   Soft mint glow + subtle scale, decays over ~1s. */
+.v4-results-row.is-pulsing {
+  animation: v4-row-pulse 1s ease-out;
+}
+@keyframes v4-row-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(166, 220, 179, 0); }
+  20%  { box-shadow: 0 0 0 8px rgba(166, 220, 179, 0.35); }
+  100% { box-shadow: 0 0 0 0 rgba(166, 220, 179, 0); }
+}
+
+/* prefers-reduced-motion → skip cascade/pulse */
+@media (prefers-reduced-motion: reduce) {
+  .v4-results-row-cascade { animation: none; }
+  .v4-results-row.is-pulsing { animation: none; }
 }
 .v4-results-list li:first-child .v4-results-row {
   border-top: none;
@@ -2699,6 +3043,48 @@ input.v4-results-search-input::placeholder {
   color: var(--v4-fg);
   font-weight: 500;
 }
+
+/* Top-3 wash — pseudo-element overlay carrying the segment tint
+   (set per-row via --tier-tint). Slow, ~1.2s reveal so the leaders
+   "fill in" rather than snap. Starts 300ms after the row's own
+   enter-delay so it lands during/after the cascade settles. */
+.v4-results-row-tier-1,
+.v4-results-row-tier-2,
+.v4-results-row-tier-3 {
+  isolation: isolate;
+}
+.v4-results-row-tier-1::before,
+.v4-results-row-tier-2::before,
+.v4-results-row-tier-3::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--tier-tint);
+  border-radius: 14px;
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+  animation: v4-tier-reveal 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--enter-delay, 0s) + 0.3s);
+}
+.v4-results-row-tier-1 > *,
+.v4-results-row-tier-2 > *,
+.v4-results-row-tier-3 > * {
+  position: relative;
+  z-index: 1;
+}
+@keyframes v4-tier-reveal {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .v4-results-row-tier-1::before,
+  .v4-results-row-tier-2::before,
+  .v4-results-row-tier-3::before {
+    animation: none;
+    opacity: 1;
+  }
+}
 .v4-results-row-trigger {
   display: grid;
   grid-template-columns: 28px 1fr auto 16px;
@@ -2718,11 +3104,11 @@ input.v4-results-search-input::placeholder {
 .v4-results-row-trigger:hover {
   background: rgba(3, 3, 2, 0.03);
 }
-/* Submission phase: rank + name + caret, but no vote column (no votes
-   yet). Drop the votes track so the name keeps its full width and the
-   caret stays flush right. */
+/* Submission phase: name + caret only. Both the rank and the vote
+   columns are dropped — there's no ranking yet (the order is just
+   submission recency) and there are no votes to show. */
 .v4-results-row-trigger.is-novotes {
-  grid-template-columns: 28px 1fr 16px;
+  grid-template-columns: 1fr 16px;
 }
 .v4-results-rank {
   font-family: 'Fraunces', ui-serif, Georgia, serif;
@@ -2757,6 +3143,23 @@ input.v4-results-search-input::placeholder {
   color: var(--v4-muted);
   letter-spacing: 0;
 }
+/* Submission-stage submitter mini-avatar — 16px boring-avatar (beam
+   variant) of the submitter, sitting right before their name in the
+   meta line. Deterministic from the submitter so all of one author's
+   submissions share the same face. Sized to fit alongside 11.5px
+   meta text. */
+.v4-results-submitter-mini {
+  display: inline-block;
+  vertical-align: middle;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 6px;
+  margin-top: -1px;
+  flex: none;
+}
+.v4-results-submitter-mini svg { display: block; }
 /* In the expanded detail: bring back the themed chip so the submitter
    gets proper credit when you're actually reading the name's story. */
 .v4-results-submitter-pill.is-chip {
@@ -2793,7 +3196,10 @@ input.v4-results-search-input::placeholder {
   color: var(--v4-muted);
 }
 
-/* Avatar (participants view) */
+/* Avatar (participants view) — now hosts a Boring Avatars marble SVG.
+   The circle is the size container; the SVG fills via boring-avatars'
+   `square={false}` mode. Text styling left in place as a fallback in
+   case the SVG ever fails to mount (very rare). */
 .v4-results-avatar {
   display: inline-flex;
   align-items: center;
@@ -2801,15 +3207,59 @@ input.v4-results-search-input::placeholder {
   width: 32px;
   height: 32px;
   border-radius: 50%;
+  overflow: hidden;
+  flex: none;
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
+.v4-results-avatar svg {
+  display: block;
+}
+
+/* Boring Avatars `beam` variant hardcodes #000 for eyes/mouth and
+   #FFFFFF for some closed-eye / open-mouth states — both are foreign
+   to our palette. We re-skin those facial features in-place by
+   targeting the inline fill/stroke attributes inside the mask group
+   (the mask rect itself stays #FFFFFF because it's outside g[mask]).
+   `--avatar-feature` is set inline per avatar from pickFeatureColor()
+   so each face gets its own deterministic NC-palette feature colour. */
+.v4-results-avatar svg g[mask] [fill="#000000"],
+.v4-results-avatar svg g[mask] [fill="#000"],
+.v4-results-submitter-mini svg g[mask] [fill="#000000"],
+.v4-results-submitter-mini svg g[mask] [fill="#000"] {
+  fill: var(--avatar-feature, #030302);
+}
+.v4-results-avatar svg g[mask] [stroke="#000000"],
+.v4-results-avatar svg g[mask] [stroke="#000"],
+.v4-results-submitter-mini svg g[mask] [stroke="#000000"],
+.v4-results-submitter-mini svg g[mask] [stroke="#000"] {
+  stroke: var(--avatar-feature, #030302);
+}
+.v4-results-avatar svg g[mask] [fill="#FFFFFF"],
+.v4-results-avatar svg g[mask] [fill="#fff"],
+.v4-results-submitter-mini svg g[mask] [fill="#FFFFFF"],
+.v4-results-submitter-mini svg g[mask] [fill="#fff"] {
+  fill: var(--avatar-feature, #030302);
+}
 
 /* Expanded row body */
 .v4-results-row-body {
   padding: 8px 16px 18px;
+  /* Fade + slide down on mount — gives the row-click expansion a
+     soft reveal instead of a snap. Height still grows instantly
+     (the parent <li> snaps); only the body's CONTENT animates,
+     which reads as the inner content "drawing in." */
+  animation: v4-row-body-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: top center;
+}
+@keyframes v4-row-body-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .v4-results-row-body { animation: none; }
 }
 
 /* Name detail panel — submitter rationale shown on row expand */
@@ -3589,6 +4039,80 @@ input.v4-results-search-input::placeholder {
   line-height: 1.5;
   word-wrap: break-word;
   overflow-wrap: break-word;
+}
+
+/* Editable list — same per-row hover/edit pattern as the brief recap
+   on the manage page. Click a row to open EditQuestionModal in place
+   instead of bouncing back to the brief chat. */
+.v4-review-list-editable {
+  list-style: none;
+  padding: 0;
+}
+.v4-review-list-editable > li {
+  padding: 0;
+  margin: 0;
+}
+.v4-review-row-edit {
+  display: grid;
+  grid-template-columns: 200px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--v4-faint);
+  padding: 12px 10px;
+  border-radius: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.2s ease;
+}
+.v4-review-list-editable > li:first-child .v4-review-row-edit {
+  border-top: none;
+}
+.v4-review-row-edit:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+.v4-review-row-edit:focus-visible {
+  background: rgba(0, 0, 0, 0.04);
+  box-shadow: 0 0 0 3px var(--v4-ring);
+  border-radius: 8px;
+}
+.v4-review-row-edit .v4-review-row-label {
+  font-size: 13px;
+  color: var(--v4-muted);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+.v4-review-row-edit .v4-review-row-value {
+  font-size: 14px;
+  color: var(--v4-fg);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  line-height: 1.5;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+.v4-review-row-edit-icon {
+  color: var(--v4-muted);
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.v4-review-row-edit:hover .v4-review-row-edit-icon,
+.v4-review-row-edit:focus-visible .v4-review-row-edit-icon {
+  opacity: 1;
+}
+
+/* Section header "Click to edit" hint — quiet eyebrow-style copy
+   sitting opposite the section title, replaces the old Edit link. */
+.v4-review-section-hint {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--v4-muted);
+  letter-spacing: 0;
 }
 
 .v4-review-launch {
@@ -4609,6 +5133,39 @@ input.v4-results-search-input::placeholder {
   }
 }
 
+/* ============================================
+   SHARE-CARD EXPORT LOCK
+   ============================================
+   `body.is-exporting-card` is set by v4ContestExport.js while a PNG
+   capture is in flight. A clone of the live WinnerHero is mounted
+   off-screen at a fixed 720px width and snapshotted from there. The
+   clone's @media queries still evaluate against the user's actual
+   viewport — on a 375px phone the mobile rules above (44px title,
+   30/18/28 padding) would still apply to the clone and produce a
+   mobile-looking PNG.
+
+   These overrides re-assert the DESKTOP values on the clone with
+   higher specificity (and !important to beat any per-page stylesheet
+   that loads later). Result: a PNG exported from any viewport size
+   matches the desktop export, pixel for pixel. */
+body.is-exporting-card .v4-winner-hero {
+  width: 720px !important;
+  max-width: none !important;
+  margin: 0 !important;
+  /* Snap entrance animation to its final state for the capture frame. */
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+/* Re-assert the desktop values that @media (max-width: 640px) overrides. */
+body.is-exporting-card .v4-winner-hero-name {
+  font-size: 64px !important;
+  line-height: 1.02 !important;
+}
+body.is-exporting-card .v4-winner-hero-inner {
+  padding: 56px 28px 44px !important;
+}
+
 /* ─────────────────────────────────────────────────────────────────────
    PICK-THE-WINNER MODAL — creator's final-call surface. Top-voted
    name preselected, full leaderboard underneath as radio buttons.
@@ -4637,6 +5194,7 @@ input.v4-results-search-input::placeholder {
   display: flex;
   flex-direction: column;
   background: #ffffff;
+  overflow: hidden;
   border-radius: 22px;
   padding: 32px 32px 24px;
   box-shadow:
@@ -4645,6 +5203,60 @@ input.v4-results-search-input::placeholder {
     0 36px 90px -24px rgba(0, 0, 0, 0.32);
   animation: v4-modal-card-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   opacity: 0;
+}
+
+/* Scattered shapes — same five-shape vocabulary used by the sign-in
+   and edit modals (mint dot, periwinkle pill, blush dot, butter dot,
+   purple accent). Tucked into the corners so they don't compete with
+   the leaderboard. */
+.v4-pickwinner-shape {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.55;
+  animation: decorFloat 12s ease-in-out infinite;
+  z-index: 0;
+  transform: scale(var(--jitter-scale, 1));
+}
+/* All shapes hug the modal's 32px padding strip — the only real
+   whitespace on this content-heavy modal. Spread along both the
+   left and right edges so the eye picks them up as a frame of
+   decoration around a dense interior. */
+/* Shapes 1–5 map 1:1 to palette slots c1–c5; 6–8 cycle back to c1,
+   c4, c3 so the segment-led colour reappears at the bottom-right
+   and the supporting hues echo near the footer. Fallbacks keep the
+   modal looking right when no palette is supplied (e.g. on the
+   demo entry that doesn't pass through a segment). */
+.v4-pickwinner-shape-1 { top: 18px;   left: 10px;   width: 10px; height: 10px; background: var(--shape-c1, var(--panel-mint, #a6dcb3)); }
+.v4-pickwinner-shape-2 { top: 64px;   right: 12px;  width: 22px; height: 10px; background: var(--shape-c2, var(--panel-periwinkle, #b3c4f0)); border-radius: 12px 4px 14px 4px; transform: rotate(-12deg) scale(var(--jitter-scale, 1)); animation-name: decorFloat2; animation-delay: -3s; }
+.v4-pickwinner-shape-3 { top: 26%;    left: 8px;    width: 12px; height: 12px; background: var(--shape-c3, var(--panel-blush, #fadecc));  animation-delay: -5s; }
+.v4-pickwinner-shape-4 { top: 32%;    right: 10px;  width: 8px;  height: 8px;  background: var(--shape-c4, var(--panel-butter, #fceebc)); animation-delay: -2s; }
+.v4-pickwinner-shape-5 { top: 52%;    left: 6px;    width: 6px;  height: 6px;  background: var(--shape-c5, var(--accent-purple, #4b68c3)); opacity: 0.4; animation-delay: -7s; }
+.v4-pickwinner-shape-6 { top: 60%;    right: 8px;   width: 12px; height: 12px; background: var(--shape-c1, var(--panel-mint, #a6dcb3));   animation-delay: -1s; }
+.v4-pickwinner-shape-7 { bottom: 90px; left: 10px;  width: 8px;  height: 8px;  background: var(--shape-c4, var(--panel-butter, #fceebc)); animation-delay: -6s; }
+.v4-pickwinner-shape-8 { bottom: 78px; right: 10px; width: 10px; height: 10px; background: var(--shape-c3, var(--panel-blush, #fadecc));  animation-delay: -4s; }
+
+/* Lift modal content above the decorative shapes — exclude the close
+   button so its absolute top-right position isn't overridden by the
+   `position: relative` cascade. */
+.v4-pickwinner-modal > *:not(.v4-pickwinner-shape):not(.v4-pickwinner-close) { position: relative; z-index: 1; }
+.v4-pickwinner-close { z-index: 3; }
+
+/* Soft blush halo — same recipe used by the sign-in and edit modals,
+   ties this surface into the rest of the modal family. */
+.v4-pickwinner-halo {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 720px; height: 720px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+              color-mix(in srgb, #fadecc 90%, #fceebc 10%) 0%,
+              rgba(250, 222, 204, 0) 65%);
+  filter: blur(8px);
+  opacity: 0.55;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: v4-signin-halo-in 0.7s ease-out both;
 }
 .v4-pickwinner-close {
   position: absolute;
@@ -5164,6 +5776,7 @@ input.v4-results-search-input::placeholder {
   width: 100%;
   max-width: 440px;
   background: #ffffff;
+  overflow: hidden;
   /* Match .v4-join-prize border-radius family + a slightly larger
      value so this floats more dramatically than the ticket-stub. */
   border-radius: 22px;
@@ -5214,28 +5827,21 @@ input.v4-results-search-input::placeholder {
   opacity: 1;
 }
 
-/* Icon wrap — rich segment-gradient pill, NOT a boring grey square.
-   Each phase gets its own warm/cool palette so the icon carries a
-   bit of personality (matches how the join prize stub uses gradient). */
+/* Icon wrap — signup.png as the badge backdrop, with a Phosphor icon
+   centered on top for the input phase. Sent / success phases override
+   the background below to use their phase-specific gradient palettes. */
 .v4-signin-icon-wrap {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 64px;
-  height: 64px;
+  width: 80px;
+  height: 80px;
   border-radius: 20px;
-  background: linear-gradient(
-    155deg,
-    color-mix(in srgb, #fadecc 60%, white) 0%,
-    #fadecc 100%
-  );
+  background: url('../assets/signup.png') center/contain no-repeat;
   color: var(--v4-fg);
   margin: 4px 0 22px;
-  /* Subtle inset highlight + soft glow ground — gives the icon a
-     dimensional, "lit-from-within" feel rather than a flat fill. */
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.55),
-    0 6px 16px -4px rgba(0, 0, 0, 0.08);
+  /* Drop shadow so the badge feels grounded on the white modal card. */
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.10));
 }
 .v4-signin-icon-wrap-sent {
   background: linear-gradient(
@@ -5252,6 +5858,65 @@ input.v4-results-search-input::placeholder {
     #a6dcb3 100%
   );
   color: #1f5430;
+}
+
+/* Key illustration as the sign-in hero — contextually fits "unlock /
+   sign in" and replaces the old icon-wrap for the input phase only. */
+.v4-signin-hero-key {
+  display: block;
+  width: 110px;
+  height: auto;
+  margin: -4px auto 18px;
+  transform: rotate(-6deg);
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.10));
+  animation: v4-signin-key-in 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes v4-signin-key-in {
+  from { opacity: 0; transform: rotate(-6deg) translateY(-10px) scale(0.88); }
+  to   { opacity: 1; transform: rotate(-6deg) translateY(0)     scale(1);    }
+}
+
+/* Scattered shapes inside the modal — small pastel dots + one tilted
+   pill, tucked at the corners so they don't compete with the form. */
+.v4-signin-shape {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.55;
+  animation: decorFloat 12s ease-in-out infinite;
+  z-index: 0;
+}
+/* Positioned well below the close button (top-right, ~14-46px) and away
+   from the centered icon-wrap, so they read as quiet accents. */
+.v4-signin-shape-1 { top: 130px;  left: 20px;   width: 10px; height: 10px; background: var(--panel-mint, #a6dcb3); }
+.v4-signin-shape-2 { top: 210px;  right: 20px;  width: 24px; height: 10px; background: var(--panel-periwinkle, #b3c4f0); border-radius: 12px 4px 14px 4px; transform: rotate(-12deg); animation-name: decorFloat2; animation-delay: -3s; }
+.v4-signin-shape-3 { bottom: 28px; left: 28px;  width: 12px; height: 12px; background: var(--panel-blush, #fadecc);  animation-delay: -5s; }
+.v4-signin-shape-4 { bottom: 96px; right: 24px; width: 8px;  height: 8px;  background: var(--panel-butter, #fceebc); animation-delay: -2s; }
+.v4-signin-shape-5 { top: 56%;    left: 18px;   width: 6px;  height: 6px;  background: var(--accent-purple, #4b68c3); opacity: 0.4; animation-delay: -7s; }
+/* Make sure form content sits above the decorative shapes — but DON'T
+   touch .v4-signin-close (it must stay absolute at top: 14px / right: 14px). */
+.v4-signin-modal > *:not(.v4-signin-shape):not(.v4-signin-close) { position: relative; z-index: 1; }
+.v4-signin-close { z-index: 3; }
+
+/* Soft blush halo behind the modal — a warm glow on the dimmed backdrop
+   that signals "this is NamingContest" without competing with the form. */
+.v4-signin-halo {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 620px; height: 620px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+              color-mix(in srgb, #fadecc 90%, #fceebc 10%) 0%,
+              rgba(250, 222, 204, 0) 65%);
+  filter: blur(8px);
+  opacity: 0.55;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: v4-signin-halo-in 0.7s ease-out both;
+}
+@keyframes v4-signin-halo-in {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.85); }
+  to   { opacity: 0.55; transform: translate(-50%, -50%) scale(1); }
 }
 
 /* Title — Fraunces italic, same scale + treatment as the thanks
@@ -6031,6 +6696,18 @@ input.v4-settings-input:-webkit-autofill:active {
    hover lift. Muted icon + name color. Slightly smaller padding so it
    reads as a footer item, not as competing card with the colored
    ongoing contest above. */
+/* Cancelled contest row — same muted footer treatment as closed. */
+.v4-settings-contest-row-cancelled {
+  background: transparent;
+  border-color: transparent;
+  padding: 10px 18px;
+  margin-bottom: 4px;
+  opacity: 0.65;
+}
+.v4-settings-contest-row-cancelled .v4-settings-contest-row-icon {
+  color: var(--v4-muted);
+}
+
 .v4-settings-contest-row-closed {
   background: transparent;
   border-color: transparent;
@@ -6964,11 +7641,36 @@ input.v4-settings-input:-webkit-autofill:active {
 
 /* Reveal form (after CTA click) — white card with breathing room */
 .v4-join-form-reveal {
+  position: relative;
   background: #ffffff;
   border-radius: 18px;
   padding: 22px 24px 24px;
+  overflow: hidden;
   box-shadow: 0 6px 24px rgba(0,0,0,0.08);
   animation: v4-join-fade-up 0.4s ease-out both;
+}
+
+/* Scattered shape decoration — same five-shape vocabulary used by
+   .v4-signin-modal / .v4-join-sent-card / .v4-pickwinner-modal so
+   this email-entry card reads as part of the same family. */
+.v4-join-form-reveal .v4-join-form-shape {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.55;
+  animation: decorFloat 12s ease-in-out infinite;
+  z-index: 0;
+}
+.v4-join-form-reveal .v4-join-form-shape-1 { top: 14px;  left: 16px;  width: 10px; height: 10px; background: var(--panel-mint, #a6dcb3); }
+.v4-join-form-reveal .v4-join-form-shape-2 { top: 18px;  right: 20px; width: 22px; height: 10px; background: var(--panel-periwinkle, #b3c4f0); border-radius: 12px 4px 14px 4px; transform: rotate(-12deg); animation-name: decorFloat2; animation-delay: -3s; }
+.v4-join-form-reveal .v4-join-form-shape-3 { bottom: 18px; left: 22px; width: 12px; height: 12px; background: var(--panel-blush, #fadecc);  animation-delay: -5s; }
+.v4-join-form-reveal .v4-join-form-shape-4 { bottom: 22px; right: 24px; width: 8px;  height: 8px;  background: var(--panel-butter, #fceebc); animation-delay: -2s; }
+.v4-join-form-reveal .v4-join-form-shape-5 { top: 52%;   left: 10px;  width: 6px;  height: 6px;  background: var(--accent-purple, #4b68c3); opacity: 0.4; animation-delay: -7s; }
+
+/* Lift content above the shapes so the form fields stay legible. */
+.v4-join-form-reveal > *:not(.v4-join-form-shape) {
+  position: relative;
+  z-index: 1;
 }
 .v4-join-form-head {
   font-family: 'Fraunces', Georgia, serif;
@@ -7004,12 +7706,56 @@ input.v4-settings-input:-webkit-autofill:active {
 
 /* Sent / success cards */
 .v4-join-sent-card {
+  position: relative;
   background: #ffffff;
   border-radius: 18px;
   padding: 28px 24px 24px;
+  overflow: hidden;
   text-align: center;
   box-shadow: 0 6px 24px rgba(0,0,0,0.08);
   animation: v4-join-fade-up 0.4s ease-out both;
+}
+
+/* Scattered shape decoration — same five-shape vocabulary used by
+   .v4-signin-modal / .v4-edit-modal / .v4-pickwinner-modal, so this
+   card reads as part of the modal-card family. */
+.v4-join-sent-card .v4-join-sent-shape {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.55;
+  animation: decorFloat 12s ease-in-out infinite;
+  z-index: 0;
+}
+.v4-join-sent-card .v4-join-sent-shape-1 { top: 18px;  left: 18px;  width: 10px; height: 10px; background: var(--panel-mint, #a6dcb3); }
+.v4-join-sent-card .v4-join-sent-shape-2 { top: 60px;  right: 20px; width: 22px; height: 10px; background: var(--panel-periwinkle, #b3c4f0); border-radius: 12px 4px 14px 4px; transform: rotate(-12deg); animation-name: decorFloat2; animation-delay: -3s; }
+.v4-join-sent-card .v4-join-sent-shape-3 { bottom: 26px; left: 24px; width: 12px; height: 12px; background: var(--panel-blush, #fadecc);  animation-delay: -5s; }
+.v4-join-sent-card .v4-join-sent-shape-4 { bottom: 70px; right: 24px; width: 8px;  height: 8px;  background: var(--panel-butter, #fceebc); animation-delay: -2s; }
+.v4-join-sent-card .v4-join-sent-shape-5 { top: 52%;   left: 12px;  width: 6px;  height: 6px;  background: var(--accent-purple, #4b68c3); opacity: 0.4; animation-delay: -7s; }
+
+/* Lift content above the shapes so the icon, title, copy, and CTA
+   stay legible on top of the decoration. */
+.v4-join-sent-card > *:not(.v4-join-sent-shape) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Magic-link sent hero illustration — uses message.png the same way
+   signup.png / key.png are used in sign-in / launch modals. Tilted
+   + drop-shadow + a soft entrance so the success card carries the
+   same visual vocabulary as the other "you did the thing" surfaces. */
+.v4-join-sent-card .v4-join-sent-hero {
+  display: block;
+  width: 110px;
+  height: auto;
+  margin: 0 auto 16px;
+  transform: rotate(-6deg);
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.10));
+  animation: v4-join-sent-hero-in 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes v4-join-sent-hero-in {
+  from { opacity: 0; transform: rotate(-6deg) translateY(-10px) scale(0.88); }
+  to   { opacity: 1; transform: rotate(-6deg) translateY(0)     scale(1);    }
 }
 .v4-join-sent-card .v4-signin-icon-wrap {
   margin: 0 auto 12px;
@@ -8235,6 +8981,12 @@ button.v4-pchat-draft.v4-pchat-draft-editable:focus-visible .v4-pchat-draft-edit
   font-size: 13.5px;
   color: var(--join-fg, var(--v4-fg));
 }
+/* When following the public-reveal share-button wrap, this "Start a
+   contest" nudge keeps its natural 22px rhythm below the button —
+   matching the JoinContest CTA → footer-fineprint rhythm. */
+.v4-preveal-share-wrap + .v4-pwinner-own {
+  margin-top: 22px;
+}
 .v4-pwinner-own-lead { opacity: 0.62; }
 .v4-pwinner-own-link {
   font-weight: 700;
@@ -8244,6 +8996,77 @@ button.v4-pchat-draft.v4-pchat-draft-editable:focus-visible .v4-pchat-draft-edit
   white-space: nowrap;
 }
 .v4-pwinner-own-link:hover { opacity: 0.75; }
+
+/* ─── Public-reveal share button ─────────────────────────────────
+   One button between the champion card and the "Start a contest"
+   nudge on the PublicWinnerReveal page. Click → copies the page URL.
+   Pill in the design-system ink (matches .btn.btn-primary), so it
+   reads as the page's primary affordance without competing with the
+   gold confetti or trophy stub. */
+.v4-preveal-share-wrap {
+  display: flex;
+  justify-content: center;
+  /* Match the card → CTA gap on JoinContest's invitation page (the
+     reference rhythm for card-with-primary-button-below). That page
+     uses .v4-join-prize { margin-bottom: 22px } + .v4-join-cta-wrap
+     with no top margin → ~22px gap. .v4-pthanks-receipt carries 36px
+     bottom margin here, so we pull up by 14px → final ≈ 22px. */
+  margin: -14px auto 0;
+}
+/* Share button — same gradient-flip hover as .v4-join-cta and the
+   landing-v3 .btn.btn-primary.btn-lg family. Ink → white background
+   flips top→bottom on hover with the text colour flipping to ink, so
+   the button feels like part of the same primary-action vocabulary
+   across the whole product (join page, brief, vote, reveal). */
+/* Share button — same gradient-flip hover as .v4-join-cta and the
+   landing-v3 .btn.btn-primary.btn-lg family. */
+.v4-preveal-share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  /* Fixed min-width fits the wider "Link copied" label too, so the
+     button doesn't visibly jump in size when the label swaps after a
+     click. The shorter "Share" label centers inside it. */
+  min-width: 150px;
+  padding: 12px 22px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  line-height: 1;
+  color: #ffffff;
+  background: linear-gradient(to top, #ffffff 50%, #030302 50%);
+  background-size: 100% 200%;
+  background-position: top;
+  border: 1px solid #030302;
+  border-radius: 999px;
+  cursor: pointer;
+  outline: none;
+  white-space: nowrap;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 4px 14px rgba(0, 0, 0, 0.08);
+  transition:
+    background-position 0.55s cubic-bezier(0.65, 0, 0.35, 1),
+    color 0.35s ease;
+}
+.v4-preveal-share-btn:hover:not(:disabled) {
+  background-position: bottom;
+  color: #030302;
+}
+.v4-preveal-share-btn:focus-visible {
+  box-shadow:
+    0 0 0 3px var(--v4-ring),
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 4px 14px rgba(0, 0, 0, 0.08);
+}
+/* Intentionally NO `.is-copied` background/color override. Overriding
+   the gradient with a solid colour at click time caused a visible
+   flicker when the user was mid-hover (the gradient was at the
+   "white" end, then suddenly went solid black). With the gradient
+   pattern preserved, the success state still reads clearly via the
+   swapped icon + label — and the hover state stays consistent. */
 
 /* Confetti canvas — fixed full-viewport, IN FRONT of the content
    (z-index 6 > .v4-review's 5) so the glass nav never blurs it. A

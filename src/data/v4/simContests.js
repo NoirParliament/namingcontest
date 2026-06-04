@@ -13,9 +13,9 @@
 // grid is uniform.
 
 import {
-  Baby, PawPrint, House, Sparkle, SoccerBall, MusicNote, Microphone,
-  HandHeart, GameController, UsersThree, Buildings, Package, Target,
-  ArrowsClockwise, Coffee,
+  Baby, PawPrint, House, PencilSimple,
+  Guitar, Microphone, GraduationCap, GameController, UsersThree,
+  Buildings, Package, Target, ArrowsClockwise,
 } from '@phosphor-icons/react';
 
 const DAY = 24 * 60 * 60 * 1000;
@@ -156,7 +156,7 @@ export const SIM_CONTESTS = {
     subSegmentTitle: 'Something else',
     name: 'The Sailboat', workingName: 'The Sailboat',
     creator: { name: 'Ray', photoIndex: 1, role: 'Skipper' },
-    phase: 'Submission', launchedAt: recentLaunch(), Icon: Sparkle,
+    phase: 'Submission', launchedAt: recentLaunch(), Icon: PencilSimple,
     settings: settings({
       customRequirements: { enabled: true, text: 'Keep it short — it has to fit on the transom. A pun is welcome.' },
     }),
@@ -191,7 +191,7 @@ export const SIM_CONTESTS = {
     subSegmentTitle: 'Sports team',
     name: 'Sunday Football Crew', workingName: 'Sunday Football Crew',
     creator: { name: 'Marcus', photoIndex: 4, role: 'Team captain' },
-    phase: 'Submission', launchedAt: recentLaunch(), Icon: SoccerBall,
+    phase: 'Submission', launchedAt: recentLaunch(), Icon: UsersThree,
     settings: settings({
       customRequirements: { enabled: true, text: 'Should sound good chanted on the touchline. Two-word maximum.' },
       submitterPrize: { enabled: true, name: 'A round at The Crown', text: 'Winning name gets a round of pints after the next match.' },
@@ -230,7 +230,7 @@ export const SIM_CONTESTS = {
     subSegmentTitle: 'Band or music group',
     name: 'Our New Band', workingName: 'Our New Band',
     creator: { name: 'Cass', photoIndex: 3, role: 'Singer' },
-    phase: 'Submission', launchedAt: recentLaunch(), Icon: MusicNote,
+    phase: 'Submission', launchedAt: recentLaunch(), Icon: Guitar,
     settings: settings({
       customRequirements: { enabled: true, text: 'Has to be searchable (not already a big band) and look right on a poster.' },
     }),
@@ -301,7 +301,7 @@ export const SIM_CONTESTS = {
     subSegmentTitle: 'School, club, or nonprofit',
     name: 'The Literacy Project', workingName: 'The Literacy Project',
     creator: { name: 'Grace', photoIndex: 6, role: 'Founder' },
-    phase: 'Submission', launchedAt: recentLaunch(), Icon: HandHeart,
+    phase: 'Submission', launchedAt: recentLaunch(), Icon: GraduationCap,
     settings: settings({
       customRequirements: { enabled: true, text: 'Should feel hopeful and inclusive, work on a grant application and a tote bag.' },
     }),
@@ -374,7 +374,7 @@ export const SIM_CONTESTS = {
     subSegmentTitle: 'Something else',
     name: 'Our Book Club', workingName: 'Our Book Club',
     creator: { name: 'Helen', photoIndex: 6, role: 'Organiser' },
-    phase: 'Submission', launchedAt: recentLaunch(), Icon: UsersThree,
+    phase: 'Submission', launchedAt: recentLaunch(), Icon: PencilSimple,
     settings: settings({
       customRequirements: { enabled: true, text: 'A little witty is good. It goes in the group chat name and the calendar invite.' },
     }),
@@ -553,7 +553,7 @@ export const SIM_CONTESTS = {
     subSegmentTitle: 'Something else',
     name: 'The Corner Café', workingName: 'The Corner Café',
     creator: { name: 'Mara', photoIndex: 3, role: 'Owner' },
-    phase: 'Submission', launchedAt: recentLaunch(), Icon: Coffee,
+    phase: 'Submission', launchedAt: recentLaunch(), Icon: PencilSimple,
     settings: settings({
       customRequirements: { enabled: true, text: 'Friendly local feel, good on a cup and an awning. Not another generic "Beans".' },
     }),

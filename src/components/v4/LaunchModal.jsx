@@ -22,6 +22,7 @@ import {
 import {
   X, CheckCircle, EnvelopeSimple, LockKey,
 } from '@phosphor-icons/react';
+import rocketImg from '../../assets/rocket.png';
 import '../../styles/landing-v3.css';
 
 const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
@@ -77,12 +78,27 @@ const STRIPE_APPEARANCE = {
   },
 };
 
+// Translate the segment palette (5 NC pastels) into CSS variables the
+// scattered shapes read. Falls through to stylesheet defaults when
+// nothing is supplied.
+function paletteVars(palette) {
+  if (!palette || !palette.length) return undefined;
+  return {
+    '--shape-c1': palette[0],
+    '--shape-c2': palette[1],
+    '--shape-c3': palette[2],
+    '--shape-c4': palette[3],
+    '--shape-c5': palette[4],
+  };
+}
+
 export default function LaunchModal({
   open,
   onClose,
   onSuccess,
   contextLabel = '',
   tier = 'personal',
+  palette,
 }) {
   if (!open) return null;
   return (
@@ -92,12 +108,13 @@ export default function LaunchModal({
         onSuccess={onSuccess}
         contextLabel={contextLabel}
         tier={tier}
+        palette={palette}
       />
     </Elements>
   );
 }
 
-function LaunchModalInner({ onClose, onSuccess, contextLabel, tier }) {
+function LaunchModalInner({ onClose, onSuccess, contextLabel, tier, palette }) {
   const stripe = useStripe();
   const elements = useElements();
   const emailRef = useRef(null);
@@ -170,12 +187,16 @@ function LaunchModalInner({ onClose, onSuccess, contextLabel, tier }) {
 
   return (
     <div className="v4 lp-v3 v4-auth-backdrop" onClick={onClose}>
+      {/* Soft blush halo behind the modal — same warm glow used by the
+          sign-in modal so the two checkout-style cards read as siblings. */}
+      <span className="v4-launch-halo" aria-hidden="true" />
       <div
         className="v4-auth-modal v4-launch-modal"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-labelledby="v4-launch-title"
+        style={paletteVars(palette)}
       >
         <button
           type="button"
@@ -187,8 +208,22 @@ function LaunchModalInner({ onClose, onSuccess, contextLabel, tier }) {
           <X weight="regular" size={16} />
         </button>
 
+        {/* Scattered decorative shapes — same vocabulary as the sign-in
+            modal: mint dot, periwinkle pill, blush, butter, purple accent. */}
+        <span className="v4-launch-shape v4-launch-shape-1" aria-hidden="true" />
+        <span className="v4-launch-shape v4-launch-shape-2" aria-hidden="true" />
+        <span className="v4-launch-shape v4-launch-shape-3" aria-hidden="true" />
+        <span className="v4-launch-shape v4-launch-shape-4" aria-hidden="true" />
+        <span className="v4-launch-shape v4-launch-shape-5" aria-hidden="true" />
+
         {!submitted && (
           <>
+            <img
+              className="v4-launch-hero-rocket"
+              src={rocketImg}
+              alt=""
+              aria-hidden="true"
+            />
             <h2 id="v4-launch-title" className="v4-auth-title">
               Launch {contextLabel ? `"${contextLabel}"` : 'your contest'}
             </h2>
