@@ -127,15 +127,16 @@ export default function ParticipantVote() {
     [contest]
   );
 
-  // ── Intro reveal stages (matches ParticipantChat's pattern) ──────
+  // ── Intro reveal stages (mirrors ParticipantChat's brief gate) ───
   //   0 → typing for welcome
-  //   1 → welcome + typing for the brief
-  //   2 → brief lead-in + brief card, auto-shown (no "re-read?" ask) + typing
-  //   3 → "Ready to see the names?" prompt + chip (WAITS for click)
-  //   4 → user-bubble "Yes, show me" + typing for vote prompt
-  //   5 → "Pick up to N…" prompt + toolbar + vote cards + sticky bar
+  //   1 → welcome bubble + typing for the brief prompt
+  //   2 → "refresher on the brief?" prompt + chip (WAITS for click)
+  //   3 → user "Show me the brief" + brief card + typing for vote prompt
+  //   4 → "ready to see the names?" prompt + chip (WAITS for click)
+  //   5 → user "Yes, show me" + typing for vote prompt
+  //   6 → "Pick up to N…" prompt + toolbar + vote cards + sticky bar
   const [introStage, setIntroStage] = useState(0);
-  const INTRO_AUTO_TIMINGS = { 0: 700, 1: 900, 2: 1000, 4: 800 };
+  const INTRO_AUTO_TIMINGS = { 0: 700, 1: 900, 3: 1000, 5: 800 };
 
   // Voting state
   const [selectedIds, setSelectedIds] = useState(() =>
@@ -257,52 +258,72 @@ export default function ParticipantVote() {
               <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
                 <span>
                   You’re back — voting’s open for{' '}
-                  <em>{contest.workingName || contest.name}</em>. Here’s{' '}
-                  {creatorName}’s brief for a quick refresher
+                  <em>{contest.workingName || contest.name}</em>.{' '}
                   {alreadyVoted
-                    ? ' — you can update your picks before voting closes.'
-                    : ' before you pick the names that should win.'}
+                    ? 'You can update your picks any time before voting closes.'
+                    : 'Time to pick the names that should win.'}
                 </span>
               </div>
             )}
 
-            {/* ── Stage 1 → typing for ready prompt ─────────────────── */}
+            {/* ── Stage 1 → typing for the "see the brief?" prompt ──── */}
             {introStage === 1 && (
               <div className="v4-typing" aria-hidden="true">
                 <span></span><span></span><span></span>
               </div>
             )}
 
-            {/* ── Stage 2+ → brief card (intro'd in the welcome message) ─ */}
-            {introStage >= 2 && (
-              <ParticipantBriefCard
-                contest={contest}
-                tone={tone}
-                briefRows={briefRows}
-                settingsRows={settingsRows}
-              />
-            )}
-
-            {/* ── Stage 2 → typing for the ready prompt ─────────────── */}
+            {/* ── Stage 2 → "refresher on the brief?" prompt + chip ─── */}
             {introStage === 2 && (
-              <div className="v4-typing" aria-hidden="true">
-                <span></span><span></span><span></span>
-              </div>
-            )}
-
-            {/* ── Stage 3 → "ready to see the names?" + chip ────────── */}
-            {introStage === 3 && (
               <>
                 <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
-                  <span>
-                    Ready to see what everyone suggested?
-                  </span>
+                  <span>Want a quick refresher on {creatorName}’s brief first?</span>
                 </div>
                 <div className="v4-chips-row" role="group">
                   <button
                     type="button"
                     className="v4-chip"
-                    onClick={() => setIntroStage(4)}
+                    onClick={() => setIntroStage(3)}
+                  >
+                    Show me the brief
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* ── Stage 3+ → user reply + brief card ─────────────────── */}
+            {introStage >= 3 && (
+              <>
+                <div className="v4-bubble v4-bubble-user" style={{ animationDelay: '0.05s' }}>
+                  <span>Show me the brief</span>
+                </div>
+                <ParticipantBriefCard
+                  contest={contest}
+                  tone={tone}
+                  briefRows={briefRows}
+                  settingsRows={settingsRows}
+                />
+              </>
+            )}
+
+            {/* ── Stage 3 → typing for the "ready to vote?" prompt ──── */}
+            {introStage === 3 && (
+              <div className="v4-typing" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+            )}
+
+            {/* ── Stage 4 → "ready to see the names?" + chip ────────── */}
+            {introStage === 4 && (
+              <>
+                <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
+                  <span>Ready to see what everyone suggested?</span>
+                </div>
+                <div className="v4-chips-row" role="group">
+                  <button
+                    type="button"
+                    className="v4-chip"
+                    onClick={() => setIntroStage(5)}
                   >
                     Yes, show me
                   </button>
@@ -310,25 +331,24 @@ export default function ParticipantVote() {
               </>
             )}
 
-            {/* ── Stage 4+ → user reply + typing for vote prompt ──── */}
-            {introStage >= 4 && (
+            {/* ── Stage 5+ → user reply + typing for vote prompt ────── */}
+            {introStage >= 5 && (
               <div className="v4-bubble v4-bubble-user" style={{ animationDelay: '0.05s' }}>
                 <span>Yes, show me</span>
               </div>
             )}
-            {introStage === 4 && (
+            {introStage === 5 && (
               <div className="v4-typing" aria-hidden="true">
                 <span></span><span></span><span></span>
               </div>
             )}
 
-            {/* ── Stage 5 → vote prompt + toolbar + cards ───────────── */}
-            {introStage >= 5 && (
+            {/* ── Stage 6 → vote prompt + toolbar + cards ───────────── */}
+            {introStage >= 6 && (
               <>
                 <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
                   <span>
-                    Pick up to <strong>{votingLimit}</strong> favourites.
-                    Tap a card to vote.
+                    Pick up to {votingLimit} favourites. Tap a card to vote.
                   </span>
                 </div>
 
@@ -404,8 +424,8 @@ export default function ParticipantVote() {
             )}
           </div>
 
-          {/* Sticky bottom bar — only after stage 5 (vote cards visible) */}
-          {introStage >= 5 && (
+          {/* Sticky bottom bar — only after stage 6 (vote cards visible) */}
+          {introStage >= 6 && (
             <div className="v4-pvote-bottom">
               <div className="v4-pvote-bottom-inner">
                 <span className="v4-pvote-bottom-count">
@@ -500,7 +520,7 @@ function VoteCard({ submission, isSelected, canSelectMore, isAnonymous, tone, on
           )}
           {!isAnonymous && submission.submitterName && (
             <div className="v4-pvote-card-by">
-              Submitted by <strong>{submission.submitterName}</strong>
+              Submitted by {submission.submitterName}
             </div>
           )}
         </div>

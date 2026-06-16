@@ -137,7 +137,7 @@ export default function ParticipantVoteThanks() {
           <header className="v4-nav v4-join-nav">
             <BrandLink />
             <div className="v4-progress v4-join-nav-inviter">
-              <span className="v4-join-inviter-invites">Voted in</span>
+              <span className="v4-join-inviter-invites">Voted ·</span>
               <strong className="v4-join-inviter-name-inline">
                 {creatorName}
               </strong>
@@ -175,7 +175,7 @@ export default function ParticipantVoteThanks() {
               </h1>
               <p className="v4-pthanks-sub">
                 Your {votedCount === 1 ? 'pick is in' : `${votedCount} picks are in`} —
-                {' '}{creatorName} announces the winner next.
+                {' '}we’ll email you the moment {creatorName} picks the winner.
               </p>
             </section>
 
@@ -204,7 +204,7 @@ export default function ParticipantVoteThanks() {
                         )}
                         {!isAnonymous && s.submitterName && (
                           <div className="v4-pthanks-card-by">
-                            by <strong>{s.submitterName}</strong>
+                            by {s.submitterName}
                           </div>
                         )}
                       </div>

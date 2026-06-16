@@ -15,7 +15,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  X, PaperPlaneTilt, ArrowRight, CheckCircle, UsersThree,
+  X, PaperPlaneTilt, ArrowRight, UsersThree,
 } from '@phosphor-icons/react';
 import { readSetup, writeSetup } from '../../utils/v4Brief';
 import { joinContest, clearParticipation, recordSubmission } from '../../utils/v4Participant';
@@ -154,15 +154,21 @@ export default function SignInModal({ open, onClose, initialMode = 'creator' }) 
   const SecondaryIcon = MODE_META[secondaryMode].Icon;
 
   // "Open the link" demo shortcut — branches on the captured mode.
+  // Lands straight on the destination (workspace / contest) with the
+  // app's standard fade-out; no intermediate "Welcome back" card.
   const handleSimulateClick = () => {
-    setPhase('success');
+    const dest = mode === 'participant'
+      ? applyParticipantSignIn(email.trim())
+      : applyCreatorSignIn(email.trim());
+    document.body.classList.add('is-exiting');
     setTimeout(() => {
-      const dest = mode === 'participant'
-        ? applyParticipantSignIn(email.trim())
-        : applyCreatorSignIn(email.trim());
       onClose?.();
+      // Skip the fade-IN on the destination so it doesn't double-flash.
+      document.body.style.transition = 'none';
+      document.body.classList.remove('is-exiting');
       navigate(dest);
-    }, 700);
+      requestAnimationFrame(() => { document.body.style.transition = ''; });
+    }, 180);
   };
 
   return (
@@ -305,24 +311,6 @@ export default function SignInModal({ open, onClose, initialMode = 'creator' }) 
             </button>
           </>
         )}
-
-        {phase === 'success' && (() => {
-          // Pick the right "where you're going" line based on mode.
-          // Creator always lands on a contest (seeded if needed),
-          // participant always lands on the workspace.
-          const line = mode === 'participant'
-            ? 'Taking you to your joined contest…'
-            : 'Taking you to your contest…';
-          return (
-            <>
-              <div className="v4-signin-icon-wrap v4-signin-icon-wrap-success">
-                <CheckCircle weight="duotone" size={28} />
-              </div>
-              <h2 className="v4-signin-title">Welcome back</h2>
-              <p className="v4-signin-subtitle">{line}</p>
-            </>
-          );
-        })()}
       </div>
     </div>
   );

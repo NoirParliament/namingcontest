@@ -6698,6 +6698,38 @@ input.v4-settings-input:-webkit-autofill:active {
   background: var(--v4-bubble-bg);
 }
 
+/* Concluded joined contest — the whole row links to the winner reveal,
+   so it reads as tappable (pointer + a touch more lift on hover) where
+   the other joined rows carry an inline button instead. */
+.v4-settings-contest-row-joined.is-clickable {
+  cursor: pointer;
+}
+.v4-settings-contest-row-joined.is-clickable:hover {
+  border-color: rgba(3, 3, 2, 0.22);
+  transform: translateY(-1px);
+}
+.v4-settings-contest-row-joined.is-clickable:focus-visible {
+  outline: 2px solid var(--row-accent, var(--v4-fg));
+  outline-offset: 2px;
+}
+/* "See who won →" cue — looks like the primary pill but it's a span;
+   the click is handled by the row wrapper, so there's no nested
+   button. */
+.v4-settings-joined-seewinner {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: var(--v4-fg);
+  color: #fff;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 /* SECONDARY contest rows — drafts and closed contests. Outlined,
    slim, no fill. A 4px left-edge stripe in the segment tint hints at
    the tier without competing with the colored "current contest" card.
@@ -9141,6 +9173,15 @@ button.v4-pchat-draft.v4-pchat-draft-editable:focus-visible .v4-pchat-draft-edit
    "white" end, then suddenly went solid black). With the gradient
    pattern preserved, the success state still reads clearly via the
    swapped icon + label — and the hover state stays consistent. */
+
+/* ParticipantWinner uses longer, contextual labels ("Share your win" /
+   "Share the winner", ~183px) than the public reveal's plain "Share".
+   Widen the floor here so the button never shrinks back when the label
+   swaps to the shorter "Link copied" success state. Scoped to this
+   variant so the public reveal's 150px button stays untouched. */
+.v4-pwinner-share-btn {
+  min-width: 184px;
+}
 
 /* Confetti canvas — fixed full-viewport, IN FRONT of the content
    (z-index 6 > .v4-review's 5) so the glass nav never blurs it. A

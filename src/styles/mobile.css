@@ -244,6 +244,20 @@
   }
   .v4-nav .v4-step-counter { display: none; }
 
+  /* ── Participant nav: keep the right slot pinned to the edge ──────
+     The centered inviter sentence hides at ≤820 (v4.css). With it
+     gone, the join-nav's 3-col grid (1fr auto 1fr) has only two items
+     left — brand + nav-right — which auto-place into cols 1 & 2, so
+     the "Submissions close…" pill (and the avatar on the thanks/vote
+     navs) drifts into the MIDDLE instead of staying top-right. Pin
+     nav-right back to the last column so it stays flush right across
+     the whole tablet range. (≤560 collapses this further — pill
+     hidden + logo centered — and overrides the column below.) */
+  .v4-nav.v4-join-nav .v4-nav-right {
+    grid-column: 3;
+    justify-self: end;
+  }
+
   /* ── Decor: scale blobs slightly so they don't dominate ──────── */
   .v4-blob {
     transform: scale(0.7);
@@ -965,6 +979,16 @@
   .v4-join-flow::before { display: none; }  /* drop the horizontal line */
   .v4-join-flow-step { gap: 5px; }          /* tighten dot ↔ label */
   .v4-join-foot { padding: 18px 20px; }
+
+  /* WINNER + REVEAL pages — the footer timeline here is purely
+     retrospective (all three steps already ✓: Suggested / Voted /
+     Winner revealed), so on phones it's just dead vertical space below
+     the champion card. Drop it entirely; the nav + champion card carry
+     the moment. Scoped to the winner screens so the forward-looking
+     join / thanks / vote-thanks timelines stay. */
+  .v4-pwinner-screen .v4-join-foot {
+    display: none;
+  }
 
 
   /* ────────────────────────────────────────────────────────────────

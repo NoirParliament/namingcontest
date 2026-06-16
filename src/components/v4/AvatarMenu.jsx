@@ -135,7 +135,7 @@ export default function AvatarMenu({ email, name, photo, defaultPhoto, tone, act
             onClick={() => setOpen(false)}
           >
             <Gear weight="duotone" size={16} />
-            <span>My Namespace</span>
+            <span>Namespace</span>
           </Link>
           <button
             type="button"

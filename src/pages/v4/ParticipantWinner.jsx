@@ -16,7 +16,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { Trophy } from '@phosphor-icons/react';
+import { Trophy, ShareNetwork, Check } from '@phosphor-icons/react';
 import confetti from 'canvas-confetti';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
@@ -137,6 +137,23 @@ export default function ParticipantWinner() {
 
   const scrollRef = useRef(null);
 
+  // Share — copies the PUBLIC reveal URL (not /winner, which needs a
+  // participation row) so anyone who clicks the link lands on a page
+  // they can actually see.
+  const shareUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}/v4/contest/${contestId}/reveal`
+    : `/v4/contest/${contestId}/reveal`;
+  const [copied, setCopied] = useState(false);
+  const handleShare = () => {
+    try {
+      navigator.clipboard?.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      // clipboard blocked — silently no-op
+    }
+  };
+
   if (!contest) return <Navigate to="/v4/settings" replace />;
   if (!participation) return <Navigate to={`/v4/join/${contestId}`} replace />;
   // No winner resolvable (e.g. empty contest) — fall back to the
@@ -239,6 +256,22 @@ export default function ParticipantWinner() {
                 </li>
               </ul>
             </section>
+
+            {/* Share — copies the public reveal link so the win can be
+                passed around (same control as the public reveal page). */}
+            <div className="v4-preveal-share-wrap">
+              <button
+                type="button"
+                className={`v4-preveal-share-btn v4-pwinner-share-btn ${copied ? 'is-copied' : ''}`}
+                onClick={handleShare}
+              >
+                {copied ? (
+                  <><Check weight="bold" size={16} /> Link copied</>
+                ) : (
+                  <><ShareNetwork weight="bold" size={16} /> Share {iWon ? 'your win' : 'the winner'}</>
+                )}
+              </button>
+            </div>
 
             {/* Small, quiet self-serve nudge — the only CTA on the page. */}
             <p className="v4-pwinner-own">

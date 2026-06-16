@@ -276,7 +276,7 @@ export default function Settings() {
           <header className="v4-nav">
             <BrandLink />
             <div className="v4-progress">
-              <span className="v4-step-label">Workspace</span>
+              <span className="v4-step-label">Home</span>
             </div>
             <div className="v4-nav-right">
               <AvatarMenu
@@ -319,7 +319,7 @@ export default function Settings() {
                     just the contests they've joined
                   - Fresh user (nothing yet) → friendly catch-all */}
             <div className="v4-settings-head">
-              <h1 className="v4-settings-title">My Namespace</h1>
+              <h1 className="v4-settings-title">Namespace</h1>
               <p className="v4-settings-subtitle">
                 {realContest
                   ? 'Your contests, billing, and account in one place.'
@@ -826,12 +826,28 @@ function JoinedContestRow({ participation, contest, row, navigate }) {
   const hasVoted = votedCount > 0;
 
   // Row states (in order of precedence):
+  //   - Concluded (winner announced) → whole row links to the reveal
   //   - No submissions yet → "Suggest a name" → /submit
   //   - Voted → "Voted ✓" pill + countdown to winner announcement
   //   - Voting open (countdown done), not voted → enabled "Vote now"
   //   - Submitted, voting NOT open yet → greyed Vote + countdown
+  //
+  // Concluded wins over everything: once a name is crowned (winnerSubId
+  // set, or the announce window has elapsed) the only useful move is
+  // "see who won," so the entire row becomes a clickable link to the
+  // participant winner reveal.
+  const isConcluded = !!contest.winnerSubId || winnerCountdown.isReady;
+  const rowClickTo = isConcluded ? `/v4/contest/${contest.id}/winner` : null;
+
   let actionUI = null;
-  if (!hasSubmitted) {
+  if (isConcluded) {
+    actionUI = (
+      <span className="v4-settings-joined-seewinner">
+        See who won
+        <ArrowRight weight="bold" size={14} />
+      </span>
+    );
+  } else if (!hasSubmitted) {
     actionUI = (
       <button
         type="button"
@@ -889,21 +905,34 @@ function JoinedContestRow({ participation, contest, row, navigate }) {
 
   return (
     <div
-      className="v4-settings-contest-row v4-settings-contest-row-joined"
+      className={`v4-settings-contest-row v4-settings-contest-row-joined${rowClickTo ? ' is-clickable' : ''}`}
       style={{ '--row-accent': segTone.fg }}
+      onClick={rowClickTo ? () => navigate(rowClickTo) : undefined}
+      role={rowClickTo ? 'button' : undefined}
+      tabIndex={rowClickTo ? 0 : undefined}
+      onKeyDown={
+        rowClickTo
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                navigate(rowClickTo);
+              }
+            }
+          : undefined
+      }
     >
       <span className="v4-settings-contest-row-icon" aria-hidden="true">
         <JoinedIcon weight="duotone" size={18} />
       </span>
       <div className="v4-settings-contest-row-text">
         <div className="v4-settings-contest-row-eyebrow">
-          <span>{row.phaseLabel}</span>
+          <span>{isConcluded ? 'WINNER' : row.phaseLabel}</span>
         </div>
         <div className="v4-settings-contest-row-name">
           {contest.name}
         </div>
         <div className="v4-settings-contest-row-desc">
-          {row.description}
+          {isConcluded ? 'Winner revealed — see who took it' : row.description}
         </div>
       </div>
       {actionUI}

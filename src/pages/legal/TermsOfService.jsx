@@ -2,7 +2,7 @@ import LegalPage from './LegalPage';
 
 export default function TermsOfService() {
   return (
-    <LegalPage title="Terms of service" updated="May 28, 2026" decor="cool">
+    <LegalPage title="Terms of service" eyebrow="What you agree to" updated="May 28, 2026" decor="cool">
       <p className="legal-lede">
         These Terms of Service (&ldquo;Terms&rdquo;) govern your access
         to and use of NamingContest.com (&ldquo;NamingContest&rdquo;),

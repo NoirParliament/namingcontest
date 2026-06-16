@@ -440,11 +440,11 @@ export default function ParticipantChat() {
             {introStage >= 1 && (
               <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
                 <span>
-                  Welcome — <strong>{creatorName}</strong> invited you to
+                  Welcome — {creatorName} invited you to
                   suggest names for{' '}
                   <em>{contest.workingName || contest.name}</em>.
                   {prizeLine && <> {prizeLine}</>} You’ll add up to{' '}
-                  <strong>{remainingSlots}</strong>{' '}
+                  {remainingSlots}{' '}
                   {remainingSlots === 1 ? 'suggestion' : 'suggestions'}.
                 </span>
               </div>

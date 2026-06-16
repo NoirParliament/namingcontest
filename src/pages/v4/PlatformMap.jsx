@@ -228,8 +228,8 @@ const PARTICIPANT_STEPS = [
   { n: 6,  title: 'Vote', desc: 'Pick your favourites from the shortlist with search, sort, and a sticky submit bar.', seed: () => seedParticipant(VOTE_ID, 'submitted'), url: `/v4/contest/${VOTE_ID}/vote` },
   { n: 7,  title: 'Post-vote thanks', desc: 'Receipt of your votes plus a countdown to the winner announcement.', seed: () => seedParticipant(VOTE_ID, 'voted'), url: `/v4/contest/${VOTE_ID}/vote-thanks` },
   { n: 8,  title: 'Winner reveal — your name won', desc: 'The celebratory state: your own submission took it. Confetti, a YOU WON badge, and the prize.', seed: () => seedParticipantWinner(VOTE_ID, 'vsub_1'), url: `/v4/contest/${VOTE_ID}/winner` },
-  { n: 9,  title: 'Winner reveal — a teammate won', desc: "The same reveal when someone else’s name took it — with a note here because you voted for the winner.", seed: () => seedParticipantWinnerOther(VOTE_ID, 'vsub_5'), url: `/v4/contest/${VOTE_ID}/winner` },
-  { n: 10, title: 'Workspace (post-vote)', desc: '“Voted ✓” status with a countdown to the winner announcement.', seed: () => seedParticipant(VOTE_ID, 'voted'), url: '/v4/settings' },
+  { n: 9,  title: 'Winner reveal — a teammate won', desc: "The same reveal when someone else’s name took it — same winning name as the “your name won” demo, with a note here because you voted for the winner.", seed: () => seedParticipantWinnerOther(VOTE_ID, 'vsub_1'), url: `/v4/contest/${VOTE_ID}/winner` },
+  { n: 10, title: 'Workspace (concluded)', desc: 'Your joined contest once the winner’s out — the row reads “WINNER” and links straight through to the reveal.', seed: () => seedParticipantWinnerOther(VOTE_ID, 'vsub_1'), url: '/v4/settings' },
 ];
 
 // Neutral flow — a single page (for now): a stranger who clicked the

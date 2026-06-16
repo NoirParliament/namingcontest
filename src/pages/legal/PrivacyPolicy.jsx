@@ -2,7 +2,7 @@ import LegalPage from './LegalPage';
 
 export default function PrivacyPolicy() {
   return (
-    <LegalPage title="Privacy policy" updated="May 28, 2026" decor="warm">
+    <LegalPage title="Privacy policy" eyebrow="What we collect" updated="May 28, 2026" decor="warm">
       <p className="legal-lede">
         This Privacy Policy explains how The Cypher Group, LLC
         (&ldquo;Cypher,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or

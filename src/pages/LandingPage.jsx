@@ -873,16 +873,16 @@ function FAQ() {
       a: <p className="faq-a"><strong>You set the deadline,</strong> but most contests wrap up in under a week.</p>
     },
     {
-      q: 'Do my voters need an account?',
-      a: <p className="faq-a"><strong>No.</strong> They click your link and they’re in. Only the organizer (you) needs an account.</p>
+      q: 'How do my voters join?',
+      a: <p className="faq-a"><strong>They open your link and drop in their email</strong>—that’s the whole setup. A magic link signs them in and takes them straight to the contest. You’re the only one who builds and runs it.</p>
     },
     {
       q: 'How does the voting work?',
-      a: <p className="faq-a"><strong>Five methods:</strong> Simple Poll, Ranked Choice, Multi-Criteria, Pairwise, and Weighted. The right one depends on your group size and how much depth you want.</p>
+      a: <p className="faq-a"><strong>One simple vote—no clunky ballots.</strong> Everyone opens your link, sees all the suggested names, and taps the ones they like best (up to a limit you set). Votes tally as they come in, and you crown the winner from the leaderboard.</p>
     },
     {
       q: 'What does it cost?',
-      a: <p className="faq-a"><strong>Three tiers, paid per contest.</strong> Personal is $9 (up to 15 voters). Group is $29 (up to 60). Business is $89 (up to 240). All include every voting method and the full naming methodology.</p>
+      a: <p className="faq-a"><strong>Three tiers, paid per contest.</strong> Personal is $9 (up to 15 voters). Group is $29 (up to 60). Business is $89 (up to 240). All three include the full naming methodology and guides—only the voter cap changes.</p>
     },
   ];
   return (
