@@ -74,21 +74,45 @@ function makeSubSegmentQuestion(group) {
     section: 'segment',
     type: 'segmentCards',
     label: 'Which kind of naming',
-    prompt: `Let's set up your ${segment.label} contest. First — which kind of naming is this?`,
+    prompt: `Let’s set up your ${segment.label} contest. First — which kind of naming is this?`,
     options: segment.options,
   };
 }
 
+// Segment-appropriate examples for the working-title placeholder. The
+// working name is just a short label so the creator can spot this
+// contest in their dashboard before the real name exists — so the
+// example should match the thing being named (a podcast example for a
+// podcast, not "Olly the puppy" for everyone).
+const WORKING_NAME_EXAMPLES = {
+  b1: 'The fintech startup',
+  b2: 'The time-tracking app',
+  b3: 'The data migration',
+  b4: 'The rebrand',
+  b5: 'The company retreat',
+  t1: 'Sunday league team',
+  t2: 'The new band',
+  t3: 'The founder podcast',
+  t4: 'The youth nonprofit',
+  t5: 'The Valorant squad',
+  t6: 'The book club',
+  p1: 'Baby girl 2026',
+  p2: 'Olly the puppy',
+  p3: 'The lake cabin',
+  p4: 'Saturday brunch crew',
+};
+
 // Build the synthetic working-name question
-function makeWorkingNameQuestion(subSegmentTitle) {
+function makeWorkingNameQuestion(subSegmentTitle, subId) {
   const subtle = subSegmentTitle ? ` for ${subSegmentTitle.toLowerCase()}` : '';
+  const example = WORKING_NAME_EXAMPLES[subId] || 'Olly the puppy';
   return {
     id: 'workingName',
     section: 'working',
     type: 'text',
     label: 'Working name',
     prompt: `Got it. What should we call this contest${subtle}?`,
-    placeholder: 'A short working title (e.g. "Olly the puppy")',
+    placeholder: `A short working title (e.g. “${example}”)`,
     required: true,
     maxLength: 60,
   };
@@ -178,7 +202,7 @@ export default function BriefChat() {
 
     const segment = SUB_SEGMENTS[initial.group];
     const pickedOption = segment?.options.find((o) => o.id === subId);
-    list.push(makeWorkingNameQuestion(pickedOption?.title));
+    list.push(makeWorkingNameQuestion(pickedOption?.title, subId));
 
     const brief = getQuestionsFor(subId, null).map((q) => ({ ...q, section: 'brief' }));
     const settings = SHARED_SETTINGS_QUESTIONS.map((q) => ({ ...q, section: 'settings' }));
@@ -365,7 +389,7 @@ export default function BriefChat() {
         return;
       }
       const ok = window.confirm(
-        "Changing the naming type will clear your brief answers (you'll need to answer them again). Continue?"
+        "Changing the naming type will clear your brief answers (you’ll need to answer them again). Continue?"
       );
       if (!ok) {
         setEditingIndex(null);

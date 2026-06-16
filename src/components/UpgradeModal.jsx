@@ -29,7 +29,7 @@ export default function UpgradeModal({ isOpen, onClose, trigger = 'participants'
 
   if (!isOpen) return null;
 
-  const triggerMsg = TRIGGER_MESSAGES[trigger]?.[currentGroup] || 'You\'ve reached the free tier limit';
+  const triggerMsg = TRIGGER_MESSAGES[trigger]?.[currentGroup] || 'You’ve reached the free tier limit';
 
   const handlePurchase = (tier) => {
     setPurchased(tier);
@@ -55,7 +55,7 @@ export default function UpgradeModal({ isOpen, onClose, trigger = 'participants'
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
               <div>
                 <div style={{ fontSize: 11, fontWeight: 700, color: tc.color, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Free Tier Limit Reached</div>
-                <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, color: '#fff', margin: 0 }}>You've reached the free tier limit</h2>
+                <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, color: '#fff', margin: 0 }}>You’ve reached the free tier limit</h2>
               </div>
               <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#7a7a7a', marginTop: 2 }}>
                 <X size={18} />

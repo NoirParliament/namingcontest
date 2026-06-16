@@ -126,8 +126,8 @@ export default function SetupName() {
             <>
               <div className="v4-hint">
                 Just a working title for your dashboard. Like
-                {' '}<span className="v4-hint-eg">"Sarah's puppy"</span> or
-                {' '}<span className="v4-hint-eg">"New mascot search"</span>. You can rename it anytime.
+                {' '}<span className="v4-hint-eg">“Sarah’s puppy”</span> or
+                {' '}<span className="v4-hint-eg">“New mascot search”</span>. You can rename it anytime.
               </div>
 
               <form className="v4-input-row" onSubmit={handleSubmit}>

@@ -37,7 +37,7 @@ function SortableSubmission({ id, name }) {
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
   return (
     <div ref={setNodeRef} style={{ ...style, display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px', background: '#ffffff', border: '0.5px solid rgba(30,35,48,0.1)', borderRadius: 8, marginBottom: 6, cursor: 'grab', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }} {...attributes} {...listeners}>
-      <span style={{ fontSize: 15, fontFamily: "'Inter', sans-serif", color: '#1e2330', flex: 1 }}>{name}</span>
+      <span style={{ fontSize: 15, fontFamily: "‘Inter’, sans-serif", color: '#1e2330', flex: 1 }}>{name}</span>
       <span style={{ color: '#8a8a82' }}>⠿</span>
     </div>
   );
@@ -145,14 +145,14 @@ export default function ContestDetail() {
   const tabs = ['overview', 'submissions', 'participants', 'settings'];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fafaf5', fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: '#fafaf5', fontFamily: "‘Inter’, sans-serif" }}>
       {/* Header */}
       <div style={{ background: '#ffffff', borderBottom: '0.5px solid rgba(30,35,48,0.08)', padding: '0 28px', height: 56, display: 'flex', alignItems: 'center', gap: 14, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
         <button onClick={() => navigate('/dashboard')} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', color: '#8a8a82', fontSize: 13 }}>
           <ArrowLeft size={14} /> Dashboard
         </button>
         <span style={{ color: '#ccc' }}>·</span>
-        <h1 style={{ fontSize: 15, fontWeight: 700, color: '#1e2330', margin: 0, fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif" }}>{contest?.title}</h1>
+        <h1 style={{ fontSize: 15, fontWeight: 700, color: '#1e2330', margin: 0, fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif" }}>{contest?.title}</h1>
         <div style={{ display: 'flex', gap: 6 }}>
           <span style={{ padding: '2px 8px', borderRadius: 12, background: `rgba(${tc.primaryRgb},0.1)`, border: `0.5px solid rgba(${tc.primaryRgb},0.3)`, fontSize: 10, fontWeight: 700, color: tc.primary, textTransform: 'uppercase' }}>{tc.label}</span>
           <span style={{ padding: '2px 8px', borderRadius: 12, background: `rgba(30,35,48,0.05)`, fontSize: 10, fontWeight: 700, color: phaseColor, textTransform: 'uppercase' }}>{contest?.phase}</span>
@@ -289,7 +289,7 @@ export default function ContestDetail() {
                 { label: 'Days Remaining', value: contest?.daysLeft || 0 },
               ].map(stat => (
                 <div key={stat.label} style={{ background: '#ffffff', border: '0.5px solid rgba(30,35,48,0.1)', borderRadius: 10, padding: '16px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-                  <div style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 28, color: '#1e2330', fontWeight: 700, marginBottom: 2 }}>{stat.value}</div>
+                  <div style={{ fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 28, color: '#1e2330', fontWeight: 700, marginBottom: 2 }}>{stat.value}</div>
                   <div style={{ fontSize: 12, color: '#8a8a82' }}>{stat.label}</div>
                 </div>
               ))}
@@ -352,8 +352,8 @@ export default function ContestDetail() {
               const emailFlows = [
                 {
                   id: 'welcome',
-                  subject: 'You\'re in — here\'s what we\'re naming',
-                  preview: 'You\'ve been invited to help name something. Read the brief and start exploring ideas...',
+                  subject: 'You’re in — here’s what we’re naming',
+                  preview: 'You’ve been invited to help name something. Read the brief and start exploring ideas...',
                   trigger: 'Sent when participants join',
                   badge: 'Sent',
                   badgeColor: tc.primary,
@@ -453,10 +453,10 @@ export default function ContestDetail() {
               {filteredSubmissions.map(sub => (
                 <div key={sub.id} style={{ background: '#ffffff', border: `0.5px solid ${shortlisted.has(sub.id) ? `rgba(${tc.primaryRgb},0.3)` : 'rgba(30,35,48,0.1)'}`, borderRadius: 12, padding: '14px 16px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
-                    <span style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 20, color: '#1e2330' }}>{sub.name}</span>
+                    <span style={{ fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 20, color: '#1e2330' }}>{sub.name}</span>
                     {sub.voteCount > 12 && <span style={{ fontSize: 10, fontWeight: 700, color: tc.primary, background: `rgba(${tc.primaryRgb},0.1)`, padding: '2px 7px', borderRadius: 4 }}>⭐ Quality</span>}
                   </div>
-                  {sub.rationale && <div style={{ fontSize: 12, color: '#8a8a82', marginBottom: 8, lineHeight: 1.5 }}>"{sub.rationale}"</div>}
+                  {sub.rationale && <div style={{ fontSize: 12, color: '#8a8a82', marginBottom: 8, lineHeight: 1.5 }}>“{sub.rationale}”</div>}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: 11, color: '#8a8a82' }}>{sub.submittedBy || 'Anonymous'}</span>
                     <div style={{ display: 'flex', gap: 6 }}>
@@ -639,7 +639,7 @@ export default function ContestDetail() {
             { id: 'merch', label: 'Check merch printability', sub: 'Some names are hard to render on jerseys. Order a test print via Printful — no minimums.', affiliate: 'Printful', required: false },
           ];
           if (baby) return [
-            { id: 'meaning', label: 'Verify meaning across languages', sub: "Check the name doesn't have unintended meanings in other languages your family speaks or travels to.", required: true },
+            { id: 'meaning', label: 'Verify meaning across languages', sub: "Check the name doesn’t have unintended meanings in other languages your family speaks or travels to.", required: true },
             { id: 'initials', label: 'Check initials and nicknames', sub: 'Write out the full name with middle and last name. Any awkward initials or nicknames?', required: true },
             { id: 'announce', label: 'Prepare your birth announcement', sub: 'Artifact Uprising makes premium birth announcement cards. Order early — ships in 5–7 days.', affiliate: 'Artifact Uprising', required: false },
           ];
@@ -675,14 +675,14 @@ export default function ContestDetail() {
 
               {curationPhase === 'build' ? (
                 <>
-                  <h2 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 22, color: '#1e2330', marginBottom: 4 }}>Build Your Shortlist</h2>
+                  <h2 style={{ fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 22, color: '#1e2330', marginBottom: 4 }}>Build Your Shortlist</h2>
                   <p style={{ fontSize: 13, color: '#8a8a82', marginBottom: 20 }}>Touchpoint 5 — Select the best submissions for your ballot</p>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 20 }}>
                     {[
-                      { num: '01', title: 'Diversity of Types', body: 'Mix descriptive, suggestive, and abstract names. Don\'t shortlist 5 similar-style names.' },
-                      { num: '02', title: 'Anchoring Bias', body: 'The first option gets 23% more votes. Randomize order — don\'t put your favorite first.' },
-                      { num: '03', title: 'Include One Surprise', body: '30% of winners weren\'t the organizer\'s top pick. Add one that surprised you.' },
+                      { num: '01', title: 'Diversity of Types', body: 'Mix descriptive, suggestive, and abstract names. Don’t shortlist 5 similar-style names.' },
+                      { num: '02', title: 'Anchoring Bias', body: 'The first option gets 23% more votes. Randomize order — don’t put your favorite first.' },
+                      { num: '03', title: 'Include One Surprise', body: '30% of winners weren’t the organizer’s top pick. Add one that surprised you.' },
                     ].map(p => (
                       <div key={p.num} style={{ padding: 12, background: '#f8f8f5', border: '0.5px solid rgba(30,35,48,0.08)', borderRadius: 10 }}>
                         <div style={{ fontSize: 10, fontWeight: 700, color: tc.primary, marginBottom: 4 }}>{p.num}</div>
@@ -702,7 +702,7 @@ export default function ContestDetail() {
                               setShortlistItems(prev => [...prev, { id: String(prev.length), name: s.name }]);
                             }
                           }} style={{ padding: '9px 12px', background: '#f8f8f5', border: '0.5px solid rgba(30,35,48,0.08)', borderRadius: 8, marginBottom: 5, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: '#1e2330' }}>{s.name}</span>
+                            <span style={{ fontFamily: "‘Inter’, sans-serif", fontSize: 15, color: '#1e2330' }}>{s.name}</span>
                             <Plus size={13} color="#8a8a82" />
                           </div>
                         ))}
@@ -746,7 +746,7 @@ export default function ContestDetail() {
                 </>
               ) : (
                 <>
-                  <h2 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 22, color: '#1e2330', marginBottom: 4 }}>Verify Before Publishing</h2>
+                  <h2 style={{ fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 22, color: '#1e2330', marginBottom: 4 }}>Verify Before Publishing</h2>
                   <p style={{ fontSize: 13, color: '#8a8a82', marginBottom: 20 }}>
                     Complete the required checks for <strong style={{ color: tc.primary }}>{_meta.subLabel}</strong>. Required items must be checked before you can publish.
                   </p>

@@ -138,7 +138,7 @@ export function getParticipantRow(contest, participation) {
       phaseKey: 'winner',
       phaseLabel: 'WINNER',
       description: contest.winnerName
-        ? `Winner picked: "${contest.winnerName}"`
+        ? `Winner picked: “${contest.winnerName}”`
         : 'Winner picked',
       actionLabel: 'See who won',
       actionRoute: `/v4/contest/${contest.id}/winner`,

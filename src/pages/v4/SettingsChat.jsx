@@ -135,7 +135,7 @@ export default function SettingsChat() {
           {isDone && (
             <div className="v4-bubble">
               <span className="v4-bubble-icon" aria-hidden="true">🚀</span>
-              <span>Almost there — let's review and launch.</span>
+              <span>Almost there — let’s review and launch.</span>
             </div>
           )}
         </main>

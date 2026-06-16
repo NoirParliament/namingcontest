@@ -22,7 +22,7 @@ function SortableItem({ id, name, rationale, index, tc }) {
     <div ref={setNodeRef} style={{ ...style, display: 'flex', alignItems: 'flex-start', gap: 12, padding: '14px 16px', background: '#ffffff', border: '0.5px solid rgba(30,35,48,0.1)', borderRadius: 10, marginBottom: 8, cursor: 'grab' }} {...attributes} {...listeners}>
       <span style={{ fontSize: 18, fontWeight: 700, color: tc.primary, minWidth: 28, paddingTop: 2 }}>#{index + 1}</span>
       <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 18, fontFamily: "'Inter', sans-serif", color: '#1e2330' }}>{name}</div>
+        <div style={{ fontSize: 18, fontFamily: "‘Inter’, sans-serif", color: '#1e2330' }}>{name}</div>
         {rationale && <div style={{ fontSize: 12, color: '#8a8a82', marginTop: 4, lineHeight: 1.5 }}>{rationale}</div>}
       </div>
       <span style={{ color: '#8a8a82', fontSize: 18, flexShrink: 0, paddingTop: 2 }}>⠿</span>
@@ -39,7 +39,7 @@ function SuccessScreen({ tc, contestId }) {
       <div style={{ width: 80, height: 80, borderRadius: '50%', background: `rgba(${tc.primaryRgb},0.12)`, border: `2px solid ${tc.primary}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
         <Check size={36} weight="bold" color={tc.primary} />
       </div>
-      <h2 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 32, color: '#1e2330', marginBottom: 8 }}>Your vote has been recorded!</h2>
+      <h2 style={{ fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 32, color: '#1e2330', marginBottom: 8 }}>Your vote has been recorded!</h2>
       <p style={{ color: '#676b5f', fontSize: 15, marginBottom: 32 }}>
         Results will be published once voting closes.
       </p>
@@ -78,7 +78,7 @@ function SimplePoll({ candidates, tc, onVote }) {
               {selected === i && <div style={{ width: 8, height: 8, borderRadius: '50%', background: tc.textColor }} />}
             </div>
             <div>
-              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 22, color: '#1e2330' }}>{c.name}</div>
+              <div style={{ fontFamily: "‘Inter’, sans-serif", fontSize: 22, color: '#1e2330' }}>{c.name}</div>
               <CandidateDesc rationale={c.rationale} />
             </div>
           </label>
@@ -164,7 +164,7 @@ function MultiCriteria({ candidates, tc, onVote }) {
         <div key={c.name} style={{ marginBottom: 20, padding: '16px', background: '#ffffff', border: '0.5px solid rgba(30,35,48,0.1)', borderRadius: 12 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
             <div>
-              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 20, color: '#1e2330' }}>{c.name}</div>
+              <div style={{ fontFamily: "‘Inter’, sans-serif", fontSize: 20, color: '#1e2330' }}>{c.name}</div>
               <CandidateDesc rationale={c.rationale} />
             </div>
             <span style={{ fontSize: 13, color: tc.primary, fontWeight: 700, flexShrink: 0, marginLeft: 12 }}>Avg: {getAvg(c.name)}/10</span>
@@ -260,7 +260,7 @@ function Pairwise({ candidates, tc, onVote }) {
       <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
         {currentPair.map((c, i) => (
           <div key={i} onClick={() => setSelected(c.name)} style={{ flex: 1, padding: '28px 20px', background: selected === c.name ? `rgba(${tc.primaryRgb},0.06)` : '#ffffff', border: `2px solid ${selected === c.name ? tc.primary : 'rgba(30,35,48,0.1)'}`, borderRadius: 14, textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s', boxShadow: selected === c.name ? `0 0 20px rgba(${tc.primaryRgb},0.15)` : 'none' }}>
-            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 28, color: '#1e2330', marginBottom: 8 }}>{c.name}</div>
+            <div style={{ fontFamily: "‘Inter’, sans-serif", fontSize: 28, color: '#1e2330', marginBottom: 8 }}>{c.name}</div>
             {c.rationale && <div style={{ fontSize: 12, color: '#8a8a82', lineHeight: 1.5, marginBottom: 8 }}>{c.rationale}</div>}
             {selected === c.name && <Check size={20} color={tc.primary} weight="bold" style={{ margin: '0 auto' }} />}
           </div>
@@ -295,7 +295,7 @@ function WeightedVoting({ candidates, tc, onVote }) {
               {selected === i && <div style={{ width: 8, height: 8, borderRadius: '50%', background: tc.textColor }} />}
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 22, color: '#1e2330' }}>{c.name}</div>
+              <div style={{ fontFamily: "‘Inter’, sans-serif", fontSize: 22, color: '#1e2330' }}>{c.name}</div>
               <CandidateDesc rationale={c.rationale} />
             </div>
             <span style={{ fontSize: 11, color: '#8a8a82', flexShrink: 0, marginTop: 4 }}>{'\u00d7'}{voterWeight} weight</span>
@@ -344,7 +344,7 @@ export default function VotingInterface() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fafaf5', fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: '#fafaf5', fontFamily: "‘Inter’, sans-serif" }}>
       {/* Header */}
       <div style={{ background: '#ffffff', borderBottom: '1px solid rgba(30,35,48,0.08)', padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', gap: 16 }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
@@ -379,7 +379,7 @@ export default function VotingInterface() {
         <div style={{ width: 220, background: '#f8f8f5', borderRight: '1px solid rgba(30,35,48,0.08)', padding: '24px 16px', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: '#8a8a82', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>Shortlisted Names</div>
           {candidates.map((c, i) => (
-            <div key={i} style={{ padding: '8px 10px', borderRadius: 7, marginBottom: 4, fontSize: 14, fontFamily: "'Inter', sans-serif", color: '#676b5f' }}>
+            <div key={i} style={{ padding: '8px 10px', borderRadius: 7, marginBottom: 4, fontSize: 14, fontFamily: "‘Inter’, sans-serif", color: '#676b5f' }}>
               {c.name}
             </div>
           ))}
@@ -435,7 +435,7 @@ export default function VotingInterface() {
             <SuccessScreen tc={tc} contestId={contestId || 'demo-1'} />
           ) : (
             <>
-              <h1 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 28, color: '#1e2330', marginBottom: 6 }}>Cast Your Vote</h1>
+              <h1 style={{ fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 28, color: '#1e2330', marginBottom: 6 }}>Cast Your Vote</h1>
               <div style={{ fontSize: 13, color: '#8a8a82', marginBottom: 32 }}>Method: {methodLabels[method]} · {candidates.length} names in the shortlist</div>
 
               {method === 'simple' && <SimplePoll candidates={candidates} tc={tc} onVote={() => setVoted(true)} />}

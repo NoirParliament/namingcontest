@@ -7,9 +7,9 @@ import { getGroupTheme, LIGHT_THEME } from '../data/themeConfig';
 
 const INVITE_CONFIG = {
   'company-name': {
-    essential: ['Founders / C-suite', 'Marketing / Brand lead', "Anyone who'll use the name daily"],
+    essential: ['Founders / C-suite', 'Marketing / Brand lead', "Anyone who’ll use the name daily"],
     recommended: ['2-3 outsiders — investors, advisors, or customers'],
-    recommendedNote: "30% of winning names came from someone outside the company. Airbnb's name came from a designer they hired, not the founders.",
+    recommendedNote: "30% of winning names came from someone outside the company. Airbnb’s name came from a designer they hired, not the founders.",
     optional: ['Early employees (builds ownership)', 'Board members (if involved in brand decisions)'],
     sweetSpot: '12–25',
     sweetSpotNote: '<10 = not enough diversity · 12–25 = sweet spot · >30 = diminishing returns',
@@ -33,13 +33,13 @@ const INVITE_CONFIG = {
   'rebrand': {
     essential: ['Founders / CEO', 'Brand / Marketing team', 'Long-tenured employees (they carry brand memory)'],
     recommended: ['Customers who know the current name and what it means to them'],
-    recommendedNote: "Brand equity lives in customer memory. They'll tell you what's worth keeping — and what associations the new name needs to escape.",
+    recommendedNote: "Brand equity lives in customer memory. They’ll tell you what’s worth keeping — and what associations the new name needs to escape.",
     optional: ['PR / Communications team', 'Board members if involved in brand decisions'],
     sweetSpot: '10–20',
     sweetSpotNote: 'Rebrands need internal buy-in AND external reality check. Balance both.',
   },
   'other-business': {
-    essential: ['Key decision-makers', 'Marketing or brand lead', "People who'll use the name daily"],
+    essential: ['Key decision-makers', 'Marketing or brand lead', "People who’ll use the name daily"],
     recommended: ['2–3 outsiders for an external perspective'],
     recommendedNote: "Fresh eyes catch assumptions insiders miss. Even one outside voice can unlock a better name.",
     optional: ['Advisors, investors, or stakeholders'],
@@ -65,7 +65,7 @@ const INVITE_CONFIG = {
   'podcast-channel': {
     essential: ['Host(s)', 'Producer / Editor'],
     recommended: ['3–5 people who match your target audience profile'],
-    recommendedNote: "Your target listener knows what show names attract them. They're your most valuable naming input.",
+    recommendedNote: "Your target listener knows what show names attract them. They’re your most valuable naming input.",
     optional: ['Guest speakers who know your content well', 'Social media followers you trust'],
     sweetSpot: '8–15',
     sweetSpotNote: 'Mix of creators and target audience gives you both insider vision and market reality.',
@@ -73,7 +73,7 @@ const INVITE_CONFIG = {
   'civic-school-nonprofit': {
     essential: ['Founding team members', 'Board members', 'Executive Director'],
     recommended: ['5–10 community members you serve or plan to serve'],
-    recommendedNote: "The community you serve should have a voice in what you're called. This is also a trust-building act — invite them in.",
+    recommendedNote: "The community you serve should have a voice in what you’re called. This is also a trust-building act — invite them in.",
     optional: ['Major donors or funders (if brand matters to them)', 'Volunteers and long-term supporters'],
     sweetSpot: '15–25',
     sweetSpotNote: 'Civic naming benefits from broad inclusion. More voices = more community ownership of the final name.',
@@ -96,8 +96,8 @@ const INVITE_CONFIG = {
   },
   'baby-name': {
     essential: ['Immediate family — parents, siblings, grandparents'],
-    recommended: ["Close friends in the baby's life — godparents, best friends"],
-    recommendedNote: "People who'll be in this child's life should feel included. It also means more people invested in the name from day one.",
+    recommended: ["Close friends in the baby’s life — godparents, best friends"],
+    recommendedNote: "People who’ll be in this child’s life should feel included. It also means more people invested in the name from day one.",
     optional: ['Distant relatives, coworkers — anyone you want to feel involved'],
     sweetSpot: '8–15',
     sweetSpotNote: "Great way to make distant relatives feel connected. The certificate on the nursery wall tells the whole story.",
@@ -105,24 +105,24 @@ const INVITE_CONFIG = {
   'pet-name': {
     essential: ['Immediate family members'],
     recommended: ['Anyone who will regularly see or care for the pet'],
-    recommendedNote: "Pets become part of the community around them. The people who'll call the name most often should help choose it.",
+    recommendedNote: "Pets become part of the community around them. The people who’ll call the name most often should help choose it.",
     optional: ['Friends of the family who know about the new pet'],
     sweetSpot: '5–15',
     sweetSpotNote: "Keep it personal — this is a family moment.",
   },
   'home-property-fun': {
-    essential: ["People who'll live in or regularly use the space"],
+    essential: ["People who’ll live in or regularly use the space"],
     recommended: ['Friends who know the space and your style'],
-    recommendedNote: "Friends who've visited often name places better than the owners — they see the vibe without the familiarity bias.",
+    recommendedNote: "Friends who’ve visited often name places better than the owners — they see the vibe without the familiarity bias.",
     optional: ['Neighbors, frequent guests, anyone with a connection to the space'],
     sweetSpot: '5–15',
     sweetSpotNote: 'Keep it fun and intimate.',
   },
   'other-personal': {
-    essential: ["People closest to you who understand what you're naming"],
+    essential: ["People closest to you who understand what you’re naming"],
     recommended: ['A few friends or family for fresh perspective'],
     recommendedNote: "Outside voices catch what feels obvious to you but surprising to the world.",
-    optional: ["Anyone with a connection to the thing you're naming"],
+    optional: ["Anyone with a connection to the thing you’re naming"],
     sweetSpot: '5–15',
     sweetSpotNote: 'Scale to the occasion.',
   },
@@ -133,7 +133,7 @@ const EMAIL_TEMPLATES = {
     subject: 'I need your help naming something important',
     body: `Hi [Name],
 
-I'm running a naming contest and I'd love your input. You know my situation well, so your perspective would be genuinely valuable.
+I’m running a naming contest and I’d love your input. You know my situation well, so your perspective would be genuinely valuable.
 
 The contest is live now — just click the link below, submit one or more name ideas, and explain what you like about them. It takes less than 5 minutes.
 
@@ -143,10 +143,10 @@ PIN: [PIN]
 Submissions close [Date]. Thanks so much!`,
   },
   generic: {
-    subject: 'You\'re invited to a naming contest',
+    subject: 'You’re invited to a naming contest',
     body: `Hi there,
 
-You're invited to participate in a collaborative naming contest on NamingContest.com.
+You’re invited to participate in a collaborative naming contest on NamingContest.com.
 
 Click the link below to submit your name ideas — no account required. The more perspectives we get, the better our final decision will be.
 
@@ -506,7 +506,7 @@ export default function InvitationGuidance() {
               Choose carefully — the right voices lead to the best names.
             </div>
             <div style={{ fontSize: 14, color: LIGHT_THEME.textMuted }}>
-              Not all opinions are equal. Here's who will give you the most useful input for this specific naming contest.
+              Not all opinions are equal. Here’s who will give you the most useful input for this specific naming contest.
             </div>
           </div>
 

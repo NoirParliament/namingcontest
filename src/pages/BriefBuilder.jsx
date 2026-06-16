@@ -17,17 +17,17 @@ function getPrimerContent(group, subSegment, tc) {
     color: '#676b5f',
     lineHeight: 1.6,
   };
-  const quoteStyle = { fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 17, color: '#1e2330', fontWeight: 400, display: 'block', marginBottom: 8 };
+  const quoteStyle = { fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 17, color: '#1e2330', fontWeight: 400, display: 'block', marginBottom: 8 };
 
   if (subSegment === 'company-name') return (
     <div>
       <blockquote style={{ margin: '0 0 10px', padding: 0 }}>
-        <span style={quoteStyle}>"A name isn't a strategy. It's a vessel you fill with meaning."</span>
-        <span style={quoteStyle}>"The best name isn't the one everyone likes. It's the one that works."</span>
-        <span style={quoteStyle}>"Your job: Define what 'works' means for your company."</span>
+        <span style={quoteStyle}>“A name isn’t a strategy. It’s a vessel you fill with meaning.”</span>
+        <span style={quoteStyle}>“The best name isn’t the one everyone likes. It’s the one that works.”</span>
+        <span style={quoteStyle}>“Your job: Define what ‘works’ means for your company.”</span>
       </blockquote>
       <div style={boxStyle}>
-        <strong style={{ color: '#1e2330' }}>Real example:</strong> "Apple" tells you nothing about computers. But it's distinctive, memorable, ownable. That's what matters.
+        <strong style={{ color: '#1e2330' }}>Real example:</strong> “Apple” tells you nothing about computers. But it’s distinctive, memorable, ownable. That’s what matters.
       </div>
     </div>
   );
@@ -40,14 +40,14 @@ function getPrimerContent(group, subSegment, tc) {
   );
   if (subSegment === 'project-name') return (
     <div>
-      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>Generic names kill momentum. 'Project Phoenix' has been done to death. A distinctive internal name drives adoption and builds morale.</p>
-      <div style={boxStyle}><strong style={{ color: '#1e2330' }}>Example:</strong> Google's "Project Loon" (internet balloons) became a cultural touchstone</div>
+      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>Generic names kill momentum. ‘Project Phoenix’ has been done to death. A distinctive internal name drives adoption and builds morale.</p>
+      <div style={boxStyle}><strong style={{ color: '#1e2330' }}>Example:</strong> Google’s “Project Loon” (internet balloons) became a cultural touchstone</div>
     </div>
   );
   if (subSegment === 'rebrand') return (
     <div>
-      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>You're not starting from scratch. You have brand equity. The question is: <strong style={{ color: '#1e2330' }}>Evolution or Revolution?</strong></p>
-      <div style={boxStyle}><strong style={{ color: '#1e2330' }}>Examples:</strong> Mastercard (evolution — kept the name, dropped "MasterCard" spacing), Facebook→Meta (revolution), Dunkin' Donuts→Dunkin' (evolution — simplified)</div>
+      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>You’re not starting from scratch. You have brand equity. The question is: <strong style={{ color: '#1e2330' }}>Evolution or Revolution?</strong></p>
+      <div style={boxStyle}><strong style={{ color: '#1e2330' }}>Examples:</strong> Mastercard (evolution — kept the name, dropped “MasterCard” spacing), Facebook→Meta (revolution), Dunkin’ Donuts→Dunkin’ (evolution — simplified)</div>
     </div>
   );
   if (subSegment === 'sports-team') return (
@@ -58,26 +58,26 @@ function getPrimerContent(group, subSegment, tc) {
   );
   if (subSegment === 'band-music') return (
     <div>
-      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>Your band name is your first song. Fans will ask <em>'How'd you get your name?'</em> — have a good story.</p>
-      <div style={boxStyle}><strong style={{ color: '#1e2330' }}>Examples:</strong> Radiohead (from Talking Heads song), Foo Fighters (Dave Grohl's WWII UFO reference)</div>
+      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>Your band name is your first song. Fans will ask <em>‘How’d you get your name?’</em> — have a good story.</p>
+      <div style={boxStyle}><strong style={{ color: '#1e2330' }}>Examples:</strong> Radiohead (from Talking Heads song), Foo Fighters (Dave Grohl’s WWII UFO reference)</div>
     </div>
   );
   if (subSegment === 'podcast-channel') return (
     <div>
-      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>You're on a spectrum between <strong style={{ color: '#1e2330' }}>ultra-clear</strong> ("How I Built This") and <strong style={{ color: '#1e2330' }}>utterly intriguing</strong> ("Radiolab"). Both work — but they work differently.</p>
-      <div style={boxStyle}><strong style={{ color: '#1e2330' }}>The sweet spot:</strong> Most winning podcast names balance both. "Hidden Brain" is intriguing (why hidden?) but clearly about psychology. Aim for that.</div>
+      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>You’re on a spectrum between <strong style={{ color: '#1e2330' }}>ultra-clear</strong> (“How I Built This”) and <strong style={{ color: '#1e2330' }}>utterly intriguing</strong> (“Radiolab”). Both work — but they work differently.</p>
+      <div style={boxStyle}><strong style={{ color: '#1e2330' }}>The sweet spot:</strong> Most winning podcast names balance both. “Hidden Brain” is intriguing (why hidden?) but clearly about psychology. Aim for that.</div>
     </div>
   );
   if (subSegment === 'civic-school-nonprofit') return (
     <div>
-      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>You're naming something that should outlast you by decades. <strong style={{ color: '#1e2330' }}>Clarity</strong> beats cleverness. <strong style={{ color: '#1e2330' }}>Aspiration</strong> beats description.</p>
+      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>You’re naming something that should outlast you by decades. <strong style={{ color: '#1e2330' }}>Clarity</strong> beats cleverness. <strong style={{ color: '#1e2330' }}>Aspiration</strong> beats description.</p>
       <div style={boxStyle}><strong style={{ color: '#1e2330' }}>Examples:</strong> Habitat for Humanity (clear + aspirational), charity: water (memorable lowercase), Doctors Without Borders (communicates scope and courage in 3 words).</div>
     </div>
   );
   if (subSegment === 'other-team') return (
     <div>
       <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>Names shape group identity before a single shared experience happens. A great group name creates <strong style={{ color: '#1e2330' }}>belonging</strong> — outsiders want in.</p>
-      <div style={boxStyle}><strong style={{ color: '#1e2330' }}>Research shows:</strong> Groups named with aspirational titles ("The Visionaries") demonstrate more creative output than generic identifiers. Your name becomes a self-fulfilling prophecy.</div>
+      <div style={boxStyle}><strong style={{ color: '#1e2330' }}>Research shows:</strong> Groups named with aspirational titles (“The Visionaries”) demonstrate more creative output than generic identifiers. Your name becomes a self-fulfilling prophecy.</div>
     </div>
   );
   if (subSegment === 'gaming-group') return (
@@ -100,14 +100,14 @@ function getPrimerContent(group, subSegment, tc) {
   );
   if (subSegment === 'home-property-fun') return (
     <div>
-      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>Named places feel more like <strong style={{ color: '#1e2330' }}>home</strong>. "The Bungalow" becomes a person. "Stella" the sailboat becomes a family legend.</p>
+      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>Named places feel more like <strong style={{ color: '#1e2330' }}>home</strong>. “The Bungalow” becomes a person. “Stella” the sailboat becomes a family legend.</p>
       <div style={boxStyle}><strong style={{ color: '#1e2330' }}>Research shows:</strong> Named spaces are used more, cared for more, and remembered more fondly. The name you choose becomes part of the story you tell about this place.</div>
     </div>
   );
   return (
     <div>
-      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>A great name doesn't just describe what you do — it creates a container for everything you'll become.</p>
-      <div style={boxStyle}><strong style={{ color: '#1e2330' }}>Key insight:</strong> The best name isn't the one everyone likes. It's the one that works. Trust the process.</div>
+      <p style={{ color: '#676b5f', lineHeight: 1.7, marginBottom: 14 }}>A great name doesn’t just describe what you do — it creates a container for everything you’ll become.</p>
+      <div style={boxStyle}><strong style={{ color: '#1e2330' }}>Key insight:</strong> The best name isn’t the one everyone likes. It’s the one that works. Trust the process.</div>
     </div>
   );
 }
@@ -115,7 +115,7 @@ function getPrimerContent(group, subSegment, tc) {
 function getPrimerTitle(subSegment) {
   const titles = {
     'company-name': 'Before You Start: The Naming Philosophy',
-    'product-name': 'Naming Products vs Companies: What\'s Different',
+    'product-name': 'Naming Products vs Companies: What’s Different',
     'project-name': 'Why Internal Project Names Matter More Than You Think',
     'rebrand': 'Rebranding: Evolution or Revolution?',
     'sports-team': 'Sports Team Naming: What Makes Fans Yell It',
@@ -209,7 +209,7 @@ function B1Fields({ data, setData, tc, subSegment }) {
           </div>
           <div style={fieldWrap}>
             <label style={labelStyle}>Why are you rebranding?</label>
-            <textarea style={{ ...textareaStyle }} rows={3} placeholder="What prompted this rebrand? What's changing about your business?" value={data.rebrandReason || ''} onChange={e => setData({ ...data, rebrandReason: e.target.value })} />
+            <textarea style={{ ...textareaStyle }} rows={3} placeholder="What prompted this rebrand? What’s changing about your business?" value={data.rebrandReason || ''} onChange={e => setData({ ...data, rebrandReason: e.target.value })} />
           </div>
         </>
       )}
@@ -237,7 +237,7 @@ function B1Fields({ data, setData, tc, subSegment }) {
       <div style={fieldWrap}>
         <label style={labelStyle}>Target audience</label>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Names communicate differently to different audiences. 'Catalyst' reads as credible to VCs but vague to main street consumers. 'QuickBite' works for a food delivery app but would embarrass an enterprise software buyer. Tell participants who the name needs to resonate with — and who it shouldn't alienate." />
-        <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={2} placeholder="Who needs to love this name? e.g. 'SMB owners aged 35-55, non-technical, price-sensitive'" value={data.targetAudience || ''} onChange={e => setData({ ...data, targetAudience: e.target.value })} />
+        <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={2} placeholder="Who needs to love this name? e.g. ‘SMB owners aged 35-55, non-technical, price-sensitive’" value={data.targetAudience || ''} onChange={e => setData({ ...data, targetAudience: e.target.value })} />
       </div>
 
       <div style={fieldWrap}>
@@ -307,7 +307,7 @@ function B2Fields({ data, setData, tc }) {
       <div style={fieldWrap}>
         <label style={labelStyle}>What does this product / service do?</label>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Be specific about the problem it solves and who it's for. Example: 'A B2B SaaS tool that automates payroll for remote teams under 50 employees.' Participants need this to name it intelligently." />
-        <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={4} placeholder="What does it do? Who is it for? What's the core benefit in one sentence?" value={data.prodDesc || ''} onChange={e => setData({ ...data, prodDesc: e.target.value })} />
+        <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={4} placeholder="What does it do? Who is it for? What’s the core benefit in one sentence?" value={data.prodDesc || ''} onChange={e => setData({ ...data, prodDesc: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Company / Brand name (the parent)</label>
@@ -366,10 +366,10 @@ function B2Fields({ data, setData, tc }) {
 // ── Business B3 fields (Project / Initiative Name) ──
 function B3Fields({ data, setData, tc }) {
   const nameTypes = [
-    { id: 'functional', label: 'Functional', example: '"Migration 2025", "Customer Portal Rebuild"' },
-    { id: 'inspirational', label: 'Inspirational', example: '"Project Phoenix", "Operation Clarity"' },
+    { id: 'functional', label: 'Functional', example: '“Migration 2025”, “Customer Portal Rebuild”' },
+    { id: 'inspirational', label: 'Inspirational', example: '“Project Phoenix”, “Operation Clarity”' },
     { id: 'codename', label: 'Codename / Abstract', example: 'Random word — Everest, Sequoia, Saturn' },
-    { id: 'any', label: "Any — I'll know it when I see it", example: '' },
+    { id: 'any', label: "Any — I’ll know it when I see it", example: '' },
   ];
   const suggestDate = new Date(new Date().getTime() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
   return (
@@ -377,7 +377,7 @@ function B3Fields({ data, setData, tc }) {
       <div style={fieldWrap}>
         <label style={labelStyle}>What is this project / initiative?</label>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Describe the project's goal, scope, and who it affects. Great internal names capture the spirit of the work, not just the task. 'Project Heartbeat' for a customer retention initiative says something about the stakes." />
-        <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={4} placeholder="What is the project's goal? Who is involved? What changes when it succeeds?" value={data.projDesc || ''} onChange={e => setData({ ...data, projDesc: e.target.value })} />
+        <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={4} placeholder="What is the project’s goal? Who is involved? What changes when it succeeds?" value={data.projDesc || ''} onChange={e => setData({ ...data, projDesc: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>How long will this project run?</label>
@@ -426,10 +426,10 @@ function T1Fields({ data, setData, tc }) {
   const personalities = ['Intimidating', 'Pride-Based', 'Fun / Playful', 'Underdog / Gritty', 'Not sure'];
   const ageGroups = ['Youth (under 14)', 'High School (14-18)', 'College / University', 'Adult Amateur', 'Semi-Pro / Pro'];
   const namingDirections = [
-    { id: 'animal-mascot', label: 'Animal / Mascot', example: '"Lions", "Hawks", "Wolves"' },
-    { id: 'force-of-nature', label: 'Force of Nature', example: '"Thunder", "Blaze", "Surge"' },
-    { id: 'place-geographic', label: 'Place / Geographic', example: '"Lakeview", "Riverside", "Northern"' },
-    { id: 'abstract-fierce', label: 'Abstract / Fierce', example: '"Renegades", "Vanguard", "Apex"' },
+    { id: 'animal-mascot', label: 'Animal / Mascot', example: '“Lions”, “Hawks”, “Wolves”' },
+    { id: 'force-of-nature', label: 'Force of Nature', example: '“Thunder”, “Blaze”, “Surge”' },
+    { id: 'place-geographic', label: 'Place / Geographic', example: '“Lakeview”, “Riverside”, “Northern”' },
+    { id: 'abstract-fierce', label: 'Abstract / Fierce', example: '“Renegades”, “Vanguard”, “Apex”' },
     { id: 'any', label: 'No preference — show me everything', example: '' },
   ];
   const suggestDate = new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
@@ -551,7 +551,7 @@ function T2Fields({ data, setData, tc }) {
         <label style={labelStyle}>Google / searchability test</label>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="In the streaming era, a band name that's searchable without 10,000 false positives is a real competitive advantage. 'The The', 'Girls', and '!!!' are famously unsearchable. 'Foo Fighters' returns exactly what you want. Tell participants: do you want a highly distinctive, searchable name, or are you okay with something more common?" />
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-          {['Highly distinctive / searchable', 'Okay with some ambiguity', "Don't mind"].map(opt => (
+          {['Highly distinctive / searchable', 'Okay with some ambiguity', "Don’t mind"].map(opt => (
             <button key={opt} onClick={() => setData({ ...data, searchability: opt })} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${data.searchability === opt ? tc.color : 'rgba(30,35,48,0.15)'}`, background: data.searchability === opt ? `rgba(${tc.rgb},0.1)` : 'transparent', color: '#1e2330', fontSize: 13, cursor: 'pointer' }}>{opt}</button>
           ))}
         </div>
@@ -585,7 +585,7 @@ function T3Fields({ data, setData, tc }) {
       <div style={fieldWrap}>
         <label style={labelStyle}>What is your show about?</label>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Be specific. 'Tech' is too broad. 'How solo founders build profitable SaaS businesses in under 12 months' is clear. Participants need to understand your show's topic to name it well." />
-        <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={4} placeholder="Describe the show's topic, angle, and target audience in 2-3 sentences..." value={data.showDesc || ''} onChange={e => setData({ ...data, showDesc: e.target.value })} />
+        <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={4} placeholder="Describe the show’s topic, angle, and target audience in 2-3 sentences..." value={data.showDesc || ''} onChange={e => setData({ ...data, showDesc: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Primary Platform</label>
@@ -645,7 +645,7 @@ function T4Fields({ data, setData, tc }) {
       <div style={fieldWrap}>
         <label style={labelStyle}>Mission / Purpose</label>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Civic names need to communicate purpose instantly. Describe your mission in 1-2 sentences. The best civic names are either crystal-clear (Habitat for Humanity) or deeply aspirational (Doctors Without Borders). Tell participants which direction to go." />
-        <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={4} placeholder="What is this organization's mission? Who does it serve? What change does it create?" value={data.mission || ''} onChange={e => setData({ ...data, mission: e.target.value })} />
+        <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={4} placeholder="What is this organization’s mission? Who does it serve? What change does it create?" value={data.mission || ''} onChange={e => setData({ ...data, mission: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Community served</label>
@@ -737,9 +737,9 @@ function T5Fields({ data, setData, tc }) {
   const vibes = ['Intimidating / Feared', 'Meme-worthy / Ironic', 'Clean / Professional', 'Fun / Casual'];
   const platforms = ['PC / Desktop', 'Console (PS/Xbox)', 'Mobile', 'Multi-platform'];
   const tagStyles = [
-    { id: 'prefix', label: 'Prefix style', example: '"Team X", "FaZe X", "Cloud9 X"' },
-    { id: 'single-word', label: 'Single word / No tag', example: '"Liquid", "Sentinels", "NaVi"' },
-    { id: 'clan-suffix', label: 'Clan suffix', example: '"X Gaming", "X Esports", "X GG"' },
+    { id: 'prefix', label: 'Prefix style', example: '“Team X”, “FaZe X”, “Cloud9 X”' },
+    { id: 'single-word', label: 'Single word / No tag', example: '“Liquid”, “Sentinels”, “NaVi”' },
+    { id: 'clan-suffix', label: 'Clan suffix', example: '“X Gaming”, “X Esports”, “X GG”' },
     { id: 'any', label: 'No preference', example: '' },
   ];
   const suggestDate = new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
@@ -865,16 +865,16 @@ function P1Fields({ data, setData, tc }) {
       <div style={fieldWrap}>
         <label style={labelStyle}>Initials to avoid <span style={{ color: '#8a8a82', fontWeight: 400 }}>(optional)</span></label>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="The initials test. 'ASS', 'DIE', 'FAT' — people have been caught off guard. Participants who know the last name can avoid unfortunate combinations. Share if there are initial sequences to avoid." />
-        <input style={{ ...inputStyle, marginTop: 8 }} placeholder="e.g. Avoid initials 'E.D.' or anything that spells something unfortunate" value={data.avoidInitials || ''} onChange={e => setData({ ...data, avoidInitials: e.target.value })} />
+        <input style={{ ...inputStyle, marginTop: 8 }} placeholder="e.g. Avoid initials ‘E.D.’ or anything that spells something unfortunate" value={data.avoidInitials || ''} onChange={e => setData({ ...data, avoidInitials: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Family naming traditions <span style={{ color: '#8a8a82', fontWeight: 400 }}>(optional)</span></label>
-        <input style={{ ...inputStyle, marginTop: 4 }} placeholder="e.g. First child always has the father's name as middle name, names starting with 'M' for tradition..." value={data.traditions || ''} onChange={e => setData({ ...data, traditions: e.target.value })} />
+        <input style={{ ...inputStyle, marginTop: 4 }} placeholder="e.g. First child always has the father’s name as middle name, names starting with ‘M’ for tradition..." value={data.traditions || ''} onChange={e => setData({ ...data, traditions: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Any names to avoid? <span style={{ color: '#8a8a82', fontWeight: 400 }}>(optional)</span></label>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="Family names that didn't work out? Names of exes? We won't show these to voters — they stay private between you and the platform." />
-        <input style={{ ...inputStyle, marginTop: 8 }} placeholder="Ex: No names starting with K (too many cousins already), no 'Jennifer'" value={data.avoidNames || ''} onChange={e => setData({ ...data, avoidNames: e.target.value })} />
+        <input style={{ ...inputStyle, marginTop: 8 }} placeholder="Ex: No names starting with K (too many cousins already), no ‘Jennifer’" value={data.avoidNames || ''} onChange={e => setData({ ...data, avoidNames: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Submission Limit per Person</label>
@@ -919,7 +919,7 @@ function P2Fields({ data, setData, tc }) {
       <div style={fieldWrap}>
         <label style={labelStyle}>Describe their personality <span style={{ color: '#8a8a82', fontWeight: 400 }}>(optional)</span></label>
         <TipRow color={tc.color} rgb={tc.rgb} tipContent="The name should fit the animal. 'Chaos' works for a hyperactive dog. 'Professor' works for a dignified cat. Share what you've noticed — their quirks, habits, or early personality signals — and let participants match the name to the animal." />
-        <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={2} placeholder="'Chaotic gremlin energy' or 'Regal and aloof' or 'Timid but playful once comfortable'" value={data.petPersonality || ''} onChange={e => setData({ ...data, petPersonality: e.target.value })} />
+        <textarea style={{ ...textareaStyle, marginTop: 8 }} rows={2} placeholder="‘Chaotic gremlin energy’ or ‘Regal and aloof’ or ‘Timid but playful once comfortable’" value={data.petPersonality || ''} onChange={e => setData({ ...data, petPersonality: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Call name preference</label>
@@ -940,7 +940,7 @@ function P2Fields({ data, setData, tc }) {
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Any names to avoid? <span style={{ color: '#8a8a82', fontWeight: 400 }}>(optional)</span></label>
-        <input style={{ ...inputStyle, marginTop: 4 }} placeholder="Names already taken by other pets, names that sound like 'no', etc." value={data.avoidNames || ''} onChange={e => setData({ ...data, avoidNames: e.target.value })} />
+        <input style={{ ...inputStyle, marginTop: 4 }} placeholder="Names already taken by other pets, names that sound like ‘no’, etc." value={data.avoidNames || ''} onChange={e => setData({ ...data, avoidNames: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Submission Limit per Person</label>
@@ -1014,7 +1014,7 @@ function P3Fields({ data, setData, tc }) {
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Names or words to avoid <span style={{ color: '#8a8a82', fontWeight: 400 }}>(optional)</span></label>
-        <input style={{ ...inputStyle, marginTop: 4 }} placeholder="e.g. Nothing too generic, avoid 'haven' or 'hideaway' — too overused" value={data.avoidNames || ''} onChange={e => setData({ ...data, avoidNames: e.target.value })} />
+        <input style={{ ...inputStyle, marginTop: 4 }} placeholder="e.g. Nothing too generic, avoid ‘haven’ or ‘hideaway’ — too overused" value={data.avoidNames || ''} onChange={e => setData({ ...data, avoidNames: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <label style={labelStyle}>Submission Limit per Person</label>
@@ -1043,7 +1043,7 @@ function GenericFields({ data, setData, tc }) {
     <div>
       <div style={fieldWrap}>
         <label style={labelStyle}>What are you naming?</label>
-        <textarea style={{ ...textareaStyle }} rows={3} placeholder="Describe what you're naming in 2-3 sentences..." value={data.companyDesc || ''} onChange={e => setData({ ...data, companyDesc: e.target.value })} />
+        <textarea style={{ ...textareaStyle }} rows={3} placeholder="Describe what you’re naming in 2-3 sentences..." value={data.companyDesc || ''} onChange={e => setData({ ...data, companyDesc: e.target.value })} />
       </div>
       <div style={fieldWrap}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -1161,7 +1161,7 @@ function CustomRequirementsField({ data, setData, tc }) {
           <textarea
             style={{ ...textareaStyle }}
             rows={4}
-            placeholder="e.g. Must work as a .com domain, should not start with 'X', needs to sound good in Spanish..."
+            placeholder="e.g. Must work as a .com domain, should not start with ‘X’, needs to sound good in Spanish..."
             value={data.customRequirements || ''}
             onChange={e => setData({ ...data, customRequirements: e.target.value })}
           />
@@ -1317,9 +1317,9 @@ function PrizeField({ data, setData, tc }) {
 // ── Invite config per subsegment ──
 const INVITE_CONFIG = {
   'company-name': {
-    essential: ['Founders / C-suite', 'Marketing / Brand lead', "Anyone who'll use the name daily"],
+    essential: ['Founders / C-suite', 'Marketing / Brand lead', "Anyone who’ll use the name daily"],
     recommended: ['2-3 outsiders — investors, advisors, or customers'],
-    recommendedNote: "30% of winning names came from someone outside the company. Airbnb's name came from a designer they hired, not the founders.",
+    recommendedNote: "30% of winning names came from someone outside the company. Airbnb’s name came from a designer they hired, not the founders.",
     optional: ['Early employees (builds ownership)', 'Board members (if involved in brand decisions)'],
     sweetSpot: '12–25',
     sweetSpotNote: '<10 = not enough diversity · 12–25 = sweet spot · >30 = diminishing returns',
@@ -1343,13 +1343,13 @@ const INVITE_CONFIG = {
   'rebrand': {
     essential: ['Founders / CEO', 'Brand / Marketing team', 'Long-tenured employees (they carry brand memory)'],
     recommended: ['Customers who know the current name and what it means to them'],
-    recommendedNote: "Brand equity lives in customer memory. They'll tell you what's worth keeping — and what associations the new name needs to escape.",
+    recommendedNote: "Brand equity lives in customer memory. They’ll tell you what’s worth keeping — and what associations the new name needs to escape.",
     optional: ['PR / Communications team', 'Board members if involved in brand decisions'],
     sweetSpot: '10–20',
     sweetSpotNote: 'Rebrands need internal buy-in AND external reality check. Balance both.',
   },
   'other-business': {
-    essential: ['Key decision-makers', 'Marketing or brand lead', "People who'll use the name daily"],
+    essential: ['Key decision-makers', 'Marketing or brand lead', "People who’ll use the name daily"],
     recommended: ['2–3 outsiders for an external perspective'],
     recommendedNote: "Fresh eyes catch assumptions insiders miss. Even one outside voice can unlock a better name.",
     optional: ['Advisors, investors, or stakeholders'],
@@ -1375,7 +1375,7 @@ const INVITE_CONFIG = {
   'podcast-channel': {
     essential: ['Host(s)', 'Producer / Editor'],
     recommended: ['3–5 people who match your target audience profile'],
-    recommendedNote: "Your target listener knows what show names attract them. They're your most valuable naming input.",
+    recommendedNote: "Your target listener knows what show names attract them. They’re your most valuable naming input.",
     optional: ['Guest speakers who know your content well', 'Social media followers you trust'],
     sweetSpot: '8–15',
     sweetSpotNote: 'Mix of creators and target audience gives you both insider vision and market reality.',
@@ -1383,7 +1383,7 @@ const INVITE_CONFIG = {
   'civic-school-nonprofit': {
     essential: ['Founding team members', 'Board members', 'Executive Director'],
     recommended: ['5–10 community members you serve or plan to serve'],
-    recommendedNote: "The community you serve should have a voice in what you're called. This is also a trust-building act — invite them in.",
+    recommendedNote: "The community you serve should have a voice in what you’re called. This is also a trust-building act — invite them in.",
     optional: ['Major donors or funders (if brand matters to them)', 'Volunteers and long-term supporters'],
     sweetSpot: '15–25',
     sweetSpotNote: 'Civic naming benefits from broad inclusion. More voices = more community ownership of the final name.',
@@ -1406,8 +1406,8 @@ const INVITE_CONFIG = {
   },
   'baby-name': {
     essential: ['Immediate family — parents, siblings, grandparents'],
-    recommended: ['Close friends in the baby\'s life — godparents, best friends'],
-    recommendedNote: "People who'll be in this child's life should feel included. It also means more people invested in the name from day one.",
+    recommended: ['Close friends in the baby’s life — godparents, best friends'],
+    recommendedNote: "People who’ll be in this child’s life should feel included. It also means more people invested in the name from day one.",
     optional: ['Distant relatives, coworkers — anyone you want to feel involved'],
     sweetSpot: '8–15',
     sweetSpotNote: "Great way to make distant relatives feel connected. The certificate on the nursery wall tells the whole story.",
@@ -1415,24 +1415,24 @@ const INVITE_CONFIG = {
   'pet-name': {
     essential: ['Immediate family members'],
     recommended: ['Anyone who will regularly see or care for the pet'],
-    recommendedNote: "Pets become part of the community around them. The people who'll call the name most often should help choose it.",
+    recommendedNote: "Pets become part of the community around them. The people who’ll call the name most often should help choose it.",
     optional: ['Friends of the family who know about the new pet'],
     sweetSpot: '5–15',
     sweetSpotNote: "Keep it personal — this is a family moment.",
   },
   'home-property-fun': {
-    essential: ["People who'll live in or regularly use the space"],
+    essential: ["People who’ll live in or regularly use the space"],
     recommended: ['Friends who know the space and your style'],
-    recommendedNote: "Friends who've visited often name places better than the owners — they see the vibe without the familiarity bias.",
+    recommendedNote: "Friends who’ve visited often name places better than the owners — they see the vibe without the familiarity bias.",
     optional: ['Neighbors, frequent guests, anyone with a connection to the space'],
     sweetSpot: '5–15',
     sweetSpotNote: 'Keep it fun and intimate.',
   },
   'other-personal': {
-    essential: ['People closest to you who understand what you\'re naming'],
+    essential: ['People closest to you who understand what you’re naming'],
     recommended: ['A few friends or family for fresh perspective'],
     recommendedNote: "Outside voices catch what feels obvious to you but surprising to the world.",
-    optional: ['Anyone with a connection to the thing you\'re naming'],
+    optional: ['Anyone with a connection to the thing you’re naming'],
     sweetSpot: '5–15',
     sweetSpotNote: 'Scale to the occasion.',
   },
@@ -1446,65 +1446,65 @@ const CREATOR_ARTICLES = {
     { id: 'b1-arc', title: 'The 5 Name Archetypes — and Which One Wins', readTime: '3 min',
       sections: [
         { heading: 'Not all names are created equal', body: 'Every company name fits one of five archetypes: Descriptive, Suggestive, Abstract/Coined, Real-word repurposed, or Founder/Acronym. Each has tradeoffs. Understanding them is the difference between a name that constrains you at Series B and one that grows with you to IPO.' },
-        { heading: 'Descriptive names (QuickBooks, PayPal)', body: "They tell you what they do. Good for early traction, SEO, zero ambiguity. Bad for future pivots, trademark protection, and global expansion. Rule of thumb: if you're 100% confident in your category and positioning for the next 10 years, descriptive can work. If not, think twice." },
-        { heading: 'Suggestive names (Salesforce, Shopify, Slack)', body: "They hint at the benefit without stating it literally. Most Fortune 500 tech companies live here. Why? Trademarkable + memorable + flexible as the business evolves. 'Salesforce' became a CRM AND a marketing platform AND an AI company without the name fighting back." },
+        { heading: 'Descriptive names (QuickBooks, PayPal)', body: "They tell you what they do. Good for early traction, SEO, zero ambiguity. Bad for future pivots, trademark protection, and global expansion. Rule of thumb: if you’re 100% confident in your category and positioning for the next 10 years, descriptive can work. If not, think twice." },
+        { heading: 'Suggestive names (Salesforce, Shopify, Slack)', body: "They hint at the benefit without stating it literally. Most Fortune 500 tech companies live here. Why? Trademarkable + memorable + flexible as the business evolves. ‘Salesforce’ became a CRM AND a marketing platform AND an AI company without the name fighting back." },
         { heading: 'Abstract/Coined names (Google, Xerox, Verizon)', body: 'Meaningless until you make them mean something. Hardest to launch, strongest moat once established. These require the most marketing investment but provide the deepest long-term competitive advantage — no one can accidentally use your name in a sentence.' },
       ],
-      callout: { type: 'example', text: "Slack started as a gaming company's internal tool. A descriptive name like 'TeamChat' would have fought the pivot to enterprise. An abstract name gave them a clean surface to project any meaning onto." },
+      callout: { type: 'example', text: "Slack started as a gaming company’s internal tool. A descriptive name like ‘TeamChat’ would have fought the pivot to enterprise. An abstract name gave them a clean surface to project any meaning onto." },
     },
     { id: 'b1-comp', title: "Why Competitor Names Are Your Most Important Research", readTime: '2 min',
       sections: [
         { heading: 'The differentiation principle', body: 'If five of your competitors have two-syllable, suggestive names — do not be the sixth. Research on brand recall is clear: names that do not fit the category pattern are remembered 47% more often than names that blend in. The competitor field in your brief is the highest-leverage field you will fill out.' },
-        { heading: 'What to look for', body: "List 5 competitors and analyze: What archetype? What length? What tone (serious, playful, technical)? Where there's density — that's exactly where your name should not be." },
+        { heading: 'What to look for', body: "List 5 competitors and analyze: What archetype? What length? What tone (serious, playful, technical)? Where there’s density — that’s exactly where your name should not be." },
         { heading: 'The pattern break wins', body: "When HubSpot launched, every CRM was descriptive or founder-named. HubSpot was a compound abstract — stood alone immediately. When Notion launched against Evernote, Confluence, OneNote — they chose a single abstract word. They owned that positioning." },
       ],
-      callout: { type: 'insight', text: "The sweet spot: sounds like it belongs in your category, but doesn't sound like anyone already there." },
+      callout: { type: 'insight', text: "The sweet spot: sounds like it belongs in your category, but doesn’t sound like anyone already there." },
     },
     { id: 'b1-brief', title: 'The Briefing Paradox: More Context = Better Names', readTime: '2 min',
       sections: [
-        { heading: 'The most common organizer mistake', body: "Most organizers share too little context, afraid of 'leading' participants. This is backwards. The more specific context you give, the more creative and on-target submissions become. Vague brief → creative anxiety → generic submissions. 'Make us something catchy' is not a brief." },
-        { heading: 'What participants actually need', body: 'They need: What you do (2-3 sentences), who it\'s for (specific, not "everyone"), what the name should signal (your tone/archetype preference), what the competition looks like (so they can differentiate), and what to avoid (saves everyone time).' },
+        { heading: 'The most common organizer mistake', body: "Most organizers share too little context, afraid of ‘leading’ participants. This is backwards. The more specific context you give, the more creative and on-target submissions become. Vague brief → creative anxiety → generic submissions. ‘Make us something catchy’ is not a brief." },
+        { heading: 'What participants actually need', body: 'They need: What you do (2-3 sentences), who it’s for (specific, not “everyone”), what the name should signal (your tone/archetype preference), what the competition looks like (so they can differentiate), and what to avoid (saves everyone time).' },
       ],
-      callout: { type: 'warning', text: "Warning: 'I'll know the right name when I see it' is not a brief. That's a wish. Great briefs define success criteria before the contest starts — so participants aim at a defined target, not a moving one." },
+      callout: { type: 'warning', text: "Warning: ‘I’ll know the right name when I see it’ is not a brief. That’s a wish. Great briefs define success criteria before the contest starts — so participants aim at a defined target, not a moving one." },
     },
   ],
   'product-name': [
     { id: 'b2-arch', title: 'Brand Architecture: Decide This Before Naming Anything', readTime: '2 min',
       sections: [
         { heading: 'The decision that shapes everything', body: "Before you name a product, decide: will this product extend your company brand, or live independently? This is brand architecture. Get it wrong and the product name will fight the company name rather than amplifying it." },
-        { heading: 'Three models', body: "Branded House (Google, Apple): every product extends the master brand. House of Brands (P&G, Unilever): each product is standalone — consumers don't know the parent. Endorsed Brand (Marriott Courtyard): parent lends credibility, product has distinct identity." },
-        { heading: 'Which model is right?', body: "Branded house works when the parent brand is strong and consistent. House of brands works when products serve radically different markets. Tell participants which model you're using — it completely changes what 'good' looks like for a submission." },
+        { heading: 'Three models', body: "Branded House (Google, Apple): every product extends the master brand. House of Brands (P&G, Unilever): each product is standalone — consumers don’t know the parent. Endorsed Brand (Marriott Courtyard): parent lends credibility, product has distinct identity." },
+        { heading: 'Which model is right?', body: "Branded house works when the parent brand is strong and consistent. House of brands works when products serve radically different markets. Tell participants which model you’re using — it completely changes what ‘good’ looks like for a submission." },
       ],
-      callout: { type: 'example', text: "Salesforce chose branded house → Sales Cloud, Service Cloud, Marketing Cloud. Every product extends the master. Consistent, scalable — but every product must feel 'salesforce-y.' Choose your architecture before you brief." },
+      callout: { type: 'example', text: "Salesforce chose branded house → Sales Cloud, Service Cloud, Marketing Cloud. Every product extends the master. Consistent, scalable — but every product must feel ‘salesforce-y.’ Choose your architecture before you brief." },
     },
     { id: 'b2-diff', title: 'Product Names Live in a Different Ecosystem', readTime: '2 min',
       sections: [
-        { heading: 'Why product naming is harder', body: "Company names compete in a broad landscape. Product names must work in context: alongside your company name, your other products, competitors' products, and in specific usage contexts (app store, sales deck, support ticket). Each context adds pressure the company name never faces." },
-        { heading: 'The precision requirement', body: "A new product name often has to work on first contact — in a headline, a demo, a pitch. If it doesn't land in 3 seconds, it's working against your sales team, not for them. Precision matters more in product naming than in company naming." },
+        { heading: 'Why product naming is harder', body: "Company names compete in a broad landscape. Product names must work in context: alongside your company name, your other products, competitors’ products, and in specific usage contexts (app store, sales deck, support ticket). Each context adds pressure the company name never faces." },
+        { heading: 'The precision requirement', body: "A new product name often has to work on first contact — in a headline, a demo, a pitch. If it doesn’t land in 3 seconds, it’s working against your sales team, not for them. Precision matters more in product naming than in company naming." },
       ],
-      callout: { type: 'insight', text: "The best product name has a 'job.' AirPods = air (wireless, invisible) + pods (small, self-contained). Clear benefit, suggests the experience, in two syllables. Know the job before you name." },
+      callout: { type: 'insight', text: "The best product name has a ‘job.’ AirPods = air (wireless, invisible) + pods (small, self-contained). Clear benefit, suggests the experience, in two syllables. Know the job before you name." },
     },
     { id: 'b2-sound', title: 'The Sound of Your Product: Phonetics That Match the Experience', readTime: '2 min',
       sections: [
-        { heading: 'Sound carries meaning before the dictionary does', body: "Hard consonants (K, T, B, P) signal speed, strength, and precision. Soft sounds (L, M, S, vowel-heavy names) signal ease, warmth, and approachability. 'Crisp' feels sharper than 'Smooth.' Neither is wrong — but the phonetic profile of your product name creates subconscious expectations before a customer reads a single word of copy." },
-        { heading: 'Onomatopoeia is an underused weapon', body: "Names that sound like the experience they deliver are processed faster and remembered longer. 'Zip' for a file compressor. 'Glide' for a presentation tool. 'Snap' for anything instant. The product name that sounds like its core benefit is doing double marketing duty every time someone says it aloud." },
+        { heading: 'Sound carries meaning before the dictionary does', body: "Hard consonants (K, T, B, P) signal speed, strength, and precision. Soft sounds (L, M, S, vowel-heavy names) signal ease, warmth, and approachability. ‘Crisp’ feels sharper than ‘Smooth.’ Neither is wrong — but the phonetic profile of your product name creates subconscious expectations before a customer reads a single word of copy." },
+        { heading: 'Onomatopoeia is an underused weapon', body: "Names that sound like the experience they deliver are processed faster and remembered longer. ‘Zip’ for a file compressor. ‘Glide’ for a presentation tool. ‘Snap’ for anything instant. The product name that sounds like its core benefit is doing double marketing duty every time someone says it aloud." },
         { heading: 'Apply this to your brief', body: "Think about how your product feels to use — fast, calm, precise, expansive, warm? Write that adjective down before you brief. Tell participants the emotional experience the name should evoke. Sound design in naming is invisible when done right and glaring when wrong." },
       ],
-      callout: { type: 'example', text: "'Zoom' — short, explosive, onomatopoeic. You feel the speed before you know it's a video tool. Compare to 'WebEx' — technical, hyphenated, sounds like IT infrastructure. Same category, completely different phonetic signal." },
+      callout: { type: 'example', text: "‘Zoom’ — short, explosive, onomatopoeic. You feel the speed before you know it’s a video tool. Compare to ‘WebEx’ — technical, hyphenated, sounds like IT infrastructure. Same category, completely different phonetic signal." },
     },
   ],
   'project-name': [
     { id: 'b3-momentum', title: 'Generic Project Names Kill Momentum', readTime: '2 min',
       sections: [
-        { heading: "What's in a project name?", body: "More than you think. Research shows named projects achieve their objectives 34% more often than unnamed or numbered ones. A great project name creates shared mental model, motivates ownership, and makes status updates feel like progress rather than reporting." },
-        { heading: '"Project Phoenix" has been done to death', body: "Phoenix, Titan, Horizon, Compass, Catalyst — these are the cargo shorts of project naming. They signal nothing, commit to nothing. The most effective project names are: (a) crystal-clear about the goal, or (b) so specific to your culture that outsiders wouldn't get it but insiders feel it." },
+        { heading: "What’s in a project name?", body: "More than you think. Research shows named projects achieve their objectives 34% more often than unnamed or numbered ones. A great project name creates shared mental model, motivates ownership, and makes status updates feel like progress rather than reporting." },
+        { heading: '“Project Phoenix” has been done to death', body: "Phoenix, Titan, Horizon, Compass, Catalyst — these are the cargo shorts of project naming. They signal nothing, commit to nothing. The most effective project names are: (a) crystal-clear about the goal, or (b) so specific to your culture that outsiders wouldn’t get it but insiders feel it." },
       ],
-      callout: { type: 'example', text: "Google's 'Project Loon' (internet balloons) captured both the literal mechanism and the audacious feeling of the work. The name became a cultural touchstone inside and outside the company." },
+      callout: { type: 'example', text: "Google’s ‘Project Loon’ (internet balloons) captured both the literal mechanism and the audacious feeling of the work. The name became a cultural touchstone inside and outside the company." },
     },
     { id: 'b3-funcvsinsp', title: 'Functional vs Inspirational: Two Cultures', readTime: '2 min',
       sections: [
-        { heading: 'Functional names', body: '"Customer Portal Migration," "Q4 Data Architecture Upgrade." Pros: zero ambiguity, perfect for regulatory contexts. Cons: generates no energy, no ownership, no pride. People report the work but do not own the vision.' },
-        { heading: 'Inspirational names', body: '"Project Catalyst," "Operation Clarity," "Mission Backbone." Research shows team members with project names they are proud of work 18% more hours and report 31% higher satisfaction with outcomes. Best for transformation and culture-change projects.' },
+        { heading: 'Functional names', body: '“Customer Portal Migration,” “Q4 Data Architecture Upgrade.” Pros: zero ambiguity, perfect for regulatory contexts. Cons: generates no energy, no ownership, no pride. People report the work but do not own the vision.' },
+        { heading: 'Inspirational names', body: '“Project Catalyst,” “Operation Clarity,” “Mission Backbone.” Research shows team members with project names they are proud of work 18% more hours and report 31% higher satisfaction with outcomes. Best for transformation and culture-change projects.' },
       ],
       callout: { type: 'insight', text: 'Research verdict: for culture-change or transformation projects, inspirational names outperform. For technical migrations or compliance work, functional wins. Know which you are running before you brief.' },
     },
@@ -1512,18 +1512,18 @@ const CREATOR_ARTICLES = {
   'rebrand': [
     { id: 'b4-equity', title: 'What Is Your Brand Equity Actually Worth?', readTime: '3 min',
       sections: [
-        { heading: 'Brand equity is real money', body: "Before rebranding, answer honestly: what does the current name mean to customers? Not what you wish it meant — what does it actually mean? Brand equity is the sum of all associations, memories, and expectations your name triggers. Some is valuable. Some is what you're trying to escape." },
-        { heading: 'What to preserve', body: "Mastercard evolved from 'MasterCard' — they kept the name, the red circle, the two-hemisphere concept because the equity was enormous. Before you start this contest: identify specifically what about the current name or brand is worth preserving. This becomes a constraint for participants." },
+        { heading: 'Brand equity is real money', body: "Before rebranding, answer honestly: what does the current name mean to customers? Not what you wish it meant — what does it actually mean? Brand equity is the sum of all associations, memories, and expectations your name triggers. Some is valuable. Some is what you’re trying to escape." },
+        { heading: 'What to preserve', body: "Mastercard evolved from ‘MasterCard’ — they kept the name, the red circle, the two-hemisphere concept because the equity was enormous. Before you start this contest: identify specifically what about the current name or brand is worth preserving. This becomes a constraint for participants." },
         { heading: 'What to escape', body: "Philip Morris → Altria (after tobacco litigation). Facebook → Meta (after regulatory pressure). If the existing name has become a liability, the new name needs to create distance while preserving underlying trust. Tell participants what associations you are moving away from." },
       ],
       callout: { type: 'warning', text: "Warning: rebrands that change too much simultaneously (name + logo + color + tone) confuse customers more than they help. Research shows customers require 7-12 exposures to recognize a new brand from a previous relationship. Evolutionary rebrands outperform revolutionary ones in retention." },
     },
     { id: 'b4-evolverev', title: 'Evolution vs Revolution — How to Choose', readTime: '2 min',
       sections: [
-        { heading: 'Evolution (the safer path)', body: "Tweak, modernize, refine. Dunkin' Donuts → Dunkin'. They shortened and simplified, kept the equity. Evolution works when the core identity is sound but the expression needs updating for a new era or market segment." },
+        { heading: 'Evolution (the safer path)', body: "Tweak, modernize, refine. Dunkin’ Donuts → Dunkin’. They shortened and simplified, kept the equity. Evolution works when the core identity is sound but the expression needs updating for a new era or market segment." },
         { heading: 'Revolution (the riskier path)', body: "Rename and reposition entirely. Andersen Consulting → Accenture. BackRub → Google. Revolution is warranted when: (a) the existing name is a genuine barrier to growth, (b) scandal has made the name toxic, or (c) the business has fundamentally changed beyond what the name can contain." },
       ],
-      callout: { type: 'example', text: "Dunkin' removed 'Donuts' because 60% of revenue was beverages, not donuts. The word was misleading. They kept 'Dunkin'' because that's where 60+ years of equity lived. That's precision equity management." },
+      callout: { type: 'example', text: "Dunkin’ removed ‘Donuts’ because 60% of revenue was beverages, not donuts. The word was misleading. They kept ‘Dunkin’‘ because that’s where 60+ years of equity lived. That’s precision equity management." },
     },
   ],
   'sports-team': [
@@ -1537,8 +1537,8 @@ const CREATOR_ARTICLES = {
     },
     { id: 't1-chant', title: 'Chantability: The Test Every Team Name Must Pass', readTime: '1 min',
       sections: [
-        { heading: 'The stadium test', body: "Imagine 10,000 people chanting your team name after a goal. Not reading it. Not typing it. Screaming it. Does it work? Names with natural stress patterns and sharp endings pass this test: 'HEAT! HEAT! HEAT!' 'THUNDER! THUNDER!' Names with three syllables or soft endings fail it: try chanting 'Navigators' for 90 seconds. You will not enjoy it." },
-        { heading: 'What makes a name chant-ready', body: "One or two syllables. A hard consonant or sharp vowel at the end. Or a name that compresses naturally (Sacramento Kings → 'KINGS!'). Test every submission by yelling it three times fast. If your voice trips on it, cut it from the shortlist." },
+        { heading: 'The stadium test', body: "Imagine 10,000 people chanting your team name after a goal. Not reading it. Not typing it. Screaming it. Does it work? Names with natural stress patterns and sharp endings pass this test: ‘HEAT! HEAT! HEAT!’ ‘THUNDER! THUNDER!’ Names with three syllables or soft endings fail it: try chanting ‘Navigators’ for 90 seconds. You will not enjoy it." },
+        { heading: 'What makes a name chant-ready', body: "One or two syllables. A hard consonant or sharp vowel at the end. Or a name that compresses naturally (Sacramento Kings → ‘KINGS!’). Test every submission by yelling it three times fast. If your voice trips on it, cut it from the shortlist." },
       ],
       callout: { type: 'insight', text: "Chantability correlates with merchandise sales. Names that are easy to chant are easy to print, easy to hashtag, and easy to remember mid-game. It is not a soft criterion — it is infrastructure." },
     },
@@ -1546,17 +1546,17 @@ const CREATOR_ARTICLES = {
   'band-music': [
     { id: 't2-firstsong', title: 'The Band Name Is Your First Song', readTime: '2 min',
       sections: [
-        { heading: 'The name sets tone before a note plays', body: "Before anyone hears your music, they see your name. It's on the flyer, the playlist, the algorithm recommendation. The name creates expectation. 'Death Cab for Cutie' creates completely different expectations than 'The 1975.' Both great — but they signal different worlds." },
-        { heading: 'The story test', body: "Fans always ask: 'How did you get your name?' A great answer is a great story. Radiohead = from a Talking Heads B-side. Lynyrd Skynyrd = named after a gym teacher who told them to cut their hair. Foo Fighters = Dave Grohl's WWII UFO reference. A name with a story becomes band mythology before the first album." },
-        { heading: 'The searchability problem', body: "In the streaming era, a searchable band name is a competitive advantage. 'The The', 'Girls', and '!!!' are all legitimate band names — and all impossible to find on any platform. 'Foo Fighters' returns exactly what you want. Distinctiveness and searchability are not the same thing — you need both." },
+        { heading: 'The name sets tone before a note plays', body: "Before anyone hears your music, they see your name. It’s on the flyer, the playlist, the algorithm recommendation. The name creates expectation. ‘Death Cab for Cutie’ creates completely different expectations than ‘The 1975.’ Both great — but they signal different worlds." },
+        { heading: 'The story test', body: "Fans always ask: ‘How did you get your name?’ A great answer is a great story. Radiohead = from a Talking Heads B-side. Lynyrd Skynyrd = named after a gym teacher who told them to cut their hair. Foo Fighters = Dave Grohl’s WWII UFO reference. A name with a story becomes band mythology before the first album." },
+        { heading: 'The searchability problem', body: "In the streaming era, a searchable band name is a competitive advantage. ‘The The’, ‘Girls’, and ‘!!!’ are all legitimate band names — and all impossible to find on any platform. ‘Foo Fighters’ returns exactly what you want. Distinctiveness and searchability are not the same thing — you need both." },
       ],
       callout: { type: 'insight', text: 'Music discovery data: 67% of new listeners find artists through search (Spotify, YouTube, Google). A highly distinctive band name drives 2-3x more organic monthly plays in the first 6 months than a common word or phrase.' },
     },
     { id: 't2-archetypes', title: 'Three Archetypes That Dominate Music Naming History', readTime: '2 min',
       sections: [
-        { heading: 'Absurdist / Provocative', body: "Arctic Monkeys, Vampire Weekend, Panic! at the Disco, Chumbawamba. Memorable for strangeness. Make you stop and think. Best for genres where personality is part of the brand. Risk: can feel gimmicky if the music doesn't match the name's attitude." },
-        { heading: 'Evocative / Poetic', body: "The National, Fleet Foxes, Beach House, Portishead, Mazzy Star. Mood-first. Feels like the music before you hear it. Names that suggest a feeling, a place, an aesthetic. Ages beautifully — doesn't feel tied to any era or trend." },
-        { heading: 'Personal / Story-based', body: "Dave Matthews Band, Lynyrd Skynyrd, Radiohead. The name carries identity — either the artist's or a moment in the band's history. Best for artist-driven projects where personality is the product." },
+        { heading: 'Absurdist / Provocative', body: "Arctic Monkeys, Vampire Weekend, Panic! at the Disco, Chumbawamba. Memorable for strangeness. Make you stop and think. Best for genres where personality is part of the brand. Risk: can feel gimmicky if the music doesn’t match the name’s attitude." },
+        { heading: 'Evocative / Poetic', body: "The National, Fleet Foxes, Beach House, Portishead, Mazzy Star. Mood-first. Feels like the music before you hear it. Names that suggest a feeling, a place, an aesthetic. Ages beautifully — doesn’t feel tied to any era or trend." },
+        { heading: 'Personal / Story-based', body: "Dave Matthews Band, Lynyrd Skynyrd, Radiohead. The name carries identity — either the artist’s or a moment in the band’s history. Best for artist-driven projects where personality is the product." },
       ],
       callout: { type: 'insight', text: "Top 50 band names in history split roughly: 40% Absurdist, 40% Evocative, 20% Personal. Absurdist dominates indie/alt. Evocative dominates ambient/folk. Personal dominates hip-hop and country. Know your genre archetype before you brief." },
     },
@@ -1564,35 +1564,35 @@ const CREATOR_ARTICLES = {
   'podcast-channel': [
     { id: 't3-discovery', title: 'Discovery vs Memory: The Two Jobs of a Podcast Name', readTime: '2 min',
       sections: [
-        { heading: 'Job 1: Discovery', body: "When someone searches 'business podcast' or 'true crime,' does your name surface? Discovery-optimized names lean clear: 'The Daily,' 'Crime Junkie,' 'How I Built This.' These work when you have no existing audience and search is your primary acquisition channel." },
-        { heading: 'Job 2: Memory', body: "When a listener recommends your show in conversation, can they remember the name? Memory-optimized names lean intriguing: 'Serial,' 'S-Town,' '99% Invisible,' 'Radiolab.' These work when word-of-mouth is your growth engine." },
-        { heading: 'The balanced approach wins long-term', body: "'Hidden Brain' (NPR psychology): 'Hidden' = intriguing. 'Brain' = instantly signals the subject. You know it's about psychology before you read the description. Balanced names outperform pure-clarity or pure-mystery in long-term growth." },
+        { heading: 'Job 1: Discovery', body: "When someone searches ‘business podcast’ or ‘true crime,’ does your name surface? Discovery-optimized names lean clear: ‘The Daily,’ ‘Crime Junkie,’ ‘How I Built This.’ These work when you have no existing audience and search is your primary acquisition channel." },
+        { heading: 'Job 2: Memory', body: "When a listener recommends your show in conversation, can they remember the name? Memory-optimized names lean intriguing: ‘Serial,’ ‘S-Town,’ ’99% Invisible,’ ‘Radiolab.’ These work when word-of-mouth is your growth engine." },
+        { heading: 'The balanced approach wins long-term', body: "‘Hidden Brain’ (NPR psychology): ‘Hidden’ = intriguing. ‘Brain’ = instantly signals the subject. You know it’s about psychology before you read the description. Balanced names outperform pure-clarity or pure-mystery in long-term growth." },
       ],
-      callout: { type: 'example', text: "'Stuff You Should Know' is extremely clear and SEO-rich — 2.5 billion downloads. 'Radiolab' is abstract and memorable — 120M downloads. Clear names front-load audience. Memorable names compound over time. Choose your growth strategy first." },
+      callout: { type: 'example', text: "‘Stuff You Should Know’ is extremely clear and SEO-rich — 2.5 billion downloads. ‘Radiolab’ is abstract and memorable — 120M downloads. Clear names front-load audience. Memorable names compound over time. Choose your growth strategy first." },
     },
     { id: 't3-algorithm', title: 'The Algorithm vs Memory Tension — How to Win Both', readTime: '2 min',
       sections: [
-        { heading: 'What the algorithm wants', body: "Podcast platforms surface shows based on keyword relevance. Clear, descriptive names ('The Marketing Podcast,' 'Daily News Brief') index well in search and get recommended in the right categories automatically. If search is your only acquisition channel, lean descriptive — you will get traffic earlier." },
-        { heading: 'What memory wants', body: "Word-of-mouth — still the highest-conversion podcast acquisition channel — requires a name that lives in the brain and rolls off the tongue. 'You Must Remember This,' 'My Favorite Murder,' 'Conan Needs a Friend' spread because the names are interesting enough to repeat. Distinctive names compound." },
-        { heading: 'The hybrid strategy', body: "Name the show memorably. Use the subtitle for clarity and keywords. 'Hidden Brain: A Podcast About the Unconscious Forces That Drive Human Behavior.' The name is memorable; the subtitle handles SEO. Many top shows use this approach — give participants both a name and subtitle brief." },
+        { heading: 'What the algorithm wants', body: "Podcast platforms surface shows based on keyword relevance. Clear, descriptive names (‘The Marketing Podcast,’ ‘Daily News Brief’) index well in search and get recommended in the right categories automatically. If search is your only acquisition channel, lean descriptive — you will get traffic earlier." },
+        { heading: 'What memory wants', body: "Word-of-mouth — still the highest-conversion podcast acquisition channel — requires a name that lives in the brain and rolls off the tongue. ‘You Must Remember This,’ ‘My Favorite Murder,’ ‘Conan Needs a Friend’ spread because the names are interesting enough to repeat. Distinctive names compound." },
+        { heading: 'The hybrid strategy', body: "Name the show memorably. Use the subtitle for clarity and keywords. ‘Hidden Brain: A Podcast About the Unconscious Forces That Drive Human Behavior.’ The name is memorable; the subtitle handles SEO. Many top shows use this approach — give participants both a name and subtitle brief." },
       ],
-      callout: { type: 'insight', text: "Spotify's internal data shows that shows with distinctive (non-descriptive) names have 40% higher episode completion rates. Listeners who chose the show based on its name — not keywords — are more committed listeners." },
+      callout: { type: 'insight', text: "Spotify’s internal data shows that shows with distinctive (non-descriptive) names have 40% higher episode completion rates. Listeners who chose the show based on its name — not keywords — are more committed listeners." },
     },
   ],
   'civic-school-nonprofit': [
     { id: 't4-longevity', title: 'The 50-Year Test for Civic Organization Names', readTime: '2 min',
       sections: [
         { heading: 'Names that outlast their founders', body: "YMCA was founded in 1844. Habitat for Humanity in 1976. Doctors Without Borders in 1971. None use trendy language. None reference technology. None use slang. Great civic organization names are built to outlast their founders by decades. Ask every participant: will this name still make sense in 50 years?" },
-        { heading: 'What makes a civic name age well', body: "Names that age well: reference human values ('humanity' is permanent), name the impact not the process (Doctors Without Borders describes impact, not methodology), stay away from tech buzzwords (anything with 'digital,' 'smart,' 'e-,' 'cyber-' will be dated within 15 years)." },
-        { heading: 'The dual audience requirement', body: "Civic names must communicate purpose to two audiences: the people served AND the donors/funders. A name that resonates with one but not the other is a strategic liability. 'Feeding America' works for both: donors know what they're funding; recipients know what they're getting." },
+        { heading: 'What makes a civic name age well', body: "Names that age well: reference human values (‘humanity’ is permanent), name the impact not the process (Doctors Without Borders describes impact, not methodology), stay away from tech buzzwords (anything with ‘digital,’ ‘smart,’ ‘e-,’ ‘cyber-’ will be dated within 15 years)." },
+        { heading: 'The dual audience requirement', body: "Civic names must communicate purpose to two audiences: the people served AND the donors/funders. A name that resonates with one but not the other is a strategic liability. ‘Feeding America’ works for both: donors know what they’re funding; recipients know what they’re getting." },
       ],
-      callout: { type: 'example', text: "'eCorps' (2000s nonprofit): the 'e-' prefix aged terribly. 'charity: water' (2006): aged beautifully — the lowercase and colon feel intentional and modern without being tied to any tech era." },
+      callout: { type: 'example', text: "‘eCorps’ (2000s nonprofit): the ‘e-’ prefix aged terribly. ‘charity: water’ (2006): aged beautifully — the lowercase and colon feel intentional and modern without being tied to any tech era." },
     },
     { id: 't4-community', title: 'Clarity vs Aspiration — When Each Approach Wins', readTime: '2 min',
       sections: [
         { heading: 'The clarity approach', body: "Crystal-clear civic names tell you exactly what they do: Habitat for Humanity, Feeding America, Girls Who Code. Best for service organizations where the mission IS the brand and you need to communicate in seconds without context." },
-        { heading: 'The aspiration approach', body: "Aspirational names evoke the world being worked toward. Aspiration works when you're building a movement, not just delivering a service. The name should inspire, not just describe — donors fund visions, not services." },
-        { heading: 'Community ownership', body: "The best civic names feel like they belong to everyone. 'Big Brothers Big Sisters' could be anyone. 'The Johnson Initiative' belongs to Johnson. Unless your founder carries enormous equity (Gates, Obama), naming after a person limits community participation." },
+        { heading: 'The aspiration approach', body: "Aspirational names evoke the world being worked toward. Aspiration works when you’re building a movement, not just delivering a service. The name should inspire, not just describe — donors fund visions, not services." },
+        { heading: 'Community ownership', body: "The best civic names feel like they belong to everyone. ‘Big Brothers Big Sisters’ could be anyone. ‘The Johnson Initiative’ belongs to Johnson. Unless your founder carries enormous equity (Gates, Obama), naming after a person limits community participation." },
       ],
       callout: { type: 'insight', text: 'Research on donor behavior: civic names that communicate mission in the name receive 31% more first-time donations than abstract names. First impressions drive first dollars.' },
     },
@@ -1600,31 +1600,31 @@ const CREATOR_ARTICLES = {
   'gaming-group': [
     { id: 't5-psychology', title: 'The Psychology Behind Great Gaming Group Names', readTime: '1 min',
       sections: [
-        { heading: 'Two camps, both dominate', body: "Intimidating names (FaZe Clan, Team Liquid, Cloud9) signal competitive dominance. Meme-worthy names (Panda Global, Golden Guardians) signal a different confidence: we're secure enough to be playful. Both work. Choice depends on how seriously competitive you are." },
-        { heading: 'The functional tests', body: "Can you yell it when you clutch a 1v5? Can it go on a jersey? Does it have a tag/abbreviation that works? (Cloud9 → C9, Team Liquid → TL). Gaming names should be 1-2 words max, distinctive within your game's community, and functional as a competitive tag." },
+        { heading: 'Two camps, both dominate', body: "Intimidating names (FaZe Clan, Team Liquid, Cloud9) signal competitive dominance. Meme-worthy names (Panda Global, Golden Guardians) signal a different confidence: we’re secure enough to be playful. Both work. Choice depends on how seriously competitive you are." },
+        { heading: 'The functional tests', body: "Can you yell it when you clutch a 1v5? Can it go on a jersey? Does it have a tag/abbreviation that works? (Cloud9 → C9, Team Liquid → TL). Gaming names should be 1-2 words max, distinctive within your game’s community, and functional as a competitive tag." },
       ],
       callout: { type: 'insight', text: 'Merchandise data from top esports teams: 2-syllable team names generate 2.3x more fan gear searches than longer names. Brevity is a feature, not a constraint.' },
     },
     { id: 't5-tag', title: 'The Tag Test: How Esports Names Get Compressed', readTime: '1 min',
       sections: [
-        { heading: 'Every name becomes a tag', body: "In competitive gaming, team names live as 2-3 character tags in brackets: [C9] Cloud9, [TL] Team Liquid, [FaZe] FaZe Clan. The tag is what players see in-game, in tournament brackets, and on leaderboards. A great team name produces a great tag naturally. Test every submission: what's the obvious 2-3 letter compression? If it's awkward, the name will feel wrong in competitive play." },
-        { heading: 'Tag collision and uniqueness', body: "Before finalizing any name, check if the tag is already claimed in your game's community or in major esports. A unique tag is not just aesthetic — it determines search results, community identity on Discord and Reddit, and how other players refer to you in comms. 'GG' was taken before online gaming existed. Plan ahead." },
+        { heading: 'Every name becomes a tag', body: "In competitive gaming, team names live as 2-3 character tags in brackets: [C9] Cloud9, [TL] Team Liquid, [FaZe] FaZe Clan. The tag is what players see in-game, in tournament brackets, and on leaderboards. A great team name produces a great tag naturally. Test every submission: what’s the obvious 2-3 letter compression? If it’s awkward, the name will feel wrong in competitive play." },
+        { heading: 'Tag collision and uniqueness', body: "Before finalizing any name, check if the tag is already claimed in your game’s community or in major esports. A unique tag is not just aesthetic — it determines search results, community identity on Discord and Reddit, and how other players refer to you in comms. ‘GG’ was taken before online gaming existed. Plan ahead." },
       ],
-      callout: { type: 'example', text: "'NaVi' (Natus Vincere — Latin for 'born to win') compresses perfectly: memorable tag, meaningful full name, global audience doesn't need to know the Latin to feel the dominance. The tag and the name work as a system." },
+      callout: { type: 'example', text: "‘NaVi’ (Natus Vincere — Latin for ‘born to win’) compresses perfectly: memorable tag, meaningful full name, global audience doesn’t need to know the Latin to feel the dominance. The tag and the name work as a system." },
     },
   ],
   'other-team': [
     { id: 't6-identity', title: 'Names Shape Group Identity Before the First Meeting', readTime: '2 min',
       sections: [
         { heading: 'The name creates the group before the group exists', body: "Research on organizational behavior shows groups given aspirational names produce measurably more creative output than groups with generic identifiers. The name becomes a self-fulfilling prophecy. A great group name is the first act of leadership." },
-        { heading: 'Inside vs. outside meaning', body: "The best group names work on two levels: they mean something to members (inside reference, shared history) AND they create the right impression for outsiders. A great group name says 'there's something going on here' even to people who don't know the inside story." },
+        { heading: 'Inside vs. outside meaning', body: "The best group names work on two levels: they mean something to members (inside reference, shared history) AND they create the right impression for outsiders. A great group name says ‘there’s something going on here’ even to people who don’t know the inside story." },
       ],
-      callout: { type: 'insight', text: "Groups with distinctive, creative names attract more qualified members than groups with generic identifiers. Your name is not just identity — it's a membership signal." },
+      callout: { type: 'insight', text: "Groups with distinctive, creative names attract more qualified members than groups with generic identifiers. Your name is not just identity — it’s a membership signal." },
     },
     { id: 't6-future', title: 'Will Your Group Name Make Sense in 5 Years?', readTime: '1 min',
       sections: [
-        { heading: 'The time horizon problem', body: "Groups evolve. The 'Tuesday Night Crew' stops meeting Tuesdays. The 'Book Club' stops reading books and becomes a social outlet. The 'Marketing Brainstorm Team' becomes a full strategy department. Names built around logistics, schedules, or current activities age into irony. Names built around values, shared identity, or purpose stay accurate as the group evolves." },
-        { heading: 'Future-proof naming criteria', body: "Ask: if this group's activity changes but the people stay the same, does the name still fit? If yes — it's identity-based and will age well. If no — it's activity-based and will need updating. For most groups, identity-based names are worth the extra effort to find." },
+        { heading: 'The time horizon problem', body: "Groups evolve. The ‘Tuesday Night Crew’ stops meeting Tuesdays. The ‘Book Club’ stops reading books and becomes a social outlet. The ‘Marketing Brainstorm Team’ becomes a full strategy department. Names built around logistics, schedules, or current activities age into irony. Names built around values, shared identity, or purpose stay accurate as the group evolves." },
+        { heading: 'Future-proof naming criteria', body: "Ask: if this group’s activity changes but the people stay the same, does the name still fit? If yes — it’s identity-based and will age well. If no — it’s activity-based and will need updating. For most groups, identity-based names are worth the extra effort to find." },
       ],
       callout: { type: 'insight', text: "The best group names describe who you are, not what you do — because what you do will change." },
     },
@@ -1639,9 +1639,9 @@ const CREATOR_ARTICLES = {
     },
     { id: 'p1-lifetime', title: 'The Lifetime Test: Toddler, Teen, Professional, Elderly', readTime: '2 min',
       sections: [
-        { heading: 'A name is worn for 80+ years', body: "Most parents think about how a name sounds for a baby. Few think about how it plays at a job interview, a first date, or at 75 years old. The most durable names work at every life stage. 'Eleanor' works for a toddler, a teenager, a CEO, and an 80-year-old. 'Braylee' is harder to carry into every stage with equal dignity." },
-        { heading: 'The nickname architecture', body: "Built-in nickname flexibility is a feature, not a compromise. 'Alexander' gives you Alex, Al, Xander, Lex, Alec. The child gets to choose how they self-identify at different life stages. Single-form names (no natural nickname) give the name to the world; nickname-rich names give the child editorial control." },
-        { heading: 'The professional context test', body: "Say the name in a business context: 'I'd like to introduce our CEO, [name].' Say it in a casual context: 'Have you met [name]?' If it sounds right in both settings, the name has range. If it only works in one, consider whether that constraint fits the life you're imagining for the child." },
+        { heading: 'A name is worn for 80+ years', body: "Most parents think about how a name sounds for a baby. Few think about how it plays at a job interview, a first date, or at 75 years old. The most durable names work at every life stage. ‘Eleanor’ works for a toddler, a teenager, a CEO, and an 80-year-old. ‘Braylee’ is harder to carry into every stage with equal dignity." },
+        { heading: 'The nickname architecture', body: "Built-in nickname flexibility is a feature, not a compromise. ‘Alexander’ gives you Alex, Al, Xander, Lex, Alec. The child gets to choose how they self-identify at different life stages. Single-form names (no natural nickname) give the name to the world; nickname-rich names give the child editorial control." },
+        { heading: 'The professional context test', body: "Say the name in a business context: ‘I’d like to introduce our CEO, [name].’ Say it in a casual context: ‘Have you met [name]?’ If it sounds right in both settings, the name has range. If it only works in one, consider whether that constraint fits the life you’re imagining for the child." },
       ],
       callout: { type: 'insight', text: "Research on name and career outcomes: names that are easy to pronounce and spell in the target culture correlate with fewer friction points across a lifetime of professional interactions. Spelling variation rarely adds character — it mainly adds correction burden." },
     },
@@ -1649,15 +1649,15 @@ const CREATOR_ARTICLES = {
   'pet-name': [
     { id: 'p2-personality', title: 'Personality-Forward Naming Works Best for Pets', readTime: '1 min',
       sections: [
-        { heading: 'Names that fit the animal', body: "The best pet names capture personality rather than appearance. 'Chaos' or 'Gremlin' beats 'Spot' or 'Fluffy.' Personality names age better — a puppy grows into an adult but their personality tends to stay consistent." },
-        { heading: 'The practical tests', body: "Say the name out loud 20 times: can you yell it in a dog park without embarrassment? Does it have a one-syllable call name? (Maximilian → Max). Can you say it with authority when they're misbehaving? The call name and the full name are both part of the choice." },
+        { heading: 'Names that fit the animal', body: "The best pet names capture personality rather than appearance. ‘Chaos’ or ‘Gremlin’ beats ‘Spot’ or ‘Fluffy.’ Personality names age better — a puppy grows into an adult but their personality tends to stay consistent." },
+        { heading: 'The practical tests', body: "Say the name out loud 20 times: can you yell it in a dog park without embarrassment? Does it have a one-syllable call name? (Maximilian → Max). Can you say it with authority when they’re misbehaving? The call name and the full name are both part of the choice." },
       ],
       callout: { type: 'example', text: 'Top pet names 2024: Luna, Bella, Charlie, Max, Cooper. If distinctiveness matters to you, these are the exact names to avoid. Look one tier down for uniqueness with established phonetics.' },
     },
     { id: 'p2-callname', title: 'The Call Name Principle', readTime: '1 min',
       sections: [
-        { heading: 'The name you actually use is the one that matters', body: "The formal name and the call name are two different things. 'Bartholomew' becomes 'Bart' at the dog park. 'Persephone' becomes 'Percy.' When naming a pet, work backward from the call name you will actually use 50 times a day. The full name can be ceremonial — but the one-syllable version is the functional name and it needs to work." },
-        { heading: 'Response training and phonetics', body: "Animal trainers consistently recommend names ending in a vowel sound (Bella, Luna, Coco, Milo) because they carry further in open spaces and are easier for animals to distinguish from ambient noise. Hard consonants at the start also help: 'Kira' cuts through a crowd better than 'Nana.' Brief participants with both the aesthetic and the practical." },
+        { heading: 'The name you actually use is the one that matters', body: "The formal name and the call name are two different things. ‘Bartholomew’ becomes ‘Bart’ at the dog park. ‘Persephone’ becomes ‘Percy.’ When naming a pet, work backward from the call name you will actually use 50 times a day. The full name can be ceremonial — but the one-syllable version is the functional name and it needs to work." },
+        { heading: 'Response training and phonetics', body: "Animal trainers consistently recommend names ending in a vowel sound (Bella, Luna, Coco, Milo) because they carry further in open spaces and are easier for animals to distinguish from ambient noise. Hard consonants at the start also help: ‘Kira’ cuts through a crowd better than ‘Nana.’ Brief participants with both the aesthetic and the practical." },
       ],
       callout: { type: 'insight', text: "Veterinary behaviorists note that pets named with clear two-syllable patterns (MAX-i, BEL-la, CO-co) respond to recall commands faster than pets with names that blend into sentences. The call name is a functional tool, not just a label." },
     },
@@ -1665,15 +1665,15 @@ const CREATOR_ARTICLES = {
   'home-property-fun': [
     { id: 'p3-places', title: 'Why Named Places Feel Different Than Unnamed Ones', readTime: '1 min',
       sections: [
-        { heading: 'The psychology of place names', body: "Environmental psychology research shows named spaces are used differently than unnamed ones. Named vacation homes get booked more often, maintained better, remembered more fondly. A name creates emotional ownership that transfers — 'We're going to Willowbend' creates different anticipation than 'We're going to the lake house.'" },
-        { heading: 'What makes a great property name', body: "Great property names have: a story (where the name comes from matters), a sound that fits the place, and work as both formal name and casual reference. 'The Bungalow' works. 'Casa Serenidad' works. 'Our Place' doesn't — that's a pronoun, not a name." },
+        { heading: 'The psychology of place names', body: "Environmental psychology research shows named spaces are used differently than unnamed ones. Named vacation homes get booked more often, maintained better, remembered more fondly. A name creates emotional ownership that transfers — ‘We’re going to Willowbend’ creates different anticipation than ‘We’re going to the lake house.’" },
+        { heading: 'What makes a great property name', body: "Great property names have: a story (where the name comes from matters), a sound that fits the place, and work as both formal name and casual reference. ‘The Bungalow’ works. ‘Casa Serenidad’ works. ‘Our Place’ doesn’t — that’s a pronoun, not a name." },
       ],
       callout: { type: 'example', text: 'Airbnb hosts who give their properties names see 23% higher booking rates than those who do not. The name creates a story guests want to be part of before they even arrive.' },
     },
     { id: 'p3-stick', title: 'What Makes a Property Name Stick', readTime: '1 min',
       sections: [
-        { heading: 'The four sources that work', body: "The most memorable property names come from: (1) geography — a local feature, view, or landmark ('Ridgecrest,' 'Harborside'); (2) history — a previous use or long-ago owner ('The Old Mill,' 'Shepherd's Rest'); (3) nature — flora, fauna, or natural elements specific to the land ('Heronwood,' 'Cliffside'); (4) feeling — the emotional experience the place creates ('Stillwater,' 'Driftwood'). Abstract invented names rarely stick — grounding in something real gives people a story to tell." },
-        { heading: 'The conversational test', body: "Will people use the name in natural conversation, or will it always need explanation? 'We're going to Willowbend' works. 'We're going to Casa Bella Serenissima Di Toscana' does not — it becomes 'the Italian place.' Shorter always wins. One or two words, phonetically easy, immediately evocative." },
+        { heading: 'The four sources that work', body: "The most memorable property names come from: (1) geography — a local feature, view, or landmark (‘Ridgecrest,’ ‘Harborside’); (2) history — a previous use or long-ago owner (‘The Old Mill,’ ‘Shepherd’s Rest’); (3) nature — flora, fauna, or natural elements specific to the land (‘Heronwood,’ ‘Cliffside’); (4) feeling — the emotional experience the place creates (‘Stillwater,’ ‘Driftwood’). Abstract invented names rarely stick — grounding in something real gives people a story to tell." },
+        { heading: 'The conversational test', body: "Will people use the name in natural conversation, or will it always need explanation? ‘We’re going to Willowbend’ works. ‘We’re going to Casa Bella Serenissima Di Toscana’ does not — it becomes ‘the Italian place.’ Shorter always wins. One or two words, phonetically easy, immediately evocative." },
       ],
       callout: { type: 'insight', text: "Property names that reference something visible from the property — a view, a tree, a body of water — are repeated more often by guests and neighbors. Anchoring the name to something people can point at makes it real, not decorative." },
     },
@@ -1681,15 +1681,15 @@ const CREATOR_ARTICLES = {
   'other-personal': [
     { id: 'p4-generic', title: 'A Great Name Changes How Something Feels', readTime: '1 min',
       sections: [
-        { heading: 'Names create meaning', body: "Research across psychology and linguistics consistently shows named things are treated differently than unnamed things. Named projects get more attention. Named spaces get more care. Named initiatives get more funding. Whatever you're naming, the act of choosing a name is the act of giving something a place in the world." },
+        { heading: 'Names create meaning', body: "Research across psychology and linguistics consistently shows named things are treated differently than unnamed things. Named projects get more attention. Named spaces get more care. Named initiatives get more funding. Whatever you’re naming, the act of choosing a name is the act of giving something a place in the world." },
         { heading: 'What makes it worth doing with a group', body: "When people help name something, they feel invested in it. The process of finding the right name together is itself the first shared experience. Collective naming creates shared ownership from the very first moment." },
       ],
-      callout: { type: 'insight', text: "The right name doesn't just describe what something is — it tells people how to feel about it. A name is the shortest story you can tell." },
+      callout: { type: 'insight', text: "The right name doesn’t just describe what something is — it tells people how to feel about it. A name is the shortest story you can tell." },
     },
     { id: 'p4-collective', title: 'Collective Naming Creates Collective Ownership', readTime: '1 min',
       sections: [
         { heading: 'Why the process matters as much as the outcome', body: "When a group names something together — a friendship circle, a club, a tradition, a shared space — the naming process is itself the first shared act of ownership. Research on group cohesion shows that groups who create shared symbols (names, rituals, inside references) together report significantly higher belonging and commitment than groups where symbols are assigned from outside." },
-        { heading: 'How to brief for collective resonance', body: "Tell participants who the group is and what it means to them. The best submissions will come from understanding the relationship, not just the object being named. A brief that says 'we are five friends who met studying abroad and this is our annual reunion' will generate completely different — and better — names than 'we need a name for our group.'" },
+        { heading: 'How to brief for collective resonance', body: "Tell participants who the group is and what it means to them. The best submissions will come from understanding the relationship, not just the object being named. A brief that says ‘we are five friends who met studying abroad and this is our annual reunion’ will generate completely different — and better — names than ‘we need a name for our group.’" },
       ],
       callout: { type: 'insight', text: "The name you choose together becomes a shared artifact — a piece of language that belongs to everyone who helped create it. That ownership transfers into how the name gets used and protected for years." },
     },
@@ -1725,7 +1725,7 @@ function CreatorArticlesScreen({ subSegment, tc, onContinue }) {
         <div style={{ fontSize: 11, fontWeight: 700, color: tc.color, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>
           Touchpoint 2 · Creator Education · {readCount}/{articles.length} read
         </div>
-        <h1 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 26, color: '#1e2330', marginBottom: 8, lineHeight: 1.3 }}>
+        <h1 style={{ fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 26, color: '#1e2330', marginBottom: 8, lineHeight: 1.3 }}>
           Before You Build: The Naming Strategy Guides
         </h1>
         <p style={{ fontSize: 14, color: '#8a8a82', lineHeight: 1.6 }}>
@@ -1800,7 +1800,7 @@ function InviteScreen({ group, subSegment, tc, onLaunch }) {
 
   return (
     <div style={{ maxWidth: 600, margin: '0 auto', padding: '40px 24px' }}>
-      <h1 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 28, color: '#1e2330', marginBottom: 8 }}>Who Should You Invite?</h1>
+      <h1 style={{ fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 28, color: '#1e2330', marginBottom: 8 }}>Who Should You Invite?</h1>
       <p style={{ color: '#676b5f', fontSize: 14, marginBottom: 32 }}>Choose carefully — the right voices lead to the best names.</p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
@@ -1931,7 +1931,7 @@ function LaunchedScreen({ group, tc, navigate }) {
       `}</style>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 32 }}>
-        <h1 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 28, color: '#1e2330', margin: 0 }}>Here's What to Expect</h1>
+        <h1 style={{ fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 28, color: '#1e2330', margin: 0 }}>Here’s What to Expect</h1>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 32 }}>
@@ -1951,7 +1951,7 @@ function LaunchedScreen({ group, tc, navigate }) {
             </div>
           ))}
           <div style={{ marginTop: 12, padding: '10px 12px', background: '#f8f8f5', borderRadius: 8, fontSize: 13, color: '#676b5f', fontStyle: 'italic' }}>
-            "Don't panic if submissions are slow the first 48 hours. Most people submit in the final 2 days."
+            “Don’t panic if submissions are slow the first 48 hours. Most people submit in the final 2 days.”
           </div>
         </div>
 
@@ -2116,7 +2116,7 @@ export default function BriefBuilder() {
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(250,250,245,0.92)', backdropFilter: 'blur(4px)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           <div style={{ background: '#ffffff', border: '0.5px solid rgba(30,35,48,0.1)', borderRadius: 16, padding: 32, maxWidth: 560, width: '100%', maxHeight: '90vh', overflowY: 'auto' }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: tc.color, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>~90 seconds to read</div>
-            <h2 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 24, color: '#1e2330', marginBottom: 20, lineHeight: 1.3 }}>
+            <h2 style={{ fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 24, color: '#1e2330', marginBottom: 20, lineHeight: 1.3 }}>
               {getPrimerTitle(subSegment)}
             </h2>
             {getPrimerContent(group, subSegment, tc)}
@@ -2125,7 +2125,7 @@ export default function BriefBuilder() {
                 <BookOpen size={18} /><span>Read the Naming Strategy Guides</span>
               </button>
               <button onClick={() => setStep('brief')} style={{ height: 36, border: '0.5px solid rgba(30,35,48,0.15)', borderRadius: 8, background: 'transparent', color: '#676b5f', fontSize: 13, cursor: 'pointer' }}>
-                Skip guides (I've done this before)
+                Skip guides (I’ve done this before)
               </button>
             </div>
           </div>
@@ -2212,7 +2212,7 @@ export default function BriefBuilder() {
             </div>
           </div>
 
-          <h1 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 28, color: '#1e2330', marginBottom: 8 }}>Build Your Brief</h1>
+          <h1 style={{ fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 28, color: '#1e2330', marginBottom: 8 }}>Build Your Brief</h1>
           <p style={{ color: '#676b5f', fontSize: 14, marginBottom: 32 }}>This context helps participants submit better names. Be specific — the more detail you share, the better the results.</p>
 
           {renderFormFields()}
@@ -2319,7 +2319,7 @@ export default function BriefBuilder() {
                 </div>
               </div>
               {contestType === 'voting_only'
-                ? <span style={{ fontSize: 12, color: '#8a8a82', fontStyle: 'italic' }}>You'll invite voters in the next stage</span>
+                ? <span style={{ fontSize: 12, color: '#8a8a82', fontStyle: 'italic' }}>You’ll invite voters in the next stage</span>
                 : <button onClick={() => navigate(`/contest-type/${group}/${subSegment}`)} style={{ fontSize: 12, color: tc.color, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>Edit voter list</button>
               }
             </div>

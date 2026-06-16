@@ -178,7 +178,7 @@ export default function ParticipantThanks() {
               </h1>
               <p className="v4-pthanks-sub">
                 We saved your {submittedCount === 1 ? 'suggestion' : 'suggestions'} —
-                you'll get an email the moment voting opens.
+                you’ll get an email the moment voting opens.
               </p>
             </section>
 
@@ -294,7 +294,7 @@ export default function ParticipantThanks() {
                 <span className="v4-join-flow-dot" aria-hidden="true" />
                 <span className="v4-join-flow-label">
                   <strong>See who won</strong>
-                  <em>Shoutout if it's yours</em>
+                  <em>Shoutout if it’s yours</em>
                 </span>
               </li>
             </ol>

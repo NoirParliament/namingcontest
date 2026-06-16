@@ -140,7 +140,7 @@ export default function JoinContest() {
             <div className="v4-review-inner">
               <div className="v4-join-error">
                 <h1 className="v4-join-error-title">
-                  This invitation link isn't working.
+                  This invitation link isn’t working.
                 </h1>
                 <p className="v4-join-error-body">
                   The contest may have ended, or the link may have expired.
@@ -298,7 +298,7 @@ export default function JoinContest() {
                 italic Fraunces treatment). */}
             <section className="v4-join-hero-bold">
               <h1 className="v4-join-hero-headline">
-                <span className="v4-join-hero-verb">Help naming</span>
+                <span className="v4-join-hero-verb">Help name</span>
                 <span className="v4-join-hero-workingname">
                   {contest.workingName || contest.name}
                 </span>
@@ -347,7 +347,7 @@ export default function JoinContest() {
                     className="btn btn-primary btn-lg"
                     onClick={handleRevealForm}
                   >
-                    Yes, I'm in <span className="arrow">→</span>
+                    Yes, I’m in <span className="arrow">→</span>
                   </button>
                 </div>
               )}
@@ -362,7 +362,7 @@ export default function JoinContest() {
                   <span className="v4-join-form-shape v4-join-form-shape-4" aria-hidden="true" />
                   <span className="v4-join-form-shape v4-join-form-shape-5" aria-hidden="true" />
                   <div className="v4-join-form-head">
-                    Quick — what's your email?
+                    Quick — what’s your email?
                   </div>
                   <p className="v4-join-form-why">
                     So {creatorName} can credit your suggestions, and we
@@ -452,7 +452,7 @@ export default function JoinContest() {
                   <div className="v4-signin-icon-wrap v4-signin-icon-wrap-success">
                     <CheckCircle weight="duotone" size={28} />
                   </div>
-                  <h3 className="v4-join-sent-title">You're in.</h3>
+                  <h3 className="v4-join-sent-title">You’re in.</h3>
                   <p className="v4-join-sent-sub">
                     Taking you to the brief now&hellip;
                   </p>
@@ -476,7 +476,7 @@ export default function JoinContest() {
                 <span className="v4-join-flow-dot" aria-hidden="true" />
                 <span className="v4-join-flow-label">
                   <strong>Suggest names</strong>
-                  <em>You're here · ~5 minutes</em>
+                  <em>You’re here · ~5 minutes</em>
                 </span>
               </li>
               <li className="v4-join-flow-step is-upcoming">
@@ -490,7 +490,7 @@ export default function JoinContest() {
                 <span className="v4-join-flow-dot" aria-hidden="true" />
                 <span className="v4-join-flow-label">
                   <strong>See who won</strong>
-                  <em>Shoutout if it's yours</em>
+                  <em>Shoutout if it’s yours</em>
                 </span>
               </li>
             </ol>

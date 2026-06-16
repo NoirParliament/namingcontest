@@ -20,14 +20,14 @@ export default function CatchwordConsultBlock({ headline, body }) {
       </span>
       <div className="v4-catchword-block-text">
         <h3 className="v4-catchword-block-title">
-          {headline || "Couldn't find the right name?"}
+          {headline || "Couldn’t find the right name?"}
         </h3>
         <p className="v4-catchword-block-body">
           {body || (
             <>
               Book a session with Catchword — the naming agency
               NamingContest is built on top of. They find names
-              contests don't.
+              contests don’t.
             </>
           )}
         </p>

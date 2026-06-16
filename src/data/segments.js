@@ -77,7 +77,7 @@ export const segments = {
     colorName: 'team',
     description: 'Name your sports team, band, podcast, club, or group',
     tagline: 'Give your whole group a voice',
-    subTagline: 'Give everyone a voice. Pick a name you\'ll all own.',
+    subTagline: 'Give everyone a voice. Pick a name you’ll all own.',
     subSegments: [
       {
         id: 'sports-team',
@@ -144,7 +144,7 @@ export const segments = {
     colorName: 'personal',
     description: 'Name your baby, pet, home, or something fun',
     tagline: 'Let everyone weigh in. Make it official.',
-    subTagline: 'Let everyone vote. Pick the name you\'ll love.',
+    subTagline: 'Let everyone vote. Pick the name you’ll love.',
     subSegments: [
       {
         id: 'baby-name',

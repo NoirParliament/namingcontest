@@ -538,7 +538,7 @@ function Hero({ onStart }) {
           Run a naming contest for <span className="em">anything</span>
         </h1>
         <p className="sub">
-          Whether you're naming a baby, a band, or a business, now it's so easy to land on the name everyone backs.
+          Whether you’re naming a baby, a band, or a business, now it’s so easy to land on the name everyone backs.
         </p>
         <div className="cta-row">
           <a href="#start" onClick={(e) => { e.preventDefault(); onStart(); }} className="btn btn-primary btn-lg">
@@ -596,7 +596,7 @@ function Offerings({ onStart }) {
       <div className="section-head">
         <p className="eyebrow">Pick your path</p>
         <h2 className="h-display h2">Your name starts here</h2>
-        <p className="lede">Family group chat or Fortune 500 product launch—your contest is shaped to your group, your stakes, and what you're naming.</p>
+        <p className="lede">Family group chat or Fortune 500 product launch—your contest is shaped to your group, your stakes, and what you’re naming.</p>
       </div>
       <div className="offerings">
         {tiers.map(t => (
@@ -668,7 +668,7 @@ function HowItWorks() {
           <div className="why-text">
             <div className="step-mark"><span className="step-num">02</span><span className="step-label">Invite</span></div>
             <h3>Invite your people</h3>
-            <p>Share a link, and they're in. No signup, no download.</p>
+            <p>Share a link, and they’re in. No signup, no download.</p>
           </div>
           <div className="why-art">
             <div className="artifact art-invite">
@@ -828,7 +828,7 @@ function Testimonials() {
   return (
     <section className="section" id="testimonials">
       <div className="section-head">
-        <p className="eyebrow">Winners' stories</p>
+        <p className="eyebrow">Winners’ stories</p>
         <h2 className="h-display h2">Names that clicked</h2>
       </div>
       <div className="testimonials">
@@ -865,8 +865,8 @@ function FAQ() {
   const [openIdx, setOpenIdx] = useState(0);
   const items = [
     {
-      q: "Who's behind this?",
-      a: <p className="faq-a"><strong>We're Catchword Branding</strong>—a naming agency that's been at it for 25+ years and worked with brands like The North Face, Volkswagen, and Asana. This platform turns what we've learned into a naming contest anyone can run.</p>
+      q: "Who’s behind this?",
+      a: <p className="faq-a"><strong>We’re Catchword Branding</strong>—a naming agency that’s been at it for 25+ years and worked with brands like The North Face, Volkswagen, and Asana. This platform turns what we’ve learned into a naming contest anyone can run.</p>
     },
     {
       q: 'How long does a contest take?',
@@ -874,7 +874,7 @@ function FAQ() {
     },
     {
       q: 'Do my voters need an account?',
-      a: <p className="faq-a"><strong>No.</strong> They click your link and they're in. Only the organizer (you) needs an account.</p>
+      a: <p className="faq-a"><strong>No.</strong> They click your link and they’re in. Only the organizer (you) needs an account.</p>
     },
     {
       q: 'How does the voting work?',

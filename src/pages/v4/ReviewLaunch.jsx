@@ -121,7 +121,7 @@ export default function ReviewLaunch() {
     // the user picked or what they filled in. Production would POST
     // to backend and route to the real new contest ID instead.
     writeSetup({ contestId: 'mock_ongoing_1', launchedAt: Date.now() });
-    setTimeout(() => navigate('/v4/contest/mock_ongoing_1'), 600);
+    setTimeout(() => navigate('/v4/contest/mock_ongoing_1?phase=submission'), 600);
   };
 
   return (
@@ -241,7 +241,7 @@ export default function ReviewLaunch() {
               )}
             </button>
             <p className="v4-review-fineprint">
-              Participants will get a link to submit names. You can edit anything from your dashboard later.
+              You’ll get a link to share with your participants — and you can edit anything from your dashboard later.
             </p>
           </div>
           </div>

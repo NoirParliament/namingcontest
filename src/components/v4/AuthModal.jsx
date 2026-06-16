@@ -65,8 +65,8 @@ export default function AuthModal({
     : 'Save your progress';
 
   const blurb = mode === 'launch'
-    ? `We'll send you a magic link to manage ${contextLabel ? `"${contextLabel}"` : 'your contest'} and see results when voting closes.`
-    : `Drop your email and we'll save what you've filled in so far. You can pick up where you left off from any device.`;
+    ? `We’ll send you a magic link to manage ${contextLabel ? `“${contextLabel}”` : 'your contest'} and see results when voting closes.`
+    : `Drop your email and we’ll save what you’ve filled in so far. You can pick up where you left off from any device.`;
 
   const cta = mode === 'launch' ? 'Continue to launch' : 'Save & continue';
 
@@ -118,7 +118,7 @@ export default function AuthModal({
             </form>
 
             <p className="v4-auth-fineprint">
-              No password needed. We'll email you a one-tap login link.
+              No password needed. We’ll email you a one-tap login link.
             </p>
           </>
         )}

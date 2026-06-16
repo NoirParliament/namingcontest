@@ -2758,6 +2758,73 @@ input.v4-launch-email-input::placeholder {
 }
 
 /* ============================================
+   CONFIRM DIALOG — on-brand replacement for window.confirm()
+   ============================================ */
+.v4-confirm-modal {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 32px 30px 26px;
+  text-align: center;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 16px 36px -10px rgba(0, 0, 0, 0.22),
+    0 36px 90px -24px rgba(0, 0, 0, 0.32);
+  animation: v4-modal-card-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  opacity: 0;
+}
+.v4-confirm-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  margin-bottom: 14px;
+}
+.v4-confirm-icon-danger {
+  background: #fbe7e3;
+  color: #b23b2e;
+}
+.v4-confirm-title {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--v4-fg);
+  margin: 0 0 8px;
+}
+.v4-confirm-body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--v4-muted);
+  margin: 0 0 22px;
+}
+.v4-confirm-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.v4-confirm-actions .btn {
+  min-width: 120px;
+  justify-content: center;
+}
+/* Destructive confirm — restrained warm red, not garish. */
+.v4-confirm-danger-btn {
+  background: #b23b2e;
+  color: #ffffff;
+  border: 1px solid #b23b2e;
+}
+.v4-confirm-danger-btn:hover {
+  background: #9c3225;
+  border-color: #9c3225;
+}
+
+/* ============================================
    LIVE RESULTS PANEL — names + participants + multi-criteria heatmap
    ============================================ */
 .v4-results {
@@ -5792,6 +5859,13 @@ body.is-exporting-card .v4-winner-hero-inner {
   animation: v4-modal-card-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   opacity: 0;
   text-align: center;
+  /* Lock a consistent height across the input / sent / success phases
+     and center the content so the modal doesn't visibly resize when
+     the user moves between them. */
+  min-height: 470px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 @keyframes v4-modal-card-in {
   from {

@@ -164,7 +164,7 @@ export default function PickWinnerModal({
               )}
             </div>
             <div className="v4-pickwinner-preview-name">
-              "{selectedName.text}"
+              “{selectedName.text}”
             </div>
             <div className="v4-pickwinner-preview-meta">
               Submitted by <strong>{submitter?.name || 'a participant'}</strong>
@@ -174,7 +174,7 @@ export default function PickWinnerModal({
                 <Gift weight="duotone" size={14} />
                 <span>
                   <strong>{submitter?.name}</strong> wins
-                  {prize.name ? <> &nbsp;<em>"{prize.name}"</em></> : <> &nbsp;the prize</>}
+                  {prize.name ? <> &nbsp;<em>“{prize.name}”</em></> : <> &nbsp;the prize</>}
                 </span>
               </div>
             )}
@@ -223,7 +223,7 @@ export default function PickWinnerModal({
             disabled={!selectedName}
           >
             <Trophy weight="bold" size={14} />
-            Crown "{selectedName?.text || '…'}"
+            Crown “{selectedName?.text || '…'}”
             <ArrowRight weight="bold" size={14} />
           </button>
         </div>

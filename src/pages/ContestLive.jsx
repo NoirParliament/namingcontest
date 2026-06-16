@@ -104,14 +104,14 @@ const B1_ARTICLES = [
     id: 'b1-a1', title: 'Why Company Names Matter More Than You Think', readTime: '3 min', readPoints: 25,
     body: [
       'Naming is one of the most consequential decisions a company makes — and one of the least understood.',
-      'A great name doesn\'t just describe your product. It creates a container for everything your brand will become. Apple tells you nothing about computers. Amazon tells you nothing about retail. Google doesn\'t even look like a real word. But each of these names became synonymous with their categories.',
-      'The cost of getting it wrong is enormous. RadioShack, Friendster, Flooz — these aren\'t just failed names, they\'re cautionary tales about companies that couldn\'t outrun their branding.',
+      'A great name doesn’t just describe your product. It creates a container for everything your brand will become. Apple tells you nothing about computers. Amazon tells you nothing about retail. Google doesn’t even look like a real word. But each of these names became synonymous with their categories.',
+      'The cost of getting it wrong is enormous. RadioShack, Friendster, Flooz — these aren’t just failed names, they’re cautionary tales about companies that couldn’t outrun their branding.',
       '<strong>Why group naming fails:</strong> In most organizations, naming decisions fall to whoever speaks loudest in the room. The CEO\'s gut wins. The founder\'s first idea anchors the conversation. The loudest personality steamrolls nuance. This platform is designed to fix that. Anonymous submissions. Structured voting. Data-driven shortlisting.',
       '<strong>Three myths about naming:</strong><br>1. "It has to describe what we do" — Apple, Amazon, Google are all non-descriptive. The best names leave room to grow.<br>2. "Everyone has to love it" — The best name isn\'t the one everyone likes. It\'s the one that works.<br>3. "We\'ll know the right name when we hear it" — You won\'t. You\'ll feel uncertain. That\'s normal. Trust the process.',
     ],
     quiz: [
-      { question: 'What\'s the PRIMARY reason group naming usually fails?', options: ['No one has good ideas', 'The loudest voice wins, not the best idea', 'Names are too expensive to research', 'Groups are too large'], correct: 1 },
-      { question: 'Which of these is a myth about brand naming?', options: ['Abstract names can become iconic', 'You need to describe what you do for a name to work', 'Polarizing names can be memorable', 'You won\'t always feel certain about the right name'], correct: 1 },
+      { question: 'What’s the PRIMARY reason group naming usually fails?', options: ['No one has good ideas', 'The loudest voice wins, not the best idea', 'Names are too expensive to research', 'Groups are too large'], correct: 1 },
+      { question: 'Which of these is a myth about brand naming?', options: ['Abstract names can become iconic', 'You need to describe what you do for a name to work', 'Polarizing names can be memorable', 'You won’t always feel certain about the right name'], correct: 1 },
       { question: 'Apple, Amazon, and Google are all examples of...', options: ['Descriptive names', 'Names that describe their products clearly', 'Abstract or non-descriptive names that became iconic', 'Failed naming decisions'], correct: 2 },
     ],
   },
@@ -129,13 +129,13 @@ const B1_ARTICLES = [
     quiz: [
       { question: 'Amazon is an example of what type of brand name?', options: ['Descriptive', 'Abstract / coined', 'Real word repurposed', 'Compound'], correct: 2 },
       { question: 'Which type of name is typically the easiest to trademark?', options: ['Descriptive', 'Suggestive', 'Abstract or coined names', 'Compound'], correct: 2 },
-      { question: 'If all competitors use suggestive names, what\'s often the smart move?', options: ['Use a descriptive name to stand out', 'Use a suggestive name too', 'Go abstract for maximum differentiation', 'Name type doesn\'t matter'], correct: 2 },
+      { question: 'If all competitors use suggestive names, what’s often the smart move?', options: ['Use a descriptive name to stand out', 'Use a suggestive name too', 'Go abstract for maximum differentiation', 'Name type doesn’t matter'], correct: 2 },
     ],
   },
   {
-    id: 'b1-a3', title: "Catchword's 10 Criteria for Great Brand Names", readTime: '4 min', readPoints: 25,
+    id: 'b1-a3', title: "Catchword’s 10 Criteria for Great Brand Names", readTime: '4 min', readPoints: 25,
     body: [
-      'A name that "sounds cool" isn\'t enough. Catchword — one of the world\'s top naming agencies — evaluates names across 10 dimensions.',
+      'A name that “sounds cool” isn’t enough. Catchword — one of the world’s top naming agencies — evaluates names across 10 dimensions.',
       '<strong>The 10 Criteria:</strong><br>1. <strong>Magnetism</strong> — Does it draw you in?<br>2. <strong>Distinctiveness</strong> — Will it stand out?<br>3. <strong>Brand Fit</strong> — Does it align with values?<br>4. <strong>Accessibility</strong> — Easy to say, spell, remember?<br>5. <strong>Longevity</strong> — Will it still work in 10 years?<br>6. <strong>Conciseness</strong> — Is it appropriately short?<br>7. <strong>Euphony</strong> — Does it sound good aloud?<br>8. <strong>Appropriateness</strong> — Does it fit the industry?<br>9. <strong>Consistency</strong> — Can it work across all uses?<br>10. <strong>Protectability</strong> — Can it be trademarked?',
       '<strong>Critical insight:</strong> Your job is NOT to pick the name you personally like most. It\'s to pick the name that scores highest on the criteria that matter for THIS brand.',
       '<strong>Real examples:</strong> Häagen-Dazs fails accessibility but wins magnetism. Wii was wildly polarizing but won distinctiveness and conciseness. Sold 102 million units.',
@@ -143,7 +143,7 @@ const B1_ARTICLES = [
     quiz: [
       { question: 'Your MAIN job as a voter is to...', options: ['Vote for the name you personally like most', 'Vote for the name that sounds coolest', 'Evaluate names against objective criteria for this brand', 'Pick the safest option'], correct: 2 },
       { question: 'Häagen-Dazs is a great example because it...', options: ['Scores perfectly on all 10 criteria', 'Shows that a name can succeed despite failing some criteria', 'Demonstrates why accessibility is the most important criterion', 'Proves abstract names always win'], correct: 1 },
-      { question: 'What does "euphony" mean in brand naming?', options: ['The ability to trademark the name', 'How short the name is', 'How pleasant it sounds when spoken aloud', 'How well it fits on a logo'], correct: 2 },
+      { question: 'What does “euphony” mean in brand naming?', options: ['The ability to trademark the name', 'How short the name is', 'How pleasant it sounds when spoken aloud', 'How well it fits on a logo'], correct: 2 },
     ],
   },
 ];
@@ -159,9 +159,9 @@ const B2_ARTICLES = [
       '<strong>Your submission strategy:</strong> First, understand which architecture this company uses. Then name accordingly. A branded-house product name can afford to be functional. A standalone product needs the full naming firepower.',
     ],
     quiz: [
-      { question: 'In a "Branded House" architecture, product names need to...', options: ['Be completely standalone with their own identity', 'Carry the full brand weight independently', 'Primarily provide descriptive clarity under the parent brand', 'Sound as abstract as possible'], correct: 2 },
+      { question: 'In a “Branded House” architecture, product names need to...', options: ['Be completely standalone with their own identity', 'Carry the full brand weight independently', 'Primarily provide descriptive clarity under the parent brand', 'Sound as abstract as possible'], correct: 2 },
       { question: 'Tide, Pampers, and Gillette are all examples of...', options: ['Branded House architecture', 'House of Brands architecture', 'Hybrid architecture', 'Co-branding'], correct: 1 },
-      { question: 'Why does the brand architecture matter for naming?', options: ['It determines the legal requirements', 'It dictates how much work the product name needs to do alone', 'It affects trademark filing', 'It doesn\'t matter for naming'], correct: 1 },
+      { question: 'Why does the brand architecture matter for naming?', options: ['It determines the legal requirements', 'It dictates how much work the product name needs to do alone', 'It affects trademark filing', 'It doesn’t matter for naming'], correct: 1 },
     ],
   },
   {
@@ -174,15 +174,15 @@ const B2_ARTICLES = [
       '<strong>For your submission:</strong> Avoid hyper-literal names. Leave room to grow. Suggestive names (hint at benefit without describing the feature) age far better than descriptive names.',
     ],
     quiz: [
-      { question: 'The "specificity trap" in product naming means...', options: ['The name is too short', 'A highly descriptive name can cage a product as it evolves', 'The name has trademark issues', 'The product is too specific to name'], correct: 1 },
+      { question: 'The “specificity trap” in product naming means...', options: ['The name is too short', 'A highly descriptive name can cage a product as it evolves', 'The name has trademark issues', 'The product is too specific to name'], correct: 1 },
       { question: 'Instagram was originally named...', options: ['PhotoShare', 'Burbn', 'Pixie', 'Snappr'], correct: 1 },
-      { question: 'The "horizon test" asks...', options: ['Is the name short enough?', 'Can the name be trademarked?', 'If the product doubles in scope, does the name still work?', 'Does the name sound good internationally?'], correct: 2 },
+      { question: 'The “horizon test” asks...', options: ['Is the name short enough?', 'Can the name be trademarked?', 'If the product doubles in scope, does the name still work?', 'Does the name sound good internationally?'], correct: 2 },
     ],
   },
   {
     id: 'b2-a3', title: "Naming Criteria for Product Names", readTime: '3 min', readPoints: 25,
     body: [
-      'Product names are evaluated on a slightly different rubric than company names. Here\'s what matters most:',
+      'Product names are evaluated on a slightly different rubric than company names. Here’s what matters most:',
       '<strong>1. Distinctiveness within the portfolio:</strong> Does it stand out from the company\'s other products? If a company has "Pro," "Plus," and "Max" — those names have lost all meaning.',
       '<strong>2. Memorability over SEO:</strong> Counterintuitive, but product names that are memorable beat product names that are keyword-heavy. "Notion" ranks better long-term than "ProjectManagementTool."',
       '<strong>3. Emotional resonance:</strong> Great product names evoke a feeling. Slack feels relaxed. Stripe feels clean and efficient. Zoom feels fast. What feeling should your product name evoke?',
@@ -190,9 +190,9 @@ const B2_ARTICLES = [
       '<strong>Your submission:</strong> Think about how the name will appear next to its siblings in the product family.',
     ],
     quiz: [
-      { question: '"Pro," "Plus," and "Max" as product names are problematic because...', options: ['They\'re too hard to trademark', 'They\'re generic and have lost differentiation meaning', 'They\'re too long', 'They don\'t work internationally'], correct: 1 },
-      { question: 'Why does "memorability over SEO" matter for product names?', options: ['Search doesn\'t apply to products', 'Memorable names build brand equity that outlasts any SEO advantage', 'Keyword names are usually taken', 'SEO doesn\'t help product discovery'], correct: 1 },
-      { question: 'The name "Slack" evokes a feeling of...', options: ['Speed and efficiency', 'Power and control', 'Relaxation and ease', 'Innovation'], correct: 2 },
+      { question: '“Pro,” “Plus,” and “Max” as product names are problematic because...', options: ['They’re too hard to trademark', 'They’re generic and have lost differentiation meaning', 'They’re too long', 'They don’t work internationally'], correct: 1 },
+      { question: 'Why does “memorability over SEO” matter for product names?', options: ['Search doesn’t apply to products', 'Memorable names build brand equity that outlasts any SEO advantage', 'Keyword names are usually taken', 'SEO doesn’t help product discovery'], correct: 1 },
+      { question: 'The name “Slack” evokes a feeling of...', options: ['Speed and efficiency', 'Power and control', 'Relaxation and ease', 'Innovation'], correct: 2 },
     ],
   },
 ];
@@ -201,30 +201,30 @@ const B3_ARTICLES = [
   {
     id: 'b3-a1', title: 'Why Internal Project Names Matter More Than You Think', readTime: '3 min', readPoints: 25,
     body: [
-      'Generic names kill momentum. "Project Phoenix" has been done to death. "Project Alpha" signals nothing. A distinctive internal name is a leadership tool — it drives adoption, builds shared ownership, and creates morale.',
+      'Generic names kill momentum. “Project Phoenix” has been done to death. “Project Alpha” signals nothing. A distinctive internal name is a leadership tool — it drives adoption, builds shared ownership, and creates morale.',
       '<strong>The rallying effect:</strong> NASA\'s Apollo program wasn\'t called "Moon Mission 1." It was named after the Greek god of the sun — a name that conveyed ambition, light, and reaching. People NAMED who they were when they said "I work on Apollo."',
       '<strong>Google\'s naming culture:</strong> Project Loon (internet balloons), Project Sunroof (solar energy), Project Wing (drone delivery). Each name creates a vivid mental picture. You know the project\'s spirit before anyone explains it.',
       '<strong>Two camps:</strong> 1) Functional names ("Project Unify," "Initiative 2026") — tell you the goal. 2) Evocative names ("Project Everest," "Operation Clarity") — create a feeling. Evocative names win on adoption. Teams rally around them.',
     ],
     quiz: [
-      { question: 'NASA named its moon program "Apollo" (not "Moon Mission 1") because...', options: ['Legal required it', 'It conveyed ambition and meaning — people identified with it', 'It was shorter', 'They randomly chose Greek myths'], correct: 1 },
-      { question: 'Google\'s internal project names (Loon, Sunroof, Wing) work because they...', options: ['Are short', 'Create vivid mental pictures of the project\'s spirit', 'Are easy to trademark', 'Match the product\'s technical function exactly'], correct: 1 },
-      { question: 'Evocative project names beat functional names because...', options: ['They\'re easier to trademark', 'Teams rally around them — adoption is higher', 'They\'re shorter', 'Functional names cause legal issues'], correct: 1 },
+      { question: 'NASA named its moon program “Apollo” (not “Moon Mission 1”) because...', options: ['Legal required it', 'It conveyed ambition and meaning — people identified with it', 'It was shorter', 'They randomly chose Greek myths'], correct: 1 },
+      { question: 'Google’s internal project names (Loon, Sunroof, Wing) work because they...', options: ['Are short', 'Create vivid mental pictures of the project’s spirit', 'Are easy to trademark', 'Match the product’s technical function exactly'], correct: 1 },
+      { question: 'Evocative project names beat functional names because...', options: ['They’re easier to trademark', 'Teams rally around them — adoption is higher', 'They’re shorter', 'Functional names cause legal issues'], correct: 1 },
     ],
   },
   {
     id: 'b3-a2', title: 'Functional vs. Inspirational: Which Type of Project Name Works?', readTime: '3 min', readPoints: 25,
     body: [
-      'Not every project needs a mythological name. Context matters. Here\'s how to decide.',
+      'Not every project needs a mythological name. Context matters. Here’s how to decide.',
       '<strong>Short-term, tactical projects:</strong> Use functional names. "Migration 2026," "Q4 Launch," "Brand Refresh." These signal urgency and clarity. Teams know exactly what they\'re working on.',
       '<strong>Long-term, strategic initiatives:</strong> Use inspirational names. "Project Aurora," "Initiative Clarity," "Program Elevate." These need to survive leadership changes, budget cycles, and team turnover. A great name creates continuity.',
       '<strong>Cross-functional projects:</strong> ALWAYS use inspirational names. When a project spans departments, the name becomes the shared identity. "Finance and HR\'s Q3 Integration" is forgettable. "Project Bridge" is a rallying point.',
       '<strong>The test:</strong> Will someone mention this project by name at a company all-hands 2 years from now? If yes, go inspirational. If no, functional is fine.',
     ],
     quiz: [
-      { question: 'Cross-functional projects should use inspirational names because...', options: ['It\'s a legal requirement', 'The name becomes the shared identity across departments', 'Functional names are trademarked', 'It looks better in presentations'], correct: 1 },
-      { question: '"Migration 2026" is an example of a...', options: ['Inspirational name', 'Functional name', 'Abstract name', 'Compound name'], correct: 1 },
-      { question: 'The "2-year all-hands test" determines...', options: ['If the name is trademark-safe', 'Whether to use an inspirational vs functional name based on project longevity', 'If the name is too long', 'The project\'s success probability'], correct: 1 },
+      { question: 'Cross-functional projects should use inspirational names because...', options: ['It’s a legal requirement', 'The name becomes the shared identity across departments', 'Functional names are trademarked', 'It looks better in presentations'], correct: 1 },
+      { question: '“Migration 2026” is an example of a...', options: ['Inspirational name', 'Functional name', 'Abstract name', 'Compound name'], correct: 1 },
+      { question: 'The “2-year all-hands test” determines...', options: ['If the name is trademark-safe', 'Whether to use an inspirational vs functional name based on project longevity', 'If the name is too long', 'The project’s success probability'], correct: 1 },
     ],
   },
   {
@@ -239,8 +239,8 @@ const B3_ARTICLES = [
     ],
     quiz: [
       { question: 'Internal project names should be...', options: ['As descriptive as possible', 'Simple and memorable — 1-2 words with rallying potential', 'Always mythological', 'Always functional'], correct: 1 },
-      { question: 'Why does "global sensitivity" matter for project names?', options: ['Legal filing requires it', 'Names can have negative meanings in other languages', 'Global names rank better in search', 'It doesn\'t matter for internal projects'], correct: 1 },
-      { question: '"Project Digital Transformation Acceleration Initiative" fails because...', options: ['It\'s not trademarked', 'It\'s not memorable — it\'s too long and functional', 'It\'s culturally insensitive', 'It uses too many verbs'], correct: 1 },
+      { question: 'Why does “global sensitivity” matter for project names?', options: ['Legal filing requires it', 'Names can have negative meanings in other languages', 'Global names rank better in search', 'It doesn’t matter for internal projects'], correct: 1 },
+      { question: '“Project Digital Transformation Acceleration Initiative” fails because...', options: ['It’s not trademarked', 'It’s not memorable — it’s too long and functional', 'It’s culturally insensitive', 'It uses too many verbs'], correct: 1 },
     ],
   },
 ];
@@ -254,7 +254,7 @@ const B4_ARTICLES = [
       '<strong>What NOT to rebrand for:</strong> Boredom, a new CEO\'s ego, or because the logo looks dated. Those are design problems, not naming problems.',
     ],
     quiz: [
-      { question: 'Dunkin\' Donuts renamed to Dunkin\' because...', options: ['Donuts became unpopular', 'They expanded beyond donuts and needed a broader name', 'They had trademark issues', 'A new CEO demanded it'], correct: 1 },
+      { question: 'Dunkin’ Donuts renamed to Dunkin’ because...', options: ['Donuts became unpopular', 'They expanded beyond donuts and needed a broader name', 'They had trademark issues', 'A new CEO demanded it'], correct: 1 },
       { question: 'Facebook became Meta primarily because of...', options: ['VR/AR expansion strategy and reputation distance', 'Trademark issues with other Facebooks', 'Geographic expansion to new markets', 'A merger with Instagram'], correct: 0 },
       { question: 'What is NOT a good reason to rebrand?', options: ['Scope expansion beyond the current name', 'Reputation crisis tied to the name', 'A new CEO wanting a fresh start', 'Geographic expansion requiring translation'], correct: 2 },
     ],
@@ -269,23 +269,23 @@ const B4_ARTICLES = [
       '<strong>For your submissions:</strong> Read the brief carefully. Understand WHY they\'re rebranding. Name accordingly. If it\'s scope expansion, suggest names that nod to the heritage while opening new doors. If it\'s reputation crisis, suggest clean breaks.',
     ],
     quiz: [
-      { question: 'Mastercard\'s rebrand is an example of...', options: ['Evolution — kept core equity, modernized expression', 'Revolution — complete reinvention', 'Merger-driven rebrand', 'Geographic expansion rebrand'], correct: 0 },
-      { question: 'The "equity audit test" asks...', options: ['How much the rebrand will cost', 'What equity the current name actually carries — positive or negative?', 'How many employees know the current name', 'Whether the trademark can be transferred'], correct: 1 },
+      { question: 'Mastercard’s rebrand is an example of...', options: ['Evolution — kept core equity, modernized expression', 'Revolution — complete reinvention', 'Merger-driven rebrand', 'Geographic expansion rebrand'], correct: 0 },
+      { question: 'The “equity audit test” asks...', options: ['How much the rebrand will cost', 'What equity the current name actually carries — positive or negative?', 'How many employees know the current name', 'Whether the trademark can be transferred'], correct: 1 },
       { question: 'If a company is rebranding because of a reputation crisis, you should suggest...', options: ['Names that strongly reference the old brand', 'Clean break names with no heritage connection', 'Only descriptive names', 'Exactly the same name with new typography'], correct: 1 },
     ],
   },
   {
     id: 'b4-a3', title: 'Equity Preservation: Carrying the Heritage Forward', readTime: '3 min', readPoints: 25,
     body: [
-      'Not all rebrands start from zero. Many companies want to evolve, not abandon. The art is preserving what\'s valuable while creating room to grow.',
+      'Not all rebrands start from zero. Many companies want to evolve, not abandon. The art is preserving what’s valuable while creating room to grow.',
       '<strong>What equity looks like:</strong> Equity can be visual (the Nike swoosh), sonic (Intel\'s 5-note chime), verbal (Apple\'s simplicity and contrarianism), or conceptual (Amazon\'s "everything store" positioning).',
       '<strong>Thread-carrying techniques:</strong><br>1. <strong>Phonetic similarity</strong> — Keep similar sounds. "Cingular" → "AT&T" (lost equity, bad). "KPMG" → "Klynveld Peat Marwick Goerdeler" (phonetic equity preserved in initials).<br>2. <strong>Meaning bridge</strong> — The new name evokes the old values. Weight Watchers → WW preserves the wellness mission even without "weight."<br>3. <strong>Visual anchor</strong> — Keep a visual element. The Shell logo has been recognizably the same since 1904.',
       '<strong>For your submissions:</strong> If the brief mentions "we want to preserve brand recognition," look for names that share phonetic or conceptual bridges with the current name.',
     ],
     quiz: [
       { question: 'Brand equity can be expressed through...', options: ['Only the company name', 'Visual, sonic, verbal, and conceptual elements', 'Only visual elements like logos', 'Only financial valuation'], correct: 1 },
-      { question: 'Weight Watchers → WW is a good rebrand because...', options: ['WW is shorter and easier to say', 'It preserves the wellness mission while dropping the stigmatized word "weight"', 'WW has better trademark protection', 'It was driven by a merger'], correct: 1 },
-      { question: 'A "meaning bridge" in rebranding means...', options: ['Building a physical connection between old and new offices', 'The new name evokes the same values as the old one', 'Using the same logo', 'Keeping the same employees'], correct: 1 },
+      { question: 'Weight Watchers → WW is a good rebrand because...', options: ['WW is shorter and easier to say', 'It preserves the wellness mission while dropping the stigmatized word “weight”', 'WW has better trademark protection', 'It was driven by a merger'], correct: 1 },
+      { question: 'A “meaning bridge” in rebranding means...', options: ['Building a physical connection between old and new offices', 'The new name evokes the same values as the old one', 'Using the same logo', 'Keeping the same employees'], correct: 1 },
     ],
   },
 ];
@@ -300,9 +300,9 @@ const SPORTS_ARTICLE = {
     '<strong>4. Merchandisable</strong> — Will people wear this on a jersey? The "Let\'s go [NAME]!" test is real.',
   ],
   quiz: [
-    { question: "What's the 'jersey test' for sports team names?", options: ['Is it the right length to fit on a jersey?', 'Will people be proud to wear it? Can you chant it?', 'Does it have good colors?', 'Is it approved by the league?'], correct: 1 },
-    { question: 'Why should you avoid trendy references in a sports team name?', options: ["Because leagues don't allow them", 'Because trending references age poorly and names should be timeless', "Because they're harder to trademark", 'Trendy references are actually fine'], correct: 1 },
-    { question: 'The Oklahoma City Thunder is a great example because...', options: ['It was chosen by the owner without any public input', 'It was chosen by public vote from 64,000 submissions, giving the community ownership', "It perfectly describes the city's weather", 'It is abstract with no meaning'], correct: 1 },
+    { question: "What’s the ‘jersey test’ for sports team names?", options: ['Is it the right length to fit on a jersey?', 'Will people be proud to wear it? Can you chant it?', 'Does it have good colors?', 'Is it approved by the league?'], correct: 1 },
+    { question: 'Why should you avoid trendy references in a sports team name?', options: ["Because leagues don’t allow them", 'Because trending references age poorly and names should be timeless', "Because they’re harder to trademark", 'Trendy references are actually fine'], correct: 1 },
+    { question: 'The Oklahoma City Thunder is a great example because...', options: ['It was chosen by the owner without any public input', 'It was chosen by public vote from 64,000 submissions, giving the community ownership', "It perfectly describes the city’s weather", 'It is abstract with no meaning'], correct: 1 },
   ],
 };
 
@@ -317,9 +317,9 @@ const BAND_ARTICLE = {
     '<strong>The story test:</strong> Fans will ask "How did you get your name?" Have an answer. Better yet, have a great one.',
   ],
   quiz: [
-    { question: 'Which archetype does "Arctic Monkeys" fall into?', options: ['Evocative', 'Absurdist', 'Personal / Biographical', 'Descriptive'], correct: 1 },
-    { question: 'Why does searchability matter for band names in the streaming era?', options: ["It doesn't matter", 'Names with too many false positives make it hard to find your music', 'Streaming platforms require unique names', 'Searchable names rank higher on Billboard'], correct: 1 },
-    { question: 'The "story test" means...', options: ['Your name should describe your music genre', 'Your name should be short enough to tweet', "Your band name should have an interesting origin story", 'Your name should test well in market research'], correct: 2 },
+    { question: 'Which archetype does “Arctic Monkeys” fall into?', options: ['Evocative', 'Absurdist', 'Personal / Biographical', 'Descriptive'], correct: 1 },
+    { question: 'Why does searchability matter for band names in the streaming era?', options: ["It doesn’t matter", 'Names with too many false positives make it hard to find your music', 'Streaming platforms require unique names', 'Searchable names rank higher on Billboard'], correct: 1 },
+    { question: 'The “story test” means...', options: ['Your name should describe your music genre', 'Your name should be short enough to tweet', "Your band name should have an interesting origin story", 'Your name should test well in market research'], correct: 2 },
   ],
 };
 
@@ -333,25 +333,25 @@ const PODCAST_ARTICLE = {
     '<strong>SEO matters:</strong> If your show is about true crime, having "crime" or "murder" in the name dramatically increases discovery.',
   ],
   quiz: [
-    { question: '"How I Built This" is an example of a...', options: ['Intrigue-first name', 'Clarity-first name', 'Abstract name', 'Personality-brand name'], correct: 1 },
-    { question: 'The "sweet spot" for podcast names is...', options: ['Maximum clarity at all times', 'Maximum intrigue at all times', 'A balance of clarity and memorability', 'The shortest possible name'], correct: 2 },
-    { question: 'For a true crime podcast, having "crime" in the name helps with...', options: ['Trademark protection', 'SEO and discoverability on podcast platforms', 'Advertising rates', 'Listener retention'], correct: 1 },
+    { question: '“How I Built This” is an example of a...', options: ['Intrigue-first name', 'Clarity-first name', 'Abstract name', 'Personality-brand name'], correct: 1 },
+    { question: 'The “sweet spot” for podcast names is...', options: ['Maximum clarity at all times', 'Maximum intrigue at all times', 'A balance of clarity and memorability', 'The shortest possible name'], correct: 2 },
+    { question: 'For a true crime podcast, having “crime” in the name helps with...', options: ['Trademark protection', 'SEO and discoverability on podcast platforms', 'Advertising rates', 'Listener retention'], correct: 1 },
   ],
 };
 
 const CIVIC_ARTICLE = {
   id: 'civic1', title: 'Naming for the Long Term: Civic & Community Organizations', readTime: '3 min', readPoints: 20,
   body: [
-    'You\'re naming something that should outlast you by decades. The standards are different from commercial naming.',
+    'You’re naming something that should outlast you by decades. The standards are different from commercial naming.',
     '<strong>Clarity over cleverness:</strong> Community organizations are discovered by people who need them. "Habitat for Humanity" tells you exactly what it is. "charity: water" tells you exactly what it does. Both are memorable AND clear.',
     '<strong>Aspiration matters:</strong> Great civic names carry a mission. They\'re not just names — they\'re rallying cries. "Doctors Without Borders" (Médecins Sans Frontières) communicates scale, courage, and scope in 3 words.',
     '<strong>Longevity test:</strong> Ask: will this name still feel right in 30 years? Avoid technology-specific terms (they date fast) and trendy language. Focus on human values: community, courage, growth, connection.',
     '<strong>The Google test:</strong> Will people find you when they search your mission? Civic orgs live and die by discoverability. Balance inspiration with findability.',
   ],
   quiz: [
-    { question: '"Habitat for Humanity" is effective because...', options: ['It uses aspirational religious language', 'It\'s both clear about its mission AND memorable', 'It was founder\'s name', 'It has great SEO keywords'], correct: 1 },
+    { question: '“Habitat for Humanity” is effective because...', options: ['It uses aspirational religious language', 'It’s both clear about its mission AND memorable', 'It was founder’s name', 'It has great SEO keywords'], correct: 1 },
     { question: 'For civic organizations, longevity testing means avoiding...', options: ['Long names', 'Technology-specific terms that will date the organization', 'Aspirational language', 'Geographic references'], correct: 1 },
-    { question: '"Doctors Without Borders" communicates...', options: ['A pharmaceutical company\'s global reach', 'Scale, courage, and scope in 3 words', 'A government health program', 'A medical school'], correct: 1 },
+    { question: '“Doctors Without Borders” communicates...', options: ['A pharmaceutical company’s global reach', 'Scale, courage, and scope in 3 words', 'A government health program', 'A medical school'], correct: 1 },
   ],
 };
 
@@ -365,14 +365,14 @@ const OTHER_TEAM_ARTICLE = {
     '<strong>For your submission:</strong> Think about what behavior you want to reinforce in this group. Then name toward that.',
   ],
   quiz: [
-    { question: '"The Builders" is an example of which archetype?', options: ['Identity-first', 'Mission-first', 'Culture-first', 'Brand-first'], correct: 1 },
+    { question: '“The Builders” is an example of which archetype?', options: ['Identity-first', 'Mission-first', 'Culture-first', 'Brand-first'], correct: 1 },
     { question: 'The in-group test says the best group names should...', options: ['Only make sense to members', 'Have meaning for members AND create curiosity for outsiders', 'Be as generic as possible', 'Reference the founding date'], correct: 1 },
-    { question: 'Studies showed groups named "The Visionaries" demonstrated...', options: ['Lower performance due to pressure', 'More creative output — names shape group behavior', 'No difference from control groups', 'Higher conflict rates'], correct: 1 },
+    { question: 'Studies showed groups named “The Visionaries” demonstrated...', options: ['Lower performance due to pressure', 'More creative output — names shape group behavior', 'No difference from control groups', 'Higher conflict rates'], correct: 1 },
   ],
 };
 
 const GAMING_TIPS = [
-  { icon: <GameController size={24} weight="duotone" />, title: 'Test #1: The Clutch Call', text: 'Can you yell your team name when you clutch a 1v5? If it sounds weak, think harder. "FaZe Clan" → "LET\'S GO FAZE!" works.' },
+  { icon: <GameController size={24} weight="duotone" />, title: 'Test #1: The Clutch Call', text: 'Can you yell your team name when you clutch a 1v5? If it sounds weak, think harder. “FaZe Clan” → “LET’S GO FAZE!” works.' },
   { icon: <Fire size={24} weight="duotone" />, title: 'Two Camps That Win', text: 'Intimidating (FaZe Clan, Team Liquid, 100 Thieves) or Meme-worthy (Panda Global, Golden Guardians). Pick a lane — middleground names get forgotten.' },
   { icon: <ChartBar size={24} weight="duotone" />, title: 'Searchability Matters', text: 'Your tag will appear in tournament brackets, streaming titles, and social handles. Can people find you? Is it unique enough to own?' },
 ];
@@ -380,22 +380,22 @@ const GAMING_TIPS = [
 const PERSONAL_TIPS_BY_SEGMENT = {
   'baby-name': [
     { icon: <Heart size={24} weight="duotone" />, title: 'Did You Know?', text: 'Names with 2-3 syllables are easiest for babies to learn to respond to. Mo-na. Eli-as. Lu-cy. Science backs the sweet spot.' },
-    { icon: <ChartPie size={24} weight="duotone" />, title: 'Family Input Matters', text: '23% of parents say they wished they\'d gotten more input on their baby\'s name. That\'s why you\'re here — your voice genuinely matters.' },
+    { icon: <ChartPie size={24} weight="duotone" />, title: 'Family Input Matters', text: '23% of parents say they wished they’d gotten more input on their baby’s name. That’s why you’re here — your voice genuinely matters.' },
     { icon: <Leaf size={24} weight="duotone" />, title: 'Grow-Up Test', text: 'The best baby names work at every life stage: on a birth announcement, a kindergarten cubby, a college application, and a professional bio. Think long-term.' },
   ],
   'pet-name': [
-    { icon: <Star size={24} weight="duotone" />, title: 'The Shout Test', text: 'You\'ll say this name hundreds of times — often loudly, in public. "Luna!" "Max!" "Sir Biscuit!" Try shouting it. If it feels natural, it\'s a good name.' },
-    { icon: <Lightbulb size={24} weight="duotone" />, title: 'Short Names Work Best', text: 'Pets respond better to 1-2 syllable names with sharp consonants. "Rex," "Pip," "Zara." They distinguish these sounds more easily than multi-syllable names.' },
-    { icon: <Heart size={24} weight="duotone" />, title: 'Make It Yours', text: 'The best pet names have a story. "Pretzel" (found at a bakery). "Bandit" (escaped the shelter twice). What story will this pet\'s name tell?' },
+    { icon: <Star size={24} weight="duotone" />, title: 'The Shout Test', text: 'You’ll say this name hundreds of times — often loudly, in public. “Luna!” “Max!” “Sir Biscuit!” Try shouting it. If it feels natural, it’s a good name.' },
+    { icon: <Lightbulb size={24} weight="duotone" />, title: 'Short Names Work Best', text: 'Pets respond better to 1-2 syllable names with sharp consonants. “Rex,” “Pip,” “Zara.” They distinguish these sounds more easily than multi-syllable names.' },
+    { icon: <Heart size={24} weight="duotone" />, title: 'Make It Yours', text: 'The best pet names have a story. “Pretzel” (found at a bakery). “Bandit” (escaped the shelter twice). What story will this pet’s name tell?' },
   ],
   'home-property-fun': [
-    { icon: <Star size={24} weight="duotone" />, title: 'Great Home Names Are Personal', text: 'The best house names reflect who lives there or the home\'s character. "The Weeping Willow House." "La Casita." "The Nook." Think about what makes this place yours.' },
+    { icon: <Star size={24} weight="duotone" />, title: 'Great Home Names Are Personal', text: 'The best house names reflect who lives there or the home’s character. “The Weeping Willow House.” “La Casita.” “The Nook.” Think about what makes this place yours.' },
     { icon: <Leaf size={24} weight="duotone" />, title: 'Lean Into History or Geography', text: 'Does the property have a history? Previous owners? A notable tree? A view? The best property names anchor to something real and specific.' },
     { icon: <NotePencil size={24} weight="duotone" />, title: 'It Should Look Good on an Envelope', text: 'Property names appear on holiday cards, real estate listings, and mail. Test your suggestion: write it on an imaginary envelope. Does it feel right?' },
   ],
   default: [
     { icon: <Confetti size={24} weight="duotone" />, title: 'Have Fun With It', text: 'This is a low-stakes naming exercise. Creativity and personality beat safe and predictable. What name would make people smile?' },
-    { icon: <Lightbulb size={24} weight="duotone" />, title: 'Think Story-First', text: 'The best names come with a story attached. "How did you come up with that?" should have a great answer.' },
+    { icon: <Lightbulb size={24} weight="duotone" />, title: 'Think Story-First', text: 'The best names come with a story attached. “How did you come up with that?” should have a great answer.' },
     { icon: <Sparkle size={24} weight="duotone" />, title: 'Surprise the Organizer', text: 'The name they pick might not be yours — but a surprising, unexpected option often sparks the creative thinking that leads to the winner.' },
   ],
 };
@@ -438,7 +438,7 @@ const SIMULATED_BRIEF = {
   },
   'rebrand': {
     'Current name': 'DataBridge Solutions (feels outdated and generic)',
-    'Reason for rebrand': 'Pivoting from consulting to SaaS — old name doesn\'t reflect who we are now',
+    'Reason for rebrand': 'Pivoting from consulting to SaaS — old name doesn’t reflect who we are now',
     'What to keep': 'Sense of connection and reliability',
     'New direction': 'Modern, tech-forward, approachable',
     'Target audience': 'Mid-market tech companies, 50–500 employees',
@@ -476,7 +476,7 @@ const SIMULATED_BRIEF = {
     'Tone': 'Conversational and curious, not sensationalist',
     'Format': 'Two hosts, 45-minute episodes, weekly release',
     'Platform': 'Spotify & Apple Podcasts primarily',
-    'Comparable shows': 'Criminal, Invisibilia, You\'re Wrong About',
+    'Comparable shows': 'Criminal, Invisibilia, You’re Wrong About',
   },
   'gaming-group': {
     'Main games': 'Valorant, Apex Legends, some Minecraft',
@@ -503,7 +503,7 @@ const SIMULATED_BRIEF = {
     'Animal': 'Golden Retriever puppy',
     'Personality': 'Goofy, clumsy, obsessed with socks — absolute chaos gremlin',
     'Appearance': 'Light golden, one ear that flops more than the other',
-    'Tone preference': 'Funny or charming — something you\'d enjoy yelling at the dog park',
+    'Tone preference': 'Funny or charming — something you’d enjoy yelling at the dog park',
     'Names to avoid': 'Buddy, Max, Cooper — too common',
   },
   'home-property-fun': {
@@ -579,7 +579,7 @@ function BriefImmersionCard({ contest, tc, onPoints, qualityPct }) {
           <div style={{ marginBottom: 10 }}><strong style={{ color: LIGHT_THEME.textPrimary }}>Deadline:</strong> {contest?.daysLeft || 5} days left to submit</div>
           {SIMULATED_BRIEF[contest?.subSegment] ? (
             <div style={{ marginTop: 12, padding: '14px 16px', background: LIGHT_THEME.sidebarBg, borderRadius: 8 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: tc.primary, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 10 }}>Creator's Brief</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: tc.primary, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 10 }}>Creator’s Brief</div>
               {Object.entries(SIMULATED_BRIEF[contest?.subSegment]).map(([label, val]) => (
                 <div key={label} style={{ marginBottom: 8, fontSize: 13, lineHeight: 1.6 }}>
                   <strong style={{ color: LIGHT_THEME.textPrimary }}>{label}:</strong>{' '}
@@ -589,7 +589,7 @@ function BriefImmersionCard({ contest, tc, onPoints, qualityPct }) {
             </div>
           ) : (
             <div style={{ padding: '12px 14px', background: LIGHT_THEME.sidebarBg, borderRadius: 8, fontSize: 13, color: LIGHT_THEME.textSecondary, fontStyle: 'italic', marginTop: 12 }}>
-              "We're looking for a name that's distinctive, memorable, and positions us for growth. Read the articles below to understand what makes a great name in this context."
+              “We’re looking for a name that’s distinctive, memorable, and positions us for growth. Read the articles below to understand what makes a great name in this context.”
             </div>
           )}
         </div>
@@ -611,8 +611,8 @@ const SCRATCH_PROMPTS = {
   'civic-school-nonprofit': ['What should this name signal to the community?', 'List 5 words that capture the organization mission:', 'What organization names convey trust and longevity?', 'What names would feel too corporate for a civic org?'],
   'gaming-group':           ['What impression should the crew name make in-game?', 'List 5 words that capture your play style:', 'What gaming tags or crew names have the right energy?', 'What names would be hard to use as a tag or handle?'],
   'other-team':             ['What should this name make members feel?', 'List 5 words that capture the group identity:', 'What group names have you seen that you admire?', 'What should the name NOT sound like?'],
-  'baby-name':              ['What feeling should the name give when you say it aloud?', 'List 5 names you keep coming back to:', 'Are there family or cultural names you want to honor?', 'What names are on your "absolutely not" list?'],
-  'pet-name':               ['What is your pet\'s personality in 3 words?', 'List 5 names that match their look or energy:', 'What names would be easy to call out at the park?', 'What names sound too similar to commands? (Kit → Sit)'],
+  'baby-name':              ['What feeling should the name give when you say it aloud?', 'List 5 names you keep coming back to:', 'Are there family or cultural names you want to honor?', 'What names are on your “absolutely not” list?'],
+  'pet-name':               ['What is your pet’s personality in 3 words?', 'List 5 names that match their look or energy:', 'What names would be easy to call out at the park?', 'What names sound too similar to commands? (Kit → Sit)'],
   'home-property-fun':      ['What feeling should the property name create for visitors?', 'List 5 words that capture the character of this place:', 'What property names have you seen that feel right?', 'What names would look wrong on a sign at the entrance?'],
 };
 
@@ -664,10 +664,10 @@ function ScratchPad({ tc, onPoints, qualityPct, subSegment }) {
 /* ─── Self-Screening Checklist ─── */
 function SelfScreeningChecklist({ tc, group }) {
   const businessItems = [
-    { id: 'check1', label: 'Is it easy to spell on first hearing?', tip: 'If you have to say "no, with a K" — reconsider.' },
+    { id: 'check1', label: 'Is it easy to spell on first hearing?', tip: 'If you have to say “no, with a K” — reconsider.' },
     { id: 'check2', label: 'Does it avoid acronyms that could embarrass? (ASS, WTF, etc.)', tip: 'Do a quick mental check of the initials.' },
-    { id: 'check3', label: 'Is it distinctly different from the competitors listed in the brief?', tip: 'Names that blend in won\'t make the shortlist.' },
-    { id: 'check4', label: 'Does it avoid literal descriptions of the category?', tip: '"Best Insurance" can\'t be trademarked. Abstract or suggestive is better.' },
+    { id: 'check3', label: 'Is it distinctly different from the competitors listed in the brief?', tip: 'Names that blend in won’t make the shortlist.' },
+    { id: 'check4', label: 'Does it avoid literal descriptions of the category?', tip: '“Best Insurance” can’t be trademarked. Abstract or suggestive is better.' },
     { id: 'check5', label: 'Would you be comfortable saying it in a board meeting?', tip: 'The client test: would a Fortune 500 CEO put it on their business card?' },
   ];
   const teamItems = [
@@ -782,7 +782,7 @@ function ContextStats({ submittedNames, totalPoints, tc, group, participantQuali
       {/* Creator Quality */}
       <div style={{ padding: '16px', background: LIGHT_THEME.cardBg, border: `1px solid ${LIGHT_THEME.cardBorder}`, borderRadius: 10, marginBottom: 12, boxShadow: LIGHT_THEME.cardShadow }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: LIGHT_THEME.textPrimary }}>Creator's brief quality</div>
+          <div style={{ fontSize: 12, fontWeight: 600, color: LIGHT_THEME.textPrimary }}>Creator’s brief quality</div>
           <div style={{ fontSize: 13, fontWeight: 700, color: creatorTier.color }}>{creatorQuality || 0}/50</div>
         </div>
         <div style={{ height: 8, background: 'rgba(30,35,48,0.08)', borderRadius: 4, overflow: 'hidden', marginBottom: 8 }}>
@@ -790,7 +790,7 @@ function ContextStats({ submittedNames, totalPoints, tc, group, participantQuali
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 11, fontWeight: 700, color: creatorTier.color, padding: '2px 8px', background: `${creatorTier.color}15`, border: `0.5px solid ${creatorTier.color}40`, borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{creatorTier.label}</span>
-          <span style={{ fontSize: 11, color: LIGHT_THEME.textMuted }}>The creator's brief quality affects the overall contest score</span>
+          <span style={{ fontSize: 11, color: LIGHT_THEME.textMuted }}>The creator’s brief quality affects the overall contest score</span>
         </div>
       </div>
 
@@ -1210,7 +1210,7 @@ export default function ContestLive() {
                         Waiting for the creator to open voting
                       </div>
                       <div style={{ fontSize: 13, color: LIGHT_THEME.textMuted, lineHeight: 1.6, marginBottom: 16 }}>
-                        The contest organizer will review all submissions and hand-pick a shortlist before opening voting. You'll receive an email as soon as voting opens.
+                        The contest organizer will review all submissions and hand-pick a shortlist before opening voting. You’ll receive an email as soon as voting opens.
                       </div>
                       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 20, background: `${tc.primary}15`, border: `0.5px solid ${tc.primary}35`, fontSize: 12, fontWeight: 600, color: tc.primary }}>
                         <Clock size={12} /> Your submission is in — sit tight

@@ -22,7 +22,7 @@ const TYPES = [
     icon: CheckCircle,
     description: "You already have name options. Just need votes.",
     flow: ['Upload Names', 'Invite', 'Voting Phase', 'Results'],
-    useCase: "You've narrowed to 5-10 finalists. Let people vote.",
+    useCase: "You’ve narrowed to 5-10 finalists. Let people vote.",
     recommended: false,
   },
   {
@@ -94,7 +94,7 @@ function TypeCard({ type, isSelected, tc, onClick }) {
           </div>
           {/* Use case */}
           <div style={{ fontSize: 12, color: isSelected ? tc.primary : '#8a8a82', fontStyle: 'italic' }}>
-            Best for: "{type.useCase}"
+            Best for: “{type.useCase}”
           </div>
         </div>
       </div>
@@ -136,7 +136,7 @@ export default function ContestTypeSelection() {
   const submitterCount = submitterEmails.split('\n').filter(e => e.trim()).length;
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fafaf5', fontFamily: "'Inter', sans-serif", display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: '#fafaf5', fontFamily: "‘Inter’, sans-serif", display: 'flex', flexDirection: 'column' }}>
 
       {/* Header */}
       <div style={{ padding: '18px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '0.5px solid rgba(30,35,48,0.08)', background: '#ffffff' }}>
@@ -166,7 +166,7 @@ export default function ContestTypeSelection() {
       {/* Main */}
       <div style={{ flex: 1, maxWidth: 720, margin: '0 auto', padding: '48px 24px', width: '100%' }}>
 
-        <button onClick={() => navigate(`/select/${group}`)} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#8a8a82', fontSize: 13, cursor: 'pointer', fontFamily: "'Inter', sans-serif", marginBottom: 32, padding: 0 }}>
+        <button onClick={() => navigate(`/select/${group}`)} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#8a8a82', fontSize: 13, cursor: 'pointer', fontFamily: "‘Inter’, sans-serif", marginBottom: 32, padding: 0 }}>
           <ArrowLeft size={14} /> Back to sub-type selection
         </button>
 
@@ -175,7 +175,7 @@ export default function ContestTypeSelection() {
           <div style={{ display: 'inline-flex', alignItems: 'center', background: `rgba(${tc.primaryRgb},0.1)`, border: `0.5px solid rgba(${tc.primaryRgb},0.25)`, borderRadius: 9999, padding: '3px 12px', fontSize: 11, fontWeight: 600, color: tc.primary, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 14 }}>
             {tc.label} · Step 3 of 5
           </div>
-          <h1 style={{ fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 800, color: '#1e2330', marginBottom: 10, fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif" }}>
+          <h1 style={{ fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 800, color: '#1e2330', marginBottom: 10, fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif" }}>
             What type of contest do you need?
           </h1>
           <p style={{ fontSize: 15, color: '#676b5f', lineHeight: 1.5 }}>
@@ -193,7 +193,7 @@ export default function ContestTypeSelection() {
         {/* ── Voting Permissions Panel (appears after type selected) ── */}
         {selectedType && (
           <div style={{ background: '#ffffff', border: `1px solid rgba(${tc.primaryRgb},0.2)`, borderRadius: 14, padding: '24px', marginBottom: 28, animation: 'fadeIn 0.2s ease' }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1e2330', marginBottom: 4, fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif" }}>Who can vote on the names?</h3>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1e2330', marginBottom: 4, fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif" }}>Who can vote on the names?</h3>
             <p style={{ fontSize: 13, color: '#8a8a82', marginBottom: 20 }}>
               {selectedType === 'internal_brainstorm'
                 ? 'For Internal Brainstorm: configure who can submit names AND who votes on them.'
@@ -212,7 +212,7 @@ export default function ContestTypeSelection() {
                   onChange={e => setSubmitterEmails(e.target.value)}
                   rows={4}
                   placeholder={"designer@company.com\ncopywriter@company.com\nbrand@company.com"}
-                  style={{ width: '100%', background: '#ffffff', border: `0.5px solid rgba(${tc.primaryRgb},0.3)`, borderRadius: 8, padding: '10px 12px', color: '#1e2330', fontSize: 13, fontFamily: "'Inter', sans-serif", resize: 'vertical', boxSizing: 'border-box' }}
+                  style={{ width: '100%', background: '#ffffff', border: `0.5px solid rgba(${tc.primaryRgb},0.3)`, borderRadius: 8, padding: '10px 12px', color: '#1e2330', fontSize: 13, fontFamily: "‘Inter’, sans-serif", resize: 'vertical', boxSizing: 'border-box' }}
                 />
                 {submitterCount > 0 && <div style={{ fontSize: 12, color: tc.primary, marginTop: 4 }}>{submitterCount} submitter{submitterCount !== 1 ? 's' : ''} added</div>}
               </div>
@@ -237,7 +237,7 @@ export default function ContestTypeSelection() {
                       {opt.value === 'all_participants' && votingPermissions === 'all_participants' && selectedType !== 'voting_only' && (
                         <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10, cursor: 'pointer' }}>
                           <input type="checkbox" checked={allowNonSubmitters} onChange={e => setAllowNonSubmitters(e.target.checked)} style={{ accentColor: tc.primary, width: 14, height: 14 }} />
-                          <span style={{ fontSize: 12, color: '#676b5f' }}>Allow voting even if someone didn't submit</span>
+                          <span style={{ fontSize: 12, color: '#676b5f' }}>Allow voting even if someone didn’t submit</span>
                         </label>
                       )}
                     </div>
@@ -258,7 +258,7 @@ export default function ContestTypeSelection() {
                   onChange={e => setVoterEmails(e.target.value)}
                   rows={4}
                   placeholder={"sarah@company.com\njohn@company.com\nceo@company.com"}
-                  style={{ width: '100%', background: '#ffffff', border: `0.5px solid rgba(${tc.primaryRgb},0.3)`, borderRadius: 8, padding: '10px 12px', color: '#1e2330', fontSize: 13, fontFamily: "'Inter', sans-serif", resize: 'vertical', boxSizing: 'border-box' }}
+                  style={{ width: '100%', background: '#ffffff', border: `0.5px solid rgba(${tc.primaryRgb},0.3)`, borderRadius: 8, padding: '10px 12px', color: '#1e2330', fontSize: 13, fontFamily: "‘Inter’, sans-serif", resize: 'vertical', boxSizing: 'border-box' }}
                 />
                 {voterCount > 0 && <div style={{ fontSize: 12, color: tc.primary, marginTop: 4 }}>{voterCount} voter{voterCount !== 1 ? 's' : ''} added</div>}
                 {selectedType !== 'internal_brainstorm' && (
@@ -276,7 +276,7 @@ export default function ContestTypeSelection() {
         <button
           onClick={handleContinue}
           disabled={!canContinue}
-          style={{ width: '100%', height: 52, background: canContinue ? tc.primary : 'rgba(30,35,48,0.1)', border: 'none', borderRadius: 12, color: canContinue ? tc.textColor : '#8a8a82', fontSize: 15, fontWeight: 700, cursor: canContinue ? 'pointer' : 'not-allowed', fontFamily: "'Inter', sans-serif", display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, opacity: canContinue ? 1 : 0.5 }}
+          style={{ width: '100%', height: 52, background: canContinue ? tc.primary : 'rgba(30,35,48,0.1)', border: 'none', borderRadius: 12, color: canContinue ? tc.textColor : '#8a8a82', fontSize: 15, fontWeight: 700, cursor: canContinue ? 'pointer' : 'not-allowed', fontFamily: "‘Inter’, sans-serif", display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, opacity: canContinue ? 1 : 0.5 }}
         >
           Continue <ArrowRight size={16} weight="bold" />
         </button>

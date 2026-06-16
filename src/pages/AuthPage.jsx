@@ -40,7 +40,7 @@ export default function AuthPage() {
     <div style={{
       minHeight: '100vh',
       background: '#fafaf5',
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: "‘Inter’, sans-serif",
       display: 'flex',
       flexDirection: 'column',
     }}>
@@ -127,7 +127,7 @@ export default function AuthPage() {
           {/* Heading */}
           <div style={{ textAlign: 'center', marginBottom: 32 }}>
             <h1 style={{
-              fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
+              fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif",
               fontSize: 34, fontWeight: 800,
               color: '#1e2330',
               marginBottom: 8,
@@ -174,7 +174,7 @@ export default function AuthPage() {
                     padding: '0 16px',
                     color: '#1e2330',
                     fontSize: 14,
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: "‘Inter’, sans-serif",
                     outline: 'none',
                     transition: 'border-color 0.2s',
                     boxSizing: 'border-box',
@@ -209,7 +209,7 @@ export default function AuthPage() {
                       padding: '0 44px 0 16px',
                       color: '#1e2330',
                       fontSize: 14,
-                      fontFamily: "'Inter', sans-serif",
+                      fontFamily: "‘Inter’, sans-serif",
                       outline: 'none',
                       transition: 'border-color 0.2s',
                       boxSizing: 'border-box',
@@ -250,7 +250,7 @@ export default function AuthPage() {
                   color: tc.btnText,
                   fontSize: 15, fontWeight: 700,
                   cursor: loading ? 'not-allowed' : 'pointer',
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "‘Inter’, sans-serif",
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                   transition: 'all 0.2s',
                   opacity: loading ? 0.7 : 1,
@@ -298,7 +298,7 @@ export default function AuthPage() {
                 color: '#676b5f',
                 fontSize: 13, fontWeight: 500,
                 cursor: 'pointer',
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "‘Inter’, sans-serif",
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 transition: 'all 0.2s',
               }}
@@ -318,7 +318,7 @@ export default function AuthPage() {
           <p style={{ textAlign: 'center', fontSize: 13, color: '#8a8a82' }}>
             {mode === 'signup'
               ? 'Already have an account?'
-              : "Don't have an account?"}
+              : "Don’t have an account?"}
             {' '}
             <button
               onClick={() => setMode(mode === 'signup' ? 'signin' : 'signup')}
@@ -326,7 +326,7 @@ export default function AuthPage() {
                 background: 'none', border: 'none',
                 color: tc.primary, fontSize: 13, fontWeight: 600,
                 cursor: 'pointer', padding: 0,
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "‘Inter’, sans-serif",
               }}
             >
               {mode === 'signup' ? 'Sign In' : 'Create Account'}

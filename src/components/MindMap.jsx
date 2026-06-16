@@ -3,7 +3,7 @@ import { Brain, FilePdf, Check } from '@phosphor-icons/react';
 
 /* ─── Seed nodes per segment ─── */
 const MIND_MAP_SEEDS = {
-  'baby-name':            ['Heritage & Origin', 'Sounds I\'m Drawn To', 'Meanings That Matter', 'Sibling Harmony'],
+  'baby-name':            ['Heritage & Origin', 'Sounds I’m Drawn To', 'Meanings That Matter', 'Sibling Harmony'],
   'pet-name':             ['Their Personality', 'How They Look', 'Funny & Ridiculous', 'Pop Culture Refs'],
   'home-property-fun':    ['The Feeling of the Place', 'The Land & Surroundings', 'History & Stories', 'First Impressions'],
   'sports-team':          ['Animals & Creatures', 'Local Geography', 'Forces of Nature', 'Mythology & Legends'],

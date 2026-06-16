@@ -189,7 +189,7 @@ function ArticlesGateMockup() {
   const titles = [
     'Why Names Matter More Than You Think',
     'The Five Types of Brand Names',
-    "Catchword's 10 Criteria for Great Names",
+    "Catchword’s 10 Criteria for Great Names",
   ];
   return (
     <div>
@@ -215,7 +215,7 @@ function ArticlesGateMockup() {
 // ── Mockup: Reminders Gate ────────────────────────────────────────────────────
 function RemindersGateMockup() {
   const items = [
-    { label: '3 days before deadline', sub: 'Sent to participants who haven\'t submitted yet' },
+    { label: '3 days before deadline', sub: 'Sent to participants who haven’t submitted yet' },
     { label: '1 day before deadline', sub: 'Final nudge — highest open rate' },
     { label: 'Voting opens', sub: 'Notifies all participants when voting phase begins' },
   ];

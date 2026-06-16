@@ -258,7 +258,7 @@ export default function ContactPage() {
                   <h2 className="contact-received-title">Message received</h2>
                   <p className="contact-received-sub">
                     Thanks{answers.name ? `, ${firstName(answers.name)}` : ''} —
-                    we'll reply to <strong>{answers.email}</strong> within a
+                    we’ll reply to <strong>{answers.email}</strong> within a
                     business day. Keep an eye on your inbox.
                   </p>
                   <button type="button" className="contact-received-again" onClick={handleReset}>

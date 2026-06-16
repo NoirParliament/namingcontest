@@ -225,11 +225,11 @@ function LaunchModalInner({ onClose, onSuccess, contextLabel, tier, palette }) {
               aria-hidden="true"
             />
             <h2 id="v4-launch-title" className="v4-auth-title">
-              Launch {contextLabel ? `"${contextLabel}"` : 'your contest'}
+              Launch {contextLabel ? `“${contextLabel}”` : 'your contest'}
             </h2>
             <p className="v4-auth-blurb">
               One charge of <strong>${pricing.price}</strong> for your {pricing.label} contest.
-              We'll email you a magic link to manage results.
+              We’ll email you a magic link to manage results.
             </p>
 
             <form onSubmit={handleSubmit} className="v4-launch-form">
@@ -311,7 +311,7 @@ function LaunchModalInner({ onClose, onSuccess, contextLabel, tier, palette }) {
             <span className="v4-auth-icon v4-auth-icon-success" aria-hidden="true">
               <CheckCircle weight="duotone" size={28} />
             </span>
-            <h2 className="v4-auth-title">You're live!</h2>
+            <h2 className="v4-auth-title">You’re live!</h2>
             <p className="v4-auth-blurb">
               Magic link on its way to <strong>{email.trim()}</strong>.
               Taking you to your contest&hellip;

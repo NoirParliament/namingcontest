@@ -291,7 +291,7 @@ export default function ResultsPage() {
 
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fafaf5', fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: '#fafaf5', fontFamily: "‘Inter’, sans-serif" }}>
       <style>{`
         @keyframes countPop { 0% { transform: scale(2.2); opacity: 0; } 30% { opacity: 1; } 75% { transform: scale(1); opacity: 1; } 100% { transform: scale(0.8); opacity: 0; } }
         @keyframes winnerReveal { 0% { opacity: 0; transform: scale(0.85); filter: blur(16px); } 60% { filter: blur(0); } 100% { opacity: 1; transform: scale(1); } }
@@ -323,7 +323,7 @@ export default function ResultsPage() {
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', background: `rgba(${tc.primaryRgb},0.18)`, border: `1px solid rgba(${tc.primaryRgb},0.4)`, borderRadius: 20, fontSize: 12, fontWeight: 700, color: tc.primary, textTransform: 'uppercase', marginBottom: 20, boxShadow: `0 0 12px rgba(${tc.primaryRgb},0.5), 0 0 32px rgba(${tc.primaryRgb},0.25)` }}>
               <Trophy size={14} weight="bold" /> Winner
             </div>
-            <div style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 64, fontWeight: 800, color: '#1e2330', lineHeight: 1.1, marginBottom: 12, animation: countdown === 0 ? 'fadeSlideUp 0.7s 0.3s cubic-bezier(0.22,1,0.36,1) both' : 'none' }}>
+            <div style={{ fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 64, fontWeight: 800, color: '#1e2330', lineHeight: 1.1, marginBottom: 12, animation: countdown === 0 ? 'fadeSlideUp 0.7s 0.3s cubic-bezier(0.22,1,0.36,1) both' : 'none' }}>
               {winner?.name || 'Hollow Signal'}
             </div>
             {winner?.rationale && (
@@ -360,7 +360,7 @@ export default function ResultsPage() {
                 'product-name':   { body: 'Lock it in — trademark your product name before a competitor does.',         cta: 'File a trademark →' },
                 'project-name':   { body: 'Great project name. Protect it before it gets used elsewhere.',              cta: 'Protect your name →' },
                 'rebrand':        { body: 'Rebrand complete — update your trademark to match the new name.',            cta: 'Update trademark →' },
-                'other-business': { body: "You have a winning name — make sure it's legally yours.",                    cta: 'Protect your name →' },
+                'other-business': { body: "You have a winning name — make sure it’s legally yours.",                    cta: 'Protect your name →' },
               };
               const { body, cta } = subCTA[meta.sub] || subCTA['company-name'];
               return (
@@ -384,7 +384,7 @@ export default function ResultsPage() {
 
         {/* Zone 2: Analytics Dashboard */}
         <div style={{ marginBottom: 40 }}>
-          <h2 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 22, color: '#1e2330', marginBottom: 20 }}>Analytics Dashboard</h2>
+          <h2 style={{ fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 22, color: '#1e2330', marginBottom: 20 }}>Analytics Dashboard</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
             {[
               { label: 'Total Votes Cast', value: totalVotes || 47 },
@@ -393,7 +393,7 @@ export default function ResultsPage() {
               { label: 'Contest Duration', value: '9 days' },
             ].map((stat, i) => (
               <div key={i} style={{ background: '#ffffff', border: '1px solid rgba(30,35,48,0.1)', borderRadius: 10, padding: '16px 14px', textAlign: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 26, fontWeight: 700, color: '#1e2330', marginBottom: 4 }}>{stat.value}</div>
+                <div style={{ fontFamily: "‘Inter’, sans-serif", fontSize: 26, fontWeight: 700, color: '#1e2330', marginBottom: 4 }}>{stat.value}</div>
                 <div style={{ fontSize: 11, color: '#8a8a82' }}>{stat.label}</div>
               </div>
             ))}
@@ -419,12 +419,12 @@ export default function ResultsPage() {
 
         {/* Zone 3: Runner-Up & Shortlist */}
         <div style={{ marginBottom: 40 }}>
-          <h2 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 22, color: '#1e2330', marginBottom: 20 }}>The Final Shortlist</h2>
+          <h2 style={{ fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 22, color: '#1e2330', marginBottom: 20 }}>The Final Shortlist</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {submissions.slice(0, 5).map((sub, i) => (
               <div key={sub.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px', background: i === 0 ? `rgba(${tc.primaryRgb},0.06)` : '#ffffff', border: `1px solid ${i === 0 ? tc.primary : 'rgba(30,35,48,0.1)'}`, borderRadius: 12, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
                 <span style={{ fontSize: 20, minWidth: 28 }}>{MEDALS[i] || `#${i + 1}`}</span>
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 20, color: '#1e2330', flex: 1 }}>{sub.name}</span>
+                <span style={{ fontFamily: "‘Inter’, sans-serif", fontSize: 20, color: '#1e2330', flex: 1 }}>{sub.name}</span>
                 <span style={{ fontSize: 13, color: '#676b5f', minWidth: 60, textAlign: 'right' }}>{sub.voteCount} votes</span>
                 <div style={{ width: 80, height: 6, background: 'rgba(30,35,48,0.08)', borderRadius: 4, overflow: 'hidden' }}>
                   <div style={{ height: '100%', width: `${totalVotes ? Math.round((sub.voteCount / totalVotes) * 100) : 0}%`, background: i === 0 ? tc.primary : `rgba(${tc.primaryRgb},0.5)`, borderRadius: 4 }} />
@@ -437,7 +437,7 @@ export default function ResultsPage() {
 
         {/* Zone 4: Contest Quality Metrics */}
         <div style={{ marginBottom: 40 }}>
-          <h2 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 22, color: '#1e2330', marginBottom: 20 }}>Your Contest's Performance</h2>
+          <h2 style={{ fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 22, color: '#1e2330', marginBottom: 20 }}>Your Contest’s Performance</h2>
           <div style={{ background: '#ffffff', border: '1px solid rgba(30,35,48,0.1)', borderRadius: 12, padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
               {[
@@ -491,12 +491,12 @@ export default function ResultsPage() {
           return (
             <div style={{ marginBottom: 40 }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 8 }}>
-                <h2 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 22, color: '#1e2330', margin: 0 }}>
+                <h2 style={{ fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 22, color: '#1e2330', margin: 0 }}>
                   You have a name. Now make it real.
                 </h2>
               </div>
               <p style={{ fontSize: 13, color: '#8a8a82', marginBottom: 20 }}>
-                <strong style={{ color: tc.primary }}>{winName}</strong> is chosen — here's what to do next, in order.
+                <strong style={{ color: tc.primary }}>{winName}</strong> is chosen — here’s what to do next, in order.
               </p>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px,1fr))', gap: 14 }}>
@@ -660,14 +660,14 @@ export default function ResultsPage() {
                     <AffCard
                       badge="Announcement · Artifact Uprising"
                       title="Announce the name"
-                      body={`"${winName}" is chosen — now share the news. Premium birth announcement cards, printed and shipped.`}
+                      body={`“${winName}” is chosen — now share the news. Premium birth announcement cards, printed and shipped.`}
                       subText="~10% per order · Warm tone, not hard-sell · Ships in 5–7 days"
                       cta="Design Announcements →"
                       href="#"
                     />
                     <AffCard
                       badge="Personalised Gifts · Etsy"
-                      title={`Celebrate the name "${winName}".`}
+                      title={`Celebrate the name “${winName}”.`}
                       body="Personalised gifts featuring the chosen name — nursery prints, keepsake books, embroidered blankets."
                       subText="Handmade · Ships worldwide"
                       cta="Shop personalised gifts →"
@@ -704,7 +704,7 @@ export default function ResultsPage() {
                     <AffCard
                       badge="Merchandise · Printful"
                       title={`Make it official with merch.`}
-                      body={`Print "${winName}" on jerseys, hoodies, and gear. No minimums — order 1 or 100.`}
+                      body={`Print “${winName}” on jerseys, hoodies, and gear. No minimums — order 1 or 100.`}
                       subText="~15% per order · Ships in 3–5 days"
                       cta="Design team merch →"
                       href="#"
@@ -719,7 +719,7 @@ export default function ResultsPage() {
                     />
                     <AffCard
                       badge="Website · Squarespace"
-                      title="Claim your team's home online."
+                      title="Claim your team’s home online."
                       body="Build a simple team website with schedules, roster, and news. No coding required. Looks great on every device."
                       subText="From $16/mo · 14-day free trial"
                       cta="Build your team site →"
@@ -727,7 +727,7 @@ export default function ResultsPage() {
                     />
                     <AffCard
                       badge="Domain · Namecheap"
-                      title="Secure your team's domain."
+                      title="Secure your team’s domain."
                       body={`Lock in ${winName.toLowerCase().replace(/\s+/g,'')}.com before someone else does. 20–30% off first purchase.`}
                       subText="From $10/yr"
                       cta="Check domain →"
@@ -742,7 +742,7 @@ export default function ResultsPage() {
                     {isHome && (
                       <AffCard
                         badge="Custom Sign · Etsy"
-                        title={`Get a "${winName}" sign`}
+                        title={`Get a “${winName}” sign`}
                         body="Handmade wooden or metal signs engraved with your property name. Perfect for the entrance or garden."
                         subText="Handmade · Ships worldwide"
                         cta="Shop custom signs →"
@@ -751,7 +751,7 @@ export default function ResultsPage() {
                     )}
                     <AffCard
                       badge="Personalised Gifts · Etsy"
-                      title={`Celebrate "${winName}".`}
+                      title={`Celebrate “${winName}”.`}
                       body="Personalised gifts, prints, and keepsakes featuring the chosen name. Handmade by independent creators."
                       subText="Ships worldwide"
                       cta="Shop personalised gifts →"
@@ -779,7 +779,7 @@ export default function ResultsPage() {
 
         {/* Zone 8: Export */}
         <div style={{ marginBottom: 40 }}>
-          <h2 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 22, color: '#1e2330', marginBottom: 20 }}>Export Your Data</h2>
+          <h2 style={{ fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 22, color: '#1e2330', marginBottom: 20 }}>Export Your Data</h2>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
             {[
               { label: 'Download CSV', desc: 'All submissions, votes, timestamps' },
@@ -796,7 +796,7 @@ export default function ResultsPage() {
 
         {/* Zone 9: Share & Next Steps */}
         <div style={{ marginBottom: 40 }}>
-          <h2 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 22, color: '#1e2330', marginBottom: 20 }}>Share Your Results</h2>
+          <h2 style={{ fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 22, color: '#1e2330', marginBottom: 20 }}>Share Your Results</h2>
           <div style={{ background: '#ffffff', border: '1px solid rgba(30,35,48,0.1)', borderRadius: 12, padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
             <div style={{ fontSize: 12, color: '#8a8a82', marginBottom: 8 }}>Shareable results link:</div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 20 }}>
@@ -854,14 +854,14 @@ function CertificateSection({ winner, meta, tc }) {
 
   return (
     <div style={{ marginBottom: 40 }}>
-      <h2 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 22, color: '#1e2330', marginBottom: 20 }}>Official Naming Certificate</h2>
+      <h2 style={{ fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 22, color: '#1e2330', marginBottom: 20 }}>Official Naming Certificate</h2>
 
       {/* Branding toggle */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
         <button
           onClick={() => setWhiteLabel(false)}
           style={{
-            padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+            padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: "‘Inter’, sans-serif",
             background: !whiteLabel ? `rgba(${tc.primaryRgb},0.15)` : 'transparent',
             border: `1px solid ${!whiteLabel ? tc.primary : 'rgba(30,35,48,0.12)'}`,
             color: !whiteLabel ? tc.primary : '#8a8a82',
@@ -872,7 +872,7 @@ function CertificateSection({ winner, meta, tc }) {
         <button
           onClick={() => setWhiteLabel(true)}
           style={{
-            padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+            padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: "‘Inter’, sans-serif",
             background: whiteLabel ? `rgba(${tc.primaryRgb},0.15)` : 'transparent',
             border: `1px solid ${whiteLabel ? tc.primary : 'rgba(30,35,48,0.12)'}`,
             color: whiteLabel ? tc.primary : '#8a8a82',
@@ -918,12 +918,12 @@ function PostResultsReflection({ winnerName, contestTitle, tc, isBusiness }) {
 
   const followUps = {
     confident: {
-      headline: "That's the spirit. Here's your next-step checklist.",
-      body: "Choosing a name is step one. Here's what to do in the next 7 days to make it official.",
+      headline: "That’s the spirit. Here’s your next-step checklist.",
+      body: "Choosing a name is step one. Here’s what to do in the next 7 days to make it official.",
       items: [
         { icon: '🔍', label: 'USPTO trademark search', sub: 'Search at USPTO.gov — look for exact matches in your category' },
         { icon: '🌐', label: 'Register the .com', sub: 'If not available, secure .co or .io and put a redirect on the .com' },
-        { icon: '📱', label: 'Claim social handles', sub: '@YourName on X, Instagram, LinkedIn — even if you won\'t use them yet' },
+        { icon: '📱', label: 'Claim social handles', sub: '@YourName on X, Instagram, LinkedIn — even if you won’t use them yet' },
         { icon: '🎨', label: 'Commission a wordmark', sub: 'A wordmark before a logo. Typography first. Marks come later.' },
         { icon: '📣', label: 'Draft the announcement', sub: 'Tell the story of how the name was chosen — people love the process.' },
       ],
@@ -931,20 +931,20 @@ function PostResultsReflection({ winnerName, contestTitle, tc, isBusiness }) {
       ctaNote: isBusiness ? 'File your LLC or corporation before someone else registers the name.' : null,
     },
     secondthoughts: {
-      headline: "Second thoughts are normal. Here's how to tell if it's cold feet or a real problem.",
-      body: "Most organizers feel doubt after choosing a name. Here's a diagnostic to separate real issues from nerves.",
+      headline: "Second thoughts are normal. Here’s how to tell if it’s cold feet or a real problem.",
+      body: "Most organizers feel doubt after choosing a name. Here’s a diagnostic to separate real issues from nerves.",
       items: [
         { icon: <Brain size={14} weight="duotone" />, label: "Is it the name — or the change?", sub: 'Often what feels wrong is the change itself, not the name. Give it 72 hours before making any decisions.' },
-        { icon: <ArrowRight size={14} weight="bold" />, label: 'Say it out loud 20 times', sub: "Strange names become familiar fast. Most 'bad' names just need time to feel natural." },
-        { icon: <Share size={14} weight="duotone" />, label: 'Ask 3 people who weren\'t in the contest', sub: "Fresh ears catch things participants can't. Do they understand it? Does it feel right to them?" },
+        { icon: <ArrowRight size={14} weight="bold" />, label: 'Say it out loud 20 times', sub: "Strange names become familiar fast. Most ‘bad’ names just need time to feel natural." },
+        { icon: <Share size={14} weight="duotone" />, label: 'Ask 3 people who weren’t in the contest', sub: "Fresh ears catch things participants can’t. Do they understand it? Does it feel right to them?" },
         { icon: <Scales size={14} weight="duotone" />, label: 'Compare to the runner-up', sub: 'Is the runner-up name actually better, or just different? Write down specifically why the winner beat it.' },
       ],
       cta: 'Run Another Round — 50% Off →',
       ctaNote: "Not confident? Open a new round with fresh candidates at half price.",
     },
     unsure: {
-      headline: "Still not sure? That's okay. Use this framework.",
-      body: "Uncertainty after choosing a name is common. Here's a structured way to evaluate it.",
+      headline: "Still not sure? That’s okay. Use this framework.",
+      body: "Uncertainty after choosing a name is common. Here’s a structured way to evaluate it.",
       items: [
         { icon: <Copy size={14} weight="duotone" />, label: 'Write down what bothers you specifically', sub: 'Vague discomfort is not a reason to rechose. Specific concerns are. Write the actual words down.' },
         { icon: <Target size={14} weight="duotone" />, label: 'Test it on strangers', sub: 'Tell 5 people outside the contest the name only — no context. What do they assume about you?' },
@@ -977,34 +977,34 @@ function PostResultsReflection({ winnerName, contestTitle, tc, isBusiness }) {
             <>
               <p style={{ fontSize: 14, color: '#676b5f', lineHeight: 1.7, marginBottom: 8 }}>Hi there,</p>
               <p style={{ fontSize: 14, color: '#676b5f', lineHeight: 1.7, marginBottom: 16 }}>
-                It's been a week since you chose <strong style={{ color: '#1e2330' }}>{winnerName || 'your winning name'}</strong>{contestTitle ? ` for ${contestTitle}` : ''}. Now that you've lived with it for a few days:
+                It’s been a week since you chose <strong style={{ color: '#1e2330' }}>{winnerName || 'your winning name'}</strong>{contestTitle ? ` for ${contestTitle}` : ''}. Now that you’ve lived with it for a few days:
               </p>
               <p style={{ fontSize: 16, fontWeight: 700, color: '#1e2330', marginBottom: 4 }}>How do you feel about the name?</p>
               <p style={{ fontSize: 12, color: '#8a8a82', marginBottom: 20 }}>Click one of the options below to see what happens next.</p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
                 {[
-                  { key: 'confident', label: "✓  Yes, we're confident in this name", color: tc.primary, bg: `rgba(${tc.primaryRgb},0.06)`, border: `1px solid rgba(${tc.primaryRgb},0.3)` },
-                  { key: 'secondthoughts', label: "↩  We're having second thoughts", color: tc.primary, bg: `rgba(${tc.primaryRgb},0.06)`, border: `1px solid rgba(${tc.primaryRgb},0.2)` },
-                  { key: 'unsure', label: "?  We're still not sure", color: tc.primary, bg: `rgba(${tc.primaryRgb},0.06)`, border: `1px solid rgba(${tc.primaryRgb},0.2)` },
+                  { key: 'confident', label: "✓  Yes, we’re confident in this name", color: tc.primary, bg: `rgba(${tc.primaryRgb},0.06)`, border: `1px solid rgba(${tc.primaryRgb},0.3)` },
+                  { key: 'secondthoughts', label: "↩  We’re having second thoughts", color: tc.primary, bg: `rgba(${tc.primaryRgb},0.06)`, border: `1px solid rgba(${tc.primaryRgb},0.2)` },
+                  { key: 'unsure', label: "?  We’re still not sure", color: tc.primary, bg: `rgba(${tc.primaryRgb},0.06)`, border: `1px solid rgba(${tc.primaryRgb},0.2)` },
                 ].map(opt => (
-                  <button key={opt.key} onClick={() => setResponse(opt.key)} style={{ padding: '14px 20px', background: opt.bg, border: opt.border, borderRadius: 10, color: opt.color, fontSize: 14, fontWeight: 600, cursor: 'pointer', textAlign: 'left', fontFamily: "'Inter', sans-serif" }}>
+                  <button key={opt.key} onClick={() => setResponse(opt.key)} style={{ padding: '14px 20px', background: opt.bg, border: opt.border, borderRadius: 10, color: opt.color, fontSize: 14, fontWeight: 600, cursor: 'pointer', textAlign: 'left', fontFamily: "‘Inter’, sans-serif" }}>
                     {opt.label}
                   </button>
                 ))}
               </div>
 
               <p style={{ fontSize: 12, color: '#8a8a82', lineHeight: 1.6 }}>
-                Regardless of your answer, we'll follow up with guidance.<br />
+                Regardless of your answer, we’ll follow up with guidance.<br />
                 — The NamingContest.com Team · Powered by Catchword, the #1 Ranked Naming Agency Worldwide
               </p>
             </>
           ) : (
             <>
               <div style={{ padding: '4px 10px', background: `rgba(${tc.primaryRgb},0.1)`, border: `0.5px solid rgba(${tc.primaryRgb},0.3)`, borderRadius: 6, fontSize: 11, fontWeight: 700, color: tc.primary, textTransform: 'uppercase', letterSpacing: '0.06em', display: 'inline-block', marginBottom: 16 }}>
-                Response received — here's what to do next
+                Response received — here’s what to do next
               </div>
-              <h3 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 20, color: '#1e2330', marginBottom: 12, lineHeight: 1.3 }}>{chosen.headline}</h3>
+              <h3 style={{ fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 20, color: '#1e2330', marginBottom: 12, lineHeight: 1.3 }}>{chosen.headline}</h3>
               <p style={{ fontSize: 14, color: '#676b5f', lineHeight: 1.6, marginBottom: 20 }}>{chosen.body}</p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
@@ -1021,7 +1021,7 @@ function PostResultsReflection({ winnerName, contestTitle, tc, isBusiness }) {
 
               {chosen.cta && (
                 <div style={{ padding: '16px 20px', background: `rgba(${tc.primaryRgb},0.06)`, border: `1px solid rgba(${tc.primaryRgb},0.2)`, borderRadius: 10, marginBottom: 20 }}>
-                  <button style={{ width: '100%', padding: '12px', border: `1.5px solid ${tc.primary}`, borderRadius: 8, background: `rgba(${tc.primaryRgb},0.1)`, color: tc.primary, fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
+                  <button style={{ width: '100%', padding: '12px', border: `1.5px solid ${tc.primary}`, borderRadius: 8, background: `rgba(${tc.primaryRgb},0.1)`, color: tc.primary, fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: "‘Inter’, sans-serif" }}>
                     {chosen.cta}
                   </button>
                   {chosen.ctaNote && <p style={{ fontSize: 12, color: '#8a8a82', marginTop: 8, textAlign: 'center', lineHeight: 1.5 }}>{chosen.ctaNote}</p>}
@@ -1039,9 +1039,9 @@ function PostResultsReflection({ winnerName, contestTitle, tc, isBusiness }) {
                     Need expert help? Let Catchword name it for you.
                   </div>
                   <div style={{ fontSize: 13, color: '#676b5f', lineHeight: 1.65, marginBottom: 16 }}>
-                    Your contest data — brief, submissions, votes — becomes the starting point for Catchword's professional naming team. 25+ years of experience, 3,000+ brands named.
+                    Your contest data — brief, submissions, votes — becomes the starting point for Catchword’s professional naming team. 25+ years of experience, 3,000+ brands named.
                   </div>
-                  <button style={{ height: 40, padding: '0 20px', border: `1.5px solid ${tc.primary}`, borderRadius: 8, background: `rgba(${tc.primaryRgb},0.1)`, color: tc.primary, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'Inter', sans-serif", display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <button style={{ height: 40, padding: '0 20px', border: `1.5px solid ${tc.primary}`, borderRadius: 8, background: `rgba(${tc.primaryRgb},0.1)`, color: tc.primary, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "‘Inter’, sans-serif", display: 'flex', alignItems: 'center', gap: 6 }}>
                     Explore Catchword Services <ArrowRight size={14} />
                   </button>
                 </div>

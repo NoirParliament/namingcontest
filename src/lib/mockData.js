@@ -222,25 +222,25 @@ export const EDUCATION_ARTICLES = {
       readTime: '3 min',
       readPoints: 25,
       quizPoints: 30,
-      content: `Every year, companies spend millions fixing names that never should have been chosen. Trademark battles. Rebrand costs. Lost customer recognition. A bad name isn't just aesthetically unpleasant — it's a strategic liability.
+      content: `Every year, companies spend millions fixing names that never should have been chosen. Trademark battles. Rebrand costs. Lost customer recognition. A bad name isn’t just aesthetically unpleasant — it’s a strategic liability.
 
 **Why Group Naming Usually Fails**
 
 Left unchecked, group naming produces predictable results:
 
 - **The loudest voice wins.** Not the best name. The one championed by whoever has the most social capital in the room.
-- **Authority bias takes over.** The CEO suggests something, and suddenly everyone thinks it's great.
-- **Recency bias skews everything.** The last name suggested gets more attention simply because it's fresh.
+- **Authority bias takes over.** The CEO suggests something, and suddenly everyone thinks it’s great.
+- **Recency bias skews everything.** The last name suggested gets more attention simply because it’s fresh.
 
-This isn't theoretical. Research on group decision-making consistently shows that unstructured naming sessions produce anchored, biased results — regardless of how thoughtful the participants are.
+This isn’t theoretical. Research on group decision-making consistently shows that unstructured naming sessions produce anchored, biased results — regardless of how thoughtful the participants are.
 
-**What a Name Can (and Can't) Do**
+**What a Name Can (and Can’t) Do**
 
 A name can be distinctive. Memorable. Ownable. It can signal your positioning, hint at your value, and create the conditions for a strong brand.
 
-What a name can't do is replace a strategy. "Apple" tells you nothing about computers. But it's distinctive, memorable, and infinitely ownable. Meaning was built around it over decades.
+What a name can’t do is replace a strategy. “Apple” tells you nothing about computers. But it’s distinctive, memorable, and infinitely ownable. Meaning was built around it over decades.
 
-Your job isn't to find the perfect name — perfect doesn't exist. Your job is to find a name that works: one that can carry meaning as you build it.
+Your job isn’t to find the perfect name — perfect doesn’t exist. Your job is to find a name that works: one that can carry meaning as you build it.
 
 **The Cost of Getting It Wrong**
 
@@ -258,7 +258,7 @@ The structured contest approach exists precisely because the stakes are high —
           question: 'Which statement about company names is FALSE?',
           options: ['Names can be distinctive and memorable', 'A great name replaces a marketing strategy', 'Names can signal positioning', 'Names need to be ownable'],
           correct: 1,
-          explanation: 'Apple tells you nothing about computers. Names create conditions for brand-building — they don\'t replace the strategy itself.',
+          explanation: 'Apple tells you nothing about computers. Names create conditions for brand-building — they don’t replace the strategy itself.',
         },
         {
           question: 'What is something a name CANNOT do for your company?',
@@ -295,15 +295,15 @@ Names exist on two axes:
 
 The sweet spot for tech and B2B companies is suggestive: enough meaning to orient, enough abstraction to own.
 
-- Asana (Sanskrit for "yoga pose" — implies balance/flow) ✓ Suggestive
+- Asana (Sanskrit for “yoga pose” — implies balance/flow) ✓ Suggestive
 - Notion (implies a concept, an idea) ✓ Abstract
 - Basecamp (implies a starting point, home base) ✓ Suggestive
 
 **Trademark Strength Increases with Abstraction**
 
-Descriptive names are hardest to trademark (everyone can describe what they make). Abstract/coined names are easiest — they're genuinely unique.
+Descriptive names are hardest to trademark (everyone can describe what they make). Abstract/coined names are easiest — they’re genuinely unique.
 
-Implication for your contest: if you're evaluating names, ask "does this stand out from how competitors sound?" The competitive landscape determines which direction to explore.`,
+Implication for your contest: if you’re evaluating names, ask “does this stand out from how competitors sound?” The competitive landscape determines which direction to explore.`,
       quiz: [
         {
           question: 'What type of names are Amazon, Slack, and Fitbit?',
@@ -315,10 +315,10 @@ Implication for your contest: if you're evaluating names, ask "does this stand o
           question: 'Which type of name is easiest to trademark?',
           options: ['Descriptive (QuickBooks)', 'Suggestive (Salesforce)', 'Abstract/Coined (Kodak)', 'Compound (Facebook)'],
           correct: 2,
-          explanation: 'Abstract and coined names are unique — no one else uses that word in that context. Descriptive names can\'t be owned because they describe generic qualities.',
+          explanation: 'Abstract and coined names are unique — no one else uses that word in that context. Descriptive names can’t be owned because they describe generic qualities.',
         },
         {
-          question: 'When evaluating competitive differentiation, what\'s the key question?',
+          question: 'When evaluating competitive differentiation, what’s the key question?',
           options: ['Is it the shortest name?', 'Does it stand out from how competitors sound?', 'Does it describe the product perfectly?', 'Is it easy to pronounce?'],
           correct: 1,
           explanation: 'Notion entered a crowded space (Asana, Trello, Monday — all suggestive, 2-syllable compounds) and went abstract. The differentiation was strategic, not accidental.',
@@ -327,7 +327,7 @@ Implication for your contest: if you're evaluating names, ask "does this stand o
     },
     {
       id: 'b1_a3',
-      title: "Catchword's 10 Criteria for Great Brand Names",
+      title: "Catchword’s 10 Criteria for Great Brand Names",
       source: 'Catchword Branding Methodology',
       readTime: '4 min',
       readPoints: 25,
@@ -338,7 +338,7 @@ Implication for your contest: if you're evaluating names, ask "does this stand o
 
 1. **Magnetism** — Is it intriguing? Does it draw people in?
 2. **Distinctiveness** — Does it stand out? Is it unique in the competitive landscape?
-3. **Brand Fit** — Does it fit the company's personality, values, and positioning?
+3. **Brand Fit** — Does it fit the company’s personality, values, and positioning?
 4. **Accessibility** — Is it easy to spell, say, and remember?
 5. **Longevity** — Will it still work in 10–20 years?
 6. **Conciseness** — Short enough to be memorable? (Under 3 syllables ideal)
@@ -350,19 +350,19 @@ Implication for your contest: if you're evaluating names, ask "does this stand o
 **The Critical Message: Vote for Brand Fit, Not Personal Preference**
 
 This is the most important thing participants can learn. When you vote, ask:
-*"Does this name serve the brand?" — not "Do I personally like it?"*
+*”Does this name serve the brand?” — not “Do I personally like it?”*
 
 Häagen-Dazs is a made-up word that means nothing in any language. It tests terribly in focus groups. But it sounds luxurious, European, premium. It built an $800M brand. Your gut reaction is not the test.
 
 **No Name Is Perfect**
 
-Wii was nearly universally mocked before launch. "Wee? Like urination?" But it was distinctive, short, euphonic, and branded Nintendo's next generation perfectly. When applying the 10 criteria, you're looking for the name that scores highest overall — not 10/10 on every dimension.`,
+Wii was nearly universally mocked before launch. “Wee? Like urination?” But it was distinctive, short, euphonic, and branded Nintendo’s next generation perfectly. When applying the 10 criteria, you’re looking for the name that scores highest overall — not 10/10 on every dimension.`,
       quiz: [
         {
           question: 'When voting on names, what should participants prioritize?',
           options: ['Personal preference', 'Brand fit over time', 'The most familiar-sounding option', 'The shortest name'],
           correct: 1,
-          explanation: 'The most common voting mistake is choosing "the name I like" over "the name that serves the brand." Häagen-Dazs tested poorly but built an $800M brand.',
+          explanation: 'The most common voting mistake is choosing “the name I like” over “the name that serves the brand.” Häagen-Dazs tested poorly but built an $800M brand.',
         },
         {
           question: 'What does the Catchword example of Häagen-Dazs demonstrate?',
@@ -371,8 +371,8 @@ Wii was nearly universally mocked before launch. "Wee? Like urination?" But it w
           explanation: 'Häagen-Dazs is a made-up word in no real language. It tested poorly. But it sounds premium and helped build an enormous brand. Perfection is not the standard.',
         },
         {
-          question: 'What does "Euphony" mean in the context of naming?',
-          options: ['The name\'s trademark strength', 'How the name sounds when spoken aloud', 'Whether the domain is available', 'The name\'s length in syllables'],
+          question: 'What does “Euphony” mean in the context of naming?',
+          options: ['The name’s trademark strength', 'How the name sounds when spoken aloud', 'Whether the domain is available', 'The name’s length in syllables'],
           correct: 1,
           explanation: 'Euphony refers to the acoustic quality — how a name sounds when spoken. Some names have natural rhythm and flow; others feel awkward or harsh.',
         },
@@ -384,7 +384,7 @@ Wii was nearly universally mocked before launch. "Wee? Like urination?" But it w
   b2: [
     {
       id: 'b2_a1',
-      title: 'Product Naming vs Company Naming: What\'s Different',
+      title: 'Product Naming vs Company Naming: What’s Different',
       source: 'howbrandsarebuilt.com — Product Naming Guide',
       readTime: '3 min',
       readPoints: 25,
@@ -404,7 +404,7 @@ Your company name sets the stage. Your product names extend the story. This rela
 
 *House of Brands* — Each product stands alone:
 - P&G → Tide, Gillette, Pampers, Febreze (independent brands)
-- Unilever → Dove, Axe, Hellmann's (no parent brand visible)
+- Unilever → Dove, Axe, Hellmann’s (no parent brand visible)
 
 **Which Strategy Is Right?**
 
@@ -417,16 +417,16 @@ House of brands: Use if products serve radically different markets. Allows disti
 For early-stage companies, a modular approach works well: [Company] [Descriptor]. Example: Notion Calendar, Notion AI. This scales cleanly.`,
       quiz: [
         {
-          question: 'What is a "Branded House" naming architecture?',
+          question: 'What is a “Branded House” naming architecture?',
           options: ['Multiple independent brands under one parent', 'One master brand applied to all products', 'A naming strategy for B2C products only', 'Product names that describe their function'],
           correct: 1,
           explanation: 'Google (Gmail, Drive, Maps), Apple (iPhone, iPad, iMac) — one master brand carries everything. Efficient and scalable when the master brand is strong.',
         },
         {
-          question: 'Which company uses a "House of Brands" strategy?',
+          question: 'Which company uses a “House of Brands” strategy?',
           options: ['Google', 'Apple', 'P&G (Tide, Gillette, Pampers)', 'Salesforce'],
           correct: 2,
-          explanation: 'P&G\'s brands (Tide, Gillette, Pampers, Febreze) are independent — consumers often don\'t know they share a parent company. This is classic "house of brands."',
+          explanation: 'P&G’s brands (Tide, Gillette, Pampers, Febreze) are independent — consumers often don’t know they share a parent company. This is classic “house of brands.”',
         },
         {
           question: 'For early-stage startups, which portfolio approach is usually recommended?',
@@ -443,22 +443,22 @@ For early-stage companies, a modular approach works well: [Company] [Descriptor]
       readTime: '4 min',
       readPoints: 25,
       quizPoints: 30,
-      content: `The worst time to realize your product name doesn't scale is when you're about to launch version 2.0. Plan ahead.
+      content: `The worst time to realize your product name doesn’t scale is when you’re about to launch version 2.0. Plan ahead.
 
 **The Scalability Test**
 
 Ask three questions before finalizing any product name:
-1. Does this work for a "Pro" version? → [Name] Pro
-2. Does this work for a "Lite" version? → [Name] Lite
+1. Does this work for a “Pro” version? → [Name] Pro
+2. Does this work for a “Lite” version? → [Name] Lite
 3. Does this work as part of a suite? → [Name] + sibling product names
 
 **Real Failures: Dead-End Names**
 
-Apple's iPhone naming became a problem: iPhone 1, 2, 3, 4, 5, 6, 7, 8 — then what? They jumped to iPhone X (10). The linear numbering system painted them into a corner.
+Apple’s iPhone naming became a problem: iPhone 1, 2, 3, 4, 5, 6, 7, 8 — then what? They jumped to iPhone X (10). The linear numbering system painted them into a corner.
 
 **Real Successes: Scalable Systems**
 
-Salesforce Clouds: Sales Cloud, Service Cloud, Marketing Cloud, Commerce Cloud. The word "Cloud" anchors the whole suite. New products simply add a descriptor before "Cloud." Infinitely scalable.
+Salesforce Clouds: Sales Cloud, Service Cloud, Marketing Cloud, Commerce Cloud. The word “Cloud” anchors the whole suite. New products simply add a descriptor before “Cloud.” Infinitely scalable.
 
 **The Modular Approach**
 
@@ -470,27 +470,27 @@ Microsoft: Microsoft Teams, Microsoft 365, Microsoft Azure (company name as anch
 **The Naming Exercise**
 
 Before submitting or evaluating names, say this aloud:
-"Introducing [Name], [Name] Pro, [Name] Lite, and [Name] Enterprise."
+“Introducing [Name], [Name] Pro, [Name] Lite, and [Name] Enterprise.”
 
 If it sounds right, the name scales.`,
       quiz: [
         {
-          question: 'What is the "Scalability Test" for product names?',
+          question: 'What is the “Scalability Test” for product names?',
           options: ['Test if the name is short enough', 'Test if the name works for Pro/Lite/Suite versions', 'Test if the domain is available', 'Test if the name is trademarked'],
           correct: 1,
-          explanation: 'Before finalizing a product name, check: Does "[Name] Pro" work? "[Name] Lite"? Part of a suite? Planning ahead prevents dead-end names.',
+          explanation: 'Before finalizing a product name, check: Does “[Name] Pro” work? “[Name] Lite”? Part of a suite? Planning ahead prevents dead-end names.',
         },
         {
           question: 'What naming problem did Apple encounter with iPhone?',
           options: ['The name was too short', 'Linear numbering painted them into a corner', 'iPhone was too similar to competitor names', 'The trademark was unavailable'],
           correct: 1,
-          explanation: 'iPhone 1-8 worked until it didn\'t — they jumped to iPhone X (10) rather than iPhone 9. A scalable naming system avoids this problem.',
+          explanation: 'iPhone 1-8 worked until it didn’t — they jumped to iPhone X (10) rather than iPhone 9. A scalable naming system avoids this problem.',
         },
         {
           question: 'Which is an example of a scalable product naming architecture?',
           options: ['iPhone 1, 2, 3, 4...', 'Salesforce Sales Cloud, Service Cloud, Marketing Cloud', 'A single descriptive product name', 'Brand names with founder surnames'],
           correct: 1,
-          explanation: 'Salesforce\'s Cloud system adds a simple descriptor before "Cloud" for each new product. Infinitely scalable without any naming dead-ends.',
+          explanation: 'Salesforce’s Cloud system adds a simple descriptor before “Cloud” for each new product. Infinitely scalable without any naming dead-ends.',
         },
       ],
     },
@@ -501,7 +501,7 @@ If it sounds right, the name scales.`,
       readTime: '4 min',
       readPoints: 25,
       quizPoints: 30,
-      content: `Catchword's 10 criteria apply to products just as they do to company names — but the weighting shifts. When you're naming a product, certain criteria take on more importance.
+      content: `Catchword’s 10 criteria apply to products just as they do to company names — but the weighting shifts. When you’re naming a product, certain criteria take on more importance.
 
 **Most Critical for Products**
 
@@ -515,7 +515,7 @@ If it sounds right, the name scales.`,
 
 **Context: The Competitive Product Landscape**
 
-When evaluating names for your product, always ask: "If I heard this name with no context, would I know it's a [category]?"
+When evaluating names for your product, always ask: “If I heard this name with no context, would I know it’s a [category]?”
 
 Examples:
 - Slack → Immediately feels like a work tool (suggestive of ease)
@@ -525,7 +525,7 @@ Examples:
 **The Portfolio Check**
 
 After choosing a finalist, say all your products together:
-"[Company] makes [Product1], [Product2], and [NewProduct]."
+“[Company] makes [Product1], [Product2], and [NewProduct].”
 
 Does it sound like a family? If the new name sounds like it belongs to a different company, reconsider.`,
       quiz: [
@@ -536,16 +536,16 @@ Does it sound like a family? If the new name sounds like it belongs to a differe
           explanation: 'A product name that contradicts the brand personality undermines the entire brand. Brand Fit is weighted highest in product naming because products live under the company umbrella.',
         },
         {
-          question: 'What is the "Portfolio Check" in product naming?',
+          question: 'What is the “Portfolio Check” in product naming?',
           options: ['Checking trademark availability', 'Saying all product names together to test family sound', 'Counting syllables in product names', 'Comparing to competitor product names'],
           correct: 1,
-          explanation: 'Say "[Company] makes [Product1], [Product2], and [NewProduct]" aloud. Does it sound like a coherent product family? If the new name sounds foreign, reconsider.',
+          explanation: 'Say “[Company] makes [Product1], [Product2], and [NewProduct]” aloud. Does it sound like a coherent product family? If the new name sounds foreign, reconsider.',
         },
         {
           question: 'Why is Accessibility especially important in product naming?',
           options: ['Products need to be searchable online', 'Customer-facing teams say the name hundreds of times daily', 'Products need shorter names than companies', 'Product names must be international'],
           correct: 1,
-          explanation: 'Sales reps, support agents, and account managers will say the product name constantly. If it\'s hard to say or remember, it becomes a daily friction point.',
+          explanation: 'Sales reps, support agents, and account managers will say the product name constantly. If it’s hard to say or remember, it becomes a daily friction point.',
         },
       ],
     },
@@ -560,7 +560,7 @@ Does it sound like a family? If the new name sounds like it belongs to a differe
       readTime: '3 min',
       readPoints: 20,
       quizPoints: 15,
-      content: `Sports names have a unique set of requirements. They're chanted. They're on jerseys. They're defended fiercely by fans for generations. Here's what separates the great ones from the forgettable ones.
+      content: `Sports names have a unique set of requirements. They’re chanted. They’re on jerseys. They’re defended fiercely by fans for generations. Here’s what separates the great ones from the forgettable ones.
 
 **1. Intimidation or Identity — Pick Your Camp**
 
@@ -572,16 +572,16 @@ Both work — the key is committing to one. Youth teams often lean pride (Firefl
 **2. Local Connection**
 
 The best sports names have geographic or cultural roots:
-- Lakers = Minnesota's "Land of 10,000 Lakes" (yes, even after moving to LA)
-- Grizzlies = Vancouver's wilderness heritage
-- Golden State Warriors = San Francisco's Gold Rush history
+- Lakers = Minnesota’s “Land of 10,000 Lakes” (yes, even after moving to LA)
+- Grizzlies = Vancouver’s wilderness heritage
+- Golden State Warriors = San Francisco’s Gold Rush history
 - Cleveland Guardians = Named after the Guardians of Traffic statues on the Hope Memorial Bridge
 
 A local connection gives fans a reason to own the name beyond just sports loyalty.
 
 **3. Timelessness**
 
-Avoid trendy references. "Miami Heat" works forever. A name based on a pop culture moment would've aged terribly.
+Avoid trendy references. “Miami Heat” works forever. A name based on a pop culture moment would’ve aged terribly.
 
 Oklahoma City Thunder beat out finalists: Barons, Energy, and Marshalls in their 2008 public vote — specifically because Thunder felt timeless and intimidating.
 
@@ -589,7 +589,7 @@ Oklahoma City Thunder beat out finalists: Barons, Energy, and Marshalls in their
 
 Will people wear this on a jersey? Say it at games? Chant it?
 
-The test: "Defense! Defense! Let's go [NAME]!"
+The test: “Defense! Defense! Let’s go [NAME]!”
 
 If it sounds awkward in that sentence, reconsider.`,
       quiz: [
@@ -597,19 +597,19 @@ If it sounds awkward in that sentence, reconsider.`,
           question: 'What should sports team names prioritize above trends?',
           options: ['Trending pop culture references', 'Timelessness', 'The most aggressive-sounding option', 'The longest name possible'],
           correct: 1,
-          explanation: '"Miami Heat" works forever. A name based on a 2008 trend would have aged poorly. When evaluating names, ask: will this still be great in 20 years?',
+          explanation: '“Miami Heat” works forever. A name based on a 2008 trend would have aged poorly. When evaluating names, ask: will this still be great in 20 years?',
         },
         {
-          question: 'What is the "Local Connection" principle in sports naming?',
-          options: ['The name must describe the sport', 'Geographic or cultural roots give fans reason to own the name', 'The name must use the city\'s name directly', 'Names should reference local politicians'],
+          question: 'What is the “Local Connection” principle in sports naming?',
+          options: ['The name must describe the sport', 'Geographic or cultural roots give fans reason to own the name', 'The name must use the city’s name directly', 'Names should reference local politicians'],
           correct: 1,
           explanation: 'Lakers, Grizzlies, Warriors, Guardians — all have roots in local geography or culture. This creates deeper fan ownership beyond just team loyalty.',
         },
         {
-          question: 'What\'s the best test for a sports team name?',
-          options: ['Does it look good on a logo?', 'Can you yell it in a game context: "Let\'s go [NAME]!"', 'Is it the shortest option?', 'Does the coach like it?'],
+          question: 'What’s the best test for a sports team name?',
+          options: ['Does it look good on a logo?', 'Can you yell it in a game context: “Let’s go [NAME]!”', 'Is it the shortest option?', 'Does the coach like it?'],
           correct: 1,
-          explanation: 'Sports names live in chants and crowds. If "Let\'s go [NAME]!" sounds awkward, the name won\'t work in its primary environment — the game.',
+          explanation: 'Sports names live in chants and crowds. If “Let’s go [NAME]!” sounds awkward, the name won’t work in its primary environment — the game.',
         },
       ],
     },
@@ -624,7 +624,7 @@ If it sounds awkward in that sentence, reconsider.`,
       readTime: '3 min',
       readPoints: 20,
       quizPoints: 15,
-      content: `Your band name is your first song. Before a note is played, it sets expectations. Genre. Attitude. Story. Here's the framework that separates legendary band names from forgettable ones.
+      content: `Your band name is your first song. Before a note is played, it sets expectations. Genre. Attitude. Story. Here’s the framework that separates legendary band names from forgettable ones.
 
 **The 3 Band Name Archetypes**
 
@@ -637,8 +637,8 @@ Examples: The National, Fleet Foxes, Beach House, Sufjan Stevens
 Sets mood without being literal. Works for longevity. Often the most critically respected approach.
 
 *3. Personal/Story*
-Examples: Lynyrd Skynyrd (after gym teacher Leonard Skinner), Radiohead (from Talking Heads song "Radio Head"), Foo Fighters (Dave Grohl's WWII UFO reference)
-Authentic origin creates mythology. Fans love "how we got our name" stories.
+Examples: Lynyrd Skynyrd (after gym teacher Leonard Skinner), Radiohead (from Talking Heads song “Radio Head”), Foo Fighters (Dave Grohl’s WWII UFO reference)
+Authentic origin creates mythology. Fans love “how we got our name” stories.
 
 **Genre Matters**
 
@@ -650,14 +650,14 @@ Your name signals your genre before anyone hears you.
 
 **The Google Test**
 
-Is your name searchable? "The The," "Girls," and "!!!" are real band names that are essentially impossible to search online.
+Is your name searchable? “The The,” “Girls,” and “!!!” are real band names that are essentially impossible to search online.
 
 CHVRCHES uses a V instead of a U — ugly? Maybe. But instantly searchable.
 
 **The Origin Story**
 
 Pink Floyd = Pink Anderson + Floyd Council (two blues musicians Syd Barrett loved).
-The Beatles = pun on "beat" + Buddy Holly's Crickets.
+The Beatles = pun on “beat” + Buddy Holly’s Crickets.
 
 Even if your name sounds random, having a story makes it mythological.`,
       quiz: [
@@ -674,10 +674,10 @@ Even if your name sounds random, having a story makes it mythological.`,
           explanation: 'Metal bands use aggressive names (Slayer). Indie bands use literary/abstract names (Fleet Foxes). Your name sets expectations before a note is played.',
         },
         {
-          question: 'What is the "Google Test" for band names?',
+          question: 'What is the “Google Test” for band names?',
           options: ['Does the name appear in Google results?', 'Is the name searchable — not a common word or impossible to find?', 'Did Google name any bands using this method?', 'Is the .com domain available?'],
           correct: 1,
-          explanation: '"The The," "Girls," "!!!" — all real bands impossible to search online. CHVRCHES deliberately misspells their name to be searchable. This matters for discoverability.',
+          explanation: '“The The,” “Girls,” “!!!” — all real bands impossible to search online. CHVRCHES deliberately misspells their name to be searchable. This matters for discoverability.',
         },
       ],
     },
@@ -696,11 +696,11 @@ Even if your name sounds random, having a story makes it mythological.`,
 
 **The Clarity vs Intrigue Spectrum**
 
-*Ultra-clear:* "How I Built This" — exactly what it is. Perfect SEO, immediate value prop.
-*Balanced:* "Serial" — intriguing word that implies episodic, genre-appropriate, one word.
-*Abstract:* "99% Invisible" — memorable, thought-provoking, requires explanation. Roman Mars built it into a legend.
+*Ultra-clear:* “How I Built This” — exactly what it is. Perfect SEO, immediate value prop.
+*Balanced:* “Serial” — intriguing word that implies episodic, genre-appropriate, one word.
+*Abstract:* “99% Invisible” — memorable, thought-provoking, requires explanation. Roman Mars built it into a legend.
 
-We recommend "Balanced" for new shows — unless you have an existing audience that will follow you regardless.
+We recommend “Balanced” for new shows — unless you have an existing audience that will follow you regardless.
 
 **The Format Factor**
 
@@ -710,17 +710,17 @@ We recommend "Balanced" for new shows — unless you have an existing audience t
 
 **The Recommendation Test**
 
-The real test: Can someone say "You should listen to [NAME]" and have the other person remember it three days later?
+The real test: Can someone say “You should listen to [NAME]” and have the other person remember it three days later?
 
-"Have you heard Criminal?" → Yes, they remember.
-"Have you heard The Podcast About Crime Stories?" → They forget it immediately.
+“Have you heard Criminal?” → Yes, they remember.
+“Have you heard The Podcast About Crime Stories?” → They forget it immediately.
 
 **Discovery Strategy**
 
 If Apple Podcasts search is your primary acquisition channel → lean clearer.
 If word-of-mouth is your strategy → lean more memorable.
 
-Reply All had a strong brand but was hard to discover. "How I Built This" is discoverable but less mythological. Know your strategy.`,
+Reply All had a strong brand but was hard to discover. “How I Built This” is discoverable but less mythological. Know your strategy.`,
       quiz: [
         {
           question: 'The clarity vs intrigue spectrum for podcasts suggests:',
@@ -730,15 +730,15 @@ Reply All had a strong brand but was hard to discover. "How I Built This" is dis
         },
         {
           question: 'Interview-format shows commonly use which naming approach?',
-          options: ['Abstract single-word names', 'Geographic names', "The host's name", 'Descriptive topic names'],
+          options: ['Abstract single-word names', 'Geographic names', "The host’s name", 'Descriptive topic names'],
           correct: 2,
-          explanation: 'Joe Rogan Experience, Armchair Expert (Dax Shepard), WTF with Marc Maron — interview shows often use the host\'s name because it\'s a personal brand play.',
+          explanation: 'Joe Rogan Experience, Armchair Expert (Dax Shepard), WTF with Marc Maron — interview shows often use the host’s name because it’s a personal brand play.',
         },
         {
-          question: 'What is the "Recommendation Test" for podcast names?',
+          question: 'What is the “Recommendation Test” for podcast names?',
           options: ['Did your friends recommend you start a podcast?', 'Can someone say the name and have others remember it days later?', 'Did other podcasters recommend the name?', 'Is the name recommended by Apple Podcasts?'],
           correct: 1,
-          explanation: '"Have you heard Criminal?" sticks. "Have you heard The True Crime Investigation Podcast?" doesn\'t. The recommendation test checks memorability — the most important word-of-mouth quality.',
+          explanation: '“Have you heard Criminal?” sticks. “Have you heard The True Crime Investigation Podcast?” doesn’t. The recommendation test checks memorability — the most important word-of-mouth quality.',
         },
       ],
     },
@@ -753,24 +753,24 @@ Reply All had a strong brand but was hard to discover. "How I Built This" is dis
       readTime: '3 min',
       readPoints: 20,
       quizPoints: 15,
-      content: `When you're naming a school, nonprofit, or civic organization, you're naming something that should outlast you by decades. The priorities shift dramatically from commercial naming.
+      content: `When you’re naming a school, nonprofit, or civic organization, you’re naming something that should outlast you by decades. The priorities shift dramatically from commercial naming.
 
 **Longevity First**
 
-Avoid trendy language. No "cyber-," "e-," "i-" prefixes. No slang. No references that will date your organization.
+Avoid trendy language. No “cyber-,” “e-,” “i-” prefixes. No slang. No references that will date your organization.
 
-Ask: "Will this name make sense in 50 years?"
+Ask: “Will this name make sense in 50 years?”
 
-"Tech for America" would've aged better than "CyberCorps." "Feeding America" will still be understood in 2075. "Digital Hunger Initiative" won't.
+“Tech for America” would’ve aged better than “CyberCorps.” “Feeding America” will still be understood in 2075. “Digital Hunger Initiative” won’t.
 
 **Community Ownership**
 
-The name should feel like it belongs to everyone — not to one person's vision.
+The name should feel like it belongs to everyone — not to one person’s vision.
 
 Names that feel communal: Big Brothers Big Sisters, Habitat for Humanity, Teach For America.
-Names that feel like one person's project: The Johnson Initiative, Sarah's Foundation.
+Names that feel like one person’s project: The Johnson Initiative, Sarah’s Foundation.
 
-Avoid founder names unless the founder is legendary (Ford Foundation works because Henry Ford was legendary). For most organizations, founder names limit the name's ability to outlive its originator.
+Avoid founder names unless the founder is legendary (Ford Foundation works because Henry Ford was legendary). For most organizations, founder names limit the name’s ability to outlive its originator.
 
 **The Acronym Test**
 
@@ -785,7 +785,7 @@ Unlike brands, civic names often benefit from stating their mission directly:
 - charity: water → clean, lowercase, memorable
 - The Nature Conservancy → exactly describes the work
 
-The risk of pure abstraction: if donors and supporters can't understand what you do, you're always explaining yourself.`,
+The risk of pure abstraction: if donors and supporters can’t understand what you do, you’re always explaining yourself.`,
       quiz: [
         {
           question: 'What should civic and nonprofit names prioritize above all else?',
@@ -795,15 +795,15 @@ The risk of pure abstraction: if donors and supporters can't understand what you
         },
         {
           question: 'What does the Acronym Test check?',
-          options: ['Whether the name is too long', 'Whether the initials work as an acronym and aren\'t already taken', 'Whether the name uses abbreviations', 'Whether board members like the initials'],
+          options: ['Whether the name is too long', 'Whether the initials work as an acronym and aren’t already taken', 'Whether the name uses abbreviations', 'Whether board members like the initials'],
           correct: 1,
-          explanation: 'ACLU, YMCA, NAACP — many civic organizations become their acronyms. Before finalizing a name, check if the initials work, are pronounceable or spell-outable, and aren\'t already taken.',
+          explanation: 'ACLU, YMCA, NAACP — many civic organizations become their acronyms. Before finalizing a name, check if the initials work, are pronounceable or spell-outable, and aren’t already taken.',
         },
         {
           question: 'Why should most civic organizations avoid founder names?',
-          options: ['Founder names are harder to trademark', 'Founder names limit the organization\'s ability to outlive its originator', 'Donors dislike personal names', 'Founder names are too long'],
+          options: ['Founder names are harder to trademark', 'Founder names limit the organization’s ability to outlive its originator', 'Donors dislike personal names', 'Founder names are too long'],
           correct: 1,
-          explanation: 'Unless the founder is legendary (Ford Foundation), a founder name limits the organization. "The Morrison Foundation" dies with the Morrisons. "Community Health Partners" can outlast anyone.',
+          explanation: 'Unless the founder is legendary (Ford Foundation), a founder name limits the organization. “The Morrison Foundation” dies with the Morrisons. “Community Health Partners” can outlast anyone.',
         },
       ],
     },
@@ -821,31 +821,31 @@ The risk of pure abstraction: if donors and supporters can't understand what you
       readTime: '3 min',
       readPoints: 20,
       quizPoints: 15,
-      content: `Whether you're naming a running club, book club, D&D party, supper club, or fantasy league, the psychology is the same: names create identity, and identity drives belonging.
+      content: `Whether you’re naming a running club, book club, D&D party, supper club, or fantasy league, the psychology is the same: names create identity, and identity drives belonging.
 
 **Names Create In-Group Signaling**
 
 Research in social psychology consistently shows that named groups have stronger cohesion than unnamed ones. The name becomes a shorthand for everything the group represents.
 
-When someone says "I'm part of [Group Name]," they're claiming an identity — not just describing an activity.
+When someone says “I’m part of [Group Name],” they’re claiming an identity — not just describing an activity.
 
 **Names Signal What the Group Is About**
 
-"The Tuesday Readers" tells you it's a book club that meets on Tuesdays. Functional. Clear. Forgettable.
+“The Tuesday Readers” tells you it’s a book club that meets on Tuesdays. Functional. Clear. Forgettable.
 
-"The Shelf Life Club" tells you it's a book club with a sense of humor. Slightly more memorable. Still clear enough.
+“The Shelf Life Club” tells you it’s a book club with a sense of humor. Slightly more memorable. Still clear enough.
 
-"The Unread Pile" tells you it's a book club with self-aware irony about the stacks of unread books everyone has. That's a personality.
+“The Unread Pile” tells you it’s a book club with self-aware irony about the stacks of unread books everyone has. That’s a personality.
 
 **Names Make Groups Feel Real**
 
-Before naming, a group is just "some people who do X together." After naming, it's an institution. People invite others. They make merchandise. They develop rituals and inside jokes that attach to the name.
+Before naming, a group is just “some people who do X together.” After naming, it’s an institution. People invite others. They make merchandise. They develop rituals and inside jokes that attach to the name.
 
 **The Good Story Test**
 
 The best group names usually have a story: where they came from, what they mean, why they work.
 
-D&D parties often name themselves after their first campaign's location or villain. Running clubs name themselves after a local landmark or inside joke. Supper clubs often riff on food puns.
+D&D parties often name themselves after their first campaign’s location or villain. Running clubs name themselves after a local landmark or inside joke. Supper clubs often riff on food puns.
 
 Give participants context — the best name often comes from a shared experience or inside joke.`,
       quiz: [
@@ -853,19 +853,19 @@ Give participants context — the best name often comes from a shared experience
           question: 'According to social psychology, what do named groups have compared to unnamed ones?',
           options: ['More members', 'Stronger cohesion and identity', 'Better organizational structure', 'More formal leadership'],
           correct: 1,
-          explanation: 'Research shows named groups have significantly stronger cohesion. The name becomes a shorthand for everything the group represents — it makes the group "real."',
+          explanation: 'Research shows named groups have significantly stronger cohesion. The name becomes a shorthand for everything the group represents — it makes the group “real.”',
         },
         {
           question: 'What does a good group name do beyond describing the activity?',
-          options: ['Makes it official', 'Signals the group\'s personality and creates identity', 'Helps with recruitment', 'Makes scheduling easier'],
+          options: ['Makes it official', 'Signals the group’s personality and creates identity', 'Helps with recruitment', 'Makes scheduling easier'],
           correct: 1,
-          explanation: '"The Unread Pile" vs "Tuesday Readers" — both are book clubs. But one has personality. Names that signal personality attract people who share that personality.',
+          explanation: '“The Unread Pile” vs “Tuesday Readers” — both are book clubs. But one has personality. Names that signal personality attract people who share that personality.',
         },
         {
-          question: 'What is the "Good Story Test" for group names?',
+          question: 'What is the “Good Story Test” for group names?',
           options: ['Does the name sound good in a story?', 'Does the name have an origin story that will become group mythology?', 'Is the name based on a famous story?', 'Would the name work for a storytelling group?'],
           correct: 1,
-          explanation: 'The best group names come from shared experiences or inside jokes. When someone new asks "how\'d you get that name?" and the answer is a great story, the name does extra work building group identity.',
+          explanation: 'The best group names come from shared experiences or inside jokes. When someone new asks “how’d you get that name?” and the answer is a great story, the name does extra work building group identity.',
         },
       ],
     },
@@ -878,47 +878,47 @@ Give participants context — the best name often comes from a shared experience
 // ─── Tip Cards for Personal paths ───
 export const PERSONAL_TIP_CARDS = {
   p1: [
-    { id: 'p1_t1', emoji: '👶', title: 'The Playground Test', tip: 'Imagine calling the name across a crowded playground. Can you yell it clearly? Does it stand out without sounding harsh? If yes, you\'re on the right track.', points: 5 },
-    { id: 'p1_t2', emoji: '✨', title: 'The Initials Check', tip: 'Write out the full name with initials. Fun fact: parents of a child named Andrew Steven Smith only realized later their kid\'s initials spelled A-S-S. Check yours!', points: 5 },
-    { id: 'p1_t3', emoji: '💡', title: 'The 30% Rule', tip: 'On our platform, 30% of winning baby names were NOT in the parents\' initial top-3. Trust the process — the crowd often sees what you\'ve been too close to notice.', points: 5 },
+    { id: 'p1_t1', emoji: '👶', title: 'The Playground Test', tip: 'Imagine calling the name across a crowded playground. Can you yell it clearly? Does it stand out without sounding harsh? If yes, you’re on the right track.', points: 5 },
+    { id: 'p1_t2', emoji: '✨', title: 'The Initials Check', tip: 'Write out the full name with initials. Fun fact: parents of a child named Andrew Steven Smith only realized later their kid’s initials spelled A-S-S. Check yours!', points: 5 },
+    { id: 'p1_t3', emoji: '💡', title: 'The 30% Rule', tip: 'On our platform, 30% of winning baby names were NOT in the parents’ initial top-3. Trust the process — the crowd often sees what you’ve been too close to notice.', points: 5 },
   ],
   p2: [
-    { id: 'p2_t1', emoji: '🐾', title: 'Short Names Win', tip: '1-2 syllables is ideal for pet names. Your pet will respond to shorter names faster — and you\'ll be yelling it at the dog park. "Max!" works. "Bartholomew!" doesn\'t.', points: 5 },
-    { id: 'p2_t2', emoji: '🏆', title: 'The Park Test', tip: 'Imagine calling the name loudly at a dog park or across the house. Does it sound natural? Would you be embarrassed yelling it in public? That\'s your test.', points: 5 },
+    { id: 'p2_t1', emoji: '🐾', title: 'Short Names Win', tip: '1-2 syllables is ideal for pet names. Your pet will respond to shorter names faster — and you’ll be yelling it at the dog park. “Max!” works. “Bartholomew!” doesn’t.', points: 5 },
+    { id: 'p2_t2', emoji: '🏆', title: 'The Park Test', tip: 'Imagine calling the name loudly at a dog park or across the house. Does it sound natural? Would you be embarrassed yelling it in public? That’s your test.', points: 5 },
   ],
   p3: [
-    { id: 'p3_t1', emoji: '🏡', title: 'The Invitation Test', tip: 'You\'ll be telling people "come stay at [Property Name]." Does it sound inviting? Does it make people curious? That\'s the test for home and property names.', points: 5 },
-    { id: 'p3_t2', emoji: '⚓', title: 'Boats Have Stories', tip: 'The best boat names have a story behind them — a place you love, a person who matters, an inside joke. When someone asks "Why\'d you name it that?" you want a good answer.', points: 5 },
+    { id: 'p3_t1', emoji: '🏡', title: 'The Invitation Test', tip: 'You’ll be telling people “come stay at [Property Name].” Does it sound inviting? Does it make people curious? That’s the test for home and property names.', points: 5 },
+    { id: 'p3_t2', emoji: '⚓', title: 'Boats Have Stories', tip: 'The best boat names have a story behind them — a place you love, a person who matters, an inside joke. When someone asks “Why’d you name it that?” you want a good answer.', points: 5 },
   ],
   p4: [
     { id: 'p4_t1', emoji: '🎲', title: 'Names Make Groups Real', tip: 'Research shows named groups have stronger cohesion than unnamed ones. Your fantasy league, book club, or D&D party will meet more consistently once it has an identity.', points: 5 },
-    { id: 'p4_t2', emoji: '😄', title: 'The Inside Joke Goldmine', tip: 'The best group names often come from inside jokes or shared experiences. Give people context about your group\'s history — the best name is often already in your story.', points: 5 },
+    { id: 'p4_t2', emoji: '😄', title: 'The Inside Joke Goldmine', tip: 'The best group names often come from inside jokes or shared experiences. Give people context about your group’s history — the best name is often already in your story.', points: 5 },
   ],
 };
 
 // ─── Exploration Prompts ───
 export const EXPLORATION_PROMPTS = {
   b1: [
-    "What's the one word that captures what your company does differently from everyone else?",
+    "What’s the one word that captures what your company does differently from everyone else?",
     "If your company were a person, what would their nickname be?",
-    "What metaphor best describes your company's core value? (e.g., 'a bridge,' 'a compass,' 'a spark')",
+    "What metaphor best describes your company’s core value? (e.g., ‘a bridge,’ ‘a compass,’ ‘a spark’)",
     "What do your best customers say when they describe you to others?",
-    "What would competitors never say about themselves that's actually true of you?",
+    "What would competitors never say about themselves that’s actually true of you?",
   ],
   b2: [
     "What transformation does this product create for the user?",
     "If this product were a tool in a physical workshop, what would it be?",
-    "What's the one moment when this product is most valuable?",
-    "What do users feel after using this product that they didn't feel before?",
+    "What’s the one moment when this product is most valuable?",
+    "What do users feel after using this product that they didn’t feel before?",
   ],
   t1: [
     "What makes this team different from all the others in your league?",
-    "What's the one thing that makes teammates excited to show up?",
+    "What’s the one thing that makes teammates excited to show up?",
     "If the team were an animal, what would it be and why?",
   ],
   t2: [
-    "What's the first song you ever played together?",
-    "What's an inside joke or shared experience that defines the band?",
+    "What’s the first song you ever played together?",
+    "What’s an inside joke or shared experience that defines the band?",
     "What 3 adjectives describe your sound?",
   ],
   p1: [
@@ -929,26 +929,26 @@ export const EXPLORATION_PROMPTS = {
 
 // ─── Famous Rejected Names (Flip Cards) ───
 export const REJECTED_NAMES = [
-  { brand: 'Amazon', current: 'Amazon', rejected: ['Cadabra', 'Relentless', 'Awake', 'MakeItSo'], note: "Bezos's lawyer misheard 'Cadabra' as 'Cadaver' on the phone", source: 'Brad Stone, "The Everything Store"' },
-  { brand: 'Google', current: 'Google', rejected: ['BackRub', 'Googol'], note: "The misspelling of 'Googol' stuck — and became worth trillions", source: 'Stanford archives' },
-  { brand: 'Nike', current: 'Nike', rejected: ['Dimension Six'], note: "Named after the Greek goddess of victory at the last minute", source: 'Phil Knight memoir "Shoe Dog"' },
-  { brand: 'Pepsi', current: 'Pepsi', rejected: ["Brad's Drink"], note: "Named after dyspepsia (indigestion) it claimed to cure", source: 'Pepsi company history' },
-  { brand: 'Sony', current: 'Sony', rejected: ['Tokyo Tsushin Kogyo', 'Sonny Boy'], note: "Combined 'sonus' (Latin: sound) + 'sonny' (American slang: boy)", source: 'Akio Morita autobiography' },
+  { brand: 'Amazon', current: 'Amazon', rejected: ['Cadabra', 'Relentless', 'Awake', 'MakeItSo'], note: "Bezos’s lawyer misheard ‘Cadabra’ as ‘Cadaver’ on the phone", source: 'Brad Stone, “The Everything Store”' },
+  { brand: 'Google', current: 'Google', rejected: ['BackRub', 'Googol'], note: "The misspelling of ‘Googol’ stuck — and became worth trillions", source: 'Stanford archives' },
+  { brand: 'Nike', current: 'Nike', rejected: ['Dimension Six'], note: "Named after the Greek goddess of victory at the last minute", source: 'Phil Knight memoir “Shoe Dog”' },
+  { brand: 'Pepsi', current: 'Pepsi', rejected: ["Brad’s Drink"], note: "Named after dyspepsia (indigestion) it claimed to cure", source: 'Pepsi company history' },
+  { brand: 'Sony', current: 'Sony', rejected: ['Tokyo Tsushin Kogyo', 'Sonny Boy'], note: "Combined ‘sonus’ (Latin: sound) + ‘sonny’ (American slang: boy)", source: 'Akio Morita autobiography' },
   { brand: 'Starbucks', current: 'Starbucks', rejected: ['Cargo House', 'Pequod'], note: "Named after Starbuck, first mate in Moby Dick", source: 'Howard Schultz interviews' },
   { brand: 'Instagram', current: 'Instagram', rejected: ['Burbn', 'Codename', 'Scotch'], note: "Burbn was a check-in app; they pivoted to photos only and renamed", source: 'Kevin Systrom interviews' },
   { brand: 'Twitter', current: 'Twitter', rejected: ['twttr', 'Jitter', 'Smssy'], note: "Jack Dorsey wanted a name that sounded like birds chirping", source: 'Dom Sagolla, Twitter co-founder' },
-  { brand: 'Netflix', current: 'Netflix', rejected: ['Kibble'], note: "Almost named after Reed Hastings' dog before cooler heads prevailed", source: 'Marc Randolph co-founder memoir' },
-  { brand: 'Spotify', current: 'Spotify', rejected: ['MusicTorrent', 'Tunigo', 'Peer Tracks'], note: "Created by combining 'spot' and 'identify'", source: 'Daniel Ek interviews' },
-  { brand: 'Yahoo', current: 'Yahoo', rejected: ["Jerry and David's Guide to the World Wide Web"], note: "Yahoo = 'Yet Another Hierarchical Officious Oracle'", source: 'Jerry Yang, co-founder' },
-  { brand: 'Slack', current: 'Slack', rejected: ['Glitch'], note: "Pivoted from a game called Glitch; the acronym came after — they worked backward from 'Slack'", source: 'Stewart Butterfield interviews' },
+  { brand: 'Netflix', current: 'Netflix', rejected: ['Kibble'], note: "Almost named after Reed Hastings’ dog before cooler heads prevailed", source: 'Marc Randolph co-founder memoir' },
+  { brand: 'Spotify', current: 'Spotify', rejected: ['MusicTorrent', 'Tunigo', 'Peer Tracks'], note: "Created by combining ‘spot’ and ‘identify’", source: 'Daniel Ek interviews' },
+  { brand: 'Yahoo', current: 'Yahoo', rejected: ["Jerry and David’s Guide to the World Wide Web"], note: "Yahoo = ‘Yet Another Hierarchical Officious Oracle’", source: 'Jerry Yang, co-founder' },
+  { brand: 'Slack', current: 'Slack', rejected: ['Glitch'], note: "Pivoted from a game called Glitch; the acronym came after — they worked backward from ‘Slack’", source: 'Stewart Butterfield interviews' },
 ];
 
 // ─── FAQ ───
 export const FAQ_ITEMS = [
   { q: 'Do participants need accounts?', a: 'No. Share a link, they join instantly. Only organizers create accounts (and only at contest launch). Participants click the link, see the brief, read the education content, and submit — zero friction.' },
-  { q: 'How does anonymous submission work?', a: 'Names appear without attribution during voting. Even the organizer doesn\'t see who suggested what until after voting closes. In our data, anonymous contests have 23% higher satisfaction with final results.' },
+  { q: 'How does anonymous submission work?', a: 'Names appear without attribution during voting. Even the organizer doesn’t see who suggested what until after voting closes. In our data, anonymous contests have 23% higher satisfaction with final results.' },
   { q: 'Can I run a free contest?', a: 'Yes. Free tier includes up to 5 participants, basic voting (Simple Poll), and a results summary. Upgrade to Standard ($9–$29) for unlimited participants, all 5 voting methods, PDF reports, and analytics.' },
-  { q: 'What\'s the Catchword connection?', a: 'NamingContest.com is built using Catchword\'s 25-year naming methodology. Every article, every criterion, every tip — backed by the firm that named TikTok, Rivian, and Intel. Catchword consultants are available for post-contest support.' },
+  { q: 'What’s the Catchword connection?', a: 'NamingContest.com is built using Catchword’s 25-year naming methodology. Every article, every criterion, every tip — backed by the firm that named TikTok, Rivian, and Intel. Catchword consultants are available for post-contest support.' },
   { q: 'How long does a typical contest take?', a: 'Recommended: 5-7 days for submissions, then 3-4 days for voting. Total: 8-11 days. Contests under 5 days have 54% avg participation. Contests of 8-11 days have 76% avg participation. You control the timeline.' },
   { q: 'What are the pricing tiers?', a: 'Personal: Free (5 participants) or $9 (up to 15). Team: Free or $29 (up to 60). Business: Free or $89 (up to 240). All paid plans include every voting method, naming methodology, and automated reminders.' },
   { q: 'What is Multi-Round Series?', a: 'For Business and Civic contests, you can run 2-3 rounds: submit many names in Round 1, advance the top 8 to Round 2, then the top 3 to a final vote. Standard tier supports 2 rounds; Professional supports 3.' },
@@ -982,7 +982,7 @@ export const SEGMENTS = {
     colorRgb: '253,199,0',
     icon: '👥',
     description: 'Give your whole group a voice',
-    hoverHeadline: 'Give everyone a voice. Pick a name you\'ll all own.',
+    hoverHeadline: 'Give everyone a voice. Pick a name you’ll all own.',
     subsegments: [
       { id: 't1', label: 'Sports Team', description: 'Name a recreational or competitive team', icon: '🏆', briefSteps: 4 },
       { id: 't2', label: 'Band or Music Group', description: 'Name a musical act or band', icon: '🎸', briefSteps: 5 },
@@ -999,7 +999,7 @@ export const SEGMENTS = {
     colorRgb: '253,199,0',
     icon: '✨',
     description: 'Let everyone weigh in. Make it official.',
-    hoverHeadline: 'Let everyone vote. Pick the name you\'ll love.',
+    hoverHeadline: 'Let everyone vote. Pick the name you’ll love.',
     subsegments: [
       { id: 'p1', label: 'Baby Name', description: 'Choosing a name for your baby', icon: '👶', briefSteps: 1 },
       { id: 'p2', label: 'Pet Name', description: 'Naming your new pet', icon: '🐾', briefSteps: 1 },

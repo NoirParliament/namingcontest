@@ -84,8 +84,8 @@ export const LIGHT_THEME = {
   divider: 'rgba(30,35,48,0.08)',
 
   // Typography
-  fontDisplay: "'Bricolage Grotesque', 'Inter', sans-serif",
-  fontBody: "'Inter', sans-serif",
+  fontDisplay: "‘Bricolage Grotesque’, ‘Inter’, sans-serif",
+  fontBody: "‘Inter’, sans-serif",
 };
 
 // ── Helper functions ──

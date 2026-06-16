@@ -71,7 +71,7 @@ function buildCard(idx) {
   const rows = Math.floor(CARD_H / lineH);
   pre.style.cssText = `
     position:absolute;top:0;left:0;width:100%;height:100%;
-    color:rgba(${seg.rgb},0.55);font-family:'Courier New',monospace;
+    color:rgba(${seg.rgb},0.55);font-family:’Courier New’,monospace;
     font-size:9.5px;line-height:${lineH}px;overflow:hidden;white-space:pre;
     margin:0;padding:4px 0 0 3px;box-sizing:border-box;
   `;

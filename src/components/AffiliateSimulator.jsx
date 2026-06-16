@@ -41,7 +41,7 @@ const RESULTS_PAGE_AFFILIATES = {
     { partner: 'Printful', tag: 'Band Merch', headline: 'Launch your band merch.', body: 'T-shirts, hoodies, posters with your band name. No minimums, print-on-demand.', cta: 'Design merch →', accent: '#d2e823', accentText: '#fff', subs: ['band-music'] },
     { partner: 'Printful', tag: 'Custom Merch', headline: 'Make it official with merch.', body: 'Custom hats, hoodies, and gear with your new name. No minimums.', cta: 'Design merch →', accent: '#d2e823', accentText: '#fff', subs: ['podcast-channel', 'civic-school-nonprofit', 'gaming-group', 'other-team'] },
     { partner: '99designs', tag: 'Brand Design', headline: 'Every great name needs a great logo.', body: 'Multiple concepts, unlimited revisions. Work with a dedicated designer.', cta: 'Get a logo →', accent: '#ec4899', accentText: '#fff' },
-    { partner: 'Squarespace', tag: 'Website Builder', headline: "Claim your team's home online.", body: 'Schedules, roster, news. No coding required. Looks great on every device.', cta: 'Build your site →', accent: '#3b82f6', accentText: '#fff', subs: ['sports-team', 'civic-school-nonprofit', 'other-team'] },
+    { partner: 'Squarespace', tag: 'Website Builder', headline: "Claim your team’s home online.", body: 'Schedules, roster, news. No coding required. Looks great on every device.', cta: 'Build your site →', accent: '#3b82f6', accentText: '#fff', subs: ['sports-team', 'civic-school-nonprofit', 'other-team'] },
     { partner: 'Buzzsprout', tag: 'Podcast Hosting', headline: 'Launch your show.', body: 'Reliable podcast hosting with built-in analytics. Distribute to Apple, Spotify, and everywhere else.', cta: 'Start hosting →', accent: '#f97316', accentText: '#fff', subs: ['podcast-channel'] },
     { partner: 'DistroKid', tag: 'Music Distribution', headline: 'Get your music everywhere.', body: 'Distribute to Spotify, Apple Music, and 150+ platforms. Keep 100% of your royalties.', cta: 'Distribute music →', accent: '#8b5cf6', accentText: '#fff', subs: ['band-music'] },
     { partner: 'Namecheap', tag: 'Domain Registrar', headline: 'Secure your domain.', body: 'Lock in the domain for your new name before someone else does.', cta: 'Check domain →', accent: '#d2e823', accentText: '#fff' },
@@ -49,8 +49,8 @@ const RESULTS_PAGE_AFFILIATES = {
   personal: [
     { partner: 'Artifact Uprising', tag: 'Birth Announcements', headline: 'Share the name with the world.', body: 'Premium birth announcement cards, printed and shipped. The name you chose together, beautifully presented.', cta: 'Design announcements →', accent: '#d2e823', accentText: '#fff', subs: ['baby-name'] },
     { partner: 'Etsy', tag: 'Personalised Gifts', headline: 'Celebrate the name.', body: 'Personalised gifts featuring the chosen name — perfect for new babies, pets, or homes.', cta: 'Shop personalised gifts →', accent: '#f59e0b', accentText: '#fff' },
-    { partner: 'Chewy', tag: 'Pet Accessories', headline: 'Make it official for your pet.', body: 'Custom ID tags and personalised accessories engraved with your pet\'s new name. Fast shipping.', cta: 'Get a custom ID tag →', accent: '#d2e823', accentText: '#fff', subs: ['pet-name'] },
-    { partner: 'Namecheap', tag: 'Domain Registrar', headline: 'Claim the name online.', body: 'If you plan to create any presence around this name, grab the domain while it\'s available.', cta: 'Check on Namecheap →', accent: '#d2e823', accentText: '#fff' },
+    { partner: 'Chewy', tag: 'Pet Accessories', headline: 'Make it official for your pet.', body: 'Custom ID tags and personalised accessories engraved with your pet’s new name. Fast shipping.', cta: 'Get a custom ID tag →', accent: '#d2e823', accentText: '#fff', subs: ['pet-name'] },
+    { partner: 'Namecheap', tag: 'Domain Registrar', headline: 'Claim the name online.', body: 'If you plan to create any presence around this name, grab the domain while it’s available.', cta: 'Check on Namecheap →', accent: '#d2e823', accentText: '#fff' },
     { partner: 'Etsy', tag: 'Custom Sign', headline: 'Get a custom name sign.', body: 'Handmade wooden or metal signs engraved with your property name. Perfect for the entrance.', cta: 'Shop custom signs →', accent: '#16a34a', accentText: '#fff', subs: ['home-property-fun'] },
   ],
 };
@@ -124,7 +124,7 @@ function TrademarkMockup({ moment, group, subSegment }) {
           </div>
         </div>
         <div style={{ marginTop: 12, padding: '8px 12px', background: '#f5f5f0', border: `0.5px solid rgba(${rgb},0.15)`, borderRadius: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 11, color: '#a1a1a1', flex: 1 }}>Search "{(SAMPLE_NAMES[subSegment] || ['nova'])[0]}"…</span>
+          <span style={{ fontSize: 11, color: '#a1a1a1', flex: 1 }}>Search “{(SAMPLE_NAMES[subSegment] || ['nova'])[0]}”…</span>
           <span style={{ fontSize: 10, fontWeight: 700, color, background: `rgba(${rgb},0.12)`, padding: '3px 8px', borderRadius: 4 }}>Search →</span>
         </div>
         <div style={{ fontSize: 9, color: '#a1a1a1', marginTop: 8 }}>Powered by {moment.partner} · Sponsored</div>
@@ -234,13 +234,13 @@ function ResultsPageAllCards({ group, cards: filteredCards }) {
 
   return (
     <div>
-      <div style={breadcrumb}>Results Page — "You have a name. Now make it real." section</div>
+      <div style={breadcrumb}>Results Page — “You have a name. Now make it real.” section</div>
 
       {/* Simulated page header stub */}
       <div style={{ background: '#fff', border: `0.5px solid rgba(${rgb},0.15)`, borderRadius: 10, padding: '14px 18px', marginBottom: 16 }}>
         <div style={{ fontSize: 13, fontWeight: 700, color: '#1e2330', marginBottom: 3 }}>You have a name. Now make it real.</div>
         <div style={{ fontSize: 11, color: '#676b5f' }}>
-          <span style={{ color: `rgba(${rgb},0.9)`, fontWeight: 600 }}>WinnerName</span> is chosen — here's what to do next, in order.
+          <span style={{ color: `rgba(${rgb},0.9)`, fontWeight: 600 }}>WinnerName</span> is chosen — here’s what to do next, in order.
         </div>
       </div>
 
@@ -264,7 +264,7 @@ function ResultsPageAllCards({ group, cards: filteredCards }) {
         ))}
       </div>
       <div style={{ fontSize: 9, color: '#a1a1a1', marginTop: 8 }}>
-        {cards.length} affiliate cards shown on this segment's Results Page · All sponsored
+        {cards.length} affiliate cards shown on this segment’s Results Page · All sponsored
       </div>
     </div>
   );
@@ -415,7 +415,7 @@ export default function AffiliateSimulator({ group, onClose }) {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 10, color: '#8a8a82', marginBottom: 18 }}>
                   <span>{SUB_LABELS[activeSub] || label}</span><span>›</span>
                   <span>Results Page</span><span>›</span>
-                  <span style={{ color }}>"You have a name. Now make it real." — all {resultsCards.length} cards</span>
+                  <span style={{ color }}>“You have a name. Now make it real.” — all {resultsCards.length} cards</span>
                 </div>
                 <ResultsPageAllCards group={activeGroup} cards={resultsCards} />
               </>

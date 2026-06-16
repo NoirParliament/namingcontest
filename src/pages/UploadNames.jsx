@@ -106,7 +106,7 @@ export default function UploadNames() {
 
         <div style={{ marginBottom: 32 }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: tc.primary, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>Voting Only · Upload Name Candidates</div>
-          <h1 style={{ fontSize: 'clamp(24px,3vw,38px)', fontWeight: 800, color: '#1e2330', marginBottom: 10, fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif" }}>What names are you voting on?</h1>
+          <h1 style={{ fontSize: 'clamp(24px,3vw,38px)', fontWeight: 800, color: '#1e2330', marginBottom: 10, fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif" }}>What names are you voting on?</h1>
           <p style={{ fontSize: 14, color: '#676b5f', lineHeight: 1.6 }}>
             Add 5–20 name candidates. Optionally include a short description or rationale for each name — voters will see it when casting their vote.
           </p>
@@ -208,7 +208,7 @@ export default function UploadNames() {
         {/* Voting method */}
         {isReady && (
           <>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1e2330', marginBottom: 12, fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif" }}>Voting method</h3>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1e2330', marginBottom: 12, fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif" }}>Voting method</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 24 }}>
               {VOTING_METHODS.map(m => (
                 <div key={m.id} onClick={() => setVotingMethod(m.id)} style={{ padding: '14px 16px', background: votingMethod === m.id ? `rgba(${tc.primaryRgb},0.06)` : '#ffffff', border: `0.5px solid ${votingMethod === m.id ? `rgba(${tc.primaryRgb},0.4)` : 'rgba(30,35,48,0.1)'}`, borderRadius: 10, cursor: 'pointer' }}>
@@ -226,7 +226,7 @@ export default function UploadNames() {
 
             {/* Voting duration */}
             <div style={{ background: '#ffffff', border: '0.5px solid rgba(30,35,48,0.1)', borderRadius: 12, padding: '18px 20px', marginBottom: 24 }}>
-              <h4 style={{ fontSize: 14, fontWeight: 700, color: '#1e2330', marginBottom: 12, fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif" }}>Voting duration</h4>
+              <h4 style={{ fontSize: 14, fontWeight: 700, color: '#1e2330', marginBottom: 12, fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif" }}>Voting duration</h4>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div style={{ display: 'flex', gap: 6 }}>
                   {[2, 3, 5, 7].map(d => (

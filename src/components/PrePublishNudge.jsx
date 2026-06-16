@@ -85,7 +85,7 @@ export default function PrePublishNudge({ isOpen, onClose, winnerName, currentGr
                 <div style={{ fontSize: 12, color: '#a1a1a1', marginBottom: 10, lineHeight: 1.5 }}>
                   Have you done a basic trademark search? Go to USPTO.gov → Trademark Search.
                   <br />
-                  <span style={{ color: '#d2e823' }}>Green:</span> No matches · <span style={{ color: '#d2e823' }}>Yellow:</span> Similar names · <span style={{ color: '#ef4444' }}>Red:</span> Exact match — don't use it
+                  <span style={{ color: '#d2e823' }}>Green:</span> No matches · <span style={{ color: '#d2e823' }}>Yellow:</span> Similar names · <span style={{ color: '#ef4444' }}>Red:</span> Exact match — don’t use it
                 </div>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   <button onClick={() => window.open('https://www.uspto.gov/trademarks/search', '_blank')} style={{ height: 32, padding: '0 14px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 7, background: 'transparent', color: '#fff', fontSize: 12, cursor: 'pointer' }}>
@@ -137,7 +137,7 @@ export default function PrePublishNudge({ isOpen, onClose, winnerName, currentGr
             All Clear — Publish Results →
           </button>
           <button onClick={onProceed} style={{ height: 36, border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, background: 'transparent', color: '#7a7a7a', fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-            I'll verify these later — proceed anyway
+            I’ll verify these later — proceed anyway
             {!allChecked && <span style={{ fontSize: 11, color: '#ef4444' }}>⚠ Not all checks complete</span>}
           </button>
         </div>

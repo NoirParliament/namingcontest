@@ -4,25 +4,25 @@ const steps = [
   {
     number: '01',
     title: 'Choose Your Category',
-    description: 'Select whether you\'re naming a business, team, or personal project. Each category has tailored features.',
+    description: 'Select whether you’re naming a business, team, or personal project. Each category has tailored features.',
     icon: '🎯'
   },
   {
     number: '02',
     title: 'Create Your Brief',
-    description: 'Answer questions about what you\'re naming. Our smart brief builder adapts to your needs.',
+    description: 'Answer questions about what you’re naming. Our smart brief builder adapts to your needs.',
     icon: '✍️'
   },
   {
     number: '03',
     title: 'Invite Participants',
-    description: 'Share a link with collaborators, team members, or friends. They\'ll submit and vote on names.',
+    description: 'Share a link with collaborators, team members, or friends. They’ll submit and vote on names.',
     icon: '📬'
   },
   {
     number: '04',
     title: 'Get Your Winner',
-    description: 'See results in real-time. Export rankings, generate "name stories," and celebrate your new name.',
+    description: 'See results in real-time. Export rankings, generate “name stories,” and celebrate your new name.',
     icon: '🎉'
   }
 ];

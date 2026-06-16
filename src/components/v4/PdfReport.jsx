@@ -142,7 +142,7 @@ const PdfReport = forwardRef(function PdfReport({
             <Gift weight="duotone" size={16} />
             <span>
               <strong>{submitter?.name}</strong> wins{' '}
-              <em>"{prize.name || 'the prize'}"</em>
+              <em>“{prize.name || 'the prize'}”</em>
             </span>
           </div>
         )}

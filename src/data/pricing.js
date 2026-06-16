@@ -181,9 +181,9 @@ export const getUpgradeMessage = (segmentGroup, currentParticipants) => {
   if (currentParticipants <= freePlan.maxParticipants) return null;
   
   const messages = {
-    business: `You've reached the free limit of ${freePlan.maxParticipants} participants. Upgrade to Business for $${paidPlan.price} to invite up to ${paidPlan.maxParticipants} people and unlock all voting methods, live sessions, and professional reports.`,
-    team: `You've reached the free limit of ${freePlan.maxParticipants} participants. Upgrade this contest for $${paidPlan.price} to invite up to ${paidPlan.maxParticipants} people and unlock full voting options.`,
-    personal: `You've reached the free limit of ${freePlan.maxParticipants} participants. Upgrade this contest for $${paidPlan.price} to invite up to ${paidPlan.maxParticipants} people and unlock full voting options.`,
+    business: `You’ve reached the free limit of ${freePlan.maxParticipants} participants. Upgrade to Business for $${paidPlan.price} to invite up to ${paidPlan.maxParticipants} people and unlock all voting methods, live sessions, and professional reports.`,
+    team: `You’ve reached the free limit of ${freePlan.maxParticipants} participants. Upgrade this contest for $${paidPlan.price} to invite up to ${paidPlan.maxParticipants} people and unlock full voting options.`,
+    personal: `You’ve reached the free limit of ${freePlan.maxParticipants} participants. Upgrade this contest for $${paidPlan.price} to invite up to ${paidPlan.maxParticipants} people and unlock full voting options.`,
   };
   
   return messages[segmentGroup] || messages.personal;

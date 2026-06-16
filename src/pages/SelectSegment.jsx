@@ -154,7 +154,7 @@ export default function SelectSegment() {
             Step 1 of 4
           </div>
           <h1 style={{
-            fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
+            fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif",
             fontSize: 'clamp(32px, 5vw, 52px)',
             fontWeight: 800,
             color: '#1e2330',
@@ -163,7 +163,7 @@ export default function SelectSegment() {
             What are you naming?
           </h1>
           <p style={{ fontSize: 15, color: '#676b5f', maxWidth: 440, margin: '0 auto', lineHeight: 1.65 }}>
-            Choose your category — then tell us if you're organizing a contest or joining one as a participant
+            Choose your category — then tell us if you’re organizing a contest or joining one as a participant
           </p>
         </div>
 
@@ -234,7 +234,7 @@ function SegmentCard({ seg, isHovered, onHover, onLeave, onClick }) {
       </div>
 
       {/* Title */}
-      <h3 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 20, fontWeight: 700, color: '#1e2330', lineHeight: 1.2, margin: 0 }}>
+      <h3 style={{ fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 20, fontWeight: 700, color: '#1e2330', lineHeight: 1.2, margin: 0 }}>
         {seg.title}
       </h3>
 

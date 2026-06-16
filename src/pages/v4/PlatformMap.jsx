@@ -214,7 +214,7 @@ const CREATOR_STEPS = [
   { n: 5,  title: 'Review & launch', desc: 'Summary of every answer, then the fake-Stripe checkout modal to go live.', seed: () => seedCreatorContest(SUBMIT_ID), url: '/v4/setup/review?launch=1', payHint: 'Test card 4242 4242 4242 4242 · any future expiry · any 3-digit CVC' },
   { n: 6,  title: 'Manage — submission stage', desc: 'Creator dashboard while names roll in, with live results and the brief recap.', seed: () => seedCreatorContest(SUBMIT_ID), url: `/v4/contest/${SUBMIT_ID}?phase=submission` },
   { n: 7,  title: 'Manage — voting stage', desc: 'Same dashboard once submissions close and votes start accumulating.', seed: () => seedCreatorContest(VOTE_ID), url: `/v4/contest/${VOTE_ID}?phase=voting` },
-  { n: 8,  title: 'Pick the winner', desc: 'Creator crowns a name from the leaderboard in the pick-winner modal.', seed: () => seedCreatorContest(VOTE_ID), url: `/v4/contest/${VOTE_ID}?phase=winner&pick=1` },
+  { n: 8,  title: 'Manage — pick the winner stage', desc: 'Creator dashboard at the final stage: the journey shows voting closed, and the Pick the winner button opens the leaderboard to crown a name.', seed: () => seedCreatorContest(VOTE_ID), url: `/v4/contest/${VOTE_ID}?phase=winner` },
   { n: 9,  title: 'Winner screen', desc: 'The winner hero card with share + PNG/PDF export once a name is crowned.', seed: () => seedCreatorContest(VOTE_ID), url: `/v4/contest/${VOTE_ID}?phase=winner&winner=vsub_2` },
   { n: 10, title: 'Workspace (creator)', desc: 'Account home — running and past contests, billing, and profile.', seed: () => seedCreatorContest(VOTE_ID), url: '/v4/settings' },
 ];
@@ -228,8 +228,8 @@ const PARTICIPANT_STEPS = [
   { n: 6,  title: 'Vote', desc: 'Pick your favourites from the shortlist with search, sort, and a sticky submit bar.', seed: () => seedParticipant(VOTE_ID, 'submitted'), url: `/v4/contest/${VOTE_ID}/vote` },
   { n: 7,  title: 'Post-vote thanks', desc: 'Receipt of your votes plus a countdown to the winner announcement.', seed: () => seedParticipant(VOTE_ID, 'voted'), url: `/v4/contest/${VOTE_ID}/vote-thanks` },
   { n: 8,  title: 'Winner reveal — your name won', desc: 'The celebratory state: your own submission took it. Confetti, a YOU WON badge, and the prize.', seed: () => seedParticipantWinner(VOTE_ID, 'vsub_1'), url: `/v4/contest/${VOTE_ID}/winner` },
-  { n: 9,  title: 'Winner reveal — a teammate won', desc: "The same reveal when someone else's name took it — with a note here because you voted for the winner.", seed: () => seedParticipantWinnerOther(VOTE_ID, 'vsub_5'), url: `/v4/contest/${VOTE_ID}/winner` },
-  { n: 10, title: 'Workspace (post-vote)', desc: '"Voted ✓" status with a countdown to the winner announcement.', seed: () => seedParticipant(VOTE_ID, 'voted'), url: '/v4/settings' },
+  { n: 9,  title: 'Winner reveal — a teammate won', desc: "The same reveal when someone else’s name took it — with a note here because you voted for the winner.", seed: () => seedParticipantWinnerOther(VOTE_ID, 'vsub_5'), url: `/v4/contest/${VOTE_ID}/winner` },
+  { n: 10, title: 'Workspace (post-vote)', desc: '“Voted ✓” status with a countdown to the winner announcement.', seed: () => seedParticipant(VOTE_ID, 'voted'), url: '/v4/settings' },
 ];
 
 // Neutral flow — a single page (for now): a stranger who clicked the
@@ -253,7 +253,7 @@ const ADDITIONAL = {
   ],
   errors: [
     { title: '404 — Not found', desc: 'Shown for any unknown URL; on-brand with a way back.', url: '/this-page-does-not-exist' },
-    { title: 'Error state', desc: 'Generic "something went wrong" page for unexpected failures.', url: '/error' },
+    { title: 'Error state', desc: 'Generic “something went wrong” page for unexpected failures.', url: '/error' },
   ],
 };
 

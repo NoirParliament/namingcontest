@@ -102,8 +102,8 @@ const SUBMIT_BUBBLE_DELAY = 600;  // pacing between user-bubble and the next pro
 const SUBMISSION_TIPS = [
   `Your first instinct is usually your most obvious — submit it anyway, it sets the baseline.`,
   `Try a different angle from #1 — change the tone, archetype, or length.`,
-  `The third one is usually the boldest. Don't censor it.`,
-  `You've covered the obvious territory — try something the room would push back on.`,
+  `The third one is usually the boldest. Don’t censor it.`,
+  `You’ve covered the obvious territory — try something the room would push back on.`,
   `Diminishing returns from here. Make this one weird or call it.`,
 ];
 const TIPPED_LIMIT = 5; // submissions 1–5 get a tip; 6+ go rapid-fire
@@ -115,7 +115,7 @@ function getSubmissionTip(n) {
 // First-turn prompt — only used when there are no drafts yet.
 // Subsequent prompts are baked into the system response that follows
 // each user-bubble (one bubble per turn, never two in a row).
-const INITIAL_PROMPT = `OK — what's the first name that comes to mind?`;
+const INITIAL_PROMPT = `OK — what’s the first name that comes to mind?`;
 
 // 20 ack phrases + 20 prompt phrases. Combined per turn so the bot
 // never sounds identical twice. Early turns (#1–5) use hand-picked
@@ -129,14 +129,14 @@ const ACK_PHRASES = [
   'Smart.', 'Good one.', 'Solid pick.', 'In the bag.',
 ];
 const PROMPT_PHRASES = [
-  `What's the next name?`,
+  `What’s the next name?`,
   `Got another?`,
   `One more, or call it?`,
   `Hit me with another.`,
   `Got more, or wrap up?`,
   `Anything else come to mind?`,
   `Throw another one in?`,
-  `Another idea, or that's it?`,
+  `Another idea, or that’s it?`,
   `Got one more in you?`,
   `What else?`,
   `Another, or you done?`,
@@ -154,10 +154,10 @@ const PROMPT_PHRASES = [
 // reads naturally early; falls back to mod-cycling for 6+.
 const TURN_RESPONSE_OVERRIDES = [
   null, // 1 (handled separately as INITIAL_PROMPT before any drafts)
-  `Got it — first one's in. What's another?`,           // after #1
-  `Nice — that's two. One more, or call it?`,           // after #2
+  `Got it — first one’s in. What’s another?`,           // after #1
+  `Nice — that’s two. One more, or call it?`,           // after #2
   `Three solid ones. Anything else, or wrap?`,          // after #3
-  `Four in. You've covered a lot — want a fifth?`,      // after #4
+  `Four in. You’ve covered a lot — want a fifth?`,      // after #4
   `Five — diminishing returns from here. Last one?`,    // after #5
 ];
 function getSystemResponse(submittedCount, isFinalTurn) {
@@ -165,7 +165,7 @@ function getSystemResponse(submittedCount, isFinalTurn) {
   // bubble. Two doors: tap any name above to edit it inline, or hit
   // submit. No "add another" since they've used their last slot.
   if (isFinalTurn) {
-    return `That's your last one — thanks! Tap any name above to edit, or send them when you're ready.`;
+    return `That’s your last one — thanks! Tap any name above to edit, or send them when you’re ready.`;
   }
   const override = TURN_RESPONSE_OVERRIDES[submittedCount];
   if (override) return override;
@@ -443,7 +443,7 @@ export default function ParticipantChat() {
                   Welcome — <strong>{creatorName}</strong> invited you to
                   suggest names for{' '}
                   <em>{contest.workingName || contest.name}</em>.
-                  {prizeLine && <> {prizeLine}</>} You'll add up to{' '}
+                  {prizeLine && <> {prizeLine}</>} You’ll add up to{' '}
                   <strong>{remainingSlots}</strong>{' '}
                   {remainingSlots === 1 ? 'suggestion' : 'suggestions'}.
                 </span>
@@ -509,7 +509,7 @@ export default function ParticipantChat() {
                     className="v4-chip"
                     onClick={() => setIntroStage(5)}
                   >
-                    Yes, let's go
+                    Yes, let’s go
                   </button>
                 </div>
               </>
@@ -518,7 +518,7 @@ export default function ParticipantChat() {
             {/* ── Stage 5+ → user reply + typing for first prompt ── */}
             {introStage >= 5 && (
               <div className="v4-bubble v4-bubble-user" style={{ animationDelay: '0.05s' }}>
-                <span>Yes, let's go</span>
+                <span>Yes, let’s go</span>
               </div>
             )}
             {introStage === 5 && (
@@ -644,7 +644,7 @@ export default function ParticipantChat() {
                     <ChecklistCard items={checklist} />
                     <div className="v4-pchat-submit-row">
                       <p className="v4-pchat-submit-warn">
-                        Once you submit, you can't add or edit names later.
+                        Once you submit, you can’t add or edit names later.
                       </p>
                       <div className="v4-pchat-submit-actions">
                         <button
@@ -699,7 +699,7 @@ function ParticipantBriefCard({ contest, tone, briefRows, settingsRows }) {
           {contest.workingName || contest.name}
         </h2>
         {projectSummary && (
-          <p className="v4-pchat-brief-summary">"{projectSummary}"</p>
+          <p className="v4-pchat-brief-summary">“{projectSummary}”</p>
         )}
       </header>
       <ul className="v4-pchat-brief-list">
@@ -782,7 +782,7 @@ function SubmissionCard({
             className="btn btn-secondary btn-sm"
             onClick={onSkip}
           >
-            That's enough — submit what I have
+            That’s enough — submit what I have
           </button>
           <p className="v4-pchat-finalize-note">
             You can still tap any name above to edit it before sending.

@@ -39,7 +39,7 @@ function SectionLabel({ children }) {
 
 function SectionHeading({ id, children }) {
   return (
-    <h2 id={id} style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 28, fontWeight: 800, color: '#1e2330', marginBottom: 8, scrollMarginTop: 80 }}>
+    <h2 id={id} style={{ fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 28, fontWeight: 800, color: '#1e2330', marginBottom: 8, scrollMarginTop: 80 }}>
       {children}
     </h2>
   );
@@ -286,7 +286,7 @@ export default function DocumentationPage() {
         {/* Page title */}
         <div style={{ marginBottom: 48 }}>
           <SectionLabel>Phase 2 Wireframe</SectionLabel>
-          <h1 style={{ fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif", fontSize: 36, fontWeight: 800, color: '#1e2330', marginBottom: 8 }}>
+          <h1 style={{ fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif", fontSize: 36, fontWeight: 800, color: '#1e2330', marginBottom: 8 }}>
             Naming Contest Documentation
           </h1>
           <Paragraph>
@@ -325,7 +325,7 @@ export default function DocumentationPage() {
 
         <SubHeading>Navigation</SubHeading>
         <Paragraph>
-          Use the Prev and Next Step buttons to walk through the flow step by step. You can also click any step circle to jump directly to that screen. The progress bar shows overall completion. At the final step, the button reads "Journey Complete".
+          Use the Prev and Next Step buttons to walk through the flow step by step. You can also click any step circle to jump directly to that screen. The progress bar shows overall completion. At the final step, the button reads “Journey Complete”.
         </Paragraph>
 
         <Divider />
@@ -337,7 +337,7 @@ export default function DocumentationPage() {
           The paywall simulator shows every place where a free user would encounter an upgrade prompt. It demonstrates the freemium model: users can run a basic contest for free, but meaningful features require a paid contest.
         </Paragraph>
 
-        <SubHeading>What's Free</SubHeading>
+        <SubHeading>What’s Free</SubHeading>
         <Card>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {['Voting-only mode', 'Up to 5 participants', 'Simple poll voting', 'Basic analytics', 'Shareable URL', 'Brief builder', 'Anonymous voting'].map(f => (
@@ -352,15 +352,15 @@ export default function DocumentationPage() {
         <DataTable
           headers={['#', 'Moment', 'Where', 'Trigger', 'Type']}
           rows={[
-            ['1', 'Open Submissions', 'Brief Builder', 'Toggling "Let participants suggest names"', 'Toggle gate'],
+            ['1', 'Open Submissions', 'Brief Builder', 'Toggling “Let participants suggest names”', 'Toggle gate'],
             ['2', 'Participant Cap', 'Invite Participants', 'Exceeding free limit (5 participants)', 'Cap gate'],
             ['3', 'Advanced Voting', 'Contest Type Selection', 'Selecting ranked-choice, pairwise, or multi-criteria', 'Method gate'],
             ['4', 'Naming Methodology', 'Participant Education', 'Accessing Catchword naming articles', 'Articles gate'],
             ['5', 'Contest Quality Score', 'Brief Builder sidebar', 'Viewing the quality score bar (business/team only)', 'Quality gate'],
             ['6', 'Automated Reminders', 'Brief Builder — Deadlines', 'Setting up participant email reminders', 'Reminders gate'],
-            ['7', 'PDF Report', 'Results Page', 'Clicking "Download PDF Report" (business/team only)', 'PDF gate'],
-            ['8', 'White-label Branding', 'PDF / Participant View', 'Previewing output with "Powered by Naming Contest" footer', 'Branding gate'],
-            ['9', 'Second Round Discount', 'Results Page', 'Selecting "We\'re still not sure" after results', 'Discount offer'],
+            ['7', 'PDF Report', 'Results Page', 'Clicking “Download PDF Report” (business/team only)', 'PDF gate'],
+            ['8', 'White-label Branding', 'PDF / Participant View', 'Previewing output with “Powered by Naming Contest” footer', 'Branding gate'],
+            ['9', 'Second Round Discount', 'Results Page', 'Selecting “We’re still not sure” after results', 'Discount offer'],
           ]}
         />
 
@@ -374,7 +374,7 @@ export default function DocumentationPage() {
         <SectionLabel>Revenue</SectionLabel>
         <SectionHeading id="affiliate-sim">Affiliate Simulation</SectionHeading>
         <Paragraph>
-          The affiliate simulator shows contextual partner recommendations that appear primarily on the Results Page. These are upsells that generate affiliate revenue — each placement is matched to the user's segment and sub-type so it feels relevant, not spammy.
+          The affiliate simulator shows contextual partner recommendations that appear primarily on the Results Page. These are upsells that generate affiliate revenue — each placement is matched to the user’s segment and sub-type so it feels relevant, not spammy.
         </Paragraph>
 
         <SubHeading>Business Placements</SubHeading>
@@ -439,7 +439,7 @@ export default function DocumentationPage() {
         <SectionHeading id="screens">Screen-by-Screen Breakdown</SectionHeading>
 
         {[
-          { name: 'Landing Page', path: '/', role: 'Public', desc: 'Marketing page with hero animation, social proof (Catchword Branding clients marquee), three segment cards with pricing, methodology section explaining Catchword\'s naming framework, testimonials, FAQ, and feature breakdown comparison.' },
+          { name: 'Landing Page', path: '/', role: 'Public', desc: 'Marketing page with hero animation, social proof (Catchword Branding clients marquee), three segment cards with pricing, methodology section explaining Catchword’s naming framework, testimonials, FAQ, and feature breakdown comparison.' },
           { name: 'Select Segment', path: '/select', role: 'Creator', desc: 'Choose between Business ($89, up to 240 participants), Team ($29, up to 60), or Personal ($9, up to 15). Cards show pricing, key features, and segment-specific messaging.' },
           { name: 'Auth / Sign Up', path: '/auth', role: 'Creator', desc: 'Email/password authentication or social login. Captures user before they invest time in the brief.' },
           { name: 'Select Sub-type', path: '/select/:group', role: 'Creator', desc: 'Pick the specific naming need within your segment. Business has 5 options (company, product, project, rebrand, other). Team has 6 (sports, band, podcast, civic, gaming, other). Personal has 4 (baby, pet, home, other).' },
@@ -522,7 +522,7 @@ export default function DocumentationPage() {
         <SectionLabel>Scoring</SectionLabel>
         <SectionHeading id="quality-score">Contest Quality Score System</SectionHeading>
         <Paragraph>
-          Naming is a collaborative task. The quality of the result depends equally on how well the creator prepares the brief and how engaged participants are. The double-sided quality score (0-100) makes this visible to both sides — creating shared accountability and replacing the chaos of "just throw names in a Google Doc" with structured guidance.
+          Naming is a collaborative task. The quality of the result depends equally on how well the creator prepares the brief and how engaged participants are. The double-sided quality score (0-100) makes this visible to both sides — creating shared accountability and replacing the chaos of “just throw names in a Google Doc” with structured guidance.
         </Paragraph>
 
         <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
@@ -612,7 +612,7 @@ export default function DocumentationPage() {
         <Card>
           <div style={{ fontSize: 13, color: '#676b5f', lineHeight: 1.75 }}>
             <div style={{ marginBottom: 12 }}>
-              <strong style={{ color: '#1e2330' }}>Competitor pricing for context:</strong> Squadhelp starts at $299, Crowdspring at $299, NamingForce at $649, Hatchwise at $89. Naming Contest's $9-$89 range is 3-30x cheaper than most alternatives.
+              <strong style={{ color: '#1e2330' }}>Competitor pricing for context:</strong> Squadhelp starts at $299, Crowdspring at $299, NamingForce at $649, Hatchwise at $89. Naming Contest’s $9-$89 range is 3-30x cheaper than most alternatives.
             </div>
             <div style={{ marginBottom: 12 }}>
               <strong style={{ color: '#1e2330' }}>Why competitors charge more:</strong> Most naming contest platforms (Squadhelp, Crowdspring, NamingForce) are creative marketplaces that source freelance namers to work on your project. Their pricing includes prize pools for winning freelancers, managed service overhead, and platform fees. Contest holders are paying for professional creative labor.
@@ -642,7 +642,7 @@ export default function DocumentationPage() {
           <Card style={{ borderColor: 'rgba(30,35,48,0.2)' }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#1e2330', marginBottom: 8 }}>Stream 3: Catchword Professional Services (Own Service)</div>
             <div style={{ fontSize: 13, color: '#676b5f', lineHeight: 1.6 }}>
-              Business users are prompted to engage Catchword's professional services on all three post-vote paths. Confident users see a brand identity upsell ("Need a full brand identity? Catchword can help."), while users with second thoughts or uncertainty see a professional naming upsell ("Need expert help? Let Catchword name it for you."). This is not an affiliate — it's Catchword's own service. Contest data (brief, submissions, votes) transfers as a starting brief, reducing onboarding friction. Also appears as a persistent link on completed business contests in the Dashboard.
+              Business users are prompted to engage Catchword’s professional services on all three post-vote paths. Confident users see a brand identity upsell (“Need a full brand identity? Catchword can help.”), while users with second thoughts or uncertainty see a professional naming upsell (“Need expert help? Let Catchword name it for you.”). This is not an affiliate — it’s Catchword’s own service. Contest data (brief, submissions, votes) transfers as a starting brief, reducing onboarding friction. Also appears as a persistent link on completed business contests in the Dashboard.
             </div>
           </Card>
         </div>
@@ -774,7 +774,7 @@ export default function DocumentationPage() {
         {/* ── Infrastructure Costs ── */}
         <SectionHeading id="infra-costs">Platform Running Costs</SectionHeading>
         <Paragraph>
-          Estimated monthly infrastructure costs based on projected traffic and the tech stack defined in "What Comes Next." A production launch requires paid tiers from day one — custom domain routing (Vercel Pro), reliable database uptime (Supabase Pro), and no daily email sending limits (Resend Pro). Free tiers are insufficient for a live product. Calculations use real 2025-2026 pricing.
+          Estimated monthly infrastructure costs based on projected traffic and the tech stack defined in “What Comes Next.” A production launch requires paid tiers from day one — custom domain routing (Vercel Pro), reliable database uptime (Supabase Pro), and no daily email sending limits (Resend Pro). Free tiers are insufficient for a live product. Calculations use real 2025-2026 pricing.
         </Paragraph>
         <div style={{ fontSize: 13, color: '#1e2330', fontWeight: 700, marginBottom: 20, padding: '10px 14px', background: 'rgba(30,35,48,0.06)', border: '1px solid rgba(30,35,48,0.2)', borderRadius: 8, maxWidth: 720 }}>
           Note: all cost and revenue calculations in this document are very preliminary and can drastically change upon real implementation.
@@ -861,7 +861,7 @@ export default function DocumentationPage() {
 
         <SubHeading>Developer Maintenance</SubHeading>
         <Paragraph>
-          Even with a serverless, managed stack, a live product needs occasional developer attention — bug fixes, security patches, dependency updates, Stripe/Supabase API changes, and user-reported issues. This is not a recurring monthly expense — it's as-needed, billed per incident when something breaks or needs updating. No full-time hire required.
+          Even with a serverless, managed stack, a live product needs occasional developer attention — bug fixes, security patches, dependency updates, Stripe/Supabase API changes, and user-reported issues. This is not a recurring monthly expense — it’s as-needed, billed per incident when something breaks or needs updating. No full-time hire required.
         </Paragraph>
         <DataTable
           headers={['Stage', 'Frequency', 'Estimated Cost', 'Covers']}
@@ -884,7 +884,7 @@ export default function DocumentationPage() {
             SECTION 4: WIREFRAME SCOPE
             ═══════════════════════════════════════════════════════════════════ */}
         <SectionLabel>Scope</SectionLabel>
-        <SectionHeading id="scope">What This Wireframe Is — and Isn't</SectionHeading>
+        <SectionHeading id="scope">What This Wireframe Is — and Isn’t</SectionHeading>
 
         <SubHeading>What this wireframe defines</SubHeading>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>

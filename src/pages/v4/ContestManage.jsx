@@ -37,6 +37,7 @@ import ActivityFlyOver from '../../components/v4/ActivityFlyOver';
 import LiveResults from '../../components/v4/LiveResults';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import PickWinnerModal from '../../components/v4/PickWinnerModal';
+import ConfirmModal from '../../components/v4/ConfirmModal';
 import WinnerHero from '../../components/v4/WinnerHero';
 import CatchwordConsultBlock from '../../components/v4/CatchwordConsultBlock';
 import PdfReport from '../../components/v4/PdfReport';
@@ -170,14 +171,6 @@ export default function ContestManage() {
         .sort((a, b) => b.voteCount - a.voteCount)
         .slice(0, 5)
     : [];
-  const setPhase = (next) => {
-    const params = new URLSearchParams(searchParams);
-    if (next === 'voting') params.delete('phase');
-    else params.set('phase', next);
-    // Drop winner sub-state when moving away from the winner phase.
-    if (next !== 'winner') params.delete('winner');
-    setSearchParams(params, { replace: true });
-  };
   // Strip the disambiguation suffix some labels carry, e.g.
   // "Something else (personal)" → "Something else". We only need the
   // segment name here; tier is already conveyed by the badge color/icon.
@@ -226,6 +219,7 @@ export default function ContestManage() {
   const [pickWinnerOpen, setPickWinnerOpen] = useState(
     () => searchParams.get('pick') === '1'
   );
+  const [cancelOpen, setCancelOpen] = useState(false);
   // Winner-card customization (only meaningful on winner-picked state).
   // Color & logo override the defaults on WinnerHero so the creator can
   // brand the share card. hideBranding strips the NamingContest marks.
@@ -443,7 +437,7 @@ export default function ContestManage() {
                     <a
                       className="v4-winner-share-icon"
                       title="Share on X"
-                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Meet "${winnerName.text}" — our new ${setup.workingName || 'name'}. Picked via naming contest.`)}&url=${encodeURIComponent(shareUrl)}`}
+                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Meet “${winnerName.text}” — our new ${setup.workingName || 'name'}. Picked via naming contest.`)}&url=${encodeURIComponent(shareUrl)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -639,7 +633,7 @@ export default function ContestManage() {
                       <div className="v4-winner-prize-eyebrow">Prize</div>
                       <div className="v4-winner-prize-line">
                         <strong>{winnerSubmitter?.name}</strong> wins{' '}
-                        <em>"{liveSettingsAnswers.submitterPrize.name || 'the prize'}"</em>
+                        <em>“{liveSettingsAnswers.submitterPrize.name || 'the prize'}”</em>
                       </div>
                       {liveSettingsAnswers.submitterPrize.text && (
                         <p className="v4-winner-prize-desc">
@@ -658,7 +652,7 @@ export default function ContestManage() {
                   </header>
                   {winnerName.tagline && (
                     <p className="v4-winner-story-tagline">
-                      "{winnerName.tagline}"
+                      “{winnerName.tagline}”
                     </p>
                   )}
                   <dl className="v4-winner-story-list">
@@ -735,7 +729,9 @@ export default function ContestManage() {
                 <div>
                   <div className="v4-manage-share-eyebrow">Share with participants</div>
                   <h2 className="v4-manage-share-title">
-                    Need a few more votes?
+                    {phase === 'submission'
+                      ? 'Get your names rolling in'
+                      : 'Need a few more votes?'}
                   </h2>
                 </div>
               </header>
@@ -799,7 +795,7 @@ export default function ContestManage() {
                       back to the demo names if no participants yet. */}
                   {(liveData.participants.slice(0, 3).length > 0
                     ? liveData.participants.slice(0, 3).map((p) => p.name)
-                    : ['Sam O\'Brien', 'Marcus Wright', 'Dan Patel']
+                    : ['Sam O’Brien', 'Marcus Wright', 'Dan Patel']
                   ).map((nm, i) => (
                     <span
                       key={i}
@@ -845,14 +841,14 @@ export default function ContestManage() {
                   : phase === 'voting' ? 2
                   : 3;
                 const eyebrowText = isWinnerPicked
-                  ? 'All steps complete · 🎉'
-                  : `Step ${stepIndex} of 3 · You are here`;
+                  ? 'All stages complete · 🎉'
+                  : `Stage ${stepIndex} of 3`;
                 return (
                   <>
                     <div className="v4-manage-wait-eyebrow">{eyebrowText}</div>
                     <h2 className="v4-manage-wait-title">Your contest journey</h2>
                     <p className="v4-manage-wait-lede">
-                      Where you are in the lifecycle — and what's coming next.
+                      Here’s where your contest stands right now.
                     </p>
                   </>
                 );
@@ -861,18 +857,15 @@ export default function ContestManage() {
               {/* Three steps mirror the three real contest phases. The
                   third step "Winner" has two sub-states: needs-picking
                   (active CTA) and picked (done).
-                  On mock contests, each step is clickable to jump to
-                  that phase — doubles as a demo lifecycle toggle. */}
-              <div className={`v4-manage-wait-steps ${mockContest ? 'is-clickable' : ''}`}>
+                  Steps are display-only — lifecycle stages are reached
+                  via the platform map, not by clicking these cards. */}
+              <div className="v4-manage-wait-steps">
 
                 {/* Step 1 — Submissions */}
                 <div
                   className={`v4-manage-wait-step ${
                     phase === 'submission' ? 'is-active' : 'is-done'
                   }`}
-                  onClick={mockContest ? () => setPhase('submission') : undefined}
-                  role={mockContest ? 'button' : undefined}
-                  tabIndex={mockContest ? 0 : undefined}
                 >
                   <span className="v4-manage-wait-step-icon" aria-hidden="true">
                     <PaperPlaneTilt weight="duotone" size={22} />
@@ -892,8 +885,8 @@ export default function ContestManage() {
                     <h3>Submissions</h3>
                     <p>
                       {phase === 'submission'
-                        ? 'Share the link with your participants and watch the names come in. The sweet spot is 12–25 — variety without voting drag.'
-                        : 'Submissions wrapped. Every name is now in the running for the vote.'}
+                        ? 'Share your link and watch the names roll in. The more people you invite, the richer the shortlist.'
+                        : 'Submissions are closed — every name that came in is now up for the vote.'}
                     </p>
                   </div>
                 </div>
@@ -905,9 +898,6 @@ export default function ContestManage() {
                       : phase === 'voting' ? 'is-active'
                       : 'is-done'
                   }`}
-                  onClick={mockContest ? () => setPhase('voting') : undefined}
-                  role={mockContest ? 'button' : undefined}
-                  tabIndex={mockContest ? 0 : undefined}
                 >
                   <span className="v4-manage-wait-step-icon" aria-hidden="true">
                     <Eye weight="duotone" size={22} />
@@ -931,10 +921,10 @@ export default function ContestManage() {
                     <h3>Voting</h3>
                     <p>
                       {phase === 'voting'
-                        ? 'Voting is live. Activity rolls in real-time — no need to refresh, and you don\'t have to be watching.'
+                        ? 'Voting is live. Picks roll in as they happen — no need to refresh or keep watching.'
                         : phase === 'submission'
-                        ? 'Once submissions close, participants vote on the names. You\'ll see the leaderboard update live.'
-                        : 'Voting has wrapped. The leaderboard is final.'}
+                        ? 'Once submissions close, your people vote on the names. You’ll watch the leaderboard fill in live.'
+                        : 'Voting is closed and the leaderboard is final — the top names are locked in.'}
                     </p>
                   </div>
                 </div>
@@ -946,9 +936,6 @@ export default function ContestManage() {
                       : isWinnerPicked ? 'is-done'
                       : 'is-active'
                   }`}
-                  onClick={mockContest ? () => setPhase('winner') : undefined}
-                  role={mockContest ? 'button' : undefined}
-                  tabIndex={mockContest ? 0 : undefined}
                 >
                   <span className="v4-manage-wait-step-icon" aria-hidden="true">
                     <Trophy weight="duotone" size={22} />
@@ -970,10 +957,10 @@ export default function ContestManage() {
                     <h3>Winner</h3>
                     <p>
                       {phase === 'winner' && !isWinnerPicked
-                        ? 'Voting is closed. Time to crown your winning name. Pick the top vote or any name that won your heart.'
+                        ? 'Voting is closed. Time to crown the winner — the top vote, or any name that won your heart.'
                         : isWinnerPicked
-                        ? 'You picked the winner. Download the share card or export the full report below.'
-                        : 'When voting closes, we\'ll send you the leaderboard. You make the final call — top vote or any name that won your heart.'}
+                        ? 'You crowned the winner. Download the share card or export the full report below.'
+                        : 'When voting wraps, the leaderboard is yours. You make the final call — the top vote, or any name that won your heart.'}
                     </p>
                     {phase === 'winner' && !isWinnerPicked && (
                       <button
@@ -1013,40 +1000,14 @@ export default function ContestManage() {
             {isWinnerPicked ? (
               <CatchwordConsultBlock
                 headline="Still hunting for the perfect name?"
-                body={<>The crowd voted, but if it's not <em>quite</em> there — Catchword is the naming agency NamingContest is built on top of. Book a session for a deeper look.</>}
+                body={<>The crowd voted, but if it’s not <em>quite</em> there — Catchword is the naming agency NamingContest is built on top of. Book a session for a deeper look.</>}
               />
             ) : (
               <div className="v4-manage-actions">
                 <button
                   type="button"
                   className="btn btn-link v4-btn-danger"
-                  onClick={() => {
-                    if (window.confirm('Cancel this contest? This cannot be undone.')) {
-                      // Mark the contest as cancelled in setup +
-                      // record an entry the workspace can render
-                      // under a "Cancelled" section. Then send the
-                      // creator to workspace where they'll see it.
-                      const cur = readSetup();
-                      const cancelledList = Array.isArray(cur.cancelledContests)
-                        ? cur.cancelledContests
-                        : [];
-                      writeSetup({
-                        cancelledContests: [
-                          ...cancelledList,
-                          {
-                            id: cur.contestId || id,
-                            workingName: cur.workingName || mockContest?.workingName || 'Your contest',
-                            subSegmentId: cur.subSegmentId || mockContest?.subSegmentId,
-                            cancelledAt: Date.now(),
-                          },
-                        ],
-                        contestId: null,
-                        workingName: null,
-                        launchedAt: null,
-                      });
-                      navigate('/v4/settings');
-                    }
-                  }}
+                  onClick={() => setCancelOpen(true)}
                 >
                   Cancel contest
                 </button>
@@ -1068,6 +1029,42 @@ export default function ContestManage() {
           onClose={() => setEditingQuestion(null)}
           onSave={handleEditSave}
           palette={segmentPalette}
+        />
+
+        {/* Cancel-contest confirm — on-brand replacement for confirm() */}
+        <ConfirmModal
+          open={cancelOpen}
+          danger
+          title="Cancel this contest?"
+          body="This can’t be undone — every name and vote so far will be discarded."
+          confirmLabel="Cancel contest"
+          cancelLabel="Keep it"
+          onClose={() => setCancelOpen(false)}
+          onConfirm={() => {
+            // Mark the contest as cancelled in setup + record an entry
+            // the workspace renders under a "Cancelled" section, then
+            // send the creator to the workspace where they'll see it.
+            const cur = readSetup();
+            const cancelledList = Array.isArray(cur.cancelledContests)
+              ? cur.cancelledContests
+              : [];
+            writeSetup({
+              cancelledContests: [
+                ...cancelledList,
+                {
+                  id: cur.contestId || id,
+                  workingName: cur.workingName || mockContest?.workingName || 'Your contest',
+                  subSegmentId: cur.subSegmentId || mockContest?.subSegmentId,
+                  cancelledAt: Date.now(),
+                },
+              ],
+              contestId: null,
+              workingName: null,
+              launchedAt: null,
+            });
+            setCancelOpen(false);
+            navigate('/v4/settings');
+          }}
         />
 
         {/* Hidden off-screen PDF report — captured by the export
@@ -1112,6 +1109,11 @@ export default function ContestManage() {
             // in (see .v4-winner-* CSS). A confetti burst punctuates the
             // moment so it feels like a real "win," not a state change.
             setPickWinnerOpen(false);
+            // Persist the crowned winner so the workspace (My Namespace)
+            // reflects "winner picked" instead of still showing voting.
+            // Keyed by contestId so it only applies to this contest.
+            const winnerText = liveData.names.find((n) => n.id === nameId)?.text || null;
+            writeSetup({ winner: { contestId: id, nameId, name: winnerText } });
             // Scroll the internal review container (NOT window) — the
             // page itself doesn't scroll on v4 surfaces; .v4-review is
             // the overflow:auto container.

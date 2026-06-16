@@ -21,6 +21,7 @@ import { readSetup, writeSetup } from '../../utils/v4Brief';
 import { joinContest, clearParticipation, recordSubmission } from '../../utils/v4Participant';
 import { MOCK_CONTESTS } from '../../data/v4/mockContests';
 import keyImg from '../../assets/key.png';
+import messageImg from '../../assets/message.png';
 // Pull landing-v3 styles in so the modal's .btn-primary / .btn-secondary
 // (and their hover-slide animation) resolve correctly even when the modal
 // is mounted outside the v4 page tree (e.g. triggered from the landing).
@@ -85,11 +86,20 @@ function applyParticipantSignIn(email) {
   joinContest('mock_ongoing_1', { name: displayName, email: e });
   [
     { text: 'Iron Boots FC',     whyItFits: `Sounds like Saturday-night football in the mud — and a long bus home.` },
-    { text: 'Brookside Rovers',  whyItFits: `Local geography wins community loyalty. Easy chant: "ROVERS!"` },
+    { text: 'Brookside Rovers',  whyItFits: `Local geography wins community loyalty. Easy chant: “ROVERS!”` },
     { text: 'North Park United', whyItFits: `Direct, two-syllable, chantable. Names the pitch.` },
   ].forEach((n) => recordSubmission('mock_ongoing_1', n));
   return '/v4/settings';
 }
+
+// Per-mode button icon + label. The modal leads with whichever mode it
+// was opened in (creator by default; participant when opened from the
+// map's returning-participant entry), so the obvious action routes the
+// user to the right place.
+const MODE_META = {
+  creator: { Icon: PaperPlaneTilt, label: 'Send magic link' },
+  participant: { Icon: UsersThree, label: 'Sign in as a participant' },
+};
 
 export default function SignInModal({ open, onClose, initialMode = 'creator' }) {
   const [email, setEmail] = useState('');
@@ -133,14 +143,15 @@ export default function SignInModal({ open, onClose, initialMode = 'creator' }) 
     }, 600);
   };
 
-  const handleSendCreatorLink = (e) => {
-    e?.preventDefault();
-    sendLink('creator');
-  };
-
-  const handleSendParticipantLink = () => {
-    sendLink('participant');
-  };
+  // The PRIMARY action follows how the modal was opened: a participant
+  // entry (?signin=participant, e.g. from the platform map) leads with
+  // the participant sign-in so pressing Enter / the big button lands on
+  // the participant workspace — not the creator flow. The other mode is
+  // offered as the secondary button.
+  const primaryMode = initialMode === 'participant' ? 'participant' : 'creator';
+  const secondaryMode = primaryMode === 'creator' ? 'participant' : 'creator';
+  const PrimaryIcon = MODE_META[primaryMode].Icon;
+  const SecondaryIcon = MODE_META[secondaryMode].Icon;
 
   // "Open the link" demo shortcut — branches on the captured mode.
   const handleSimulateClick = () => {
@@ -197,10 +208,10 @@ export default function SignInModal({ open, onClose, initialMode = 'creator' }) 
             />
             <h2 id="v4-signin-title" className="v4-signin-title">Welcome back</h2>
             <p className="v4-signin-subtitle">
-              Drop your email — we'll send a magic link. No password to remember.
+              Drop your email — we’ll send a magic link. No password to remember.
             </p>
 
-            <form className="v4-signin-form" onSubmit={handleSendCreatorLink}>
+            <form className="v4-signin-form" onSubmit={(e) => { e.preventDefault(); sendLink(primaryMode); }}>
               <label className="v4-signin-field">
                 <span className="v4-signin-field-label">Email</span>
                 <input
@@ -218,12 +229,12 @@ export default function SignInModal({ open, onClose, initialMode = 'creator' }) 
                 className="btn btn-primary btn-lg v4-signin-submit"
                 disabled={submitting}
               >
-                {submitting && mode === 'creator' ? (
+                {submitting && mode === primaryMode ? (
                   <>Sending&hellip;</>
                 ) : (
                   <>
-                    <PaperPlaneTilt weight="bold" size={14} />
-                    Send magic link
+                    <PrimaryIcon weight="bold" size={14} />
+                    {MODE_META[primaryMode].label}
                   </>
                 )}
               </button>
@@ -236,15 +247,15 @@ export default function SignInModal({ open, onClose, initialMode = 'creator' }) 
             <button
               type="button"
               className="btn btn-secondary btn-lg v4-signin-participant"
-              onClick={handleSendParticipantLink}
+              onClick={() => sendLink(secondaryMode)}
               disabled={submitting}
             >
-              {submitting && mode === 'participant' ? (
+              {submitting && mode === secondaryMode ? (
                 <>Sending&hellip;</>
               ) : (
                 <>
-                  <UsersThree weight="bold" size={14} />
-                  Sign in as a participant
+                  <SecondaryIcon weight="bold" size={14} />
+                  {MODE_META[secondaryMode].label}
                 </>
               )}
             </button>
@@ -261,9 +272,12 @@ export default function SignInModal({ open, onClose, initialMode = 'creator' }) 
 
         {phase === 'sent' && (
           <>
-            <div className="v4-signin-icon-wrap v4-signin-icon-wrap-sent">
-              <PaperPlaneTilt weight="duotone" size={28} />
-            </div>
+            <img
+              className="v4-signin-hero-key"
+              src={messageImg}
+              alt=""
+              aria-hidden="true"
+            />
             <h2 className="v4-signin-title">Check your email</h2>
             <p className="v4-signin-subtitle">
               We sent a sign-in link to <strong>{email}</strong>. Open it to
@@ -278,8 +292,8 @@ export default function SignInModal({ open, onClose, initialMode = 'creator' }) 
               Open the link <ArrowRight weight="bold" size={14} />
             </button>
             <p className="v4-signin-foot v4-signin-foot-demo">
-              ↑ Demo shortcut. In production this button wouldn't exist —
-              you'd just click the link in your inbox.
+              ↑ Demo shortcut. In production this button wouldn’t exist —
+              you’d just click the link in your inbox.
             </p>
 
             <button

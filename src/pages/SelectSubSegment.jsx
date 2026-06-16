@@ -22,7 +22,7 @@ export default function SelectSubSegment() {
         fontFamily: 'Inter, sans-serif',
       }}>
         <div style={{ textAlign: 'center' }}>
-          <p style={{ color: '#676b5f', marginBottom: 16 }}>Group "{group}" not found.</p>
+          <p style={{ color: '#676b5f', marginBottom: 16 }}>Group “{group}” not found.</p>
           <button onClick={() => navigate('/select')} style={{
             background: 'transparent', border: '1px solid rgba(30,35,48,0.2)',
             color: '#1e2330', borderRadius: 8, padding: '8px 16px', cursor: 'pointer',
@@ -143,7 +143,7 @@ export default function SelectSubSegment() {
           </div>
 
           <h1 style={{
-            fontFamily: "'Bricolage Grotesque', 'Inter', sans-serif",
+            fontFamily: "‘Bricolage Grotesque’, ‘Inter’, sans-serif",
             fontSize: 'clamp(28px, 4vw, 44px)',
             fontWeight: 800,
             color: '#1e2330',

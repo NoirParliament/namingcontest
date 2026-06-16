@@ -242,7 +242,7 @@ function NamesList({
   }, [expandedId, showAll]);
 
   if (filtered.length === 0) {
-    return <div className="v4-results-empty">No names match "{search}"</div>;
+    return <div className="v4-results-empty">No names match “{search}”</div>;
   }
 
   const visible = showAll ? filtered : filtered.slice(0, collapsedCount);
@@ -364,14 +364,8 @@ function NamesList({
 
 // ── NAME DETAIL — submitter rationale shown on row expand ───────────
 function NameDetail({ name, submitter, tone, showVotes }) {
-  const firstSentence = name.whyItFits
-    ? (name.whyItFits.match(/[^.!?]+[.!?]/)?.[0] || name.whyItFits).trim()
-    : null;
   return (
     <div className="v4-name-detail">
-      {firstSentence && (
-        <div className="v4-name-detail-tagline">"{firstSentence}"</div>
-      )}
       <dl className="v4-name-detail-list">
         {name.whyItFits && (
           <div className="v4-name-detail-field">
@@ -434,7 +428,7 @@ function ParticipantsList({
   }, [expandedId, showAll]);
 
   if (filtered.length === 0) {
-    return <div className="v4-results-empty">No participants match "{search}"</div>;
+    return <div className="v4-results-empty">No participants match “{search}”</div>;
   }
 
   const visible = showAll ? filtered : filtered.slice(0, collapsedCount);
@@ -506,7 +500,7 @@ function ParticipantsList({
                       </>
                     ) : (
                       <div className="v4-results-sub-empty">
-                        {p.name} hasn't submitted any names yet.
+                        {p.name} hasn’t submitted any names yet.
                       </div>
                     )}
                   </div>

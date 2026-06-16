@@ -87,7 +87,7 @@ const PARTICIPANT_SCREENS = [
     path: `/v4/contest/${VOTING_DEMO_CONTEST_ID}/vote`,
     status: 'LIVE',
     description: 'Voting interface. Same chat-style scaffold as the submission chat (staged reveal, brief recap, user-bubble replies). Multi-select up to votingLimit favourites with search + sort and sticky bottom submit.',
-    notes: 'Use the "Open voting-stage demo" quick action above to seed state and land on the workspace first.',
+    notes: 'Use the “Open voting-stage demo” quick action above to seed state and land on the workspace first.',
   },
   {
     title: 'Post-vote thanks',
@@ -106,14 +106,14 @@ const PARTICIPANT_SCREENS = [
     title: 'Submission chat',
     path: `/v4/contest/${DEMO_CONTEST_ID}/submit`,
     status: 'LIVE',
-    description: 'Chat-style submission flow. Staged reveal (welcome → "show brief?" → brief → "ready?" → first prompt), per-turn ack + prompt phrases, composite name + why-it-fits cards, one-shot submission.',
+    description: 'Chat-style submission flow. Staged reveal (welcome → “show brief?” → brief → “ready?” → first prompt), per-turn ack + prompt phrases, composite name + why-it-fits cards, one-shot submission.',
     notes: 'Auto-redirects to /thanks if you already submitted.',
   },
   {
     title: 'Post-submit thanks',
     path: `/v4/contest/${DEMO_CONTEST_ID}/thanks`,
     status: 'LIVE',
-    description: 'Confirmation page with 3-step lifecycle strip, pulsing "voting opens" dot, ticking clock animation.',
+    description: 'Confirmation page with 3-step lifecycle strip, pulsing “voting opens” dot, ticking clock animation.',
   },
   {
     title: 'Status / countdown dashboard',
@@ -135,7 +135,7 @@ const PLANNED_SCREENS = [
     title: 'Post-vote confirmation',
     path: `/v4/contest/${DEMO_CONTEST_ID}/vote-thanks`,
     status: 'PLANNED',
-    description: '"Thanks for voting" + countdown to winner announcement. Could extend the existing /thanks page or live separately.',
+    description: '“Thanks for voting” + countdown to winner announcement. Could extend the existing /thanks page or live separately.',
   },
   {
     title: 'Winner reveal (participant)',
@@ -215,7 +215,7 @@ export default function DemoIndex() {
     joinContest(VOTING_DEMO_CONTEST_ID, { name: displayName, email });
     [
       { text: 'Iron Boots FC',     whyItFits: 'Sounds like Saturday-night football in the mud — and a long bus home.' },
-      { text: 'Brookside Rovers',  whyItFits: 'Local geography wins community loyalty. Easy chant: "ROVERS!"' },
+      { text: 'Brookside Rovers',  whyItFits: 'Local geography wins community loyalty. Easy chant: “ROVERS!”' },
       { text: 'North Park United', whyItFits: 'Direct, two-syllable, chantable. Names the pitch.' },
     ].forEach((n) => recordSubmission(VOTING_DEMO_CONTEST_ID, n));
     navigate('/v4/settings');
@@ -298,7 +298,7 @@ export default function DemoIndex() {
               </div>
               <div className="v4-demo-flow">
                 <strong>Participant flow (returning, post-submit):</strong>{' '}
-                <Link to="/">Landing</Link> → "Sign in as participant" →{' '}
+                <Link to="/">Landing</Link> → “Sign in as participant” →{' '}
                 <Link to="/v4/settings">Workspace with countdown</Link>
               </div>
             </section>

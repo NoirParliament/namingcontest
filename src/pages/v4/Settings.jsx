@@ -154,6 +154,10 @@ export default function Settings() {
     launchedAt: setup.launchedAt,
     submissionDays: setup.settings?.submissionDays || 7,
     votingDays: setup.settings?.votingDays || 3,
+    // Crowned winner (persisted on pick), only if it's for THIS contest.
+    winner: setup.winner && setup.winner.contestId === setup.contestId
+      ? setup.winner
+      : null,
   } : null;
 
   // Mock ongoing contest — pre-built so the workspace always shows life.
@@ -222,6 +226,8 @@ export default function Settings() {
   function describeContestStatus(c) {
     // Hardcoded mock contests carry their own phase + daysLeft.
     if (c?.phase) return { phase: c.phase, daysLeft: c.daysLeft ?? null };
+    // A crowned winner overrides the demo's mid-voting default.
+    if (c?.winner) return { phase: 'Winner picked', daysLeft: null };
     const MOCK_VOTING = true;
     if (MOCK_VOTING) {
       // Pretend we're mid-voting with the full vote window remaining.
@@ -313,7 +319,7 @@ export default function Settings() {
                     just the contests they've joined
                   - Fresh user (nothing yet) → friendly catch-all */}
             <div className="v4-settings-head">
-              <h1 className="v4-settings-title">My workspace</h1>
+              <h1 className="v4-settings-title">My Namespace</h1>
               <p className="v4-settings-subtitle">
                 {realContest
                   ? 'Your contests, billing, and account in one place.'
@@ -334,7 +340,7 @@ export default function Settings() {
               <section className="v4-settings-section">
                 <header className="v4-settings-section-head">
                   <ListBullets weight="duotone" size={18} />
-                  <h2>Contests you've joined</h2>
+                  <h2>Contests you’ve joined</h2>
                 </header>
                 {joinedRows.map(({ participation, contest, row }) => (
                   <JoinedContestRow
@@ -361,12 +367,13 @@ export default function Settings() {
               <section className="v4-settings-section">
                 <header className="v4-settings-section-head">
                   <ListBullets weight="duotone" size={18} />
-                  <h2>Contests you're running</h2>
+                  <h2>Contests you’re running</h2>
                 </header>
 
                 {(() => {
                   const status = describeContestStatus(realContest);
                   const TierIcon = realContest.Icon || realContest.tierInfo.Icon;
+                  const isConcluded = status.phase === 'Winner picked' || status.phase === 'Closed';
                   return (
                     <div
                       className="v4-settings-current"
@@ -381,7 +388,9 @@ export default function Settings() {
                       </span>
                       <div className="v4-settings-current-text">
                         <div className="v4-settings-current-eyebrow">
-                          <span className="v4-manage-live-dot" aria-hidden="true"></span>
+                          {!isConcluded && (
+                            <span className="v4-manage-live-dot" aria-hidden="true"></span>
+                          )}
                           <span>{status.phase.toUpperCase()}</span>
                           {status.daysLeft !== null && status.phase !== 'Closed' && (
                             <>
@@ -398,13 +407,19 @@ export default function Settings() {
                           {realContest.name}
                         </div>
                         <div className="v4-settings-current-meta">
-                          {realContest.tierInfo.label} contest · paid ${realContest.tierInfo.price}
+                          {realContest.winner?.name
+                            ? <>Won “{realContest.winner.name}”</>
+                            : <>{realContest.tierInfo.label} contest · paid ${realContest.tierInfo.price}</>}
                         </div>
                       </div>
                       <button
                         type="button"
                         className="btn btn-primary btn-sm"
-                        onClick={() => navigate(`/v4/contest/${realContest.id}`)}
+                        onClick={() => navigate(
+                          realContest.winner
+                            ? `/v4/contest/${realContest.id}?phase=winner`
+                            : `/v4/contest/${realContest.id}`
+                        )}
                       >
                         Manage
                         <ArrowRight weight="bold" size={14} />
@@ -430,7 +445,7 @@ export default function Settings() {
                       <div className="v4-settings-contest-row-text">
                         <div className="v4-settings-contest-row-eyebrow">
                           <Trophy weight="bold" size={11} />
-                          <span>Closed {closed.closedAgo} · won "{closed.winner}"</span>
+                          <span>Closed {closed.closedAgo} · won “{closed.winner}”</span>
                         </div>
                         <div className="v4-settings-contest-row-name">
                           {closed.name}
@@ -475,7 +490,7 @@ export default function Settings() {
                     ))}
                     <CatchwordConsultBlock
                       headline="Couldn't find the right name?"
-                      body={<>Naming is hard. Catchword — the agency NamingContest is built on top of — runs deeper, one-on-one sessions when the crowd doesn't crack it.</>}
+                      body={<>Naming is hard. Catchword — the agency NamingContest is built on top of — runs deeper, one-on-one sessions when the crowd doesn’t crack it.</>}
                     />
                   </>
                 )}
@@ -524,7 +539,7 @@ export default function Settings() {
                 ))}
                 <CatchwordConsultBlock
                   headline="Couldn't find the right name?"
-                  body={<>Naming is hard. Catchword — the agency NamingContest is built on top of — runs deeper, one-on-one sessions when the crowd doesn't crack it.</>}
+                  body={<>Naming is hard. Catchword — the agency NamingContest is built on top of — runs deeper, one-on-one sessions when the crowd doesn’t crack it.</>}
                 />
               </section>
             ) : null /* Quiet "Start a contest" nudge lives at the
@@ -598,7 +613,7 @@ export default function Settings() {
                             <span className="v4-settings-billing-desc">
                               {inv.desc}
                               {inv.contestName && (
-                                <span className="v4-settings-billing-sub"> · "{inv.contestName}"</span>
+                                <span className="v4-settings-billing-sub"> · “{inv.contestName}”</span>
                               )}
                             </span>
                             <span className="v4-settings-billing-amount">${inv.amount}</span>
@@ -740,7 +755,7 @@ export default function Settings() {
                         />
                       </div>
                       <span className="v4-settings-field-hint">
-                        Tied to your sign-in — can't be changed here.
+                        Tied to your sign-in — can’t be changed here.
                       </span>
                     </label>
 
@@ -787,6 +802,10 @@ export default function Settings() {
 function JoinedContestRow({ participation, contest, row, navigate }) {
   const tier = TIER_INFO[contest.tierKey] || TIER_INFO.group;
   const JoinedIcon = contest.Icon || tier.Icon;
+  // Left-edge accent always follows the SEGMENT tone (so a sports
+  // contest reads green, a business one periwinkle, etc.) — not the
+  // pricing tier, which made the stripe look random vs. the segment.
+  const segTone = getSegmentTone(contest.subSegmentId);
   const day = 86400000;
   const votingOpensAt =
     Number.isFinite(contest.launchedAt) && Number.isFinite(contest.submissionDays)
@@ -871,7 +890,7 @@ function JoinedContestRow({ participation, contest, row, navigate }) {
   return (
     <div
       className="v4-settings-contest-row v4-settings-contest-row-joined"
-      style={{ '--row-accent': tier.tint }}
+      style={{ '--row-accent': segTone.fg }}
     >
       <span className="v4-settings-contest-row-icon" aria-hidden="true">
         <JoinedIcon weight="duotone" size={18} />

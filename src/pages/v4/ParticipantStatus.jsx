@@ -133,7 +133,7 @@ export default function ParticipantStatus() {
               </h1>
               {contest.brief?.projectSummary && (
                 <p className="v4-pstatus-hero-sub">
-                  "{contest.brief.projectSummary}"
+                  “{contest.brief.projectSummary}”
                 </p>
               )}
             </section>
@@ -168,7 +168,7 @@ export default function ParticipantStatus() {
               </div>
               {countdown.unknown ? (
                 <div className="v4-pstatus-countdown-unknown">
-                  We'll email you when voting opens.
+                  We’ll email you when voting opens.
                 </div>
               ) : countdown.isReady ? (
                 <div className="v4-pstatus-countdown-ready">
@@ -233,7 +233,7 @@ export default function ParticipantStatus() {
                     <Trophy weight="duotone" size={14} />
                     {' '}Winner picked
                   </strong>
-                  <em>shoutout if it's yours</em>
+                  <em>shoutout if it’s yours</em>
                 </span>
               </li>
             </ol>

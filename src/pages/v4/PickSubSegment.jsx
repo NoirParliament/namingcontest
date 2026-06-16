@@ -33,7 +33,7 @@ const SUB_SEGMENTS = {
   personal: {
     label: 'personal',
     options: [
-      { id: 'p1', Icon: Baby,         tone: TONES.pink,       title: 'A new baby',                       body: "The most exciting naming you'll ever do." },
+      { id: 'p1', Icon: Baby,         tone: TONES.pink,       title: 'A new baby',                       body: "The most exciting naming you’ll ever do." },
       { id: 'p2', Icon: PawPrint,     tone: TONES.butter,     title: 'A pet',                            body: 'Dogs, cats, horses, the lot.' },
       { id: 'p3', Icon: House,        tone: TONES.mint,       title: 'Home, property, or something fun', body: 'Holiday cottage, boat, or anything in between.' },
       { id: 'p4', Icon: PencilSimple, tone: TONES.periwinkle, title: 'Something else',                   body: 'Tell us about it in the brief.' },
@@ -147,7 +147,7 @@ export default function PickSubSegment() {
           {phase >= 2 && (
             <div className="v4-bubble">
               <span className="v4-bubble-icon" aria-hidden="true">👋</span>
-              <span>Hi! Let's set up your {data.label} contest. Won't take long.</span>
+              <span>Hi! Let’s set up your {data.label} contest. Won’t take long.</span>
             </div>
           )}
 

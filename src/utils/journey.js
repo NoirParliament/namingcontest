@@ -140,7 +140,7 @@ export const MOCK_CANDIDATES = {
     { id: 'ot2', name: 'Common Thread',  rationale: 'The thing that connects everyone — implies diversity unified by purpose. Warm, inclusive, memorable across contexts.', voteCount: 15 },
     { id: 'ot3', name: 'The Assembly',   rationale: 'Intentional gathering for purpose — formal enough for committees, casual enough for social groups. Timeless and dignified.', voteCount: 12 },
     { id: 'ot4', name: 'The Guild',      rationale: 'Craft plus community — signals expertise and belonging. Works for any group built around shared skill, passion, or practice.', voteCount:  9 },
-    { id: 'ot5', name: 'Parallel',       rationale: 'Moving in the same direction independently — captures how effective teams work without stepping on each other\'s contribution.', voteCount:  6 },
+    { id: 'ot5', name: 'Parallel',       rationale: 'Moving in the same direction independently — captures how effective teams work without stepping on each other’s contribution.', voteCount:  6 },
     { id: 'ot6', name: 'Waypoint',       rationale: 'A reference point on a longer journey — implies the group exists to help people navigate something larger than the group itself.', voteCount:  4 },
   ],
 
@@ -157,25 +157,25 @@ export const MOCK_CANDIDATES = {
     { id: 'pn1', name: 'Mochi',   rationale: 'Soft, round, sweet — perfect for a cat or small dog. Two syllables ending in a vowel: easy to call across a park, distinctive in any dog run.', voteCount: 22 },
     { id: 'pn2', name: 'Atlas',   rationale: 'A big name for any size animal — carries the world. Works for large breeds or any pet with an outsized personality that fills a room.', voteCount: 18 },
     { id: 'pn3', name: 'Wren',    rationale: 'Small but mighty — a bird name that fits the spirited pet. One syllable, easy recall, distinctive in any dog park full of Lunas and Bellas.', voteCount: 14 },
-    { id: 'pn4', name: 'Cosmo',   rationale: 'Cosmic energy, playful feel — works for any species. Two syllables, naturally compresses to "Cos" as a call name for training.', voteCount: 10 },
+    { id: 'pn4', name: 'Cosmo',   rationale: 'Cosmic energy, playful feel — works for any species. Two syllables, naturally compresses to “Cos” as a call name for training.', voteCount: 10 },
     { id: 'pn5', name: 'Remy',    rationale: 'French, charming, genderless — hits the personality-over-appearance sweet spot. Popular but not overused in pet circles yet.', voteCount:  7 },
     { id: 'pn6', name: 'Biscuit', rationale: 'Warm, comforting, slightly absurd in the best way — perfect for a dog with golden energy. Chantable, loveable, impossible to say without smiling.', voteCount:  4 },
   ],
   'home-property-fun': [
     { id: 'hp1', name: 'Willowbend',  rationale: 'Grounded in nature and specific enough to feel real — suggests a property with character, a feature worth naming, and a story to tell guests.', voteCount: 20 },
-    { id: 'hp2', name: 'The Lookout', rationale: 'Implies a view and a vantage point — guests immediately understand what\'s special about this property before they arrive.', voteCount: 16 },
+    { id: 'hp2', name: 'The Lookout', rationale: 'Implies a view and a vantage point — guests immediately understand what’s special about this property before they arrive.', voteCount: 16 },
     { id: 'hp3', name: 'Harborside',  rationale: 'Water adjacency and calm — works for coastal or lake properties. Evokes rest, access, and somewhere worth arriving at.', voteCount: 12 },
     { id: 'hp4', name: 'Cedar Rest',  rationale: 'Nature plus restoration — two words that paint the complete picture. Cedar signals forest warmth; Rest promises the experience of the stay.', voteCount:  9 },
     { id: 'hp5', name: 'Ridgecrest',  rationale: 'Elevation and achievement — a property at the top of something. Works for mountain or hill properties with panoramic views as a selling point.', voteCount:  6 },
     { id: 'hp6', name: 'The Croft',   rationale: 'A small, cultivated, intentional space — British in origin but universally charming. Feels like somewhere people return to every year.', voteCount:  4 },
   ],
   'other-personal': [
-    { id: 'op1', name: 'The Ritual',    rationale: 'Elevates habit into intention — whatever you\'re naming becomes something people protect and look forward to every time.', voteCount: 18 },
+    { id: 'op1', name: 'The Ritual',    rationale: 'Elevates habit into intention — whatever you’re naming becomes something people protect and look forward to every time.', voteCount: 18 },
     { id: 'op2', name: 'Common Thread', rationale: 'The shared element that makes a group a group — warm, inclusive, and specific without limiting future direction.', voteCount: 14 },
     { id: 'op3', name: 'Waypoint',      rationale: 'A marker on a longer journey — implies purpose, direction, and belonging to something bigger than any single moment.', voteCount: 11 },
     { id: 'op4', name: 'The Archive',   rationale: 'Permanence and memory — works for any group or tradition where the history matters as much as the present experience.', voteCount:  8 },
     { id: 'op5', name: 'The Habit',     rationale: 'Radical honesty about what a recurring gathering is — a habit worth keeping. Disarming and surprisingly memorable.', voteCount:  5 },
-    { id: 'op6', name: 'Meridian',      rationale: 'The highest point in an arc — your group named from the start for where it\'s going, not just where it started.', voteCount:  3 },
+    { id: 'op6', name: 'Meridian',      rationale: 'The highest point in an arc — your group named from the start for where it’s going, not just where it started.', voteCount:  3 },
   ],
 
   // ── Legacy fallbacks keyed by group ──────────────────────────────────────

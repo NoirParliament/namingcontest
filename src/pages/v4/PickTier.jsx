@@ -103,8 +103,8 @@ export default function PickTier() {
           {/* Identical to homepage offerings section */}
           <section className="section" id="pricing">
             <div className="section-head">
-              <p className="eyebrow">First things first</p>
-              <h2 className="h-display h2">What kind of contest?</h2>
+              <p className="eyebrow">Let’s name something</p>
+              <h2 className="h-display h2">Who’s this one for?</h2>
               <p className="lede">Pick a path to get started. You can change your mind anytime.</p>
             </div>
             <div className="offerings">
