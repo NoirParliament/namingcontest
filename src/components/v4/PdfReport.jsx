@@ -38,7 +38,6 @@ const PdfReport = forwardRef(function PdfReport({
   const t = tone || { bg: '#fadecc', fg: '#9c4818' };
   const sortedNames = [...names].sort((a, b) => b.voteCount - a.voteCount);
   const topNames = sortedNames.slice(0, MAX_NAMES_ON_REPORT);
-  const remainingNames = Math.max(0, sortedNames.length - MAX_NAMES_ON_REPORT);
 
   // When a customColor is supplied (the user picked one from the
   // customizer), it should cascade to EVERY tinted element in the
@@ -163,12 +162,6 @@ const PdfReport = forwardRef(function PdfReport({
               </li>
             ))}
           </ul>
-          {remainingNames > 0 && (
-            <div className="v4-pdf-report-names-more">
-              + {remainingNames} more name{remainingNames === 1 ? '' : 's'}
-              {' '}in the full contest
-            </div>
-          )}
         </div>
 
         {/* Final stats row */}

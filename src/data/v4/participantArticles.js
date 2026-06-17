@@ -32,7 +32,7 @@ export const PARTICIPANT_ARTICLES = {
       sections: [
         {
           heading: 'Founders reject “obviously good” before they pick “right”',
-          body: `Talk to any naming consultant who has run founder shortlist sessions and you hear the same pattern. The clever, dictionary-perfect entries get a polite nod, then quietly slide to the bottom. What rises to the top is almost always the name that “feels like us” — usually one the founders couldn’t have written themselves but instantly recognized when they saw it. Your edge as a participant is that you’re outside that founder bubble. Submit the name the brief asks for, not the name a naming book would.`,
+          body: `Watch a founder work through a shortlist and the same pattern repeats. The clever, dictionary-perfect entries get a polite nod, then quietly slide to the bottom. What rises to the top is almost always the name that “feels like us” — usually one the founders couldn’t have written themselves but instantly recognized when they saw it. Your edge as a participant is that you’re outside that founder bubble. Submit the name the brief asks for, not the name a naming book would.`,
         },
         {
           heading: 'The three rejection reflexes',
@@ -55,8 +55,8 @@ export const PARTICIPANT_ARTICLES = {
       icon: 'PencilSimple',
       sections: [
         {
-          heading: 'Front-load the strongest name',
-          body: `If the contest lets you submit three names, your first slot is where the chooser forms their opinion of you as a participant. Reviewers admit they form a quick “is this person on-strategy?” judgment in the first 5 seconds. Lead with your most on-brief name even if you secretly love your wildcard third entry more — the reviewer needs to trust your taste before they’ll consider your bolder swing.`,
+          heading: 'Lead on-brief, then spend a slot on the wildcard',
+          body: `If the contest lets you submit three names, your first slot is where the chooser forms their opinion of you. Reviewers form a quick “is this person on-strategy?” judgment in the first 5 seconds, so lead with your most on-brief name. That earns the trust that makes a reviewer willing to consider a bolder swing. Then deliberately spend one of your remaining slots on the wildcard you almost didn’t dare submit. Leading safe doesn’t mean hiding the bold name — it means ordering it so the bold name gets a fair hearing.`,
         },
         {
           heading: 'Write the why-it-fits like a sentence in their pitch deck',
@@ -104,7 +104,7 @@ export const PARTICIPANT_ARTICLES = {
       sections: [
         {
           heading: 'Too literal dies in the demo',
-          body: `Product names that exactly describe what the product does (“SmartScheduler”, “TaskManager Pro”) feel safe to submit but die the first time the founder demos to a customer who already knows what scheduling software is. The name has no emotional payload. Lippincott calls this “describing your way out of being remembered.”`,
+          body: `Product names that exactly describe what the product does (“SmartScheduler”, “TaskManager Pro”) feel safe to submit but die the first time the founder demos to a customer who already knows what scheduling software is. The name has no emotional payload. When a name only describes, it describes its way out of being remembered.`,
         },
         {
           heading: 'Too abstract dies in the pitch',
@@ -180,7 +180,7 @@ export const PARTICIPANT_ARTICLES = {
         },
         {
           heading: 'Watch for asymmetric risk',
-          body: `Founders rebranding are simultaneously hopeful and terrified. Names that feel like a clean break from the past read as exciting to half the room and reckless to the other half. The submissions that win usually come with a built-in bridge: a sound, a letter pattern, or a meaning that lets the founder say “this is still us, just evolved.” Lippincott calls this approach “evolutionary equity transfer.” Use it.`,
+          body: `Founders rebranding are simultaneously hopeful and terrified. Names that feel like a clean break from the past read as exciting to half the room and reckless to the other half. The submissions that win usually come with a built-in bridge: a sound, a letter pattern, or a meaning that lets the founder say “this is still us, just evolved.” Give the founder that built-in bridge — a way to carry the old equity forward instead of asking customers to start over.`,
         },
       ],
       callout: {
@@ -195,8 +195,8 @@ export const PARTICIPANT_ARTICLES = {
       icon: 'Bridge',
       sections: [
         {
-          heading: 'Why pure-revolution names usually lose',
-          body: `History is full of rebrands that swung too hard and bounced. Tribune Publishing → Tronc lasted 18 months. Weight Watchers → WW confused customers for years. The names that succeeded long-term — Accenture, Altria, Meta — all came with massive marketing budgets to bridge the gap. A contest participant rarely controls that budget. Submit names that don’t require the founder to spend $50M re-educating customers.`,
+          heading: 'When a bridge name is the safer default',
+          body: `A bridge name — one that keeps a thread of the old identity — is the lower-risk default whenever the existing equity is worth keeping. Clean-break names can absolutely win: Accenture, Google, Meta all broke hard and succeeded. But those revolutions carried more risk and needed serious marketing fuel to land, and plenty of others bounced (Tribune Publishing → Tronc lasted 18 months; Weight Watchers → WW confused customers for years). A contest participant rarely controls a re-education budget, so unless the brief is clearly asking for a fresh start, the bridge is the smarter bet.`,
         },
         {
           heading: 'How to design the bridge',
@@ -209,7 +209,7 @@ export const PARTICIPANT_ARTICLES = {
       ],
       callout: {
         type: 'insight',
-        text: `Research on customer recognition shows brands take 7–12 exposures to be recognized post-rebrand. A bridge name compresses that to 2–3. Your submission’s job is to make the founder feel that compression is possible.`,
+        text: `Every rebrand asks customers to relearn who you are. A bridge name shortens that relearning by letting existing recognition carry forward instead of starting from zero. Your submission’s job is to make the founder feel that head start is real.`,
       },
     },
   ],
@@ -268,7 +268,7 @@ export const PARTICIPANT_ARTICLES = {
       sections: [
         {
           heading: 'Test 1 — The chant',
-          body: `Stand up, picture 50 people on a sideline after a goal, and shout your submission three times: “EAGLES! EAGLES! EAGLES!” If your throat trips or the rhythm flatlines after two beats, the name fails the most important test in sports naming. Hard consonants and short vowels chant; soft endings and three-syllable names do not. Oklahoma City’s “Thunder” beat 64,000 other submissions partly because of one syllable and a hard “T-H.”`,
+          body: `Stand up, picture 50 people on a sideline after a goal, and shout your submission three times: “EAGLES! EAGLES! EAGLES!” If your throat trips or the rhythm flatlines after two beats, the name fails the most important test in sports naming. Hard consonants and short vowels chant; soft endings and three-syllable names do not. Oklahoma City’s “Thunder” was picked by fan vote off an ownership shortlist — beating finalists like Barons, Bison, Energy and Wind — and it carries partly because of that one syllable and the hard “T-H.” One more thing before you fall for a name: say it out loud and check the obvious second meaning, the slur, the unfortunate initials. The crowd will find them for you if you don’t.`,
         },
         {
           heading: 'Test 2 — The jersey',
@@ -285,7 +285,7 @@ export const PARTICIPANT_ARTICLES = {
       ],
       callout: {
         type: 'example',
-        text: `Seattle Kraken (NHL) was chosen from 215,000 fan submissions in 2020. It dominated because it passed all four tests instantly: chantable single word, jersey-ready, kid-drawable mythological creature, and rooted in Pacific Northwest seafaring lore that won’t age.`,
+        text: `Seattle Kraken (NHL) drew 215,000+ fan votes and was narrowed to a five-name shortlist in 2020. It dominated because it passed all four tests instantly: chantable single word, jersey-ready, kid-drawable mythological creature, and rooted in Pacific Northwest seafaring lore that won’t age.`,
       },
     },
     {
@@ -296,7 +296,7 @@ export const PARTICIPANT_ARTICLES = {
       sections: [
         {
           heading: 'The geography you don’t name directly',
-          body: `Teams that simply prepend the city (“[City] Tigers”, “[City] United”) survive but rarely belong. The names that genuinely root themselves use local soul as a layer beneath the surface — a creature only found here (“Memphis Grizzlies”, “Toronto Raptors” — chosen partly because of Jurassic Park-era enthusiasm but tested as Canadian-feeling), a weather pattern, a piece of working-class history, a local industry. Read the brief for clues about the team’s home and surface them obliquely.`,
+          body: `Teams that simply prepend the city (“[City] Tigers”, “[City] United”) survive but rarely belong. The names that genuinely root themselves use local soul as a layer beneath the surface: a creature that lives here (“Memphis Grizzlies”, “Vancouver Canucks”, “New Orleans Pelicans”), a weather pattern, a piece of working-class history, a local industry. Each one could only have come from its own city. Read the brief for clues about the team’s home and surface them obliquely.`,
         },
         {
           heading: 'Working-class signal beats aspirational signal',
@@ -332,7 +332,7 @@ export const PARTICIPANT_ARTICLES = {
         },
         {
           heading: 'Names that don’t fight the genre',
-          body: `A folk band named “Demonkill” or a metal band named “Soft Pillow” creates cognitive friction that loses listeners before the first stream. Read the brief for the band’s actual sound and make sure your name’s phonetic register matches. Sharp consonants for aggressive music; longer vowels and softer endings for melodic work. Phonetic congruence isn’t decoration — it’s the band’s first promise about the music.`,
+          body: `A folk band named “Demonkill” or a metal band named “Soft Pillow” creates cognitive friction that loses listeners before the first stream. Read the brief for the band’s actual sound and make sure your name’s phonetic register matches. Sharp consonants for aggressive music; longer vowels and softer endings for melodic work. Phonetic congruence isn’t decoration; it’s the band’s first promise about the music. And before you fall for a name, say it out loud and check the obvious second meaning, the slur, the unfortunate initials — what looks clean on the page can sound very different shouted back at a show.`,
         },
       ],
       callout: {
@@ -352,11 +352,11 @@ export const PARTICIPANT_ARTICLES = {
         },
         {
           heading: 'The “yelled at the encore” test',
-          body: `A great band name also has to work in the loudest possible context: the crowd yelling it for one more song. Try yelling your submission ten times. Does the rhythm work? Does the last syllable land like a kick drum? Names that pass this test almost always have either a sharp consonant ending or a long vowel that can be sustained (“Queeeen”, “Oasiiiis”). Soft trailing syllables die in stadium acoustics.`,
+          body: `A great band name also has to work in the loudest possible context: the crowd yelling it for one more song. Listen to the acoustics of your submission first — does the last syllable land like a kick drum, or trail off into nothing? Names that carry almost always have either a sharp consonant ending or a long vowel that can be sustained (“Queeeen”, “Oasiiiis”). Soft trailing syllables die in stadium air.`,
         },
         {
           heading: 'Distinctiveness compounds',
-          body: `Spotify’s internal data on artist growth consistently shows that highly distinctive names drive 2-3x more organic monthly listeners in the first six months than common-word names. The trade-off — slower initial recognition but stronger long-term ownership — is almost always worth it for new bands. Submit the distinctive name even if it sounds risky on first read.`,
+          body: `Distinctive, hard-to-confuse names tend to compound discovery over time, while common-word names quietly bleed listeners to search collisions — every mis-search hands a potential fan to someone else with a similar name. The trade-off, slower initial recognition for stronger long-term ownership, is almost always worth it for new bands. Submit the distinctive name even if it sounds risky on first read.`,
         },
       ],
       callout: {
@@ -433,7 +433,7 @@ export const PARTICIPANT_ARTICLES = {
       ],
       callout: {
         type: 'insight',
-        text: `Behavioral economics research on charitable giving consistently shows that nonprofits with mission-clear names receive 30%+ more first-time donations than abstract-named ones. First impressions are also first dollars.`,
+        text: `Names that state the mission plainly lower the barrier to a first gift — a donor doesn’t have to decode anything before deciding to give. Clarity reads as trustworthiness, and first impressions are also first dollars.`,
       },
     },
     {
@@ -476,7 +476,7 @@ export const PARTICIPANT_ARTICLES = {
         },
         {
           heading: 'The 1v5 yell',
-          body: `Picture a teammate clutching a 1v5 in ranked. The name has to be screamable in that moment — “LET’S GO [NAME]!” Names with hard consonants (FaZe, NRG, T1) and short vowels survive the yell. Multi-syllable names (Phantom Reaver Sentinels) get truncated within a week to whatever the team actually shouts in voice comms. Save the full name from death-by-nickname by submitting something already short and sharp.`,
+          body: `Picture a teammate clutching a 1v5 in ranked. The name has to be screamable in that moment — “LET’S GO [NAME]!” Names with hard consonants (FaZe, NRG, T1) and short vowels survive the yell. Multi-syllable names (Phantom Reaver Sentinels) get truncated within a week to whatever the team actually shouts in voice comms. Save the full name from death-by-nickname by submitting something already short and sharp. And before you commit, read the tag and the name out loud — check the obvious second meaning, the slur, the unfortunate initials, because a tag that reads wrong follows the team into every bracket.`,
         },
       ],
       callout: {
@@ -501,7 +501,7 @@ export const PARTICIPANT_ARTICLES = {
       ],
       callout: {
         type: 'insight',
-        text: `Esports merchandise data from 2018-2024 shows team names with 2 syllables generate roughly 2.3x more fan-gear searches than longer names. Brevity isn’t just style — it’s revenue.`,
+        text: `Short team names travel further in a scene built on tags, chants, and quick searches — fans find them, type them, and shout them without friction. A name that compresses cleanly is doing free marketing every time someone says it.`,
       },
     },
   ],
@@ -560,7 +560,7 @@ export const PARTICIPANT_ARTICLES = {
       sections: [
         {
           heading: 'Skip the year’s top-20',
-          body: `Names in any given year’s top-20 list — currently Olivia, Liam, Emma, Noah, Charlotte and their peers — are statistically guaranteed to feel “of an era” within 15 years. The U.S. Social Security Administration’s century of data shows naming popularity cycles every ~25 years. If you want to suggest a name with staying power, look at the #500-1000 range: distinctive without being invented, phonetically established, less likely to share the kindergarten with three other kids carrying it.`,
+          body: `Names in any given year’s top-20 list — currently Olivia, Liam, Emma, Noah, Charlotte and their peers — tend to feel “of an era” within 15 years, the way the Jennifers and Jasons still date their decade. The genuinely durable picks usually sit just outside the current top names: familiar enough to be spelled and said without a fight, but not the one three other kids in the kindergarten already answer to. Look a little past the front of the popularity list and you find names that feel both timeless and uncrowded.`,
         },
         {
           heading: 'The lifetime test',
@@ -608,7 +608,7 @@ export const PARTICIPANT_ARTICLES = {
         },
         {
           heading: 'Watch the call name',
-          body: `The full name and the call name are different jobs. A great submission gives both: a formal name (“Bartholomew”) with an obvious one-syllable call name (“Bart”) built in. The call name is what gets yelled across the dog park 50 times a day; the formal name is what goes on the vet paperwork and feels ceremonial.`,
+          body: `The full name and the call name are different jobs. A great submission gives both: a formal name (“Bartholomew”) with an obvious short call name of one or two syllables (“Bart”, “Barty”) built in. The call name is what gets yelled across the dog park 50 times a day; the formal name is what goes on the vet paperwork and feels ceremonial.`,
         },
       ],
       callout: {
@@ -628,7 +628,7 @@ export const PARTICIPANT_ARTICLES = {
         },
         {
           heading: 'Recall phonetics',
-          body: `Veterinary behaviorists consistently note that names ending in a vowel sound (Luna, Bella, Coco, Milo) travel further across open space and are easier for animals to distinguish from background noise. Two-syllable names with stress on the first syllable (MAX-i, BEL-la, CO-co) are even better — animals respond to recall faster than with single-syllable names that vanish in a gust of wind.`,
+          body: `Veterinary behaviorists consistently note that names of one to two syllables, ideally ending in a vowel sound and stressed on the first syllable (BEL-la, CO-co, MI-lo), travel furthest across open space and are easiest for animals to distinguish from background noise. The vowel ending carries; the front stress gives the dog a clear beat to lock onto. That combination gets a faster recall response than a flat, trailing name that vanishes in a gust of wind.`,
         },
       ],
       callout: {
@@ -652,7 +652,7 @@ export const PARTICIPANT_ARTICLES = {
         },
         {
           heading: 'Two-word maximum',
-          body: `Property names that survive guest conversations are almost always one or two words. “Casa Bella Serenissima Di Toscana” gets shortened to “the Italian place” within a week. Stillwater, Driftwood, Heronwood, The Bungalow, Magnolia House — each is short enough to roll off the tongue and specific enough to feel like a place.`,
+          body: `Property names that survive guest conversations are almost always one or two words. “Casa Bella Serenissima Di Toscana” gets shortened to “the Italian place” within a week. Stillwater, Driftwood, Heronwood, The Bungalow, Magnolia House — each is short enough to roll off the tongue and specific enough to feel like a place. Before you settle on one, say it out loud and check the obvious second meaning or unfortunate initials — a name guests have to giggle at is a name they’ll quietly stop using.`,
         },
       ],
       callout: {
@@ -729,7 +729,7 @@ export const PARTICIPANT_ARTICLES = {
       ],
       callout: {
         type: 'example',
-        text: `In Catchword Branding’s published case studies, the winning name was the participant’s “I almost didn’t send it” entry in a notable share of contests. Trust the wildcard.`,
+        text: `In Catchword Branding’s published case studies, the winning name was the participant’s “I almost didn’t send it” entry in a notable share of contests. So lead with your most on-brief name — then spend one slot on that wildcard. The safe lead earns you the trust; the wildcard wins the contest.`,
       },
     },
   ],
@@ -753,11 +753,11 @@ export const FUN_FACTS = {
   b1: [
     {
       title: 'The .com is overrated',
-      body: `Many top startups launched on .co, .io, or alt-TLDs (Notion was Notion.so for years; Slack lived on .com only after they grew). Don’t kill a good name for a domain you can buy later.`,
+      body: `Many top startups launched on .co, .io, or alt-TLDs (Notion was Notion.so for years; Slack lived on .com only after they grew). For a funded startup, don’t kill a good name over the .com. But for a small or local business, a name you can’t actually secure — domain, business registration, or trademark in your category — can be a real dealbreaker. Check availability before you fall in love.`,
     },
     {
       title: 'Two syllables win',
-      body: `9 of the top 20 most valuable tech brands (Apple, Google, Microsoft, Tesla, Adobe, Cisco) are two syllables. Easy to say → easy to remember → easy to repeat.`,
+      body: `Many of the most valuable tech brands are two syllables (Apple, Google, Adobe, Cisco). Easy to say → easy to remember → easy to repeat.`,
     },
     {
       title: `Founders rarely pick the obvious one`,
@@ -767,7 +767,7 @@ export const FUN_FACTS = {
   b2: [
     {
       title: 'Onomatopoeia sells',
-      body: `Names that sound like the thing they do (Zoom, Snap, Whoop) outperform descriptive names in first-meeting recall by 40%+. Speed-sounds for speed tools; quiet-sounds for calm ones.`,
+      body: `Names that sound like the thing they do (Zoom, Snap, Whoop) tend to beat flatly descriptive names in first-meeting recall. Speed-sounds for speed tools; quiet-sounds for calm ones.`,
     },
     {
       title: 'The two-second test',
@@ -795,7 +795,7 @@ export const FUN_FACTS = {
   b4: [
     {
       title: 'Equity transfers slowly',
-      body: `Customer-recognition research finds 7–12 brand exposures are needed for trust to fully transfer from an old name to a new one. Names sharing a sound with the old one cut this in half.`,
+      body: `Trust takes time to move from an old name to a new one — customers have to relearn who you are. A name that shares a sound or letter with the original lets recognition carry forward instead of starting from zero.`,
     },
     {
       title: 'Pure revolutions tend to fail',
@@ -803,7 +803,7 @@ export const FUN_FACTS = {
     },
     {
       title: 'Customers grieve the old name',
-      body: `Behavioral research on brand transitions documents a 60–90 day “name mourning” period where loyal customers actively miss the old identity. Plan for it.`,
+      body: `After a rebrand, loyal customers often miss the old identity for a while before the new one settles in. Plan for that adjustment period instead of being surprised by it.`,
     },
   ],
   b5: [
@@ -823,21 +823,21 @@ export const FUN_FACTS = {
   t1: [
     {
       title: 'Hard consonants chant best',
-      body: `Linguistics research on sports chants shows names ending in hard consonants (T, K, P, B) sustain crowd energy 2.3x longer than soft endings. “HEAT” beats “Lakers” — try chanting both.`,
+      body: `Names ending in hard consonants (T, K, P, B) sustain crowd energy far better than soft endings. “HEAT” beats “Lakers” — try chanting both and feel where your throat lands.`,
     },
     {
-      title: 'Kraken beat 215,000 entries',
-      body: `Seattle’s NHL team picked Kraken from 215,000 fan submissions in 2020. The winner was a single chantable mythological creature rooted in Pacific Northwest seafaring lore.`,
+      title: 'Kraken drew 215,000+ votes',
+      body: `Seattle’s NHL team drew 215,000+ fan votes and narrowed to a five-name shortlist in 2020 before landing on Kraken — a single chantable mythological creature rooted in Pacific Northwest seafaring lore.`,
     },
     {
       title: 'Two syllables = jersey gold',
-      body: `Sports merchandise data shows two-syllable team names generate 47% more apparel searches than longer names. Brevity isn’t just style — it’s revenue.`,
+      body: `Shorter team names are easier to search, print, and chant than longer ones — less to mistype, less to shrink on a jersey, less to trip over in a crowd. Brevity does real work.`,
     },
   ],
   t2: [
     {
-      title: 'Spotify rewards weird',
-      body: `Spotify’s internal artist-growth data shows distinctive (non-dictionary) band names drive 2–3x more organic monthly listeners in the first 6 months than common-word names. Distinctiveness compounds.`,
+      title: 'Distinctive names compound',
+      body: `Distinctive, hard-to-confuse band names tend to compound discovery over time; common-word names quietly bleed listeners every time a search collides with someone else. Distinctiveness compounds.`,
     },
     {
       title: 'Every band gets the same first question',
@@ -855,7 +855,7 @@ export const FUN_FACTS = {
     },
     {
       title: 'Distinctive names = loyal listeners',
-      body: `Spotify data shows shows with distinctive (non-descriptive) names have 40% higher episode completion rates. Listeners who chose the show by name, not keyword, stick around.`,
+      body: `Listeners who choose a show by its name, rather than stumbling on it by keyword, tend to stick around. A distinctive name attracts people who actually wanted that show — and they stay.`,
     },
     {
       title: 'Subtitles are your safety net',
@@ -882,8 +882,8 @@ export const FUN_FACTS = {
       body: `Competitive gaming brackets show team names as 2–4 character tags: [C9], [TL], [FaZe]. The tag is what teammates see in-game, what fans chant, what brackets display.`,
     },
     {
-      title: 'Two-syllable squads sell merch',
-      body: `Esports merch data from 2018–2024 shows team names with 2 syllables generate ~2.3x more fan-gear searches than longer names. Brevity is revenue.`,
+      title: 'Short squads sell merch',
+      body: `Short team names get searched, typed, and printed more easily than long ones — fans find your gear instead of fumbling the spelling. Brevity quietly does the selling.`,
     },
     {
       title: 'Latin still works',
@@ -906,8 +906,8 @@ export const FUN_FACTS = {
   ],
   p1: [
     {
-      title: 'Names cycle every 25 years',
-      body: `U.S. Social Security Administration data shows baby-name popularity moves in roughly 25-year cycles. For uniqueness without inventing, look at names ranked #500–1000: distinctive but phonetically established.`,
+      title: 'Look just past the top of the list',
+      body: `The most durable baby names usually sit just outside the current top names — familiar enough to spell and say, but not the one three other kids already answer to. For uniqueness without inventing, browse names ranked #500–1000: distinctive but phonetically established.`,
     },
     {
       title: '2–3 syllables = easiest to learn',

@@ -39,7 +39,7 @@ const DECO_ICONS = [
 const STEPS = [
   {
     id: 'name', type: 'text', placeholder: 'Jane Doe', autoComplete: 'name',
-    ask: () => 'Hey there — what should we call you?',
+    ask: () => 'Hey there, what should we call you?',
     valid: (v) => v.trim().length > 0,
   },
   {
@@ -223,11 +223,12 @@ export default function ContactPage() {
           <main className="contact-main" role="main">
             {/* ── Left rail — the human pitch ─────────────────────── */}
             <section className="contact-intro">
-              <div className="contact-eyebrow">Contact</div>
-              <h1 className="contact-title">Say hello.</h1>
+              <div className="contact-eyebrow">Whatever it is</div>
+              <h1 className="contact-title">Tell us everything</h1>
               <p className="contact-lede">
-                Got a question or an issue — or want professional naming help?
-                We’re Catchword, and a real human reads every message.
+                Question about setting up a contest, something acting up
+                mid-vote, or a feature you wish we had? Tell us and a real
+                person will read it and reply, usually within a day.
               </p>
 
               <div className="contact-promise">

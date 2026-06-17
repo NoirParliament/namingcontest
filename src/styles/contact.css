@@ -91,11 +91,15 @@
   color: var(--fg-muted); margin: 0 0 16px;
 }
 .contact-title {
+  /* Matches the legal pages' .legal-title exactly (58px → 40px at ≤560,
+     line-height 1.02) so the system pages read as one family. The hero
+     stacks to a single column at 860, so the full size holds down to the
+     560 breakpoint just like the legal header. */
   font-family: var(--font-display); font-weight: 400;
-  font-size: 64px; line-height: 1.04; letter-spacing: var(--tr-tight);
+  font-size: 58px; line-height: 1.02; letter-spacing: var(--tr-tight);
   color: var(--fg); margin: 0 0 18px;
 }
-@media (max-width: 860px) { .contact-title { font-size: 46px; } }
+@media (max-width: 560px) { .contact-title { font-size: 40px; } }
 .contact-lede {
   font-size: 17px; line-height: 1.55;
   color: var(--fg-faint); max-width: 420px; margin: 0 0 26px;

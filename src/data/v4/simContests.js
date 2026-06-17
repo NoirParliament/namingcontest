@@ -92,7 +92,7 @@ export const SIM_CONTESTS = {
       petPersonality: 'Goofy, food-obsessed, trips over his own ears, and already thinks he runs the place.',
       callNamePref: 'Short call name (1-2 syllables)',
       nameTone: ['Playful / Funny', 'Cute / Sweet'],
-      avoidNames: "Nothing that sounds like ‘no’ or ‘sit’ — we don’t want to confuse him in training.",
+      avoidNames: "Nothing that sounds like “no” or “sit” — we don’t want to confuse him in training.",
     },
     allSubmissions: [
       { id: 'sim_p2_1',  text: 'Biscuit',     whyItFits: 'Golden colour, golden personality, treat-motivated to the core.', submitterName: 'Sophie' },
@@ -130,7 +130,7 @@ export const SIM_CONTESTS = {
       vibe: ['Cozy / Warm', 'Adventurous / Outdoorsy'],
       signDisplay: 'Yes — will be on a sign/plaque',
       languagePref: 'English only',
-      avoidNames: "Nothing twee — no ‘haven’ or ‘hideaway’, they’re everywhere.",
+      avoidNames: "Nothing twee — no “haven” or “hideaway”, they’re everywhere.",
     },
     allSubmissions: [
       { id: 'sim_p3_1',  text: 'Willowmere',     whyItFits: 'Old word for a willow-fringed lake — exactly the view.', submitterName: 'Diane' },
@@ -382,7 +382,7 @@ export const SIM_CONTESTS = {
       projectSummary: 'A monthly book club — eight friends, a lot of wine, occasionally the actual book gets discussed.',
       groupDesc: "A monthly book club of eight friends. We rotate who hosts, someone always forgets to finish the book, and the wine-to-discussion ratio is generous. Two years in and we finally want a name.",
       vibe: ['Fun / Casual', 'Irreverent / Playful'],
-      history: "It started as ‘are we still doing the book thing?’ texts and somehow became the most reliable date in our calendars.",
+      history: "It started as “are we still doing the book thing?” texts and somehow became the most reliable date in our calendars.",
     },
     allSubmissions: [
       { id: 'sim_t6_1',  text: 'Between the Lines', whyItFits: 'Classic book pun; warm and a little knowing.', submitterName: 'Helen' },
@@ -415,9 +415,9 @@ export const SIM_CONTESTS = {
     }),
     brief: {
       projectSummary: 'A fintech building simple cash-flow tools for freelancers and tiny businesses. Friendly, trustworthy, not corporate.',
-      companyDesc: "We build simple cash-flow forecasting and invoicing tools for freelancers and businesses under ten people. No accounting jargon — just a clear answer to ‘will I make rent next month?’",
+      companyDesc: "We build simple cash-flow forecasting and invoicing tools for freelancers and businesses under ten people. No accounting jargon — just a clear answer to “will I make rent next month?”",
       namingStyle: 'suggestive',
-      targetAudience: "Freelancers and micro-business owners, 25–45, not finance-savvy, allergic to anything that feels like ‘enterprise software.’",
+      targetAudience: "Freelancers and micro-business owners, 25–45, not finance-savvy, allergic to anything that feels like “enterprise software.”",
       geoScope: 'Global / International',
       competitors: 'QuickBooks, Wave, FreshBooks, Xero',
     },
@@ -455,7 +455,7 @@ export const SIM_CONTESTS = {
       parentBrand: 'None yet — this is our flagship product.',
       architecture: 'standalone',
       primaryUser: 'Home cooks aged 25–45 juggling work and family who want dinner sorted without a second thought.',
-      differentiator: "It plans around what you already have, not a fixed recipe list — so it kills food waste and the nightly ‘what’s for dinner’ stress.",
+      differentiator: "It plans around what you already have, not a fixed recipe list — so it kills food waste and the nightly “what’s for dinner” stress.",
       competitors: 'Mealime, Paprika, Whisk, Yummly',
     },
     allSubmissions: [
