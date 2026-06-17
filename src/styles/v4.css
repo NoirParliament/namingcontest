@@ -5214,8 +5214,12 @@ input.v4-results-search-input::placeholder {
    These overrides re-assert the DESKTOP values on the clone with
    higher specificity (and !important to beat any per-page stylesheet
    that loads later). Result: a PNG exported from any viewport size
-   matches the desktop export, pixel for pixel. */
-body.is-exporting-card .v4-winner-hero {
+   matches the desktop export, pixel for pixel.
+
+   SCOPED TO `[data-export-host]` (the off-screen clone host), NOT
+   `body.is-exporting-card` — so the VISIBLE card on the page never
+   resizes during capture (that caused a visible "shake"). */
+[data-export-host] .v4-winner-hero {
   width: 720px !important;
   max-width: none !important;
   margin: 0 !important;
@@ -5225,11 +5229,11 @@ body.is-exporting-card .v4-winner-hero {
   transform: none !important;
 }
 /* Re-assert the desktop values that @media (max-width: 640px) overrides. */
-body.is-exporting-card .v4-winner-hero-name {
+[data-export-host] .v4-winner-hero-name {
   font-size: 64px !important;
   line-height: 1.02 !important;
 }
-body.is-exporting-card .v4-winner-hero-inner {
+[data-export-host] .v4-winner-hero-inner {
   padding: 56px 28px 44px !important;
 }
 

@@ -18,6 +18,34 @@ import { jsPDF } from 'jspdf';
 // exported from a 1440px desktop.
 const SHARE_CARD_EXPORT_WIDTH = 720;
 
+// Force the winner name onto a SINGLE line in the export clone, shrinking
+// its font-size to fit the card width if a long name would otherwise wrap.
+// A one-line name can never wrap-and-overlap the credit line — the failure
+// mode when html-to-image mis-measures wrapped text. Inline !important
+// beats the [data-export-host] 64px rule; a Range measures the true text
+// width without changing the element's display or centering.
+function fitWinnerNameToOneLine(clone) {
+  const nameEl = clone.querySelector('.v4-winner-hero-name');
+  const parent = nameEl && nameEl.parentElement;
+  if (!nameEl || !parent) return;
+  const ps = getComputedStyle(parent);
+  const avail = parent.clientWidth
+    - parseFloat(ps.paddingLeft || '0')
+    - parseFloat(ps.paddingRight || '0');
+  nameEl.style.whiteSpace = 'nowrap';
+  const textWidth = () => {
+    const r = document.createRange();
+    r.selectNodeContents(nameEl);
+    return r.getBoundingClientRect().width;
+  };
+  let fs = 64, guard = 0;
+  nameEl.style.setProperty('font-size', fs + 'px', 'important');
+  while (textWidth() > avail && fs > 26 && guard++ < 40) {
+    fs -= 1.5;
+    nameEl.style.setProperty('font-size', fs + 'px', 'important');
+  }
+}
+
 // ─────────────────────────────────────────────────────────────────────
 // PNG: snapshot the share card.
 //
@@ -52,6 +80,12 @@ export async function downloadShareCard(element, contestName = 'winner') {
       try { await document.fonts.ready; } catch { /* fonts API unavailable */ }
     }
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+    // Guarantee a single-line name (shrink to fit) so it can never overlap
+    // the credit, regardless of how html-to-image measures wrapped text.
+    fitWinnerNameToOneLine(clone);
+    await new Promise((r) => requestAnimationFrame(r));
+
     const dataUrl = await toPng(clone, {
       pixelRatio: 2,
       cacheBust: true,
@@ -105,11 +139,9 @@ function mountDesktopExportClone(source) {
   ].join('; ');
   host.appendChild(clone);
   document.body.appendChild(host);
-  document.body.classList.add('is-exporting-card');
 
   const restore = () => {
     if (host.parentNode) host.parentNode.removeChild(host);
-    document.body.classList.remove('is-exporting-card');
   };
   restore.clone = clone;
   return restore;
