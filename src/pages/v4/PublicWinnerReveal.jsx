@@ -21,7 +21,7 @@
 // existing /winner page.
 
 import { useRef, useState, useEffect } from 'react';
-import { useParams, Link, Navigate } from 'react-router-dom';
+import { useParams, Navigate } from 'react-router-dom';
 import { Trophy, ShareNetwork, Check, X } from '@phosphor-icons/react';
 import ExitLink from '../../components/v4/ExitLink';
 import confetti from 'canvas-confetti';
@@ -224,12 +224,6 @@ export default function PublicWinnerReveal() {
                 )}
               </button>
             </div>
-
-            {/* Quiet self-serve nudge. Same wording as ParticipantWinner. */}
-            <p className="v4-pwinner-own">
-              <span className="v4-pwinner-own-lead">Want to name something of your own?</span>{' '}
-              <Link to="/" className="v4-pwinner-own-link">Start a contest →</Link>
-            </p>
           </div>
 
           {/* ── Footer timeline — generic lifecycle, not visitor's

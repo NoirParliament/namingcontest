@@ -15,7 +15,7 @@
 // localStorage override) with a top-voted fallback from buildLiveData.
 
 import { useRef, useState, useEffect } from 'react';
-import { useParams, Link, Navigate } from 'react-router-dom';
+import { useParams, Navigate } from 'react-router-dom';
 import { Trophy, ShareNetwork, Check } from '@phosphor-icons/react';
 import confetti from 'canvas-confetti';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
@@ -272,12 +272,6 @@ export default function ParticipantWinner() {
                 )}
               </button>
             </div>
-
-            {/* Small, quiet self-serve nudge — the only CTA on the page. */}
-            <p className="v4-pwinner-own">
-              <span className="v4-pwinner-own-lead">Want to name something of your own?</span>{' '}
-              <Link to="/" className="v4-pwinner-own-link">Start a contest →</Link>
-            </p>
           </div>
 
           {/* ── Footer timeline — all three steps done. */}

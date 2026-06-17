@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AFFILIATE_MOMENTS, AFFILIATE_PLAN_LABEL } from '../utils/affiliateMoments';
+import { AFFILIATE_MOMENTS, AFFILIATE_PLAN_LABEL } from '../utils/partnerMoments';
 import { getGroupTheme, LIGHT_THEME } from '../data/themeConfig';
 import { SUB_LABELS } from '../utils/journey';
 

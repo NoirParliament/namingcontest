@@ -1,3 +1,7 @@
+// The Cookie policy page (route /cookies). The FILE is named LegalCrumbs,
+// not CookiePolicy, so ad-blockers / Brave Shields don't block the module
+// request by name in dev (ERR_BLOCKED_BY_CLIENT → blank page). The
+// component, route, and title keep "Cookie" — only the filename is neutral.
 import LegalPage from './LegalPage';
 
 export default function CookiePolicy() {

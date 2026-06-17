@@ -10,7 +10,9 @@ import { getJourneyMeta, buildJourneySteps, detectStep, PHASE_COLORS } from './u
 import { getGroupTheme } from './data/themeConfig';
 import { CurrencyDollar, Handshake, BookOpen, User, Wrench } from '@phosphor-icons/react';
 import PaywallSimulator from './components/PaywallSimulator';
-import AffiliateSimulator from './components/AffiliateSimulator';
+// File named PartnerSimulator (not "Affiliate…") so ad-blockers/Brave
+// Shields don't block the module by name (ERR_BLOCKED_BY_CLIENT).
+import AffiliateSimulator from './components/PartnerSimulator';
 
 // Pages
 import LandingPage          from '@pages/LandingPage';
@@ -44,7 +46,9 @@ import V4ParticipantWinner from '@pages/v4/ParticipantWinner';
 import V4PublicWinnerReveal from '@pages/v4/PublicWinnerReveal';
 import PrivacyPolicy       from '@pages/legal/PrivacyPolicy';
 import TermsOfService      from '@pages/legal/TermsOfService';
-import CookiePolicy        from '@pages/legal/CookiePolicy';
+// File named LegalCrumbs (not "CookiePolicy") so ad-blockers/Brave
+// Shields don't block the module by name (ERR_BLOCKED_BY_CLIENT).
+import CookiePolicy        from '@pages/legal/LegalCrumbs';
 import NotFound            from '@pages/system/NotFound';
 import ErrorState         from '@pages/system/ErrorState';
 import ContactPage        from '@pages/system/ContactPage';
