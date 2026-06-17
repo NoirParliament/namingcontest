@@ -43,6 +43,15 @@ export async function downloadShareCard(element, contestName = 'winner') {
   const restore = mountDesktopExportClone(element);
   try {
     const clone = restore.clone;
+    // Wait for web fonts to load AND a couple of paints before capture.
+    // Without this, html-to-image measures the name with a fallback
+    // serif (wider than Fraunces), wraps a 2-word name like "Brookside
+    // Rovers" to two lines, but only reserves one line's height — so the
+    // second line overflows down and collides with the credit line.
+    if (document.fonts && document.fonts.ready) {
+      try { await document.fonts.ready; } catch { /* fonts API unavailable */ }
+    }
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
     const dataUrl = await toPng(clone, {
       pixelRatio: 2,
       cacheBust: true,
@@ -124,7 +133,11 @@ export async function downloadFullReport(reportElement, contestName = 'contest')
   const prevOpacity = reportElement.style.opacity;
   reportElement.style.opacity = '1';
   try {
-    // Wait one paint so the opacity change applies before capture.
+    // Wait for fonts + a paint so the opacity change applies and text is
+    // measured/rendered with the real fonts (not a fallback) before capture.
+    if (document.fonts && document.fonts.ready) {
+      try { await document.fonts.ready; } catch { /* fonts API unavailable */ }
+    }
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 
     // 4x pixel ratio = ~3176 × 4492 image for an 794 × 1123 element.
