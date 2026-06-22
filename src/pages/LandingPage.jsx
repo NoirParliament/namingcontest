@@ -949,6 +949,22 @@ export function Footer() {
   // Highlight the active legal page in the footer (continuing the
   // "you are here" visual language used by the nav + journey steps).
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  // Footer section links must work from ANY page (legal, contact, etc.),
+  // not just the homepage. On the landing page, smooth-scroll to the
+  // section; from anywhere else, navigate home first, then scroll.
+  const goToSection = (id) => (e) => {
+    e.preventDefault();
+    if (pathname === '/') {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      navigate('/');
+      setTimeout(
+        () => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }),
+        140
+      );
+    }
+  };
   const legalLink = (to, label) => (
     <li>
       <Link to={to} className={pathname === to ? 'is-active' : undefined}>
@@ -979,9 +995,9 @@ export function Footer() {
         <div>
           <h6>Product</h6>
           <ul>
-            <li><a href="#how">How it works</a></li>
-            <li><a href="#testimonials">Testimonials</a></li>
-            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="/#how" onClick={goToSection('how')}>How it works</a></li>
+            <li><a href="/#testimonials" onClick={goToSection('testimonials')}>Testimonials</a></li>
+            <li><a href="/#pricing" onClick={goToSection('pricing')}>Pricing</a></li>
           </ul>
         </div>
         <div>
@@ -989,7 +1005,7 @@ export function Footer() {
           <ul>
             <li><a href="https://catchwordbranding.com/" target="_blank" rel="noopener noreferrer">Catchword</a></li>
             <li><Link to="/contact">Get in touch</Link></li>
-            <li><a href="/#faq">Learn more</a></li>
+            <li><a href="/#faq" onClick={goToSection('faq')}>Learn more</a></li>
           </ul>
         </div>
         <div>
