@@ -77,9 +77,10 @@ export default function WinnerHero({
 
         {/* Tagline removed — not a real participant field. */}
 
-        {/* Credit line — who + what + votes, flowing naturally. The vote
-            count is kept as one nowrap unit so it never splits mid-phrase
-            ("15 of" / "98 votes"); it only moves as a whole if it has to. */}
+        {/* Credit line — who + what + votes. On desktop the vote count
+            drops to its own line (clean stat); on phones it flows inline
+            after the credit (a forced second line looks broken on the
+            narrow card). The separator only shows in the inline case. */}
         <div className="v4-winner-hero-credit">
           {name.anonymous
             ? <>Submitted anonymously for </>
@@ -87,7 +88,6 @@ export default function WinnerHero({
           <strong>{contestName}</strong>
           {typeof name.voteCount === 'number' && (
             <span className="v4-winner-hero-credit-votes">
-              {' · '}
               {name.voteCount}{typeof totalVotes === 'number' ? ` of ${totalVotes}` : ''} votes
             </span>
           )}

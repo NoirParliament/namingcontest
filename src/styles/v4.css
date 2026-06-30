@@ -4822,16 +4822,23 @@ input.v4-results-search-input::placeholder {
   color: var(--v4-muted);
   letter-spacing: -0.005em;
   line-height: 1.5;
+  /* One line when it fits; on a narrow card it wraps into evenly
+     balanced lines (with the vote count kept whole) instead of leaving
+     an orphaned word or a stranded "· 15 of 98 votes". */
+  text-wrap: balance;
 }
 /* Only the names carry emphasis — who suggested it + the project. */
 .v4-winner-hero-credit strong {
   color: var(--v4-fg);
   font-weight: 600;
 }
-/* Vote count flows inline with the credit, but stays one unit so it never
-   splits mid-phrase ("15 of" / "98 votes"). */
+/* Vote count flows inline after the credit with a "·" separator, kept as
+   one unit so it never splits mid-phrase ("15 of" / "98 votes"). */
 .v4-winner-hero-credit-votes {
   white-space: nowrap;
+}
+.v4-winner-hero-credit-votes::before {
+  content: ' · ';
 }
 
 /* Growth footer — turns the share card into a discoverable CTA. */
