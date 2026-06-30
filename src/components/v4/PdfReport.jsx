@@ -129,7 +129,9 @@ const PdfReport = forwardRef(function PdfReport({
           </div>
           {/* Tagline removed — not a real participant field. */}
           <div className="v4-pdf-report-winner-credit">
-            <strong>{submitter?.name || 'A participant'}</strong> suggested it
+            {winner.anonymous
+              ? <span>Submitted anonymously</span>
+              : <><strong>{submitter?.name || 'A participant'}</strong> suggested it</>}
             <span className="v4-pdf-report-winner-credit-sep">·</span>
             <strong>{winner.voteCount} of {stats.votes ?? 0} votes</strong>
           </div>
@@ -140,8 +142,9 @@ const PdfReport = forwardRef(function PdfReport({
           <div className="v4-pdf-report-prize">
             <Gift weight="duotone" size={16} />
             <span>
-              <strong>{submitter?.name}</strong> wins{' '}
-              <em>“{prize.name || 'the prize'}”</em>
+              {winner.anonymous
+                ? <><em>“{prize.name || 'The prize'}”</em> forfeited — winner stayed anonymous</>
+                : <><strong>{submitter?.name}</strong> wins <em>“{prize.name || 'the prize'}”</em></>}
             </span>
           </div>
         )}

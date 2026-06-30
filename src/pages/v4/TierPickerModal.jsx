@@ -16,7 +16,6 @@ const TIERS = [
     tone: TONES.blush,
     title: 'Personal',
     body: 'Babies, pets, holiday homes, the family Wi-Fi.',
-    meta: 'Up to 15 voters · $9 / contest',
   },
   {
     id: 'group',
@@ -24,7 +23,6 @@ const TIERS = [
     tone: TONES.periwinkle,
     title: 'Group',
     body: 'Bands, podcasts, sports teams, gaming clans, civic groups.',
-    meta: 'Up to 60 voters · $29 / contest',
   },
   {
     id: 'business',
@@ -32,7 +30,6 @@ const TIERS = [
     tone: TONES.mint,
     title: 'Business',
     body: 'Companies, products, rebrands, internal projects.',
-    meta: 'Up to 240 voters · $89 / contest',
   },
 ];
 
@@ -106,9 +103,16 @@ export default function TierPickerModal({ open, onClose }) {
                 <tier.Icon weight="duotone" size={26} />
               </span>
               <div className="v4-tier-text">
-                <div className="v4-tier-title">{tier.title}</div>
+                <div className="v4-tier-head">
+                  <div className="v4-tier-title">{tier.title}</div>
+                  <span
+                    className="v4-tier-price"
+                    style={{ background: tier.tone.bg, color: tier.tone.fg }}
+                  >
+                    from <strong>$9</strong>
+                  </span>
+                </div>
                 <div className="v4-tier-body">{tier.body}</div>
-                <div className="v4-tier-meta">{tier.meta}</div>
               </div>
             </button>
           ))}

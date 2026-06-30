@@ -29,6 +29,7 @@ import { getMockContestById } from '../../data/v4/mockContests';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
 import { readSetup } from '../../utils/v4Brief';
 import { readParticipation, recordSubmission } from '../../utils/v4Participant';
+import { anonymityMode } from '../../utils/v4Anonymity';
 import {
   getParticipantArticles, getChecklist,
 } from '../../data/v4/participantArticles';
@@ -222,6 +223,13 @@ export default function ParticipantChat() {
     ? `Winning name gets ${prize.name}.`
     : null;
 
+  // "Let participants choose" mode — offer a credit toggle at submit time.
+  // Credited by default; opting out hides your name everywhere and (if a
+  // prize is on offer) forfeits the prize.
+  const letsParticipantChoose = anonymityMode(contest) === 'participant';
+  const [creditMe, setCreditMe] = useState(true);
+  const submissionAnonymous = letsParticipantChoose && !creditMe;
+
   // Local accumulated submissions for this session. These are NOT
   // persisted until the user hits the final submit button.
   const [drafts, setDrafts] = useState([]);
@@ -366,6 +374,7 @@ export default function ParticipantChat() {
         whyItFits: entry.whyItFits,
         tagline: '',
         inspiration: '',
+        anonymous: submissionAnonymous,
       })
     );
     navigate(`/v4/contest/${contestId}/thanks`, { replace: true });
@@ -379,6 +388,7 @@ export default function ParticipantChat() {
         whyItFits: entry.whyItFits,
         tagline: '',
         inspiration: '',
+        anonymous: submissionAnonymous,
       })
     );
     // replace: true so browser-back doesn't bounce into the
@@ -629,6 +639,10 @@ export default function ParticipantChat() {
                           onAdd={handleAddDraft}
                           canSkip={drafts.length > 0}
                           onSkip={handleImDone}
+                          showCreditChoice={letsParticipantChoose}
+                          creditMe={creditMe}
+                          onToggleCredit={() => setCreditMe((v) => !v)}
+                          prizeName={prize?.name}
                         />
                       </>
                     )}
@@ -730,6 +744,7 @@ function ParticipantBriefCard({ contest, tone, briefRows, settingsRows }) {
 function SubmissionCard({
   draft, onChange, segmentExample,
   canAdd, onAdd, canSkip, onSkip,
+  showCreditChoice, creditMe, onToggleCredit, prizeName,
 }) {
   return (
     <div className="v4-pchat-card">
@@ -777,6 +792,26 @@ function SubmissionCard({
            adding. Quieter visual weight (outline button) + an
            irreversibility note right under it. */
         <div className="v4-pchat-finalize">
+          {showCreditChoice && (
+            <label className="v4-pchat-credit">
+              <input
+                type="checkbox"
+                checked={creditMe}
+                onChange={onToggleCredit}
+              />
+              <span className="v4-pchat-credit-text">
+                <span className="v4-pchat-credit-label">
+                  Show my name on these suggestions
+                </span>
+                {!creditMe && (
+                  <span className="v4-pchat-credit-note">
+                    You’ll appear as <strong>Anonymous</strong>
+                    {prizeName ? <> — and won’t be eligible for {prizeName}</> : null}.
+                  </span>
+                )}
+              </span>
+            </label>
+          )}
           <button
             type="button"
             className="btn btn-secondary btn-sm"

@@ -23,6 +23,7 @@ import {
   X, CheckCircle, EnvelopeSimple, LockKey,
 } from '@phosphor-icons/react';
 import rocketImg from '../../assets/rocket.png';
+import { priceForVoters, DEFAULT_VOTER_TIER } from '../../data/v4/voterTiers';
 import '../../styles/landing-v3.css';
 
 const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
@@ -35,13 +36,6 @@ function getStripe() {
   }
   return stripePromise;
 }
-
-// Tier-specific pricing (mirrors what the homepage offering cards show)
-const TIER_PRICING = {
-  personal: { price: 9,  label: 'Personal' },
-  group:    { price: 29, label: 'Group' },
-  business: { price: 89, label: 'Business' },
-};
 
 // Stripe Elements appearance — themed to match V4 design tokens
 const STRIPE_APPEARANCE = {
@@ -125,7 +119,15 @@ function LaunchModalInner({ onClose, onSuccess, contextLabel, tier, palette }) {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const pricing = TIER_PRICING[tier] || TIER_PRICING.personal;
+  // Price comes from the chosen VOTER tier (how many can vote), not the
+  // category — read from the setup blob BriefChat wrote it to.
+  const [voterTier] = useState(() => {
+    try {
+      const cur = JSON.parse(localStorage.getItem('v4_contest_setup') || '{}');
+      return cur.voterTier || DEFAULT_VOTER_TIER;
+    } catch { return DEFAULT_VOTER_TIER; }
+  });
+  const price = priceForVoters(voterTier);
 
   useEffect(() => {
     // Pre-fill email if already saved
@@ -172,8 +174,9 @@ function LaunchModalInner({ onClose, onSuccess, contextLabel, tier, palette }) {
           ...cur,
           userEmail: email.trim(),
           paymentMethodId: paymentMethod.id, // Stripe payment method ID
-          paidAmount: pricing.price,
+          paidAmount: price,
           paidTier: tier,
+          paidVoterTier: voterTier,
         })
       );
     } catch {}
@@ -228,7 +231,7 @@ function LaunchModalInner({ onClose, onSuccess, contextLabel, tier, palette }) {
               Launch {contextLabel ? `“${contextLabel}”` : 'your contest'}
             </h2>
             <p className="v4-auth-blurb">
-              One charge of <strong>${pricing.price}</strong> for your {pricing.label} contest.
+              One charge of <strong>${price}</strong> for up to <strong>{voterTier}</strong> voters.
               We’ll email you a magic link to manage results.
             </p>
 
@@ -294,7 +297,7 @@ function LaunchModalInner({ onClose, onSuccess, contextLabel, tier, palette }) {
                 {submitting ? (
                   <>Processing…</>
                 ) : (
-                  <>Launch contest · ${pricing.price}</>
+                  <>Launch contest · ${price}</>
                 )}
               </button>
 

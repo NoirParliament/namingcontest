@@ -25,6 +25,7 @@ import { getMockContestById } from '../../data/v4/mockContests';
 import { getSegmentTone, SEGMENT_THEME } from '../../data/v4/segmentTheme';
 import { readSetup } from '../../utils/v4Brief';
 import { readParticipation } from '../../utils/v4Participant';
+import { showSubmitter } from '../../utils/v4Anonymity';
 import useCountdown, { pad2 } from '../../utils/useCountdown';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
@@ -56,7 +57,6 @@ export default function ParticipantVoteThanks() {
   const votedIds = participation?.votedFor || [];
   const votedCount = votedIds.length;
   const submittedCount = participation?.submittedNames?.length || 0;
-  const isAnonymous = contest?.anonymous === true;
 
   // Authed user.
   const setup = readSetup();
@@ -202,7 +202,7 @@ export default function ParticipantVoteThanks() {
                             {s.whyItFits}
                           </div>
                         )}
-                        {!isAnonymous && s.submitterName && (
+                        {showSubmitter(contest, s) && s.submitterName && (
                           <div className="v4-pthanks-card-by">
                             by {s.submitterName}
                           </div>

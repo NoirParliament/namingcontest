@@ -817,27 +817,53 @@ body.is-exiting {
   min-width: 0;
 }
 
+/* Title + price-tag row — mirrors the .offer-head pattern on the
+   homepage / pick-tier cards so the category surfaces read the same. */
+.v4-tier-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
 .v4-tier-title {
   font-family: 'Fraunces', ui-serif, Georgia, serif;
   font-size: 20px;
   font-weight: 500;
   letter-spacing: -0.015em;
   line-height: 1.15;
-  margin-bottom: 4px;
+}
+
+.v4-tier-price {
+  flex: none;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+.v4-tier-price strong {
+  font-weight: 700;
+  font-size: 12.5px;
 }
 
 .v4-tier-body {
   font-size: 13px;
   color: rgba(3, 3, 2, 0.6);
   line-height: 1.4;
-  margin-bottom: 6px;
+  margin-bottom: 0;
 }
 
-.v4-tier-meta {
-  font-size: 12px;
-  color: rgba(3, 3, 2, 0.45);
-  font-weight: 500;
-  letter-spacing: 0.01em;
+/* Anonymous-submitter label — quiet italic wherever a name would be. */
+.is-anon {
+  font-style: italic;
+  opacity: 0.75;
 }
 
 /* ---------- MORPH: flying card ---------- */
@@ -4030,6 +4056,47 @@ input.v4-results-search-input::placeholder {
   font-weight: 500;
   letter-spacing: 0.01em;
   margin: 0;
+}
+
+/* Voter package — editable chip in the review hero. Click opens the
+   same picker used in the brief so the size/price can change before
+   launch. Reads as a tappable pill with a quiet pencil affordance. */
+.v4-review-package {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px auto 0;
+  padding: 7px 11px 7px 15px;
+  border-radius: 999px;
+  border: 1px solid var(--v4-faint);
+  background: #fff;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--v4-muted);
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.v4-review-package strong {
+  color: var(--v4-fg);
+  font-weight: 600;
+}
+.v4-review-package-icon {
+  color: var(--v4-muted);
+  opacity: 0.55;
+  transition: opacity 0.18s ease;
+}
+.v4-review-package:hover {
+  border-color: rgba(3, 3, 2, 0.28);
+  background: rgba(0, 0, 0, 0.02);
+}
+.v4-review-package:hover .v4-review-package-icon {
+  opacity: 1;
+}
+.v4-review-package:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--v4-ring);
 }
 
 .v4-review-section {
@@ -8683,6 +8750,42 @@ button.v4-pchat-draft.v4-pchat-draft-editable:focus-visible .v4-pchat-draft-edit
   margin: 0;
   font-size: 11.5px;
   color: var(--v4-muted);
+}
+
+/* Credit choice — "let participants choose" mode only. Quiet checkbox
+   row above the submit button; reveals the anonymity/prize note when
+   the participant opts out of credit. */
+.v4-pchat-credit {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  width: 100%;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+.v4-pchat-credit input {
+  margin: 1px 0 0;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--v4-fg);
+  cursor: pointer;
+  flex: none;
+}
+.v4-pchat-credit-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.v4-pchat-credit-label {
+  font-size: 13px;
+  color: var(--v4-fg);
+  font-weight: 500;
+  line-height: 1.3;
+}
+.v4-pchat-credit-note {
+  font-size: 11.5px;
+  color: var(--v4-muted);
+  line-height: 1.4;
 }
 
 /* ── Before-you-send checklist ──────────────────────────────────── */

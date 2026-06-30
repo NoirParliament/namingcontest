@@ -16,8 +16,6 @@ const TIERS = [
     tier: 'personal',
     title: 'Personal',
     tagline: 'Babies, pets, holiday homes, the family Wi-Fi.',
-    cap: 'Up to 15 participants',
-    price: '$9',
     cta: 'Start a personal contest',
     img: personalDog,
     pillA: { text: 'Olly', meta: '8 votes', color: '#b25620', icon: <path d="M8 14s-5-3.2-5-7a3 3 0 0 1 5-2 3 3 0 0 1 5 2c0 3.8-5 7-5 7z" /> },
@@ -27,8 +25,6 @@ const TIERS = [
     tier: 'team',
     title: 'Group',
     tagline: 'Bands, podcasts, sports teams, gaming clans, civic groups.',
-    cap: 'Up to 60 participants',
-    price: '$29',
     cta: 'Start a group contest',
     img: teamPlayers,
     pillA: { text: '23 names in', color: '#4b68c3', icon: <><path d="M3 4h10M3 8h10M3 12h6" /></> },
@@ -38,8 +34,6 @@ const TIERS = [
     tier: 'business',
     title: 'Business',
     tagline: 'Company names, product launches, rebrands, internal projects.',
-    cap: 'Up to 240 participants',
-    price: '$89',
     cta: 'Start a business contest',
     img: businessWoman,
     pillA: { text: 'Quality', meta: '92/100', color: '#3f8850', icon: <><circle cx="8" cy="8" r="6" /><path d="M5 8l2 2 4-4" /></> },
@@ -116,12 +110,11 @@ export default function PickTier() {
                   data-picked={picked === t.tier ? 'yes' : picked ? 'no' : undefined}
                 >
                   <div className="offer-body">
-                    <h3>{t.title}</h3>
-                    <p className="tagline">{t.tagline}</p>
-                    <div className="meta-row">
-                      <span className="cap">{t.cap}</span>
-                      <span className="price">{t.price}<small>/contest</small></span>
+                    <div className="offer-head">
+                      <h3>{t.title}</h3>
+                      <span className="offer-price">from <strong>$9</strong></span>
                     </div>
+                    <p className="tagline">{t.tagline}</p>
                     <a
                       href={`#start-${t.tier}`}
                       onClick={(e) => { e.preventDefault(); handlePick(t.tier); }}

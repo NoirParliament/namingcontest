@@ -14,6 +14,7 @@ import { readSetup, writeSetup, getSegmentLabel } from '../../utils/v4Brief';
 import { BRIEF_QUESTIONS, SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
 import { SegmentThemeBackdrop, getSegmentTone, getSegmentIcon, getSegmentPalette } from '../../data/v4/segmentTheme';
 import LaunchModal from '../../components/v4/LaunchModal';
+import { priceForVoters, VOTER_TIER_QUESTION } from '../../data/v4/voterTiers';
 import EditQuestionModal from '../../components/v4/EditQuestionModal';
 import ExitLink from '../../components/v4/ExitLink';
 import '../../styles/landing-v3.css';
@@ -90,6 +91,8 @@ export default function ReviewLaunch() {
       writeSetup({ brief: { ...(cur.brief || {}), [question.id]: newValue } });
     } else if (section === 'settings') {
       writeSetup({ settings: { ...(cur.settings || {}), [question.id]: newValue } });
+    } else if (section === 'voter') {
+      writeSetup({ voterTier: newValue });
     }
     setEditTick((t) => t + 1);
   };
@@ -166,6 +169,16 @@ export default function ReviewLaunch() {
             <p className="v4-review-subtitle">
               {segmentLabel} · {setup.subSegmentTitle}
             </p>
+            {setup.voterTier && (
+              <button
+                type="button"
+                className="v4-review-package"
+                onClick={() => setEditingQuestion({ question: VOTER_TIER_QUESTION, section: 'voter' })}
+              >
+                <span>Up to <strong>{setup.voterTier}</strong> voters · <strong>${priceForVoters(setup.voterTier)}</strong></span>
+                <PencilSimple size={12} weight="bold" className="v4-review-package-icon" />
+              </button>
+            )}
           </div>
 
           {/* The brief — each row is now a button that opens the
@@ -266,6 +279,8 @@ export default function ReviewLaunch() {
           currentAnswer={
             editingQuestion?.section === 'brief'
               ? briefAnswers[editingQuestion?.question?.id]
+              : editingQuestion?.section === 'voter'
+              ? (setup.voterTier ? `Up to ${setup.voterTier} voters` : undefined)
               : settingsAnswers[editingQuestion?.question?.id]
           }
           onClose={() => setEditingQuestion(null)}

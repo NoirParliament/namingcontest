@@ -506,7 +506,7 @@ export default function Settings() {
                     Start another contest
                   </button>
                   <span className="v4-settings-newcontest-quiet-meta">
-                    One-time fee · Personal $9 · Group $29 · Business $89
+                    One-time fee · $9 / $19 / $39 by voter count
                   </span>
                 </div>
               </section>

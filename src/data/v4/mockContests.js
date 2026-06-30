@@ -31,9 +31,9 @@ export const MOCK_CONTESTS = {
     // Pre-filled settings — covers every SHARED_SETTINGS_QUESTIONS entry
     // so the recap shows realistic Yes/No, durations, and a prize.
     settings: {
-      // Not anonymous by default — submitter names show under each
-      // entry on the vote page. Creator can flip this to hide them.
-      anonymous: false,
+      // Participants choose per name — most credit themselves, a few
+      // opt out (those submissions carry `anonymous: true` below).
+      anonymity: 'Let participants choose',
       // Default cap of 3 — the participant chat hard-stops here and
       // shows the submit checklist; you can't add a fourth.
       submissionLimit: 3,
@@ -62,14 +62,14 @@ export const MOCK_CONTESTS = {
       { id: 'sub_1',  text: 'Iron Boots FC',        whyItFits: 'Sounds like Saturday-night football and a long bus ride home.', submitterName: "Sam O’Brien" },
       { id: 'sub_2',  text: 'Brookside Rovers',     whyItFits: 'Local geography wins community loyalty. Chants easily: “ROVERS!”', submitterName: 'Marcus Wright' },
       { id: 'sub_3',  text: 'North Park United',    whyItFits: 'Direct, two-syllable, chantable. Names the pitch we actually play on.', submitterName: 'Dan Patel' },
-      { id: 'sub_4',  text: 'Crown Heights AFC',    whyItFits: 'After the post-match pub. Half the team lives in Crown Heights — it earns the badge.', submitterName: 'Ade Adebayo' },
+      { id: 'sub_4',  text: 'Crown Heights AFC', anonymous: true,    whyItFits: 'After the post-match pub. Half the team lives in Crown Heights — it earns the badge.', submitterName: 'Ade Adebayo' },
       { id: 'sub_5',  text: 'Riverside Wanderers',  whyItFits: 'River runs along the pitch. “Wanderers” nods to working-class English football tradition.', submitterName: 'Tom Reeves' },
       { id: 'sub_6',  text: 'The Brook Boys',       whyItFits: 'Shorthand for Brookside. Slightly self-deprecating, which fits the underdog tone.', submitterName: 'Marcus Wright' },
-      { id: 'sub_7',  text: 'Heron FC',             whyItFits: 'There are herons along the North Park river. Single sharp word, easy on a jersey.', submitterName: 'Priya Shah' },
+      { id: 'sub_7',  text: 'Heron FC', anonymous: true,             whyItFits: 'There are herons along the North Park river. Single sharp word, easy on a jersey.', submitterName: 'Priya Shah' },
       { id: 'sub_8',  text: 'Brookside 11',         whyItFits: 'Names the team size + the home turf. Plays nicely against bigger-sounding pro names.', submitterName: 'Dan Patel' },
       { id: 'sub_9',  text: 'Park Lane Athletic',   whyItFits: '“Athletic” gives gravitas; “Park Lane” anchors it to where we actually play.', submitterName: "Sam O’Brien" },
       { id: 'sub_10', text: 'The Yellow Trim',      whyItFits: 'Self-aware reference to the kit colours. Memorable, slightly cheeky, lands well at the pub.', submitterName: 'Jas Bhatia' },
-      { id: 'sub_11', text: 'Brookside Boots',      whyItFits: 'Working-class signal + alliteration. Easy chant: “BOOTS! BOOTS! BOOTS!”', submitterName: 'Tom Reeves' },
+      { id: 'sub_11', text: 'Brookside Boots', anonymous: true,      whyItFits: 'Working-class signal + alliteration. Easy chant: “BOOTS! BOOTS! BOOTS!”', submitterName: 'Tom Reeves' },
       { id: 'sub_12', text: 'Underbridge United',   whyItFits: 'The river bridge sits between Brookside and Crown Heights. Names a literal landmark.', submitterName: 'Ade Adebayo' },
       { id: 'sub_13', text: 'Sunday Best FC',       whyItFits: 'Hat-tip to Sunday-league. Slightly sarcastic in a way that ages well.', submitterName: 'Marcus Wright' },
       { id: 'sub_14', text: 'Crown & Boot',         whyItFits: 'The Crown (pub) + Boots (football). Both halves of the team identity in two words.', submitterName: 'Priya Shah' },
@@ -113,7 +113,9 @@ export const MOCK_CONTESTS = {
     // voting is currently open. Voting window (3d) ends in 2 days.
     launchedAt: Date.now() - 8 * 24 * 60 * 60 * 1000,
     settings: {
-      anonymous: false,
+      // Participants choose per name — a few opted to stay anonymous
+      // (those submissions carry `anonymous: true` below).
+      anonymity: 'Let participants choose',
       submissionLimit: 3,
       votingLimit: 3,
       customRequirements: {
@@ -134,16 +136,16 @@ export const MOCK_CONTESTS = {
     allSubmissions: [
       { id: 'vsub_1',  text: 'Iron Boots FC',        whyItFits: 'Sounds like Saturday-night football and a long bus ride home.', submitterName: "Sam O’Brien" },
       { id: 'vsub_2',  text: 'Brookside Rovers',     whyItFits: 'Local geography wins community loyalty. Chants easily: “ROVERS!”', submitterName: 'Marcus Wright' },
-      { id: 'vsub_3',  text: 'North Park United',    whyItFits: 'Direct, two-syllable, chantable. Names the pitch we actually play on.', submitterName: 'Dan Patel' },
+      { id: 'vsub_3',  text: 'North Park United', anonymous: true,    whyItFits: 'Direct, two-syllable, chantable. Names the pitch we actually play on.', submitterName: 'Dan Patel' },
       { id: 'vsub_4',  text: 'Crown Heights AFC',    whyItFits: 'After the post-match pub. Half the team lives in Crown Heights — it earns the badge.', submitterName: 'Ade Adebayo' },
       { id: 'vsub_5',  text: 'Riverside Wanderers',  whyItFits: 'River runs along the pitch. “Wanderers” nods to working-class English football tradition.', submitterName: 'Tom Reeves' },
-      { id: 'vsub_6',  text: 'The Brook Boys',       whyItFits: 'Shorthand for Brookside. Slightly self-deprecating, which fits the underdog tone.', submitterName: 'Marcus Wright' },
+      { id: 'vsub_6',  text: 'The Brook Boys', anonymous: true,       whyItFits: 'Shorthand for Brookside. Slightly self-deprecating, which fits the underdog tone.', submitterName: 'Marcus Wright' },
       { id: 'vsub_7',  text: 'Heron FC',             whyItFits: 'There are herons along the North Park river. Single sharp word, easy on a jersey.', submitterName: 'Priya Shah' },
       { id: 'vsub_8',  text: 'Brookside 11',         whyItFits: 'Names the team size + the home turf. Plays nicely against bigger-sounding pro names.', submitterName: 'Dan Patel' },
-      { id: 'vsub_9',  text: 'Park Lane Athletic',   whyItFits: '“Athletic” gives gravitas; “Park Lane” anchors it to where we actually play.', submitterName: "Sam O’Brien" },
+      { id: 'vsub_9',  text: 'Park Lane Athletic', anonymous: true,   whyItFits: '“Athletic” gives gravitas; “Park Lane” anchors it to where we actually play.', submitterName: "Sam O’Brien" },
       { id: 'vsub_10', text: 'The Yellow Trim',      whyItFits: 'Self-aware reference to the kit colours. Memorable, slightly cheeky, lands well at the pub.', submitterName: 'Jas Bhatia' },
       { id: 'vsub_11', text: 'Brookside Boots',      whyItFits: 'Working-class signal + alliteration. Easy chant: “BOOTS! BOOTS! BOOTS!”', submitterName: 'Tom Reeves' },
-      { id: 'vsub_12', text: 'Underbridge United',   whyItFits: 'The river bridge sits between Brookside and Crown Heights. Names a literal landmark.', submitterName: 'Ade Adebayo' },
+      { id: 'vsub_12', text: 'Underbridge United', anonymous: true,   whyItFits: 'The river bridge sits between Brookside and Crown Heights. Names a literal landmark.', submitterName: 'Ade Adebayo' },
       { id: 'vsub_13', text: 'Sunday Best FC',       whyItFits: 'Hat-tip to Sunday-league. Slightly sarcastic in a way that ages well.', submitterName: 'Marcus Wright' },
       { id: 'vsub_14', text: 'Crown & Boot',         whyItFits: 'The Crown (pub) + Boots (football). Both halves of the team identity in two words.', submitterName: 'Priya Shah' },
       { id: 'vsub_15', text: 'Division B Royals',    whyItFits: 'Owns the actual league position (Division B) with a wink. Hard to mistake for anyone else.', submitterName: 'Jas Bhatia' },

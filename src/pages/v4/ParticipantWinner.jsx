@@ -65,7 +65,6 @@ export default function ParticipantWinner() {
 
   const creatorName = contest?.creator?.name || 'the organizer';
   const contestName = contest?.workingName || contest?.name || 'the contest';
-  const isAnonymous = contest?.anonymous === true;
 
   // Authed user.
   const setup = readSetup();
@@ -224,7 +223,7 @@ export default function ParticipantWinner() {
                   <>Your name took the crown — {voteLine} in.</>
                 ) : (
                   <>
-                    {isAnonymous || !winner.submitterName
+                    {winner.anonymous || !winner.submitterName
                       ? 'Crowned the winner'
                       : <><strong>{winner.submitterName}</strong> suggested it</>}
                     {' · '}{voteLine}
@@ -248,9 +247,9 @@ export default function ParticipantWinner() {
                     <div className="v4-pthanks-card-by">
                       {iWon
                         ? <>Submitted by <strong>you</strong></>
-                        : (!isAnonymous && winner.submitterName
+                        : (!winner.anonymous && winner.submitterName
                             ? <>Submitted by <strong>{winner.submitterName}</strong></>
-                            : null)}
+                            : <span className="is-anon">Submitted anonymously</span>)}
                     </div>
                   </div>
                 </li>

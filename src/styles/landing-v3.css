@@ -313,11 +313,14 @@
 .lp-v3 .offering[data-tier="business"] .pill-a{right:18px;top:32px}
 .lp-v3 .offering[data-tier="business"] .pill-b{right:8px;top:116px}
 .lp-v3 .offering h3{font-family:var(--font-display);font-weight:400;font-size:32px;letter-spacing:-0.025em;line-height:1.05;margin:0 0 8px}
-.lp-v3 .offering .tagline{font-family:var(--font-text);font-size:14px;color:var(--fg-muted);margin:0 0 24px;max-width:30ch}
-.lp-v3 .offering .meta-row{border-top:1px solid var(--border);margin-top:auto;padding-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:12px}
-.lp-v3 .offering .meta-row .cap{font-size:12px;color:var(--fg-muted);letter-spacing:.04em;text-transform:uppercase;font-weight:600}
-.lp-v3 .offering .meta-row .price{font-family:var(--font-display);font-size:28px;line-height:1}
-.lp-v3 .offering .meta-row .price small{font-family:var(--font-text);font-size:12px;color:var(--fg-muted);margin-left:4px;font-weight:500}
+.lp-v3 .offering .offer-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 8px}
+.lp-v3 .offering .offer-head h3{margin:0}
+.lp-v3 .offering .offer-price{flex:none;display:inline-flex;align-items:baseline;gap:3px;font-family:var(--font-text);font-size:12px;font-weight:500;letter-spacing:.01em;line-height:1;padding:6px 11px;border-radius:999px;white-space:nowrap;transition:background .25s ease}
+.lp-v3 .offering .offer-price strong{font-weight:700;font-size:13.5px}
+.lp-v3 .offering[data-tier="personal"] .offer-price{background:rgba(178,86,32,.10);color:#9c4a1c}
+.lp-v3 .offering[data-tier="team"] .offer-price{background:rgba(75,104,195,.12);color:#3a55ab}
+.lp-v3 .offering[data-tier="business"] .offer-price{background:rgba(63,136,80,.12);color:#327042}
+.lp-v3 .offering .tagline{font-family:var(--font-text);font-size:14px;color:var(--fg-muted);margin:0 0 22px;max-width:30ch}
 .lp-v3 .offering .start{margin-top:18px;font-family:var(--font-text);font-size:14px;font-weight:500;color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:999px;align-self:flex-start;border:1px solid var(--fg);background:linear-gradient(to top,#fff 50%,var(--fg) 50%);background-size:100% 200%;background-position:top;transition:background-position .55s cubic-bezier(0.65,0,0.35,1),color .35s ease}
 .lp-v3 .offering:hover .start{background-position:bottom;color:var(--fg)}
 .lp-v3 .offering .start .arrow{transition:transform .25s ease}

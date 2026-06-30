@@ -79,7 +79,9 @@ export default function WinnerHero({
 
         {/* Single combined credit line — who + what + votes. */}
         <div className="v4-winner-hero-credit">
-          <strong>{submitter?.name || 'A participant'}</strong> suggested it for{' '}
+          {name.anonymous
+            ? <>Submitted anonymously for </>
+            : <><strong>{submitter?.name || 'A participant'}</strong> suggested it for </>}
           <strong>{contestName}</strong>
           {typeof name.voteCount === 'number' && (
             <>

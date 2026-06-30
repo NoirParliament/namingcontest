@@ -7,6 +7,8 @@
 // the contest is past the submission phase: during submissions there
 // are no votes yet, so we keep them at 0 and the UI hides them.
 
+import { showSubmitter } from './v4Anonymity';
+
 // Pastel avatar tones — mirror the segment-theme palette so participant
 // chips don't clash with the rest of the page.
 const TONES = [
@@ -40,32 +42,43 @@ export function buildLiveData(contest, phase = 'voting') {
   const subs = contest?.allSubmissions || [];
   const showVotes = phase !== 'submission';
 
+  // Anonymity is absolute — a hidden author is never mapped back to a
+  // person, host included. Hidden names collapse into one synthetic
+  // "Anonymous" submitter so the participant view can't reveal them.
+  const displayNameFor = (s) =>
+    showSubmitter(contest, s) ? (s.submitterName || 'Someone') : 'Anonymous';
+
   // Unique submitters → participant records (stable order of appearance).
   const nameToId = new Map();
   const participants = [];
   subs.forEach((s) => {
-    const nm = s.submitterName || 'Someone';
+    const nm = displayNameFor(s);
     if (!nameToId.has(nm)) {
-      const id = `pp${participants.length + 1}`;
+      const id = nm === 'Anonymous' ? 'anon' : `pp${participants.length + 1}`;
       nameToId.set(nm, id);
       participants.push({
         id,
         name: nm,
-        initials: initialsOf(nm),
+        initials: nm === 'Anonymous' ? '?' : initialsOf(nm),
+        anonymous: nm === 'Anonymous',
         tone: TONES[participants.length % TONES.length],
       });
     }
   });
 
-  const names = subs.map((s, i) => ({
-    id: s.id,
-    text: s.text,
-    submittedBy: nameToId.get(s.submitterName || 'Someone'),
-    submitterName: s.submitterName || 'Someone',
-    voteCount: showVotes ? (VOTE_CURVE[i] ?? 0) : 0,
-    submittedAgo: AGO[i] ?? 'recently',
-    whyItFits: s.whyItFits || '',
-  }));
+  const names = subs.map((s, i) => {
+    const nm = displayNameFor(s);
+    return {
+      id: s.id,
+      text: s.text,
+      submittedBy: nameToId.get(nm),
+      submitterName: nm,
+      anonymous: nm === 'Anonymous',
+      voteCount: showVotes ? (VOTE_CURVE[i] ?? 0) : 0,
+      submittedAgo: AGO[i] ?? 'recently',
+      whyItFits: s.whyItFits || '',
+    };
+  });
 
   const totalVotes = names.reduce((sum, n) => sum + n.voteCount, 0);
   const leading = showVotes

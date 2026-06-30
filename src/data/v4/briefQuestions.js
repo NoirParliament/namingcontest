@@ -1027,12 +1027,30 @@ export const BRIEF_QUESTIONS = {
 // ────────────────────────────────────────────────────────────────
 export const SHARED_SETTINGS_QUESTIONS = [
   {
-    id: 'anonymous',
-    type: 'toggle',
-    label: 'Anonymous submissions?',
-    prompt: 'Should submissions be anonymous?',
-    defaultValue: true,
-    hint: `Anonymous keeps it honest — people back the name, not the person who suggested it. Turn it off for a small team that wants the credit.`,
+    id: 'anonymity',
+    type: 'radioCards',
+    label: 'Credit',
+    prompt: 'How should names be credited?',
+    defaultValue: 'Let participants choose',
+    options: [
+      {
+        id: 'participant',
+        label: 'Let participants choose',
+        sublabel: 'Each person decides — credited or anonymous, name by name',
+        recommended: true,
+      },
+      {
+        id: 'public',
+        label: 'Public',
+        sublabel: 'Every name shows who suggested it',
+      },
+      {
+        id: 'anonymous',
+        label: 'Anonymous',
+        sublabel: 'No names are credited to anyone',
+      },
+    ],
+    hint: `Letting each person choose works like donations — some want credit for a clever name, others would rather stay private. Or set one rule for everyone.`,
   },
   {
     id: 'submissionLimit',

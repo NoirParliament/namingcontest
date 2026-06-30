@@ -167,14 +167,17 @@ export default function PickWinnerModal({
               “{selectedName.text}”
             </div>
             <div className="v4-pickwinner-preview-meta">
-              Submitted by <strong>{submitter?.name || 'a participant'}</strong>
+              {selectedName.anonymous
+                ? <span className="is-anon">Submitted anonymously</span>
+                : <>Submitted by <strong>{submitter?.name || 'a participant'}</strong></>}
             </div>
             {prize?.enabled && (
               <div className="v4-pickwinner-preview-prize">
                 <Gift weight="duotone" size={14} />
                 <span>
-                  <strong>{submitter?.name}</strong> wins
-                  {prize.name ? <> &nbsp;<em>“{prize.name}”</em></> : <> &nbsp;the prize</>}
+                  {selectedName.anonymous
+                    ? <>{prize.name ? <em>“{prize.name}”</em> : 'The prize'} forfeited — winner is anonymous</>
+                    : <><strong>{submitter?.name}</strong> wins{prize.name ? <> &nbsp;<em>“{prize.name}”</em></> : <> &nbsp;the prize</>}</>}
                 </span>
               </div>
             )}

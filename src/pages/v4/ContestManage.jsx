@@ -631,10 +631,17 @@ export default function ContestManage() {
                     </span>
                     <div className="v4-winner-prize-text">
                       <div className="v4-winner-prize-eyebrow">Prize</div>
-                      <div className="v4-winner-prize-line">
-                        <strong>{winnerSubmitter?.name}</strong> wins{' '}
-                        <em>“{liveSettingsAnswers.submitterPrize.name || 'the prize'}”</em>
-                      </div>
+                      {winnerName.anonymous ? (
+                        <div className="v4-winner-prize-line">
+                          <em>“{liveSettingsAnswers.submitterPrize.name || 'The prize'}”</em>{' '}
+                          forfeited — the winner chose to stay anonymous.
+                        </div>
+                      ) : (
+                        <div className="v4-winner-prize-line">
+                          <strong>{winnerSubmitter?.name}</strong> wins{' '}
+                          <em>“{liveSettingsAnswers.submitterPrize.name || 'the prize'}”</em>
+                        </div>
+                      )}
                       {liveSettingsAnswers.submitterPrize.text && (
                         <p className="v4-winner-prize-desc">
                           {liveSettingsAnswers.submitterPrize.text}
@@ -658,7 +665,7 @@ export default function ContestManage() {
                   <dl className="v4-winner-story-list">
                     {winnerName.description && (
                       <div className="v4-winner-story-field">
-                        <dt>{winnerSubmitter?.name?.split(' ')[0] || 'Sarah'} said</dt>
+                        <dt>{winnerName.anonymous ? 'The winner' : (winnerSubmitter?.name?.split(' ')[0] || 'Sarah')} said</dt>
                         <dd>{winnerName.description}</dd>
                       </div>
                     )}

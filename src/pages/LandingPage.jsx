@@ -560,8 +560,6 @@ function Offerings({ onStart }) {
       tier: 'personal',
       title: 'Personal',
       tagline: 'Babies, pets, holiday homes, the family Wi-Fi.',
-      cap: 'Up to 15 participants',
-      price: '$9',
       cta: 'Start a personal contest',
       img: personalDog,
       pillA: { text: 'Olly', meta: '8 votes', color: '#b25620', icon: <path d="M8 14s-5-3.2-5-7a3 3 0 0 1 5-2 3 3 0 0 1 5 2c0 3.8-5 7-5 7z" /> },
@@ -571,8 +569,6 @@ function Offerings({ onStart }) {
       tier: 'team',
       title: 'Group',
       tagline: 'Bands, podcasts, sports teams, gaming clans, civic groups.',
-      cap: 'Up to 60 participants',
-      price: '$29',
       cta: 'Start a group contest',
       img: teamPlayers,
       pillA: { text: '23', meta: 'names in', color: '#4b68c3', icon: <><path d="M3 4h10M3 8h10M3 12h6" /></> },
@@ -582,8 +578,6 @@ function Offerings({ onStart }) {
       tier: 'business',
       title: 'Business',
       tagline: 'Company names, product launches, rebrands, internal projects.',
-      cap: 'Up to 240 participants',
-      price: '$89',
       cta: 'Start a business contest',
       img: businessWoman,
       pillA: { text: 'Name by', meta: 'Maya', color: '#3f8850', icon: <><circle cx="8" cy="6" r="2.5" /><path d="M3.5 13.5a4.5 4.5 0 0 1 9 0" /></> },
@@ -602,12 +596,11 @@ function Offerings({ onStart }) {
         {tiers.map(t => (
           <article key={t.tier} className="offering" data-tier={t.tier}>
             <div className="offer-body">
-              <h3>{t.title}</h3>
-              <p className="tagline">{t.tagline}</p>
-              <div className="meta-row">
-                <span className="cap">{t.cap}</span>
-                <span className="price">{t.price}<small>/contest</small></span>
+              <div className="offer-head">
+                <h3>{t.title}</h3>
+                <span className="offer-price">from <strong>$9</strong></span>
               </div>
+              <p className="tagline">{t.tagline}</p>
               <a href={`#start-${t.tier}`} onClick={(e) => { e.preventDefault(); onStart(t.tier); }} className="start">
                 {t.cta} <span className="arrow">→</span>
               </a>
@@ -882,7 +875,7 @@ function FAQ() {
     },
     {
       q: 'What does it cost?',
-      a: <p className="faq-a"><strong>Three tiers, paid per contest.</strong> Personal is $9 (up to 15 voters). Group is $29 (up to 60). Business is $89 (up to 240). All three include the full naming methodology and guides—only the voter cap changes.</p>
+      a: <p className="faq-a"><strong>Pick your size, pay once.</strong> Every contest is $9, $19, or $39 — for up to 15, 30, or 60 voters. You choose during setup. The category (personal, group, or business) just shapes the questions; the price only depends on how many people you invite to vote. Every contest includes the full naming methodology and guides.</p>
     },
   ];
   return (

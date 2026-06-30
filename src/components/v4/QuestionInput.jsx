@@ -20,6 +20,7 @@ import {
   BrandingFullInput,
   DeferLaunchInput,
 } from './CompoundInputs';
+import { VOTER_TIERS } from '../../data/v4/voterTiers';
 
 const SEGMENT_ICONS = {
   Baby, PawPrint, House, PencilSimple,
@@ -36,6 +37,7 @@ export default function QuestionInput({ question, onSubmit, autoFocus = true }) 
   if (type === 'multiChips')     return <MultiChipsInput question={question} onSubmit={onSubmit} />;
   if (type === 'radioCards')     return <RadioCardsInput question={question} onSubmit={onSubmit} />;
   if (type === 'numberChips')    return <NumberChipsInput question={question} onSubmit={onSubmit} />;
+  if (type === 'voterTier')      return <VoterTierInput question={question} onSubmit={onSubmit} />;
   if (type === 'toggle')         return <ToggleInput question={question} onSubmit={onSubmit} />;
   if (type === 'date')           return <DateInput question={question} onSubmit={onSubmit} />;
   if (type === 'toggleTextarea') return <ToggleTextareaInput question={question} onSubmit={onSubmit} />;
@@ -284,6 +286,28 @@ function NumberChipsInput({ question, onSubmit }) {
           </button>
         );
       })}
+    </div>
+  );
+}
+
+// ── voterTier (the contest's voter-package + price) ─────────────────
+// Three chips; returns the numeric voter count (15 | 30 | 60). Price is
+// shown inline but derived from VOTER_TIERS so it stays one source.
+function VoterTierInput({ question, onSubmit }) {
+  return (
+    <div className="v4-chips-row v4-number-chips" role="radiogroup" aria-label={question.label}>
+      {VOTER_TIERS.map((t) => (
+        <button
+          key={t.voters}
+          type="button"
+          role="radio"
+          aria-checked={false}
+          className="v4-chip"
+          onClick={() => onSubmit(t.voters)}
+        >
+          Up to {t.voters} voters · ${t.price}
+        </button>
+      ))}
     </div>
   );
 }

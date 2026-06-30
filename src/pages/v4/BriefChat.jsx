@@ -49,6 +49,7 @@ import {
   getSegmentLabel,
 } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
+import { VOTER_TIER_QUESTION } from '../../data/v4/voterTiers';
 import { SUB_SEGMENTS } from '../../data/v4/subSegments';
 import GuideExpandable from '../../components/v4/GuideExpandable';
 import QuestionInput from '../../components/v4/QuestionInput';
@@ -170,6 +171,10 @@ function persistAnswer(question, value) {
   if (question.section === 'working') {
     return writeSetup({ workingName: value });
   }
+  if (question.section === 'voter') {
+    // value is the numeric voter count (15 | 30 | 60); price derives from it.
+    return writeSetup({ voterTier: value });
+  }
   if (question.section === 'brief') {
     return writeSetup({ brief: { ...(current.brief || {}), [question.id]: value } });
   }
@@ -203,6 +208,7 @@ export default function BriefChat() {
     const segment = SUB_SEGMENTS[initial.group];
     const pickedOption = segment?.options.find((o) => o.id === subId);
     list.push(makeWorkingNameQuestion(pickedOption?.title, subId));
+    list.push(VOTER_TIER_QUESTION);
 
     const brief = getQuestionsFor(subId, null).map((q) => ({ ...q, section: 'brief' }));
     const settings = SHARED_SETTINGS_QUESTIONS.map((q) => ({ ...q, section: 'settings' }));
@@ -358,7 +364,9 @@ export default function BriefChat() {
       return;
     }
 
-    const display = answerToDisplay(value);
+    const display = currentQ.section === 'voter'
+      ? `Up to ${value} voters`
+      : answerToDisplay(value);
     setUserReply(display);
     setTimeout(() => {
       setHistory((prev) => [

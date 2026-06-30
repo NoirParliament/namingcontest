@@ -62,7 +62,6 @@ export default function PublicWinnerReveal() {
 
   const creatorName = contest?.creator?.name || 'the organizer';
   const contestName = contest?.workingName || contest?.name || 'the contest';
-  const isAnonymous = contest?.anonymous === true;
 
   // Resolve the winning name from contest.winnerSubId or top vote.
   const live = contest ? buildLiveData(contest, 'winner') : { names: [], stats: { votes: 0, participants: 0 } };
@@ -181,7 +180,7 @@ export default function PublicWinnerReveal() {
                 {winner.text}
               </h1>
               <p className="v4-pthanks-sub">
-                {isAnonymous || !winner.submitterName
+                {winner.anonymous || !winner.submitterName
                   ? 'Crowned the winner'
                   : <><strong>{winner.submitterName}</strong> suggested it</>}
                 {' · '}{voteLine}
@@ -201,9 +200,9 @@ export default function PublicWinnerReveal() {
                       <div className="v4-pthanks-card-why">{winner.whyItFits}</div>
                     )}
                     <div className="v4-pthanks-card-by">
-                      {(!isAnonymous && winner.submitterName)
+                      {(!winner.anonymous && winner.submitterName)
                         ? <>Submitted by <strong>{winner.submitterName}</strong></>
-                        : null}
+                        : <span className="is-anon">Submitted anonymously</span>}
                     </div>
                   </div>
                 </li>

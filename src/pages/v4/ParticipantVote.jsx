@@ -28,6 +28,7 @@ import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme
 import { readSetup, getQuestionsFor } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
 import { readParticipation, recordVotes } from '../../utils/v4Participant';
+import { showSubmitter, anonymityMode } from '../../utils/v4Anonymity';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
@@ -119,7 +120,6 @@ export default function ParticipantVote() {
   const userPhoto = setup.userPhoto || null;
   const creatorName = contest?.creator?.name || 'the organizer';
   const votingLimit = contest?.settings?.votingLimit || 3;
-  const isAnonymous = !!contest?.settings?.anonymous;
   const allSubmissions = contest?.allSubmissions || [];
   const alreadyVoted = (participation?.votedFor || []).length > 0;
   const { rows: briefRows, settingsRows } = useMemo(
@@ -158,7 +158,9 @@ export default function ParticipantVote() {
     const q = search.trim().toLowerCase();
     if (!q) return sortedSubmissions;
     return sortedSubmissions.filter((s) => {
-      const hay = `${s.text} ${s.whyItFits || ''} ${s.submitterName || ''}`.toLowerCase();
+      // Don't let search match a hidden author's name.
+      const who = showSubmitter(contest, s) ? (s.submitterName || '') : '';
+      const hay = `${s.text} ${s.whyItFits || ''} ${who}`.toLowerCase();
       return hay.includes(q);
     });
   }, [sortedSubmissions, search]);
@@ -400,9 +402,9 @@ export default function ParticipantVote() {
                       <VoteCard
                         key={sub.id}
                         submission={sub}
+                        contest={contest}
                         isSelected={selectedIds.includes(sub.id)}
                         canSelectMore={selectedIds.length < votingLimit}
-                        isAnonymous={isAnonymous}
                         tone={tone}
                         onToggle={() => toggleVote(sub.id)}
                       />
@@ -491,8 +493,13 @@ function ParticipantBriefCard({ contest, tone, briefRows, settingsRows }) {
 }
 
 // ── Single vote card ─────────────────────────────────────────────
-function VoteCard({ submission, isSelected, canSelectMore, isAnonymous, tone, onToggle }) {
+function VoteCard({ submission, contest, isSelected, canSelectMore, tone, onToggle }) {
   const disabled = !isSelected && !canSelectMore;
+  const showName = showSubmitter(contest, submission);
+  // In "participants choose" mode, surface the opted-out names as
+  // "anonymous" so the mix is visible; in a fully anonymous contest we
+  // stay silent (every card would otherwise repeat it).
+  const showAnonTag = !showName && anonymityMode(contest) === 'participant';
   // When selected, paint the card with a soft segment-tinted gradient
   // so the pick reads as exciting / committed, not just "checkbox on."
   const selectedStyle = isSelected && tone
@@ -518,10 +525,13 @@ function VoteCard({ submission, isSelected, canSelectMore, isAnonymous, tone, on
           {submission.whyItFits && (
             <div className="v4-pvote-card-tagline">“{submission.whyItFits}”</div>
           )}
-          {!isAnonymous && submission.submitterName && (
+          {showName && submission.submitterName && (
             <div className="v4-pvote-card-by">
               Submitted by {submission.submitterName}
             </div>
+          )}
+          {showAnonTag && (
+            <div className="v4-pvote-card-by is-anon">Submitted anonymously</div>
           )}
         </div>
         <div
