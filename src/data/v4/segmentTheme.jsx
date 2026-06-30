@@ -372,6 +372,18 @@ const DASH_IMAGE = {
   b5: aSomethingElsePng,
 };
 
+// Each scene keeps its full illustration (no cropping). Taller source crops
+// are shifted DOWN so their top edge lines up with the sports scene's and
+// none rise higher. Value = % of the image's own height to push down — the
+// share of its height beyond the sports aspect (739/2128).
+//   1942×809 crops → ~16.6% · 1774×887 crops → ~30.5% · 2128×739 → 0%
+const DASH_SHIFT = {
+  t4: '16.6%', t5: '16.6%', t6: '16.6%',
+  p1: '16.6%', p2: '16.6%', p3: '16.6%', p4: '16.6%',
+  b1: '16.6%',
+  t2: '30.5%', b2: '30.5%', b3: '30.5%', b4: '30.5%', b5: '30.5%',
+};
+
 export function SegmentThemeBackdrop({ subId, minimal = false }) {
   const theme = subId ? SEGMENT_THEME[subId] : null;
   const blobStyles = theme?.blobs
@@ -389,6 +401,7 @@ export function SegmentThemeBackdrop({ subId, minimal = false }) {
     const base =
       theme?.blobs?.[0] || (subId ? getSegmentTone(subId)?.bg : null) || '#a6dcb3';
     const dashImg = subId ? DASH_IMAGE[subId] : null;
+    const dashShift = subId ? DASH_SHIFT[subId] : null;
     return (
       <div className="v4-aurora" style={{ '--au-a': base }} aria-hidden="true">
         <span className="v4-aurora-gradient"></span>
@@ -398,6 +411,7 @@ export function SegmentThemeBackdrop({ subId, minimal = false }) {
           <img
             src={dashImg}
             className="v4-dash-image"
+            style={dashShift ? { '--dash-shift': dashShift } : undefined}
             alt=""
             aria-hidden="true"
           />

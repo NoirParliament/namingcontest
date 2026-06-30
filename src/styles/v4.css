@@ -356,16 +356,15 @@ body.is-exiting {
 .v4-dash-image {
   position: absolute;
   left: 50%;
-  transform: translateX(-50%);
   bottom: -110px;
+  /* Keep every illustration whole — no cropping. Taller source crops are
+     shifted DOWN (translateY) by the share of their own height that
+     exceeds the sports scene's aspect, so their top edge lines up with
+     the sports scene and none rise higher. --dash-shift is 0% for
+     sports-aspect scenes; their extra height just runs off the bottom. */
+  transform: translateX(-50%) translateY(var(--dash-shift, 0%));
   width: max(100%, 660px);
-  /* Cap every scene to the sports scene's aspect (the widest/shortest crop)
-     so no illustration rises higher than it. Taller source crops are
-     cover-fit and anchored to their lower portion. */
-  aspect-ratio: 2128 / 739;
   height: auto;
-  object-fit: cover;
-  object-position: center bottom;
   z-index: 0;
   pointer-events: none;
   opacity: 0.45;
