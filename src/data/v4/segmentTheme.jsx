@@ -372,14 +372,6 @@ const DASH_IMAGE = {
   b5: aSomethingElsePng,
 };
 
-// Some scenes are drawn as a taller / denser crop, so at full width they
-// rise too far up the page. Push those extra px below the bottom edge so
-// only the lower portion shows. Value = additional drop beyond the base.
-const DASH_IMAGE_DROP = {
-  b4: 200,
-  b5: 200,
-};
-
 export function SegmentThemeBackdrop({ subId, minimal = false }) {
   const theme = subId ? SEGMENT_THEME[subId] : null;
   const blobStyles = theme?.blobs
@@ -397,7 +389,6 @@ export function SegmentThemeBackdrop({ subId, minimal = false }) {
     const base =
       theme?.blobs?.[0] || (subId ? getSegmentTone(subId)?.bg : null) || '#a6dcb3';
     const dashImg = subId ? DASH_IMAGE[subId] : null;
-    const dashDrop = (subId && DASH_IMAGE_DROP[subId]) || 0;
     return (
       <div className="v4-aurora" style={{ '--au-a': base }} aria-hidden="true">
         <span className="v4-aurora-gradient"></span>
@@ -407,7 +398,6 @@ export function SegmentThemeBackdrop({ subId, minimal = false }) {
           <img
             src={dashImg}
             className="v4-dash-image"
-            style={dashDrop ? { '--dash-drop': `${dashDrop}px` } : undefined}
             alt=""
             aria-hidden="true"
           />

@@ -357,20 +357,26 @@ body.is-exiting {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(-110px - var(--dash-drop, 0px));
+  bottom: -110px;
   width: max(100%, 660px);
+  /* Cap every scene to the sports scene's aspect (the widest/shortest crop)
+     so no illustration rises higher than it. Taller source crops are
+     cover-fit and anchored to their lower portion. */
+  aspect-ratio: 2128 / 739;
   height: auto;
+  object-fit: cover;
+  object-position: center bottom;
   z-index: 0;
   pointer-events: none;
   opacity: 0.45;
 }
 /* On phones/tablets the viewport is narrower than the scene, so it renders
-   taller — pull it back up toward the bottom edge (and shrink the extra
-   per-segment drop) so it stays visible instead of sliding off-screen. */
+   taller — pull it back up toward the bottom edge so it stays visible
+   instead of sliding off-screen. */
 @media (max-width: 700px) {
   .v4-dash-image {
     width: 660px;
-    bottom: calc(-30px - (var(--dash-drop, 0px) * 0.3));
+    bottom: -30px;
   }
 }
 
