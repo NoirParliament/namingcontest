@@ -4834,11 +4834,13 @@ input.v4-results-search-input::placeholder {
   color: var(--v4-fg);
   font-weight: 500;
 }
-/* Vote count always sits on its own line below the credit. */
+/* Vote count flows inline after the credit with a "·" separator, kept as
+   one unit so it never splits mid-phrase ("15 of" / "98 votes"). */
 .v4-winner-hero-credit-votes {
-  display: block;
-  margin-top: 3px;
   white-space: nowrap;
+}
+.v4-winner-hero-credit-votes::before {
+  content: ' · ';
 }
 
 /* Growth footer — turns the share card into a discoverable CTA. */
