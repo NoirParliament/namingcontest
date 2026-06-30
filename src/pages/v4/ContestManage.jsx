@@ -290,7 +290,7 @@ export default function ContestManage() {
 
         <main className="v4-review" role="main">
           {/* Glass nav — same as other v4 surfaces */}
-          <header className="v4-nav">
+          <header className="v4-nav v4-nav-clear">
             <BrandLink />
             <div className="v4-progress">
               <span className="v4-step-dot is-done"></span>

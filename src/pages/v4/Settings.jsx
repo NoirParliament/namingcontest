@@ -276,11 +276,11 @@ export default function Settings() {
   return (
     <div className="v4 lp-v3">
       <div className="v4-screen">
-        <SegmentThemeBackdrop subId={subId} minimal gradient={false} />
+        <SegmentThemeBackdrop subId={subId} minimal />
 
         <main className="v4-review" role="main">
           {/* Glass nav — matches ContestManage pattern */}
-          <header className="v4-nav">
+          <header className="v4-nav v4-nav-clear">
             <BrandLink />
             <div className="v4-progress">
               <span className="v4-step-label">Home</span>

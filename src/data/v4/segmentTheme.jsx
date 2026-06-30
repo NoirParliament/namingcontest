@@ -54,6 +54,9 @@ import rebrand1Png   from '../../assets/rebrand 1.png';
 import rebrand2Png   from '../../assets/rebrand 2.png';
 import somethingElse1Png from '../../assets/something else.png';
 import somethingElse2Png from '../../assets/something else 2.png';
+// Faint line-art scene anchored at the bottom of the dashboard, per segment.
+import aSportsTeamPng from '../../assets/a-sports-team.png';
+import aBandMusicPng from '../../assets/a-band-or-music-group.png';
 
 // Standard image template positions (locked):
 //   ANCHOR slot:  top: 22%, right: 24px, width: 240, rotate: -3deg
@@ -323,7 +326,12 @@ export const SEGMENT_ICON = {
 };
 
 export function getSegmentIcon(subId) {
-  return SEGMENT_ICON[subId] || null;
+  // Use the segment's EXACT lead icon (the same one the backdrop scatters —
+  // SoccerBall for sports, PawPrint for pets, Buildings for business…) so the
+  // project/contest badge always matches its segment. Falls back to the
+  // category icon, then null.
+  const theme = subId ? SEGMENT_THEME[subId] : null;
+  return theme?.iconPositions?.[0]?.Icon || SEGMENT_ICON[subId] || null;
 }
 
 // Convenience component renderer for all theme decoration (blobs + icons + images).
@@ -331,7 +339,14 @@ export function getSegmentIcon(subId) {
 // Pass `subId` to get that segment's full theme — null/undefined = default blobs only.
 import React from 'react';
 
-export function SegmentThemeBackdrop({ subId, minimal = false, gradient = true }) {
+// Per-segment faint line-art scene anchored at the bottom of the dashboard.
+// Segments without one fall back to the scattered theme icons.
+const DASH_IMAGE = {
+  t1: aSportsTeamPng,
+  t2: aBandMusicPng,
+};
+
+export function SegmentThemeBackdrop({ subId, minimal = false }) {
   const theme = subId ? SEGMENT_THEME[subId] : null;
   const blobStyles = theme?.blobs
     ? {
@@ -342,26 +357,26 @@ export function SegmentThemeBackdrop({ subId, minimal = false, gradient = true }
       }
     : undefined;
 
-  // Dashboard backdrop = the same recipe as the legal pages: a soft top
-  // radial glow (recoloured to the segment) over the cream page, plus a
-  // scattered cluster of pastel dots. Static.
+  // Dashboard (minimal) stages: a soft top glow (recoloured to the segment)
+  // + the segment's scattered theme icons. No blobs, no illustration PNGs.
   if (minimal) {
     const base =
       theme?.blobs?.[0] || (subId ? getSegmentTone(subId)?.bg : null) || '#a6dcb3';
+    const dashImg = subId ? DASH_IMAGE[subId] : null;
     return (
       <div className="v4-aurora" style={{ '--au-a': base }} aria-hidden="true">
-        {gradient && <span className="v4-aurora-gradient"></span>}
-        <span className="v4-ddot v4-ddot-1"></span>
-        <span className="v4-ddot v4-ddot-2"></span>
-        <span className="v4-ddot v4-ddot-3"></span>
-        <span className="v4-ddot v4-ddot-4"></span>
-        <span className="v4-ddot v4-ddot-5"></span>
-        <span className="v4-ddot v4-ddot-6"></span>
-        <span className="v4-ddot v4-ddot-7"></span>
+        <span className="v4-aurora-gradient"></span>
+        {/* Soft top glow + the faint line-art scene (if any) anchored at
+            the very bottom. No scattered decoration. */}
+        {dashImg && (
+          <img src={dashImg} className="v4-dash-image" alt="" aria-hidden="true" />
+        )}
       </div>
     );
   }
 
+  // Chat stages: the full themed backdrop — blobs + scattered icons + the
+  // floating illustration PNGs.
   return (
     <>
       {/* Blobs — always rendered. CSS vars override default colors when subId set. */}
@@ -389,8 +404,8 @@ export function SegmentThemeBackdrop({ subId, minimal = false, gradient = true }
         );
       })}
 
-      {/* Floating illustration PNGs */}
-      {theme?.images?.map((img, i) => {
+      {/* Floating illustration PNGs — skipped on dashboard (minimal) stages. */}
+      {!minimal && theme?.images?.map((img, i) => {
         const { src, width, opacity, rotate, ...positionStyle } = img;
         return (
           <img
