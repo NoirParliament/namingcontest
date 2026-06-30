@@ -4818,15 +4818,15 @@ input.v4-results-search-input::placeholder {
 .v4-winner-hero-credit {
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 13px;
-  font-weight: 600;
-  color: var(--v4-fg);
+  font-weight: 400;
+  color: var(--v4-muted);
   letter-spacing: -0.005em;
   line-height: 1.5;
-  max-width: 38ch;
 }
+/* Only the names carry emphasis — who suggested it + the project. */
 .v4-winner-hero-credit strong {
-  color: inherit;
-  font-weight: inherit;
+  color: var(--v4-fg);
+  font-weight: 600;
 }
 /* Vote count on its own line — never breaks mid-phrase. */
 .v4-winner-hero-votes {
