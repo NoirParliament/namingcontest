@@ -77,19 +77,19 @@ export default function WinnerHero({
 
         {/* Tagline removed — not a real participant field. */}
 
-        {/* Single combined credit line — who + what + votes. */}
+        {/* Credit line — who + what. Vote count drops to its own line
+            below so it never breaks mid-phrase ("15 of" / "98 votes"). */}
         <div className="v4-winner-hero-credit">
           {name.anonymous
             ? <>Submitted anonymously for </>
             : <><strong>{submitter?.name || 'A participant'}</strong> suggested it for </>}
           <strong>{contestName}</strong>
-          {typeof name.voteCount === 'number' && (
-            <>
-              {' · '}
-              {name.voteCount}{typeof totalVotes === 'number' ? ` of ${totalVotes}` : ''} votes
-            </>
-          )}
         </div>
+        {typeof name.voteCount === 'number' && (
+          <div className="v4-winner-hero-votes">
+            <strong>{name.voteCount}{typeof totalVotes === 'number' ? ` of ${totalVotes}` : ''}</strong> votes
+          </div>
+        )}
       </div>
 
       {/* Growth footer — hidden when the user has chosen to hide

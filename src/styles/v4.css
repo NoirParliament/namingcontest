@@ -4818,15 +4818,30 @@ input.v4-results-search-input::placeholder {
 .v4-winner-hero-credit {
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 13px;
-  font-weight: 400;
-  color: var(--v4-muted);
+  font-weight: 600;
+  color: var(--v4-fg);
   letter-spacing: -0.005em;
   line-height: 1.5;
   max-width: 38ch;
 }
 .v4-winner-hero-credit strong {
-  color: var(--v4-fg);
-  font-weight: 600;
+  color: inherit;
+  font-weight: inherit;
+}
+/* Vote count on its own line — never breaks mid-phrase. */
+.v4-winner-hero-votes {
+  margin-top: 4px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--v4-muted);
+  letter-spacing: -0.005em;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.v4-winner-hero-votes strong {
+  color: inherit;
+  font-weight: inherit;
 }
 
 /* Growth footer — turns the share card into a discoverable CTA. */
