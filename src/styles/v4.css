@@ -4828,20 +4828,10 @@ input.v4-results-search-input::placeholder {
   color: var(--v4-fg);
   font-weight: 600;
 }
-/* Vote count on its own line — never breaks mid-phrase. */
-.v4-winner-hero-votes {
-  margin-top: 4px;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--v4-muted);
-  letter-spacing: -0.005em;
-  line-height: 1.4;
+/* Vote count flows inline with the credit, but stays one unit so it never
+   splits mid-phrase ("15 of" / "98 votes"). */
+.v4-winner-hero-credit-votes {
   white-space: nowrap;
-}
-.v4-winner-hero-votes strong {
-  color: inherit;
-  font-weight: inherit;
 }
 
 /* Growth footer — turns the share card into a discoverable CTA. */
