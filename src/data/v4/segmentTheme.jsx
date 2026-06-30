@@ -68,6 +68,8 @@ import aSomethingPng from '../../assets/something.png';
 import aCompanyPng from '../../assets/company.png';
 import aProductPng from '../../assets/product.png';
 import aPlanningPng from '../../assets/planning.png';
+import aRebrandPng from '../../assets/rebrand.png';
+import aSomethingElsePng from '../../assets/something-else.png';
 
 // Standard image template positions (locked):
 //   ANCHOR slot:  top: 22%, right: 24px, width: 240, rotate: -3deg
@@ -366,6 +368,16 @@ const DASH_IMAGE = {
   b1: aCompanyPng,
   b2: aProductPng,
   b3: aPlanningPng,
+  b4: aRebrandPng,
+  b5: aSomethingElsePng,
+};
+
+// Some scenes are drawn as a taller / denser crop, so at full width they
+// rise too far up the page. Push those extra px below the bottom edge so
+// only the lower portion shows. Value = additional drop beyond the base.
+const DASH_IMAGE_DROP = {
+  b4: 200,
+  b5: 200,
 };
 
 export function SegmentThemeBackdrop({ subId, minimal = false }) {
@@ -385,13 +397,20 @@ export function SegmentThemeBackdrop({ subId, minimal = false }) {
     const base =
       theme?.blobs?.[0] || (subId ? getSegmentTone(subId)?.bg : null) || '#a6dcb3';
     const dashImg = subId ? DASH_IMAGE[subId] : null;
+    const dashDrop = (subId && DASH_IMAGE_DROP[subId]) || 0;
     return (
       <div className="v4-aurora" style={{ '--au-a': base }} aria-hidden="true">
         <span className="v4-aurora-gradient"></span>
         {/* Soft top glow + the faint line-art scene (if any) anchored at
             the very bottom. No scattered decoration. */}
         {dashImg && (
-          <img src={dashImg} className="v4-dash-image" alt="" aria-hidden="true" />
+          <img
+            src={dashImg}
+            className="v4-dash-image"
+            style={dashDrop ? { bottom: `calc(-110px - ${dashDrop}px)` } : undefined}
+            alt=""
+            aria-hidden="true"
+          />
         )}
       </div>
     );
