@@ -875,7 +875,7 @@ function FAQ() {
     },
     {
       q: 'What does it cost?',
-      a: <p className="faq-a"><strong>Pick your size, pay once.</strong> Every contest is $9, $19, or $39 — for up to 15, 30, or 60 voters. You choose during setup. The category (personal, group, or business) just shapes the questions; the price only depends on how many people you invite to vote. Every contest includes the full naming methodology and guides.</p>
+      a: <p className="faq-a">The price depends only on how many people you invite to vote: $9 for up to 15 voters, $19 for 30, or $39 for 60. You pay once per contest, with no subscription. Every contest includes the full naming method and guides.</p>
     },
   ];
   return (
