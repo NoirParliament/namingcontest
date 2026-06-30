@@ -285,8 +285,8 @@ export default function ContestManage() {
         {/* Per-segment theme decoration (carries identity from setup) */}
         <SegmentThemeBackdrop subId={subId} minimal />
 
-        {/* Live activity fly-over — subtle avatar pills drifting up */}
-        <ActivityFlyOver tone={segmentTone} enabled={true} />
+        {/* Live activity fly-over disabled — dashboards stay static. */}
+        <ActivityFlyOver tone={segmentTone} enabled={false} />
 
         <main className="v4-review" role="main">
           {/* Glass nav — same as other v4 surfaces */}

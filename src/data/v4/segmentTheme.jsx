@@ -331,7 +331,7 @@ export function getSegmentIcon(subId) {
 // Pass `subId` to get that segment's full theme — null/undefined = default blobs only.
 import React from 'react';
 
-export function SegmentThemeBackdrop({ subId, minimal = false }) {
+export function SegmentThemeBackdrop({ subId, minimal = false, gradient = true }) {
   const theme = subId ? SEGMENT_THEME[subId] : null;
   const blobStyles = theme?.blobs
     ? {
@@ -342,23 +342,23 @@ export function SegmentThemeBackdrop({ subId, minimal = false }) {
       }
     : undefined;
 
-  // Dashboard stages (Manage, Namespace, participant status) want a
-  // calmer, distraction-free backdrop: just two soft, STATIC blobs for a
-  // faint branded wash — no scattered icons, no illustrations, no motion.
+  // Dashboard backdrop = the same recipe as the legal pages: a soft top
+  // radial glow (recoloured to the segment) over the cream page, plus a
+  // scattered cluster of pastel dots. Static.
   if (minimal) {
+    const base =
+      theme?.blobs?.[0] || (subId ? getSegmentTone(subId)?.bg : null) || '#a6dcb3';
     return (
-      <>
-        <span
-          className="v4-blob v4-blob-1 v4-blob-static"
-          style={blobStyles}
-          aria-hidden="true"
-        ></span>
-        <span
-          className="v4-blob v4-blob-2 v4-blob-static"
-          style={blobStyles}
-          aria-hidden="true"
-        ></span>
-      </>
+      <div className="v4-aurora" style={{ '--au-a': base }} aria-hidden="true">
+        {gradient && <span className="v4-aurora-gradient"></span>}
+        <span className="v4-ddot v4-ddot-1"></span>
+        <span className="v4-ddot v4-ddot-2"></span>
+        <span className="v4-ddot v4-ddot-3"></span>
+        <span className="v4-ddot v4-ddot-4"></span>
+        <span className="v4-ddot v4-ddot-5"></span>
+        <span className="v4-ddot v4-ddot-6"></span>
+        <span className="v4-ddot v4-ddot-7"></span>
+      </div>
     );
   }
 

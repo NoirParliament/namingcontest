@@ -276,7 +276,7 @@ export default function Settings() {
   return (
     <div className="v4 lp-v3">
       <div className="v4-screen">
-        <SegmentThemeBackdrop subId={subId} minimal />
+        <SegmentThemeBackdrop subId={subId} minimal gradient={false} />
 
         <main className="v4-review" role="main">
           {/* Glass nav — matches ContestManage pattern */}

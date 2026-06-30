@@ -322,6 +322,44 @@ body.is-exiting {
   filter: blur(10px);
 }
 
+/* ---------- DASHBOARD BACKDROP — legal-page recipe ------------------- */
+/* A single soft radial glow at the top (recoloured to the segment) fading
+   into the cream page — same as the legal/cookie pages — plus a scattered
+   cluster of pastel dots. Static. */
+.v4-aurora {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.v4-aurora-gradient {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 640px;
+  background: radial-gradient(80% 70% at 50% -10%, var(--au-a) 0%, var(--au-a) 28%, transparent 75%);
+  opacity: 0.55;
+}
+/* Scattered pastel dots in an intentional cluster — varied sizes + colours. */
+.v4-ddot {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: 50%;
+}
+/* Mixed forms — circle, pill, and organic blob — distributed so neither
+   side is all-circles, echoing the legal-page decor. */
+.v4-ddot-1 { top: 15%; right: 6%;  width: 28px; height: 24px; background: #a6dcb3; border-radius: 58% 42% 50% 50% / 50% 50% 55% 45%; opacity: 0.6; }
+.v4-ddot-2 { top: 11%; right: 13%; width: 12px; height: 12px; background: #b3c4f0; opacity: 0.55; }
+.v4-ddot-3 { top: 28%; right: 5%;  width: 26px; height: 11px; background: #fadecc; border-radius: 6px 14px 4px 16px; transform: rotate(10deg); opacity: 0.6; }
+.v4-ddot-4 { top: 40%; left: 6%;   width: 28px; height: 13px; background: #fceebc; border-radius: 14px 6px 18px 4px; transform: rotate(-12deg); opacity: 0.6; }
+.v4-ddot-5 { top: 49%; left: 11%;  width: 11px; height: 11px; background: #c4b3f0; opacity: 0.5; }
+.v4-ddot-6 { top: 80%; right: 8%;  width: 20px; height: 18px; background: #c4dffb; border-radius: 55% 45% 50% 50% / 50% 50% 55% 45%; opacity: 0.55; }
+.v4-ddot-7 { top: 90%; left: 7%;   width: 16px; height: 14px; background: #fadecc; border-radius: 60% 40% 55% 45% / 45% 55% 45% 55%; opacity: 0.5; }
+
 /* ---------- SCATTERED THEME ICONS — per-segment decoration ---------- */
 .v4-theme-icon {
   position: absolute;
