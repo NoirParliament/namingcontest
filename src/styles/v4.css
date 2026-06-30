@@ -4827,18 +4827,18 @@ input.v4-results-search-input::placeholder {
      an orphaned word or a stranded "· 15 of 98 votes". */
   text-wrap: balance;
 }
-/* Only the names carry emphasis — who suggested it + the project. */
+/* Only the names carry emphasis — who suggested it + the project. Medium
+   weight (not bold) + darker colour reads as emphasis without looking
+   chunky at 13px on a narrow mobile card. */
 .v4-winner-hero-credit strong {
   color: var(--v4-fg);
-  font-weight: 600;
+  font-weight: 500;
 }
-/* Vote count flows inline after the credit with a "·" separator, kept as
-   one unit so it never splits mid-phrase ("15 of" / "98 votes"). */
+/* Vote count always sits on its own line below the credit. */
 .v4-winner-hero-credit-votes {
+  display: block;
+  margin-top: 3px;
   white-space: nowrap;
-}
-.v4-winner-hero-credit-votes::before {
-  content: ' · ';
 }
 
 /* Growth footer — turns the share card into a discoverable CTA. */
