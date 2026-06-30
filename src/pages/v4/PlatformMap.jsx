@@ -355,7 +355,9 @@ export default function PlatformMap() {
                   <h2 className="v4-map-section-title">Simulations — every group &amp; segment</h2>
                   <p className="v4-map-section-sub">
                     End-to-end, themed to each segment&rsquo;s colours. Open the
-                    creator dashboard or the participant invitation for any one.
+                    creator brief or the participant invitation for any one — or
+                    hit <strong>Dashboard bg</strong> to preview that segment&rsquo;s
+                    themed dashboard background on a fully filled-out winner screen.
                   </p>
                 </div>
               </div>
@@ -401,6 +403,17 @@ export default function PlatformMap() {
                               }, `/v4/join/${id}`)}
                             >
                               Participant <ArrowSquareOut weight="bold" size={12} />
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-secondary btn-sm"
+                              title="Opens the creator winner dashboard — the richest view of this segment's themed background"
+                              onClick={() => openSeeded(
+                                () => seedCreatorContest(id),
+                                `/v4/contest/${id}?phase=winner&winner=${id}_2`
+                              )}
+                            >
+                              Dashboard bg <ArrowSquareOut weight="bold" size={12} />
                             </button>
                           </div>
                         </li>

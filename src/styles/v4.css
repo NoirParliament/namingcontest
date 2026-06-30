@@ -348,17 +348,30 @@ body.is-exiting {
   background: radial-gradient(80% 70% at 50% -10%, var(--au-a) 0%, var(--au-a) 28%, transparent 75%);
   opacity: 0.55;
 }
-/* Faint line-art scene anchored to the bottom of the dashboard, full-width,
-   its top edge faded so it dissolves into the page. */
+/* Faint line-art scene anchored to the bottom of the dashboard. Centered
+   with a min width so it can never collapse to a sliver on narrow screens
+   (at 100% width a wide image becomes too short and the negative bottom
+   pushes it off-screen). `--dash-drop` (set per-segment for taller crops)
+   lives in the bottom calc so a mobile query can scale it down. */
 .v4-dash-image {
   position: absolute;
-  left: 0;
-  bottom: -110px;
-  width: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(-110px - var(--dash-drop, 0px));
+  width: max(100%, 660px);
   height: auto;
   z-index: 0;
   pointer-events: none;
   opacity: 0.45;
+}
+/* On phones/tablets the viewport is narrower than the scene, so it renders
+   taller — pull it back up toward the bottom edge (and shrink the extra
+   per-segment drop) so it stays visible instead of sliding off-screen. */
+@media (max-width: 700px) {
+  .v4-dash-image {
+    width: 660px;
+    bottom: calc(-30px - (var(--dash-drop, 0px) * 0.3));
+  }
 }
 
 /* ---------- SCATTERED THEME ICONS — per-segment decoration ---------- */

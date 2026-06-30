@@ -407,7 +407,7 @@ export function SegmentThemeBackdrop({ subId, minimal = false }) {
           <img
             src={dashImg}
             className="v4-dash-image"
-            style={dashDrop ? { bottom: `calc(-110px - ${dashDrop}px)` } : undefined}
+            style={dashDrop ? { '--dash-drop': `${dashDrop}px` } : undefined}
             alt=""
             aria-hidden="true"
           />
