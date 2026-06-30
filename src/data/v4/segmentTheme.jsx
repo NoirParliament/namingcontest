@@ -58,6 +58,7 @@ import somethingElse2Png from '../../assets/something else 2.png';
 import aSportsTeamPng from '../../assets/a-sports-team.png';
 import aBandMusicPng from '../../assets/a-band-or-music-group.png';
 import aPodcastPng from '../../assets/podcast.png';
+import aCommunityPng from '../../assets/community.png';
 
 // Standard image template positions (locked):
 //   ANCHOR slot:  top: 22%, right: 24px, width: 240, rotate: -3deg
@@ -346,6 +347,7 @@ const DASH_IMAGE = {
   t1: aSportsTeamPng,
   t2: aBandMusicPng,
   t3: aPodcastPng,
+  t4: aCommunityPng,
 };
 
 export function SegmentThemeBackdrop({ subId, minimal = false }) {
