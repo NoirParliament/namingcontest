@@ -57,6 +57,7 @@ import somethingElse2Png from '../../assets/something else 2.png';
 // Faint line-art scene anchored at the bottom of the dashboard, per segment.
 import aSportsTeamPng from '../../assets/a-sports-team.png';
 import aBandMusicPng from '../../assets/a-band-or-music-group.png';
+import aPodcastPng from '../../assets/podcast.png';
 
 // Standard image template positions (locked):
 //   ANCHOR slot:  top: 22%, right: 24px, width: 240, rotate: -3deg
@@ -344,6 +345,7 @@ import React from 'react';
 const DASH_IMAGE = {
   t1: aSportsTeamPng,
   t2: aBandMusicPng,
+  t3: aPodcastPng,
 };
 
 export function SegmentThemeBackdrop({ subId, minimal = false }) {
