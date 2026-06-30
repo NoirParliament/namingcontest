@@ -80,7 +80,7 @@ export default function ParticipantStatus() {
         className="v4-screen"
         style={segmentBg ? { '--join-bg': segmentBg } : undefined}
       >
-        <SegmentThemeBackdrop subId={subId} />
+        <SegmentThemeBackdrop subId={subId} minimal />
         <main className="v4-review" role="main" ref={scrollRef}>
           <header className="v4-nav">
             <button

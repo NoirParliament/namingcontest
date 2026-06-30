@@ -331,7 +331,7 @@ export function getSegmentIcon(subId) {
 // Pass `subId` to get that segment's full theme — null/undefined = default blobs only.
 import React from 'react';
 
-export function SegmentThemeBackdrop({ subId }) {
+export function SegmentThemeBackdrop({ subId, minimal = false }) {
   const theme = subId ? SEGMENT_THEME[subId] : null;
   const blobStyles = theme?.blobs
     ? {
@@ -341,6 +341,26 @@ export function SegmentThemeBackdrop({ subId }) {
         '--v4-blob-4-color': theme.blobs[3],
       }
     : undefined;
+
+  // Dashboard stages (Manage, Namespace, participant status) want a
+  // calmer, distraction-free backdrop: just two soft, STATIC blobs for a
+  // faint branded wash — no scattered icons, no illustrations, no motion.
+  if (minimal) {
+    return (
+      <>
+        <span
+          className="v4-blob v4-blob-1 v4-blob-static"
+          style={blobStyles}
+          aria-hidden="true"
+        ></span>
+        <span
+          className="v4-blob v4-blob-2 v4-blob-static"
+          style={blobStyles}
+          aria-hidden="true"
+        ></span>
+      </>
+    );
+  }
 
   return (
     <>

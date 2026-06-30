@@ -28,7 +28,7 @@ import participantProfile from '../../assets/participant-profile.png';
 import { getMockContestById } from '../../data/v4/mockContests';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
 import { readSetup } from '../../utils/v4Brief';
-import { readParticipation, recordSubmission } from '../../utils/v4Participant';
+import { readParticipation, recordSubmission, writeParticipation } from '../../utils/v4Participant';
 import { anonymityMode } from '../../utils/v4Anonymity';
 import {
   getParticipantArticles, getChecklist,
@@ -223,12 +223,12 @@ export default function ParticipantChat() {
     ? `Winning name gets ${prize.name}.`
     : null;
 
-  // "Let participants choose" mode — offer a credit toggle at submit time.
-  // Credited by default; opting out hides your name everywhere and (if a
-  // prize is on offer) forfeits the prize.
+  // "Let participants choose" mode — the credit question is asked up front
+  // (intro stage 4) so people suggest names already knowing their choice.
+  // Credited by default; opting out hides the name everywhere and (if a
+  // prize is offered) forfeits it.
   const letsParticipantChoose = anonymityMode(contest) === 'participant';
   const [creditMe, setCreditMe] = useState(true);
-  const submissionAnonymous = letsParticipantChoose && !creditMe;
 
   // Local accumulated submissions for this session. These are NOT
   // persisted until the user hits the final submit button.
@@ -364,37 +364,35 @@ export default function ParticipantChat() {
     setEditingDraftIndex(null);
   };
 
-  const handleImDone = () => {
-    // "That's enough" = submit immediately, skip the checklist
-    // intermediate step. User wants one decisive click → /thanks.
-    if (drafts.length === 0) return;
+  // Record all drafts (with the chosen credit visibility) then head to
+  // the thanks page. `anonymous` only matters in participant-choose mode.
+  const recordAndGo = (anonymous) => {
     drafts.forEach((entry) =>
       recordSubmission(contestId, {
         text: entry.text,
         whyItFits: entry.whyItFits,
         tagline: '',
         inspiration: '',
-        anonymous: submissionAnonymous,
+        anonymous,
       })
     );
-    navigate(`/v4/contest/${contestId}/thanks`, { replace: true });
-  };
-
-  const handleFinalSubmit = () => {
-    if (drafts.length === 0) return;
-    drafts.forEach((entry) =>
-      recordSubmission(contestId, {
-        text: entry.text,
-        whyItFits: entry.whyItFits,
-        tagline: '',
-        inspiration: '',
-        anonymous: submissionAnonymous,
-      })
-    );
+    // Remember the participant-level choice so the workspace can show
+    // them as "Anonymous" once they've submitted anonymously.
+    if (anonymous) writeParticipation(contestId, { anonymous: true });
     // replace: true so browser-back doesn't bounce into the
     // already-submitted chat.
     navigate(`/v4/contest/${contestId}/thanks`, { replace: true });
   };
+
+  // Both submit paths ("that's enough" + the checklist submit) record with
+  // the credit choice already made up front in the intro.
+  const submitAll = () => {
+    if (drafts.length === 0) return;
+    recordAndGo(letsParticipantChoose ? !creditMe : false);
+  };
+
+  const handleImDone = submitAll;
+  const handleFinalSubmit = submitAll;
 
   // ── Render ─────────────────────────────────────────────────────────
   return (
@@ -507,28 +505,75 @@ export default function ParticipantChat() {
               </div>
             )}
 
-            {/* ── Stage 4 → "ready to start suggesting?" + chip ───── */}
+            {/* ── Stage 4 → the credit question (participant-choose mode)
+                  or the plain "ready to suggest?" gate, then chips ───── */}
             {introStage === 4 && (
               <>
-                <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
-                  <span>Got it. Ready to start suggesting names?</span>
-                </div>
-                <div className="v4-chips-row" role="group">
-                  <button
-                    type="button"
-                    className="v4-chip"
-                    onClick={() => setIntroStage(5)}
-                  >
-                    Yes, let’s go
-                  </button>
-                </div>
+                {letsParticipantChoose ? (
+                  <>
+                    <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
+                      <span>
+                        First — should your name show on the names you suggest?
+                      </span>
+                    </div>
+                    {prize?.name && (
+                      <div className="v4-hint">
+                        Heads up — anonymous names aren’t eligible for{' '}
+                        {prize.name}.
+                      </div>
+                    )}
+                    <div
+                      className="v4-chips-row"
+                      role="radiogroup"
+                      aria-label="Show your name on your suggestions?"
+                    >
+                      <button
+                        type="button"
+                        role="radio"
+                        aria-checked="false"
+                        className="v4-chip"
+                        onClick={() => { setCreditMe(true); setIntroStage(5); }}
+                      >
+                        Yes, credit me
+                      </button>
+                      <button
+                        type="button"
+                        role="radio"
+                        aria-checked="false"
+                        className="v4-chip"
+                        onClick={() => { setCreditMe(false); setIntroStage(5); }}
+                      >
+                        Keep me anonymous
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
+                      <span>Got it. Ready to start suggesting names?</span>
+                    </div>
+                    <div className="v4-chips-row" role="group">
+                      <button
+                        type="button"
+                        className="v4-chip"
+                        onClick={() => setIntroStage(5)}
+                      >
+                        Yes, let’s go
+                      </button>
+                    </div>
+                  </>
+                )}
               </>
             )}
 
             {/* ── Stage 5+ → user reply + typing for first prompt ── */}
             {introStage >= 5 && (
               <div className="v4-bubble v4-bubble-user" style={{ animationDelay: '0.05s' }}>
-                <span>Yes, let’s go</span>
+                <span>
+                  {letsParticipantChoose
+                    ? (creditMe ? 'Yes, credit me' : 'Keep me anonymous')
+                    : 'Yes, let’s go'}
+                </span>
               </div>
             )}
             {introStage === 5 && (
@@ -639,10 +684,6 @@ export default function ParticipantChat() {
                           onAdd={handleAddDraft}
                           canSkip={drafts.length > 0}
                           onSkip={handleImDone}
-                          showCreditChoice={letsParticipantChoose}
-                          creditMe={creditMe}
-                          onToggleCredit={() => setCreditMe((v) => !v)}
-                          prizeName={prize?.name}
                         />
                       </>
                     )}
@@ -687,6 +728,7 @@ export default function ParticipantChat() {
                     </div>
                   </>
                 )}
+
               </>
             )}
 
@@ -744,7 +786,6 @@ function ParticipantBriefCard({ contest, tone, briefRows, settingsRows }) {
 function SubmissionCard({
   draft, onChange, segmentExample,
   canAdd, onAdd, canSkip, onSkip,
-  showCreditChoice, creditMe, onToggleCredit, prizeName,
 }) {
   return (
     <div className="v4-pchat-card">
@@ -792,26 +833,6 @@ function SubmissionCard({
            adding. Quieter visual weight (outline button) + an
            irreversibility note right under it. */
         <div className="v4-pchat-finalize">
-          {showCreditChoice && (
-            <label className="v4-pchat-credit">
-              <input
-                type="checkbox"
-                checked={creditMe}
-                onChange={onToggleCredit}
-              />
-              <span className="v4-pchat-credit-text">
-                <span className="v4-pchat-credit-label">
-                  Show my name on these suggestions
-                </span>
-                {!creditMe && (
-                  <span className="v4-pchat-credit-note">
-                    You’ll appear as <strong>Anonymous</strong>
-                    {prizeName ? <> — and won’t be eligible for {prizeName}</> : null}.
-                  </span>
-                )}
-              </span>
-            </label>
-          )}
           <button
             type="button"
             className="btn btn-secondary btn-sm"

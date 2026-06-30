@@ -283,7 +283,7 @@ export default function ContestManage() {
     <div className="v4 lp-v3">
       <div className="v4-screen">
         {/* Per-segment theme decoration (carries identity from setup) */}
-        <SegmentThemeBackdrop subId={subId} />
+        <SegmentThemeBackdrop subId={subId} minimal />
 
         {/* Live activity fly-over — subtle avatar pills drifting up */}
         <ActivityFlyOver tone={segmentTone} enabled={true} />

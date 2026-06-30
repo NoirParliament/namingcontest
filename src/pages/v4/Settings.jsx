@@ -97,6 +97,13 @@ export default function Settings() {
   // Every contest the user has joined (most-recent first) — read up here
   // so the page background can follow a participant's joined contest.
   const participations = useMemo(() => readAllParticipations(), []);
+  // If the user has submitted anonymously to a contest, their workspace
+  // identity reads "Anonymous" rather than their real name.
+  const submittedAnonymously = participations.some(
+    (p) =>
+      p.anonymous ||
+      (p.submittedNames?.length > 0 && p.submittedNames.every((n) => n.anonymous))
+  );
   // The SegmentThemeBackdrop + accent follow, in priority order:
   //   1. the user's own launched contest (creator), else
   //   2. the contest they most recently joined (participant), else
@@ -269,7 +276,7 @@ export default function Settings() {
   return (
     <div className="v4 lp-v3">
       <div className="v4-screen">
-        <SegmentThemeBackdrop subId={subId} />
+        <SegmentThemeBackdrop subId={subId} minimal />
 
         <main className="v4-review" role="main">
           {/* Glass nav — matches ContestManage pattern */}
@@ -645,7 +652,7 @@ export default function Settings() {
                 </span>
                 <div className="v4-settings-account-meta">
                   <div className="v4-settings-account-name">
-                    {name || 'Add your name'}
+                    {submittedAnonymously ? 'Anonymous' : (name || 'Add your name')}
                   </div>
                   <div className="v4-settings-account-email">
                     {email || 'no email saved'}

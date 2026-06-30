@@ -2,10 +2,11 @@
 // Click avatar → dropdown with Settings + Sign out. Uses segment tone
 // for the avatar fill so it matches the rest of the page identity.
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Gear, SignOut, ArrowRight, CaretDown } from '@phosphor-icons/react';
 import heroProfile1 from '../../assets/hero-profile-1.png';
+import { readAllParticipations } from '../../utils/v4Participant';
 
 export default function AvatarMenu({ email, name, photo, defaultPhoto, tone, activeContest }) {
   const [open, setOpen] = useState(false);
@@ -20,6 +21,22 @@ export default function AvatarMenu({ email, name, photo, defaultPhoto, tone, act
   // transform without zooming real selfies.
   const isDefault = !photo;
   const photoSrc = photo || defaultPhoto || heroProfile1;
+
+  // Identity reads "Anonymous" once the user has submitted anonymously to
+  // a contest — mirrors the workspace account card.
+  const submittedAnonymously = useMemo(() => {
+    try {
+      return readAllParticipations().some(
+        (p) =>
+          p.anonymous ||
+          (p.submittedNames?.length > 0 &&
+            p.submittedNames.every((n) => n.anonymous))
+      );
+    } catch {
+      return false;
+    }
+  }, []);
+  const displayName = submittedAnonymously ? 'Anonymous' : (name || 'You');
 
   // Close on outside click / Escape
   useEffect(() => {
@@ -80,7 +97,7 @@ export default function AvatarMenu({ email, name, photo, defaultPhoto, tone, act
       {open && (
         <div className="v4-avatar-dropdown" role="menu">
           <div className="v4-avatar-dropdown-head">
-            <div className="v4-avatar-dropdown-name">{name || 'You'}</div>
+            <div className="v4-avatar-dropdown-name">{displayName}</div>
             <div className="v4-avatar-dropdown-email">{email || 'no email saved'}</div>
           </div>
 
