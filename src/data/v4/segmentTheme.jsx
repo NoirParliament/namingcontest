@@ -64,6 +64,7 @@ import aBrainstormPng from '../../assets/brainstorm.png';
 import aBabyPng from '../../assets/baby.png';
 import aPetPng from '../../assets/pet.png';
 import aPropertyPng from '../../assets/property.png';
+import aSomethingPng from '../../assets/something.png';
 
 // Standard image template positions (locked):
 //   ANCHOR slot:  top: 22%, right: 24px, width: 240, rotate: -3deg
@@ -358,6 +359,7 @@ const DASH_IMAGE = {
   p1: aBabyPng,
   p2: aPetPng,
   p3: aPropertyPng,
+  p4: aSomethingPng,
 };
 
 export function SegmentThemeBackdrop({ subId, minimal = false }) {
