@@ -119,6 +119,24 @@ function seedParticipant(contestId, point) {
   }
 }
 
+// Seed a participant on a contest the host set to PUBLIC (anonymity off →
+// crediting is mandatory), so the submit chat shows the "the host made
+// sharing your name mandatory" credit prompt instead of the opt-in/out
+// question. Overrides the contest's settings.anonymity to 'Public'.
+function seedParticipantPublic(contestId) {
+  seedParticipant(contestId, 'joined');
+  const c = getMockContestById(contestId);
+  try {
+    localStorage.setItem(
+      'v4_contest_override_' + contestId,
+      JSON.stringify({
+        settings: { ...(c?.settings || {}), anonymity: 'Public' },
+        launchedAt: Date.now() - 1 * DAY,
+      })
+    );
+  } catch {}
+}
+
 // Seed a participant who has voted AND crown a winner, so the winner
 // reveal page renders in its celebratory "your name won" state. The
 // winnerSubId is written onto the per-contest override (which
@@ -222,14 +240,15 @@ const CREATOR_STEPS = [
 const PARTICIPANT_STEPS = [
   { n: 1,  title: 'Join from an invite link (new)', desc: 'First-time participant: someone shares the contest link, you land on the segment-themed invitation page, see the prize, and enter your email to join.', seed: seedFresh, url: `/v4/join/${SUBMIT_ID}` },
   { n: 2,  title: 'Sign in from the homepage (returning)', desc: 'Already registered from a past contest? Sign in from the homepage with a magic link — no invite needed — and your joined contests are waiting.', seed: seedFresh, url: '/?signin=participant' },
-  { n: 3,  title: 'Submission chat', desc: 'Chat-style flow to propose names, each with its meaning and why it fits.', seed: () => seedParticipant(SUBMIT_ID, 'joined'), url: `/v4/contest/${SUBMIT_ID}/submit` },
-  { n: 4,  title: 'Post-submit thanks', desc: 'Receipt of your names plus a countdown to when voting opens.', seed: () => seedParticipant(SUBMIT_ID, 'submitted'), url: `/v4/contest/${SUBMIT_ID}/thanks` },
-  { n: 5,  title: 'Workspace (pre-vote)', desc: 'Your joined contest with a greyed Vote button + countdown until voting opens.', seed: () => seedParticipant(SUBMIT_ID, 'submitted'), url: '/v4/settings' },
-  { n: 6,  title: 'Vote', desc: 'Pick your favourites from the shortlist with search, sort, and a sticky submit bar.', seed: () => seedParticipant(VOTE_ID, 'submitted'), url: `/v4/contest/${VOTE_ID}/vote` },
-  { n: 7,  title: 'Post-vote thanks', desc: 'Receipt of your votes plus a countdown to the winner announcement.', seed: () => seedParticipant(VOTE_ID, 'voted'), url: `/v4/contest/${VOTE_ID}/vote-thanks` },
-  { n: 8,  title: 'Winner reveal — your name won', desc: 'The celebratory state: your own submission took it. Confetti, a YOU WON badge, and the prize.', seed: () => seedParticipantWinner(VOTE_ID, 'vsub_1'), url: `/v4/contest/${VOTE_ID}/winner` },
-  { n: 9,  title: 'Winner reveal — a teammate won', desc: "The same reveal when someone else’s name took it — same winning name as the “your name won” demo, with a note here because you voted for the winner.", seed: () => seedParticipantWinnerOther(VOTE_ID, 'vsub_1'), url: `/v4/contest/${VOTE_ID}/winner` },
-  { n: 10, title: 'Workspace (concluded)', desc: 'Your joined contest once the winner’s out — the row reads “WINNER” and links straight through to the reveal.', seed: () => seedParticipantWinnerOther(VOTE_ID, 'vsub_1'), url: '/v4/settings' },
+  { n: 3,  title: 'Submission chat — participant chooses', desc: 'Chat-style flow to propose names. The host left crediting up to each person, so it opens by asking whether to show your name; choosing “credit me” lets you enter the name (which becomes your profile name).', seed: () => seedParticipant(SUBMIT_ID, 'joined'), url: `/v4/contest/${SUBMIT_ID}/submit` },
+  { n: 4,  title: 'Submission chat — credit mandatory (host set it public)', desc: 'Same flow when the host turned anonymity OFF: the chat explains crediting is required for this contest and asks you to confirm the name you’re okay sharing (which becomes your profile name). No anonymous option.', seed: () => seedParticipantPublic(SUBMIT_ID), url: `/v4/contest/${SUBMIT_ID}/submit` },
+  { n: 5,  title: 'Post-submit thanks', desc: 'Receipt of your names plus a countdown to when voting opens.', seed: () => seedParticipant(SUBMIT_ID, 'submitted'), url: `/v4/contest/${SUBMIT_ID}/thanks` },
+  { n: 6,  title: 'Workspace (pre-vote)', desc: 'Your joined contest with a greyed Vote button + countdown until voting opens.', seed: () => seedParticipant(SUBMIT_ID, 'submitted'), url: '/v4/settings' },
+  { n: 7,  title: 'Vote', desc: 'Pick your favourites from the shortlist with search, sort, and a sticky submit bar.', seed: () => seedParticipant(VOTE_ID, 'submitted'), url: `/v4/contest/${VOTE_ID}/vote` },
+  { n: 8,  title: 'Post-vote thanks', desc: 'Receipt of your votes plus a countdown to the winner announcement.', seed: () => seedParticipant(VOTE_ID, 'voted'), url: `/v4/contest/${VOTE_ID}/vote-thanks` },
+  { n: 9,  title: 'Winner reveal — your name won', desc: 'The celebratory state: your own submission took it. Confetti, a YOU WON badge, and the prize.', seed: () => seedParticipantWinner(VOTE_ID, 'vsub_1'), url: `/v4/contest/${VOTE_ID}/winner` },
+  { n: 10, title: 'Winner reveal — a teammate won', desc: "The same reveal when someone else’s name took it — same winning name as the “your name won” demo, with a note here because you voted for the winner.", seed: () => seedParticipantWinnerOther(VOTE_ID, 'vsub_1'), url: `/v4/contest/${VOTE_ID}/winner` },
+  { n: 11, title: 'Workspace (concluded)', desc: 'Your joined contest once the winner’s out — the row reads “WINNER” and links straight through to the reveal.', seed: () => seedParticipantWinnerOther(VOTE_ID, 'vsub_1'), url: '/v4/settings' },
 ];
 
 // Neutral flow — a single page (for now): a stranger who clicked the

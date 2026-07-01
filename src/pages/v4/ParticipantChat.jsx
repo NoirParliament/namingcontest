@@ -27,7 +27,7 @@ import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import participantProfile from '../../assets/participant-profile.png';
 import { getMockContestById } from '../../data/v4/mockContests';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
-import { readSetup } from '../../utils/v4Brief';
+import { readSetup, writeSetup } from '../../utils/v4Brief';
 import { readParticipation, recordSubmission, writeParticipation } from '../../utils/v4Participant';
 import { anonymityMode } from '../../utils/v4Anonymity';
 import {
@@ -227,8 +227,15 @@ export default function ParticipantChat() {
   // (intro stage 4) so people suggest names already knowing their choice.
   // Credited by default; opting out hides the name everywhere and (if a
   // prize is offered) forfeits it.
-  const letsParticipantChoose = anonymityMode(contest) === 'participant';
+  const anonMode = anonymityMode(contest); // 'participant' | 'public' | 'anonymous'
+  const letsParticipantChoose = anonMode === 'participant';
   const [creditMe, setCreditMe] = useState(true);
+  // Credit sub-flow: in participant mode, "Yes, credit me" reveals a name
+  // entry; in public mode the name entry shows straight away (crediting is
+  // mandatory). The entered name is saved as the account/profile name.
+  const [creditChosen, setCreditChosen] = useState(false);
+  const [nameDraft, setNameDraft] = useState(userName);
+  const [confirmedName, setConfirmedName] = useState(null);
 
   // Local accumulated submissions for this session. These are NOT
   // persisted until the user hits the final submit button.
@@ -384,8 +391,29 @@ export default function ParticipantChat() {
     navigate(`/v4/contest/${contestId}/thanks`, { replace: true });
   };
 
+  // Confirm the credited name → save it as the account/profile name (so it
+  // shows in the avatar menu + workspace) and advance past the credit step.
+  const confirmName = () => {
+    const nm = nameDraft.trim();
+    if (nm) {
+      writeSetup({ userName: nm });
+      setConfirmedName(nm);
+    }
+    setCreditMe(true);
+    setIntroStage(5);
+  };
+
+  // The persistent user-reply bubble for the credit step (stage ≥ 5).
+  const creditReply =
+    anonMode === 'participant'
+      ? (creditMe ? `Credit me — ${confirmedName || userName}` : 'Keep me anonymous')
+      : anonMode === 'public'
+        ? `Share my name — ${confirmedName || userName}`
+        : 'Yes, let’s go';
+
   // Both submit paths ("that's enough" + the checklist submit) record with
-  // the credit choice already made up front in the intro.
+  // the credit choice already made up front in the intro. Public/anonymous
+  // modes don't carry a per-name choice, so they record as credited.
   const submitAll = () => {
     if (drafts.length === 0) return;
     recordAndGo(letsParticipantChoose ? !creditMe : false);
@@ -509,7 +537,8 @@ export default function ParticipantChat() {
                   or the plain "ready to suggest?" gate, then chips ───── */}
             {introStage === 4 && (
               <>
-                {letsParticipantChoose ? (
+                {/* ── Participant-choose mode: credit or stay anonymous ── */}
+                {anonMode === 'participant' && !creditChosen && (
                   <>
                     <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
                       <span>
@@ -532,7 +561,7 @@ export default function ParticipantChat() {
                         role="radio"
                         aria-checked="false"
                         className="v4-chip"
-                        onClick={() => { setCreditMe(true); setIntroStage(5); }}
+                        onClick={() => setCreditChosen(true)}
                       >
                         Yes, credit me
                       </button>
@@ -547,10 +576,63 @@ export default function ParticipantChat() {
                       </button>
                     </div>
                   </>
-                ) : (
+                )}
+
+                {/* Participant chose to be credited → enter the name. */}
+                {anonMode === 'participant' && creditChosen && (
+                  <>
+                    <div className="v4-bubble v4-bubble-user" style={{ animationDelay: '0.05s' }}>
+                      <span>Yes, credit me</span>
+                    </div>
+                    <div className="v4-bubble" style={{ animationDelay: '0.12s' }}>
+                      <span>
+                        Great — what name should show on your suggestions?
+                        This becomes your profile name too.
+                      </span>
+                    </div>
+                    <CreditNameEntry
+                      value={nameDraft}
+                      onChange={setNameDraft}
+                      onConfirm={confirmName}
+                      confirmLabel="Use this name"
+                    />
+                  </>
+                )}
+
+                {/* ── Public mode: crediting is mandatory (host turned off
+                      anonymity). Explain, then take the name. ── */}
+                {anonMode === 'public' && (
                   <>
                     <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
-                      <span>Got it. Ready to start suggesting names?</span>
+                      <span>
+                        Quick heads up — <strong>{contest.creator?.name || 'the host'}</strong> set
+                        this contest to <strong>public</strong>, so every name shows who
+                        suggested it. Sharing your name is required to take part here.
+                      </span>
+                    </div>
+                    <div className="v4-bubble" style={{ animationDelay: '0.14s' }}>
+                      <span>
+                        Are you okay with that? Enter the name you’d like shown —
+                        it becomes your profile name too.
+                      </span>
+                    </div>
+                    <CreditNameEntry
+                      value={nameDraft}
+                      onChange={setNameDraft}
+                      onConfirm={confirmName}
+                      confirmLabel="Yes, share my name"
+                    />
+                  </>
+                )}
+
+                {/* ── Anonymous mode: no names shown at all. ── */}
+                {anonMode === 'anonymous' && (
+                  <>
+                    <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
+                      <span>
+                        This contest is anonymous — no names are shown to anyone,
+                        the host included. Ready to start suggesting?
+                      </span>
                     </div>
                     <div className="v4-chips-row" role="group">
                       <button
@@ -569,11 +651,7 @@ export default function ParticipantChat() {
             {/* ── Stage 5+ → user reply + typing for first prompt ── */}
             {introStage >= 5 && (
               <div className="v4-bubble v4-bubble-user" style={{ animationDelay: '0.05s' }}>
-                <span>
-                  {letsParticipantChoose
-                    ? (creditMe ? 'Yes, credit me' : 'Keep me anonymous')
-                    : 'Yes, let’s go'}
-                </span>
+                <span>{creditReply}</span>
               </div>
             )}
             {introStage === 5 && (
@@ -942,6 +1020,35 @@ function DraftBubble({
         Edit
       </span>
     </button>
+  );
+}
+
+// ── Credit name entry — a text field + confirm, used when the
+// participant opts to be credited (or when the host made it mandatory).
+// The confirmed name is saved as the account/profile name.
+function CreditNameEntry({ value, onChange, onConfirm, confirmLabel }) {
+  const canConfirm = value.trim().length > 0;
+  return (
+    <div className="v4-credit-name">
+      <input
+        type="text"
+        className="v4-settings-input v4-credit-name-input"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => { if (e.key === 'Enter' && canConfirm) onConfirm(); }}
+        placeholder="Your name"
+        aria-label="The name to show on your suggestions"
+        autoFocus
+      />
+      <button
+        type="button"
+        className="v4-chip v4-credit-name-confirm"
+        onClick={onConfirm}
+        disabled={!canConfirm}
+      >
+        {confirmLabel}
+      </button>
+    </div>
   );
 }
 

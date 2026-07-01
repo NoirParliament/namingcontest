@@ -1273,6 +1273,28 @@ textarea.v4-input::placeholder {
   animation: v4-bubble-in 0.5s ease-out forwards;
   opacity: 0;
 }
+/* Credit name entry — input + confirm, shown when a participant opts into
+   (or the host mandates) crediting. */
+.v4-credit-name {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+  max-width: 560px;
+  animation: v4-bubble-in 0.5s ease-out forwards;
+  opacity: 0;
+}
+.v4-credit-name-input {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+.v4-credit-name-confirm {
+  flex: 0 0 auto;
+}
+.v4-credit-name-confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 .v4-chip {
   display: inline-flex;
   align-items: center;
