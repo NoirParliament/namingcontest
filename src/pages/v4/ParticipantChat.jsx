@@ -234,7 +234,9 @@ export default function ParticipantChat() {
   // entry; in public mode the name entry shows straight away (crediting is
   // mandatory). The entered name is saved as the account/profile name.
   const [creditChosen, setCreditChosen] = useState(false);
-  const [nameDraft, setNameDraft] = useState(userName);
+  // Two separate fields, always empty to start (no email-derived prefill).
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [confirmedName, setConfirmedName] = useState(null);
   // Public (mandatory-credit) mode: the participant can decline sharing
   // their name, which means they can't take part — we say so gracefully.
@@ -397,13 +399,28 @@ export default function ParticipantChat() {
   // Confirm the credited name → save it as the account/profile name (so it
   // shows in the avatar menu + workspace) and advance past the credit step.
   const confirmName = () => {
-    const nm = nameDraft.trim();
+    const nm = `${firstName.trim()} ${lastName.trim()}`.trim();
     if (nm) {
       writeSetup({ userName: nm });
       setConfirmedName(nm);
     }
     setCreditMe(true);
     setIntroStage(5);
+  };
+
+  // Exit from the mandatory-credit decline → log out and go home.
+  const handleExitLoggedOut = () => {
+    try {
+      const keys = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && (k.startsWith('v4_') || k === 'selectedGroup' || k === 'selectedSubSegment')) {
+          keys.push(k);
+        }
+      }
+      keys.forEach((k) => localStorage.removeItem(k));
+    } catch {}
+    navigate('/');
   };
 
   // The persistent user-reply bubble for the credit step (stage ≥ 5).
@@ -590,12 +607,13 @@ export default function ParticipantChat() {
                     <div className="v4-bubble" style={{ animationDelay: '0.12s' }}>
                       <span>
                         Great — what name should show on your suggestions?
-                        This becomes your profile name too.
                       </span>
                     </div>
                     <CreditNameEntry
-                      value={nameDraft}
-                      onChange={setNameDraft}
+                      firstName={firstName}
+                      lastName={lastName}
+                      onFirstChange={setFirstName}
+                      onLastChange={setLastName}
                       onConfirm={confirmName}
                       confirmLabel="Use this name"
                     />
@@ -615,13 +633,14 @@ export default function ParticipantChat() {
                     </div>
                     <div className="v4-bubble" style={{ animationDelay: '0.14s' }}>
                       <span>
-                        Are you okay with that? Enter the name you’d like shown —
-                        it becomes your profile name too.
+                        Are you okay with that? Enter the name you’d like shown.
                       </span>
                     </div>
                     <CreditNameEntry
-                      value={nameDraft}
-                      onChange={setNameDraft}
+                      firstName={firstName}
+                      lastName={lastName}
+                      onFirstChange={setFirstName}
+                      onLastChange={setLastName}
                       onConfirm={confirmName}
                       confirmLabel="Yes, share my name"
                     />
@@ -644,7 +663,7 @@ export default function ParticipantChat() {
                     </div>
                     <div className="v4-bubble" style={{ animationDelay: '0.12s' }}>
                       <span>
-                        Totally fair — not everyone wants the crown. This one
+                        Totally fair, not everyone wants the crown. This contest
                         only takes names with a face behind them, so it’s
                         completely okay to sit it out. No hard feelings.
                       </span>
@@ -660,7 +679,7 @@ export default function ParticipantChat() {
                       <button
                         type="button"
                         className="v4-chip"
-                        onClick={() => navigate('/')}
+                        onClick={handleExitLoggedOut}
                       >
                         Exit
                       </button>
@@ -1069,19 +1088,29 @@ function DraftBubble({
 // ── Credit name entry — a text field + confirm, used when the
 // participant opts to be credited (or when the host made it mandatory).
 // The confirmed name is saved as the account/profile name.
-function CreditNameEntry({ value, onChange, onConfirm, confirmLabel }) {
-  const canConfirm = value.trim().length > 0;
+function CreditNameEntry({ firstName, lastName, onFirstChange, onLastChange, onConfirm, confirmLabel }) {
+  const canConfirm = firstName.trim().length > 0;
+  const submitOnEnter = (e) => { if (e.key === 'Enter' && canConfirm) onConfirm(); };
   return (
     <div className="v4-credit-name">
       <input
         type="text"
         className="v4-settings-input v4-credit-name-input"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onKeyDown={(e) => { if (e.key === 'Enter' && canConfirm) onConfirm(); }}
-        placeholder="Your name"
-        aria-label="The name to show on your suggestions"
+        value={firstName}
+        onChange={(e) => onFirstChange(e.target.value)}
+        onKeyDown={submitOnEnter}
+        placeholder="First name"
+        aria-label="First name"
         autoFocus
+      />
+      <input
+        type="text"
+        className="v4-settings-input v4-credit-name-input"
+        value={lastName}
+        onChange={(e) => onLastChange(e.target.value)}
+        onKeyDown={submitOnEnter}
+        placeholder="Last name"
+        aria-label="Last name"
       />
       <button
         type="button"

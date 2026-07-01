@@ -1285,7 +1285,7 @@ textarea.v4-input::placeholder {
   opacity: 0;
 }
 .v4-credit-name-input {
-  flex: 1 1 200px;
+  flex: 1 1 130px;
   min-width: 0;
 }
 .v4-credit-name-confirm {
