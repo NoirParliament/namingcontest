@@ -37,6 +37,7 @@ import { getQuestionsFor } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
 import GuideExpandable from '../../components/v4/GuideExpandable';
 import AvatarMenu from '../../components/v4/AvatarMenu';
+import { useFadeNav } from '../../components/v4/useFadeNav';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -178,6 +179,7 @@ function getSystemResponse(submittedCount, isFinalTurn) {
 export default function ParticipantChat() {
   const { id: contestId } = useParams();
   const navigate = useNavigate();
+  const fadeNav = useFadeNav();
   const contest = getMockContestById(contestId);
   const participation = readParticipation(contestId);
 
@@ -408,8 +410,10 @@ export default function ParticipantChat() {
     setIntroStage(5);
   };
 
-  // Exit from the mandatory-credit decline → log out and go home.
-  const handleExitLoggedOut = () => {
+  // Exit from the mandatory-credit decline → log out and go home, using
+  // the same gentle fade-out → homepage as ExitLink/BrandLink elsewhere
+  // (so the homepage animates in instead of jump-cutting).
+  const handleExitLoggedOut = (e) => {
     try {
       const keys = [];
       for (let i = 0; i < localStorage.length; i++) {
@@ -420,7 +424,7 @@ export default function ParticipantChat() {
       }
       keys.forEach((k) => localStorage.removeItem(k));
     } catch {}
-    navigate('/');
+    fadeNav('/#top')(e);
   };
 
   // The persistent user-reply bubble for the credit step (stage ≥ 5).
@@ -663,9 +667,9 @@ export default function ParticipantChat() {
                     </div>
                     <div className="v4-bubble" style={{ animationDelay: '0.12s' }}>
                       <span>
-                        Totally fair, not everyone wants the crown. This contest
-                        only takes names with a face behind them, so it’s
-                        completely okay to sit it out. No hard feelings.
+                        Totally fair, not everyone wants the crown. That said,
+                        this contest only takes names with a face behind them,
+                        so it’s completely okay to sit it out.
                       </span>
                     </div>
                     <div className="v4-chips-row" role="group">

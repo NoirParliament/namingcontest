@@ -356,7 +356,7 @@ body.is-exiting {
 .v4-dash-image {
   position: absolute;
   left: 50%;
-  bottom: -110px;
+  bottom: 0;
   /* Keep every illustration whole — no cropping. Taller source crops are
      shifted DOWN (translateY) by the share of their own height that
      exceeds the sports scene's aspect, so their top edge lines up with
@@ -375,7 +375,7 @@ body.is-exiting {
 @media (max-width: 700px) {
   .v4-dash-image {
     width: 660px;
-    bottom: -30px;
+    bottom: 0;
   }
 }
 

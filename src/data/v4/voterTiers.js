@@ -7,13 +7,13 @@
 
 export const VOTER_TIERS = [
   { voters: 15, price: 9 },
-  { voters: 30, price: 19 },
-  { voters: 60, price: 39 },
+  { voters: 45, price: 19 },
+  { voters: 135, price: 39 },
 ];
 
 // Middle tier preselected as a sensible default (used if a contest somehow
 // reaches checkout without an explicit choice).
-export const DEFAULT_VOTER_TIER = 30;
+export const DEFAULT_VOTER_TIER = 45;
 
 // Lowest price — for the "from $X" cue on the homepage category cards.
 export const FROM_PRICE = VOTER_TIERS[0].price; // 9
