@@ -236,6 +236,9 @@ export default function ParticipantChat() {
   const [creditChosen, setCreditChosen] = useState(false);
   const [nameDraft, setNameDraft] = useState(userName);
   const [confirmedName, setConfirmedName] = useState(null);
+  // Public (mandatory-credit) mode: the participant can decline sharing
+  // their name, which means they can't take part — we say so gracefully.
+  const [declinedPublic, setDeclinedPublic] = useState(false);
 
   // Local accumulated submissions for this session. These are NOT
   // persisted until the user hits the final submit button.
@@ -601,12 +604,12 @@ export default function ParticipantChat() {
 
                 {/* ── Public mode: crediting is mandatory (host turned off
                       anonymity). Explain, then take the name. ── */}
-                {anonMode === 'public' && (
+                {anonMode === 'public' && !declinedPublic && (
                   <>
                     <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
                       <span>
-                        Quick heads up — <strong>{contest.creator?.name || 'the host'}</strong> set
-                        this contest to <strong>public</strong>, so every name shows who
+                        Quick heads up — {contest.creator?.name || 'the host'} set
+                        this contest to public, so every name shows who
                         suggested it. Sharing your name is required to take part here.
                       </span>
                     </div>
@@ -622,6 +625,46 @@ export default function ParticipantChat() {
                       onConfirm={confirmName}
                       confirmLabel="Yes, share my name"
                     />
+                    <button
+                      type="button"
+                      className="v4-credit-decline"
+                      onClick={() => setDeclinedPublic(true)}
+                    >
+                      I’d rather not share my name
+                    </button>
+                  </>
+                )}
+
+                {/* Declined to share on a mandatory-credit contest → they
+                    can't take part, said kindly. Can change their mind. */}
+                {anonMode === 'public' && declinedPublic && (
+                  <>
+                    <div className="v4-bubble v4-bubble-user" style={{ animationDelay: '0.05s' }}>
+                      <span>I’d rather not share my name</span>
+                    </div>
+                    <div className="v4-bubble" style={{ animationDelay: '0.12s' }}>
+                      <span>
+                        Totally fair — not everyone wants the crown. This one
+                        only takes names with a face behind them, so it’s
+                        completely okay to sit it out. No hard feelings.
+                      </span>
+                    </div>
+                    <div className="v4-chips-row" role="group">
+                      <button
+                        type="button"
+                        className="v4-chip"
+                        onClick={() => setDeclinedPublic(false)}
+                      >
+                        Actually, I’ll share it
+                      </button>
+                      <button
+                        type="button"
+                        className="v4-chip"
+                        onClick={() => navigate('/')}
+                      >
+                        Exit
+                      </button>
+                    </div>
                   </>
                 )}
 

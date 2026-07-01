@@ -1295,6 +1295,25 @@ textarea.v4-input::placeholder {
   opacity: 0.5;
   cursor: not-allowed;
 }
+/* Subtle decline link under the mandatory-credit name entry. */
+.v4-credit-decline {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--v4-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  animation: v4-bubble-in 0.5s ease-out forwards;
+  opacity: 0;
+}
+.v4-credit-decline:hover {
+  color: var(--v4-fg);
+}
 .v4-chip {
   display: inline-flex;
   align-items: center;
