@@ -454,9 +454,14 @@ export default function BriefChat() {
   return (
     <div className="v4">
       <div className="v4-screen v4-screen--chat">
-        {/* Per-segment background — the same faint line-art scene + soft
-            glow the dashboard uses, so setup matches the live workspace. */}
-        <SegmentThemeBackdrop subId={subId} minimal />
+        {/* Background: while the creator is still picking the exact segment
+            (no subId yet) keep the neutral default blobs from the tier
+            picker, so entering setup looks unchanged; once a segment is
+            chosen, switch to that segment's line-art scene (the same minimal
+            backdrop the dashboard uses). */}
+        {subId
+          ? <SegmentThemeBackdrop subId={subId} minimal />
+          : <SegmentThemeBackdrop />}
 
         <main className="v4-chat" role="main" ref={chatRef}>
           {/* Glass nav — sticky inside the chat scroll container so
