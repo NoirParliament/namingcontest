@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, Link, Navigate } from 'react-router-dom';
 import personalDog from '../assets/personal-dog.png';
-import heroSportsScene from '../assets/a-sports-team.png';
+import heroOfficeScene from '../assets/company.png';
 import teamPlayers from '../assets/team-players.png';
 import businessWoman from '../assets/business-woman.png';
 import sarahChen from '../assets/sarah-chen.png';
@@ -534,7 +534,11 @@ function Hero({ onStart }) {
     <header className="hero hero-split">
       <HeroDecor />
       <div className="hero-bg-clip" aria-hidden="true">
-        <img src={heroSportsScene} className="hero-bg-illustration" alt="" />
+        <span className="hero-aurora hero-aurora-1" />
+        <span className="hero-aurora hero-aurora-2" />
+        <span className="hero-aurora hero-aurora-3" />
+        <span className="hero-aurora hero-aurora-4" />
+        <img src={heroOfficeScene} className="hero-bg-illustration" alt="" />
       </div>
       <div className="hero-inner hero-inner-split">
         <div className="hero-copy">
@@ -557,60 +561,65 @@ function Hero({ onStart }) {
           </div>
         </div>
         <div className="hero-visual">
-          <HeroContestCard />
+          <HeroBriefSim />
         </div>
       </div>
     </header>
   );
 }
 
-// Static "live contest" mockup shown in the split hero — a leaderboard mid-vote
-// with a crowned winner, so visitors see the product's output at a glance.
-function HeroContestCard() {
-  const rows = [
-    { name: 'Brookside Rovers',    by: 'Marcus', votes: 18, pct: 100, win: true },
-    { name: 'North Park United',   by: 'Dan',    votes: 15, pct: 84 },
-    { name: 'Iron Boots FC',       by: 'Sam',    votes: 13, pct: 72 },
-    { name: 'Crown Heights AFC',   by: 'Ade',    votes: 11, pct: 61 },
-    { name: 'Riverside Wanderers', by: 'Priya',  votes: 9,  pct: 50 },
-    { name: 'The Brook Boys',      by: 'Tom',    votes: 8,  pct: 44 },
-  ];
+// A framed mini brief-chat that simulates setting up a sports contest —
+// the real setup flow in miniature. Bot questions type in, answers pop in
+// as dark user bubbles (same language as the actual BriefChat), the chat
+// scrolls itself, ends on "ready to launch", then fades and replays.
+const SIM_SCRIPT = [
+  { role: 'bot',  text: 'Let’s set up your contest. What are you naming?' },
+  { role: 'user', text: 'A company or startup' },
+  { role: 'bot',  text: 'Nice. What should we call it for now?' },
+  { role: 'user', text: 'Our fintech startup' },
+  { role: 'bot',  text: 'How many people will vote?' },
+  { role: 'user', text: 'Up to 45 voters · $19' },
+  { role: 'bot',  text: 'Any prize for the winning name?' },
+  { role: 'user', text: 'Dinner on the founders' },
+];
+
+function HeroBriefSim() {
+  const [shown, setShown] = useState(0);      // messages revealed so far
+  const [typing, setTyping] = useState(false);
+  const [leaving, setLeaving] = useState(false);
+
+  useEffect(() => {
+    let t;
+    if (leaving) {
+      t = setTimeout(() => { setShown(0); setLeaving(false); }, 700);
+    } else if (shown >= SIM_SCRIPT.length) {
+      t = setTimeout(() => setLeaving(true), 6200);
+    } else if (SIM_SCRIPT[shown].role === 'bot') {
+      setTyping(true);
+      t = setTimeout(() => { setTyping(false); setShown(shown + 1); }, 1700);
+    } else {
+      t = setTimeout(() => setShown(shown + 1), 1400);
+    }
+    return () => clearTimeout(t);
+  }, [shown, leaving]);
+
   return (
-    <div className="hero-card" aria-hidden="true">
-      <div className="hero-card-top">
-        <div>
-          <div className="hero-card-title">Sunday football crew</div>
-          <div className="hero-card-meta">15 names · 8 voters · 98 votes</div>
-        </div>
-        <span className="hero-card-status"><span className="hero-card-dot" />Voting</span>
-      </div>
-      <ul className="hero-card-list">
-        {rows.map((r, i) => (
-          <li key={i} className={`hero-card-row${r.win ? ' is-winner' : ''}`}>
-            <span className="hero-card-fill" style={{ width: `${r.pct}%` }} />
-            <span className="hero-card-rank">
-              {r.win ? (
-                <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
-                  <path d="M1.6 5.2l3.1 2.6L8 2.6l3.3 5.2 3.1-2.6-1 7.2H2.6z" fill="currentColor" />
-                </svg>
-              ) : `#${i + 1}`}
-            </span>
-            <span className="hero-card-name">
-              <span className="hero-card-name-text">{r.name}</span>
-              <span className="hero-card-by">{r.by}</span>
-            </span>
-            <span className="hero-card-votes">{r.votes}</span>
-          </li>
+    <div className="hero-sim" aria-hidden="true">
+      <div className={`hero-sim-chat${leaving ? ' is-leaving' : ''}`}>
+        {SIM_SCRIPT.slice(0, shown).map((m, i) => (
+          <div key={i} className={`hsim-bubble hsim-${m.role}`}>{m.text}</div>
         ))}
-      </ul>
-      <div className="hero-card-foot">
-        <span className="hero-card-avatars" aria-hidden="true">
-          <i style={{ background: '#a6dcb3' }} />
-          <i style={{ background: '#b3c4f0' }} />
-          <i style={{ background: '#fceebc' }} />
-          <i style={{ background: '#fadecc' }} />
-        </span>
-        <span className="hero-card-foot-text">8 people voting · closes in 3 days</span>
+        {typing && (
+          <div className="hs-typing hsim-typing"><span /><span /><span /></div>
+        )}
+        {shown >= SIM_SCRIPT.length && (
+          <div className="hero-sim-live">
+            <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true">
+              <path d="M1.6 5.2l3.1 2.6L8 2.6l3.3 5.2 3.1-2.6-1 7.2H2.6z" fill="currentColor" />
+            </svg>
+            Ready to launch
+          </div>
+        )}
       </div>
     </div>
   );

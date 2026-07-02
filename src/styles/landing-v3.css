@@ -89,7 +89,7 @@
 .lp-v3 .nav-pill .cta:hover{background-position:bottom;color:var(--fg)}
 
 /* === Hero === */
-.lp-v3 .hero{position:relative;margin-top:var(--s-30);border-radius:var(--r-2xl);overflow:visible;background:radial-gradient(80% 60% at 50% 0%,var(--panel-blush) 0%,var(--panel-butter) 50%,#fff5e0 100%);box-shadow:var(--shadow-block)}
+.lp-v3 .hero{position:relative;margin-top:var(--s-30);border-radius:var(--r-2xl);overflow:visible;background:#fff7ea;box-shadow:var(--shadow-block)}
 
 /* === Hero Decor — pastel shapes scattered in the empty space around the hero === */
 .lp-v3 .hero-decor{position:absolute;inset:-100px -60px;pointer-events:none;z-index:0}
@@ -150,12 +150,61 @@
 .lp-v3 .closing .cd6{bottom:-20px;left:30%;width:14px;height:14px;background:var(--accent-green);opacity:.5;animation-delay:-4s}
 .lp-v3 .closing .cd7{bottom:-22px;right:24%;width:30px;height:12px;background:var(--panel-mint);border-radius:6px 14px 4px 16px;transform:rotate(8deg);opacity:.55;animation-delay:-7s;animation-name:decorFloat2}
 .lp-v3 .closing .cd8{bottom:-30px;right:8%;width:20px;height:20px;background:var(--panel-butter);opacity:.5;animation-delay:-6s}
-.lp-v3 .hero-inner{max-width:1080px;margin:0 auto;padding:120px var(--s-8) 140px;text-align:center;position:relative;z-index:2}
+.lp-v3 .hero-inner{max-width:1080px;margin:0 auto;padding:110px var(--s-8) 210px;text-align:center;position:relative;z-index:2}
 .lp-v3 .hero h1{font-family:var(--font-display);font-weight:400;font-size:84px;line-height:1.02;letter-spacing:-0.03em;margin:0;text-wrap:balance}
 .lp-v3 .hero h1 .em{font-style:italic;font-weight:500}
-.lp-v3 .hero p.sub{font-family:var(--font-text);font-size:19px;line-height:1.5;color:rgba(0,0,0,.7);max-width:60ch;margin:28px auto 0}
+.lp-v3 .hero p.sub{font-family:var(--font-text);font-size:19px;line-height:1.5;color:rgba(0,0,0,.7);max-width:74ch;margin:24px auto 0}
 .lp-v3 .hero .cta-row{margin-top:40px;display:inline-flex;gap:24px;align-items:center}
 .lp-v3 .hero .cta-meta{margin-left:16px;font-size:13px;color:rgba(0,0,0,.55)}
+
+/* ---------- Hero brief-chat simulation card (v6) ---------- */
+.lp-v3 .hero-sim{
+  width:100%;max-width:440px;
+  background:none;border:none;box-shadow:none;padding:0;
+}
+.lp-v3 .hero-sim-head{
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--font-text);font-size:12.5px;font-weight:600;color:rgba(0,0,0,.55);
+  padding:2px 4px 12px;border-bottom:1px solid rgba(0,0,0,.06);
+}
+.lp-v3 .hero-sim-dot{width:7px;height:7px;border-radius:50%;background:#25a259}
+.lp-v3 .hero-sim-step{margin-left:auto;font-weight:500;color:rgba(0,0,0,.4);font-variant-numeric:tabular-nums}
+.lp-v3 .hero-sim-chat{
+  height:352px;
+  display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;gap:9px;
+  overflow:hidden;padding-top:14px;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 14%);
+  mask-image:linear-gradient(to bottom,transparent 0,#000 14%);
+  transition:opacity .6s ease;
+}
+.lp-v3 .hero-sim-chat.is-leaving{opacity:0}
+.lp-v3 .hsim-bubble{
+  max-width:82%;padding:12px 16px;border-radius:16px;
+  font-family:var(--font-text);font-size:14.5px;line-height:1.4;font-weight:480;
+  box-shadow:0 10px 26px rgba(60,40,20,.10);
+  opacity:0;animation:hsPop .5s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+.lp-v3 .hsim-bot{background:#fffdf8;color:rgba(0,0,0,.8);border-bottom-left-radius:5px}
+.lp-v3 .hsim-user{background:#100f0d;color:#fdfbf6;border-bottom-right-radius:5px;align-self:flex-end;font-weight:500}
+.lp-v3 .hs-typing{
+  display:inline-flex;align-items:center;gap:5px;
+  background:#fffdf8;padding:13px 16px;border-radius:16px;border-bottom-left-radius:5px;
+  box-shadow:0 10px 26px rgba(60,40,20,.10);
+  opacity:0;animation:hsPop .4s ease-out forwards;
+}
+.lp-v3 .hs-typing span{width:6px;height:6px;border-radius:50%;background:rgba(3,3,2,.38);animation:hsDot 1.2s ease-in-out infinite}
+.lp-v3 .hs-typing span:nth-child(2){animation-delay:.15s}
+.lp-v3 .hs-typing span:nth-child(3){animation-delay:.3s}
+.lp-v3 .hero-sim-live{
+  align-self:center;display:inline-flex;align-items:center;gap:8px;
+  background:#dff0e4;color:#14532a;font-family:var(--font-text);font-size:13.5px;font-weight:700;
+  padding:11px 18px;border-radius:999px;
+  opacity:0;animation:hsPop .5s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+.lp-v3 .hero-sim-live svg{color:#1c7a42;flex:none}
+@keyframes hsPop{from{opacity:0;transform:translateY(10px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes hsDot{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+@media (prefers-reduced-motion:reduce){.lp-v3 .hsim-bubble,.lp-v3 .hs-typing,.lp-v3 .hero-sim-live{animation:none;opacity:1}}
 
 /* ---------- Split hero (v6): copy left, live-contest card right ---------- */
 .lp-v3 .hero-inner-split{
@@ -171,8 +220,23 @@
 .lp-v3 .hero-inner-split p.sub{font-size:17px;line-height:1.55;margin:20px 0 0;max-width:50ch;text-align:left}
 .lp-v3 .hero-inner-split .cta-row{margin-top:32px;justify-content:flex-start;flex-wrap:wrap}
 
-.lp-v3 .hero-bg-clip{position:absolute;inset:0;overflow:hidden;border-radius:inherit;z-index:0;pointer-events:none;-webkit-mask-image:linear-gradient(to right,transparent 28%,#000 60%);mask-image:linear-gradient(to right,transparent 28%,#000 60%)}
-.lp-v3 .hero-bg-illustration{position:absolute;right:0;bottom:0;height:100%;width:auto;max-width:none;filter:brightness(.72);opacity:.55}
+.lp-v3 .hero-bg-clip{position:absolute;inset:0;overflow:hidden;border-radius:inherit;z-index:0;pointer-events:none}
+
+/* Aurora — vivid brand-hue fields under heavy blur (the blur does the
+   softening, so the stops start saturated: azure / violet / coral / mint). */
+.lp-v3 .hero-aurora{position:absolute;border-radius:50%;filter:blur(80px) saturate(1.3);will-change:transform}
+.lp-v3 .hero-aurora-1{width:720px;height:540px;top:-240px;left:-4%;background:radial-gradient(closest-side,#4da3ff 0%,rgba(77,163,255,0) 70%);opacity:.7;animation:auroraDrift1 17s ease-in-out infinite alternate}
+.lp-v3 .hero-aurora-2{width:620px;height:500px;top:-200px;right:-2%;background:radial-gradient(closest-side,#7b6cf6 0%,rgba(123,108,246,0) 70%);opacity:.6;animation:auroraDrift2 21s ease-in-out infinite alternate}
+.lp-v3 .hero-aurora-3{width:640px;height:460px;top:-70px;left:32%;background:radial-gradient(closest-side,#ff8a5c 0%,rgba(255,138,92,0) 72%);opacity:.55;animation:auroraDrift3 25s ease-in-out infinite alternate}
+.lp-v3 .hero-aurora-4{width:460px;height:380px;top:30px;left:12%;background:radial-gradient(closest-side,#46d484 0%,rgba(70,212,132,0) 70%);opacity:.4;animation:auroraDrift2 28s ease-in-out infinite alternate-reverse}
+@keyframes auroraDrift1{from{transform:translate(0,0) scale(1)}to{transform:translate(70px,36px) scale(1.12)}}
+@keyframes auroraDrift2{from{transform:translate(0,0) scale(1.06)}to{transform:translate(-60px,44px) scale(.96)}}
+@keyframes auroraDrift3{from{transform:translate(0,0) scale(1)}to{transform:translate(-80px,-24px) scale(1.1)}}
+@media (prefers-reduced-motion:reduce){.lp-v3 .hero-aurora{animation:none}}
+
+/* Startup-office line-art — tucked bottom-right BEHIND the chat, melting
+   into the hero on every edge via a radial mask. */
+.lp-v3 .hero-bg-illustration{position:absolute;right:-3%;bottom:-9%;width:min(58%,660px);filter:brightness(.75);opacity:.5;-webkit-mask-image:radial-gradient(80% 80% at 60% 60%,#000 50%,transparent 97%);mask-image:radial-gradient(80% 80% at 60% 60%,#000 50%,transparent 97%)}
 
 .lp-v3 .hero-visual{position:relative;z-index:2;display:flex;justify-content:center;align-items:center}
 .lp-v3 .hero-card{
