@@ -598,9 +598,9 @@ function HeroBriefSim({ onStart }) {
     const timers = [];
     const wait = (ms) => new Promise((res) => { timers.push(setTimeout(res, ms)); });
     const push = (item) => { if (!cancelled) setItems((prev) => [...prev, item]); };
-    const bot = async (text) => {
+    const bot = async (text, typeMs = 800) => {
       setTyping(true);
-      await wait(1900);
+      await wait(typeMs);
       if (cancelled) return;
       setTyping(false);
       push({ t: 'bot', text });
@@ -610,7 +610,7 @@ function HeroBriefSim({ onStart }) {
     (async () => {
       await wait(500);
       for (const s of SIM_STEPS) {
-        await bot(s.prompt);
+        await bot(s.prompt);           // 0.8s "thinking" before every bubble
         push({ t: 'answer', text: s.answer });
         await wait(1600);
       }
