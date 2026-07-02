@@ -535,7 +535,7 @@ function Hero({ onStart }) {
       <HeroAnimation />
       <div className="hero-inner">
         <h1 className="h-display">
-          Run a naming contest without the <span className="em">chaos</span>
+          Run a naming contest <span className="em">without</span> the chaos
         </h1>
         <p className="sub">
           Whether you’re naming a baby, a band, or a business, now it’s so easy to land on the name everyone backs.
