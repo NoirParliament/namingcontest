@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, Link, Navigate } from 'react-router-dom';
 import personalDog from '../assets/personal-dog.png';
-import heroOfficeScene from '../assets/company.png';
+import heroOfficeScene from '../assets/planning.png';
 import teamPlayers from '../assets/team-players.png';
 import businessWoman from '../assets/business-woman.png';
 import sarahChen from '../assets/sarah-chen.png';
@@ -538,7 +538,6 @@ function Hero({ onStart }) {
         <span className="hero-aurora hero-aurora-2" />
         <span className="hero-aurora hero-aurora-3" />
         <span className="hero-aurora hero-aurora-4" />
-        <img src={heroOfficeScene} className="hero-bg-illustration" alt="" />
       </div>
       <div className="hero-inner hero-inner-split">
         <div className="hero-copy">
@@ -582,11 +581,13 @@ const SIM_SCRIPT = [
   { role: 'bot',  text: 'Any prize for the winning name?' },
   { role: 'user', text: 'Dinner on the founders' },
 ];
+const FIRST_USER_IDX = SIM_SCRIPT.findIndex((m) => m.role === 'user');
 
 function HeroBriefSim() {
   const [shown, setShown] = useState(0);      // messages revealed so far
   const [typing, setTyping] = useState(false);
   const [leaving, setLeaving] = useState(false);
+  const chatRef = useRef(null);
 
   useEffect(() => {
     let t;
@@ -603,19 +604,34 @@ function HeroBriefSim() {
     return () => clearTimeout(t);
   }, [shown, leaving]);
 
+  // Smoothly follow the newest message, like a live thread scrolling.
+  useEffect(() => {
+    const el = chatRef.current;
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+  }, [shown, typing]);
+
   return (
     <div className="hero-sim" aria-hidden="true">
-      <div className={`hero-sim-chat${leaving ? ' is-leaving' : ''}`}>
-        {SIM_SCRIPT.slice(0, shown).map((m, i) => (
-          <div key={i} className={`hsim-bubble hsim-${m.role}`}>{m.text}</div>
-        ))}
+      <div className={`hero-sim-chat${leaving ? ' is-leaving' : ''}`} ref={chatRef}>
+        {SIM_SCRIPT.slice(0, shown).map((m, i) =>
+          m.role === 'user' ? (
+            <div key={i} className="hsim-userrow">
+              <span className="hsim-bubble hsim-user">{m.text}</span>
+              {i === FIRST_USER_IDX
+                ? <img src={creatorProfile} className="hsim-avatar" alt="" />
+                : <span className="hsim-avatar hsim-avatar-blank" aria-hidden="true" />}
+            </div>
+          ) : (
+            <div key={i} className="hsim-bubble hsim-bot">{m.text}</div>
+          )
+        )}
         {typing && (
           <div className="hs-typing hsim-typing"><span /><span /><span /></div>
         )}
         {shown >= SIM_SCRIPT.length && (
           <div className="hero-sim-live">
-            <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true">
-              <path d="M1.6 5.2l3.1 2.6L8 2.6l3.3 5.2 3.1-2.6-1 7.2H2.6z" fill="currentColor" />
+            <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
+              <path d="M4 8.3l2.6 2.6L12 5.4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             Ready to launch
           </div>
@@ -1156,7 +1172,10 @@ export default function LandingPage() {
       <div className="frame">
         <div className="wrap">
           <Nav />
-          <Hero onStart={handleStart} />
+          <div className="hero-band">
+            <img src={heroOfficeScene} className="hero-under" alt="" aria-hidden="true" />
+            <Hero onStart={handleStart} />
+          </div>
           <Offerings onStart={handleStart} />
           <HowItWorks />
           <Testimonials />
