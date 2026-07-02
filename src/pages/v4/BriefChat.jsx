@@ -454,14 +454,14 @@ export default function BriefChat() {
   return (
     <div className="v4">
       <div className="v4-screen v4-screen--chat">
-        {/* Background: while the creator is still picking the exact segment
-            (no subId yet) keep the neutral default blobs from the tier
-            picker, so entering setup looks unchanged; once a segment is
-            chosen, switch to that segment's line-art scene (the same minimal
-            backdrop the dashboard uses). */}
-        {subId
-          ? <SegmentThemeBackdrop subId={subId} minimal />
-          : <SegmentThemeBackdrop />}
+        {/* Background: neutral default blobs (same as the tier picker) while
+            the exact segment is still being chosen. They fade OUT as the
+            chosen segment's line-art scene fades IN, so the swap cross-fades
+            smoothly instead of popping. */}
+        <div className={`v4-backdrop-fade${subId ? ' is-faded' : ''}`} aria-hidden="true">
+          <SegmentThemeBackdrop />
+        </div>
+        {subId && <SegmentThemeBackdrop subId={subId} minimal />}
 
         <main className="v4-chat" role="main" ref={chatRef}>
           {/* Glass nav — sticky inside the chat scroll container so

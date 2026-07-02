@@ -381,6 +381,23 @@ body.is-exiting {
   -webkit-mask-image: linear-gradient(to right, #000 0%, #000 13%, rgba(0,0,0,0.12) 50%, #000 87%, #000 100%);
   mask-image: linear-gradient(to right, #000 0%, #000 13%, rgba(0,0,0,0.12) 50%, #000 87%, #000 100%);
 }
+/* When a segment is chosen, the neutral blobs are replaced by the segment's
+   glow + scene. Ease the whole backdrop in (the .v4-aurora wrapper holds both)
+   so it doesn't pop into view — a soft settle instead of a hard jump. */
+@keyframes v4-scene-in { from { opacity: 0; } to { opacity: 1; } }
+.v4-screen--chat .v4-aurora { animation: v4-scene-in 0.85s ease-out both; }
+/* The neutral pick-stage blobs live in this layer; when a segment is chosen
+   it fades out over the same duration the scene fades in, so the two
+   cross-fade instead of one popping in while the other vanishes. */
+.v4-backdrop-fade {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.85s ease-out;
+}
+.v4-backdrop-fade.is-faded { opacity: 0; }
 /* On phones/tablets the viewport is narrower than the scene, so it renders
    taller — pull it back up toward the bottom edge so it stays visible
    instead of sliding off-screen. */
