@@ -70,8 +70,12 @@
 .lp-v3 .nav-pill{pointer-events:auto;display:flex;align-items:center;justify-content:space-between;gap:24px;width:100%;max-width:880px;background:rgba(255,255,255,0.55);-webkit-backdrop-filter:saturate(180%) blur(18px);backdrop-filter:saturate(180%) blur(18px);border:1px solid rgba(3,3,2,0.06);color:var(--fg);border-radius:var(--r-pill);padding:8px 8px 8px 24px;font-family:var(--font-text);font-size:14px;font-weight:500;box-shadow:0 1px 2px rgba(0,0,0,.04);transition:background .25s ease,box-shadow .25s ease,border-color .25s ease}
 .lp-v3 .nav-pill.is-scrolled{background:rgba(255,255,255,0.72);border-color:rgba(3,3,2,0.08);box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 28px rgba(0,0,0,.08)}
 .lp-v3 .nav-pill .brand-mark{display:inline-flex;align-items:center;text-decoration:none;color:var(--fg)}
-.lp-v3 .nav-pill .brand-logo{display:block;height:20px;width:auto;transform:translateY(2px)}
-.lp-v3 .footer .brand-logo-footer{display:block;height:26px;width:auto;margin-bottom:20px}
+/* The mark has a star above the word, so its optical center sits below the
+   box center — nudge up to align the wordmark with the menu text. Uses a
+   percentage (of the logo's own height) so it scales at every breakpoint
+   (mobile.css shrinks this logo to 16px). */
+.lp-v3 .nav-pill .brand-logo{display:block;height:27px;width:auto;transform:translateY(-17%)}
+.lp-v3 .footer .brand-logo-footer{display:block;height:34px;width:auto;margin-bottom:16px;transform:translateY(-14%)}
 .lp-v3 .nav-pill .links{display:inline-flex;gap:24px}
 .lp-v3 .nav-pill .nav-actions{display:inline-flex;align-items:center;gap:20px}
 .lp-v3 .nav-pill .links a,
@@ -182,15 +186,34 @@
 }
 .lp-v3 .hero-sim-chat::-webkit-scrollbar{display:none}
 .lp-v3 .hero-sim-chat.is-leaving{opacity:0}
+/* The demo reuses the real v4 bubbles + the real "Read the guide" pill; this
+   flow column stacks them (bubbles self-align left/right via align-self). */
+.lp-v3 .hsim-flow{display:flex;flex-direction:column;align-items:flex-start;width:100%;gap:9px}
+/* Compact overrides: the real chat is full-screen; here it's a ~440px hero
+   panel. Shrink to the compact sizing, and make the bot bubble WHITE (the app
+   default is a grey bubble). */
+.lp-v3 .hero-sim .v4-bubble{
+  font-size:14.5px;line-height:1.4;font-weight:470;
+  padding:12px 16px;border-radius:16px;border-top-left-radius:6px;
+  margin-bottom:0;max-width:87%;
+  background:var(--bg-page,#fcf9f7);color:rgba(3,3,2,.82);border:1px solid rgba(0,0,0,.07);box-shadow:0 6px 18px rgba(60,50,40,.07);
+}
+.lp-v3 .hero-sim .v4-bubble-user{
+  background:#39332c;color:rgba(255,255,255,.94);border:none;box-shadow:0 8px 20px rgba(57,51,44,.18);
+  border-radius:16px;border-top-right-radius:6px;padding:11px 15px;margin-top:0;font-size:14.5px;
+}
+/* Typing/loading bubble matches the soft-grey bot bubbles. */
+.lp-v3 .hero-sim .hs-typing{background:var(--bg-page,#fcf9f7);border:1px solid rgba(0,0,0,.07)}
+.lp-v3 .hero-sim .hs-typing span{background:rgba(3,3,2,.38)}
 .lp-v3 .hsim-bubble{
   max-width:100%;padding:12px 16px;border-radius:16px;
   font-family:var(--font-text);font-size:14.5px;line-height:1.4;font-weight:480;
   box-shadow:0 8px 22px rgba(60,40,20,.08);
   opacity:0;animation:hsPop .5s cubic-bezier(.34,1.56,.64,1) forwards;
 }
-/* Same bubble colours as the real brief builder. */
-.lp-v3 .hsim-bot{max-width:82%;background:#f5f1ee;color:rgba(3,3,2,.82);border-bottom-left-radius:5px}
-.lp-v3 .hsim-user{background:#030302;color:#fff;border-bottom-right-radius:5px;font-weight:500}
+/* Human replies are dark (right); the bot's are white (left). */
+.lp-v3 .hsim-bot{max-width:82%;background:#fff;color:var(--fg);border:1px solid rgba(0,0,0,.05);border-bottom-left-radius:5px}
+.lp-v3 .hsim-user{background:var(--fg);color:#fff;border-bottom-right-radius:5px;font-weight:500}
 /* User row: dark bubble + the creator's avatar (first reply only; a blank
    keeps later rows aligned). */
 .lp-v3 .hsim-userrow{
@@ -202,6 +225,75 @@
   animation:hsPop .5s cubic-bezier(.34,1.56,.64,1) forwards;
 }
 .lp-v3 .hsim-avatar-blank{background:none;box-shadow:none;visibility:hidden}
+
+/* Chat header — slim phase indicator (title left, step right). */
+.lp-v3 .hero-sim-head{
+  display:flex;align-items:center;gap:8px;
+  padding:0 6px 10px;margin:0 0 4px;
+  border-bottom:1px solid rgba(0,0,0,.08);
+  font-family:var(--font-text);
+}
+.lp-v3 .hero-sim-hdot{width:7px;height:7px;border-radius:50%;flex:none;background:#5b74d8;transition:background .5s ease}
+.lp-v3 .hero-sim-hdot.is-submissions{background:#d99a2b}
+.lp-v3 .hero-sim-hdot.is-voting{background:#25a259}
+.lp-v3 .hero-sim-hphase{font-size:12.5px;font-weight:600;color:rgba(3,3,2,.72)}
+.lp-v3 .hero-sim-hstep{margin-left:auto;font-size:11.5px;font-weight:500;color:rgba(0,0,0,.4);font-variant-numeric:tabular-nums}
+
+/* "Read the guide" pill — the same element that shows in the real brief
+   chat: book icon + label + article title, read-time and caret on the right. */
+.lp-v3 .hsim-guide{
+  align-self:flex-start;max-width:94%;display:flex;align-items:center;gap:10px;
+  background:#fff;border:1px solid rgba(75,104,195,.28);border-radius:13px;padding:9px 12px;
+  box-shadow:0 8px 22px rgba(60,40,20,.07);
+  opacity:0;animation:hsPop .5s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+.lp-v3 .hsim-guide-ic{width:28px;height:28px;border-radius:9px;background:#eef1fb;color:#4b68c3;display:flex;align-items:center;justify-content:center;flex:none}
+.lp-v3 .hsim-guide-text{min-width:0;font-family:var(--font-text);line-height:1.3}
+.lp-v3 .hsim-guide-lead{font-size:13px;font-weight:600;color:#4b68c3}
+.lp-v3 .hsim-guide-title{font-weight:500;color:rgba(3,3,2,.72)}
+.lp-v3 .hsim-guide-meta{
+  margin-left:auto;display:inline-flex;align-items:center;gap:2px;flex:none;
+  font-family:var(--font-text);font-size:11.5px;font-weight:600;color:rgba(0,0,0,.42);
+}
+.lp-v3 .hsim-guide-meta svg{color:rgba(0,0,0,.35)}
+
+/* Naming-style pick — the creator selecting an archetype (dark, human side). */
+.lp-v3 .hsim-pick{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--fg);color:#fff;border-radius:16px;border-bottom-right-radius:5px;
+  padding:9px 14px;font-family:var(--font-text);
+  box-shadow:0 8px 22px rgba(60,40,20,.12);
+  opacity:0;animation:hsPop .5s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+.lp-v3 .hsim-pick-check{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.16);color:#fff;display:flex;align-items:center;justify-content:center;flex:none}
+.lp-v3 .hsim-pick-label{font-size:14px;font-weight:600}
+.lp-v3 .hsim-pick-eg{font-size:12px;color:rgba(255,255,255,.55)}
+
+/* Winner reveal — the one special beat. */
+.lp-v3 .hsim-result{
+  align-self:center;display:inline-flex;align-items:center;gap:8px;
+  background:#e6f3ec;color:#1f6b3f;font-family:var(--font-text);font-size:14px;font-weight:600;
+  padding:10px 10px 10px 15px;border-radius:16px;margin-top:4px;
+  opacity:0;animation:hsPop .5s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+.lp-v3 .hsim-result svg{color:#25a259;flex:none}
+.lp-v3 .hsim-result-votes{font-size:12px;font-weight:700;color:#1f6b3f;background:#fff;padding:3px 9px;border-radius:999px}
+
+/* Closing nudge → How it works. */
+.lp-v3 .hsim-cta{
+  align-self:center;text-align:center;margin-top:8px;padding:2px 4px;
+  font-family:var(--font-text);font-size:13px;color:rgba(3,3,2,.6);text-decoration:none;cursor:pointer;
+  opacity:0;animation:hsPop .5s ease forwards;
+}
+.lp-v3 .hsim-cta-link{
+  color:var(--fg);font-weight:600;
+  text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.5px;
+  text-decoration-color:rgba(3,3,2,.28);
+  transition:text-decoration-color .25s ease;
+}
+.lp-v3 .hsim-cta-arrow{display:inline-block;transition:transform .18s ease}
+.lp-v3 .hsim-cta:hover .hsim-cta-link{text-decoration-color:var(--fg)}
+.lp-v3 .hsim-cta:hover .hsim-cta-arrow{transform:translateX(3px)}
 .lp-v3 .hs-typing{
   display:inline-flex;align-items:center;gap:5px;
   background:#f5f1ee;padding:13px 16px;border-radius:16px;border-bottom-left-radius:5px;
@@ -232,7 +324,7 @@
   align-items:center;
   text-align:left;
   max-width:1160px;
-  padding:clamp(72px,8vw,104px) var(--s-8);
+  padding:clamp(104px,11vw,150px) var(--s-8);
 }
 .lp-v3 .hero-inner-split h1{font-size:clamp(40px,5.2vw,62px);line-height:1.03;text-align:left}
 .lp-v3 .hero-inner-split p.sub{font-size:17px;line-height:1.55;margin:20px 0 0;max-width:50ch;text-align:left}
@@ -306,6 +398,9 @@
   .lp-v3 .hero-inner-split h1,.lp-v3 .hero-inner-split p.sub{text-align:center}
   .lp-v3 .hero-inner-split p.sub{margin-left:auto;margin-right:auto}
   .lp-v3 .hero-inner-split .cta-row{justify-content:center}
+  /* Once the hero stacks, drop the chat demo entirely — just the
+     headline, copy, and buttons. */
+  .lp-v3 .hero-visual{display:none}
 }
 
 /* See how it works — guidance text with arrow below, anchored to bottom of hero */

@@ -453,15 +453,15 @@ export default function BriefChat() {
 
   return (
     <div className="v4">
-      <div className="v4-screen">
-        {/* Per-segment theme decoration (blobs + icons + illustrations).
-            Carries from setup → live so the contest keeps its identity. */}
-        <SegmentThemeBackdrop subId={subId} />
+      <div className="v4-screen v4-screen--chat">
+        {/* Per-segment background — the same faint line-art scene + soft
+            glow the dashboard uses, so setup matches the live workspace. */}
+        <SegmentThemeBackdrop subId={subId} minimal />
 
         <main className="v4-chat" role="main" ref={chatRef}>
           {/* Glass nav — sticky inside the chat scroll container so
               chat content slides UNDER it as user scrolls. */}
-          <header className={`v4-nav ${isScrolled ? 'is-scrolled' : ''}`}>
+          <header className={`v4-nav v4-nav-clear ${isScrolled ? 'is-scrolled' : ''}`}>
           <BrandLink />
           {(() => {
             // Active dot based on current section

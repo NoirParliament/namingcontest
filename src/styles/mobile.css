@@ -229,7 +229,7 @@
     justify-content: space-between;
   }
   .lp-v3 .nav-row.nav-row { padding: 10px 8px 0; }
-  .lp-v3 .nav-pill .brand-mark .brand-logo { height: 16px; }
+  .lp-v3 .nav-pill .brand-mark .brand-logo { height: 27px; }
 }
 
 
@@ -673,7 +673,7 @@
     gap: 8px;
   }
   .v4-winner-hero-brand-logo.v4-winner-hero-brand-logo {
-    height: 13px;
+    height: 18px;
   }
   .v4-winner-hero-trophy-inline.v4-winner-hero-trophy-inline {
     font-size: 9.5px;

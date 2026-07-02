@@ -99,9 +99,12 @@
   cursor: pointer;
 }
 .v4-logo {
-  height: 22px;
+  height: 30px;
   width: auto;
   display: block;
+  /* New mark has a star above the word — nudge up (proportional, scales at
+     every size) so the wordmark's optical center aligns with adjacent UI. */
+  transform: translateY(-17%);
 }
 
 .v4-progress {
@@ -368,6 +371,15 @@ body.is-exiting {
   z-index: 0;
   pointer-events: none;
   opacity: 0.45;
+}
+/* In the chats (setup + participant) the conversation runs down the center
+   column, so keep the scene at full strength on the left/right edges and let
+   it dissolve smoothly toward the center behind the bubbles — background where
+   there's space, clear where the text is. */
+.v4-screen--chat .v4-dash-image {
+  opacity: 0.42;
+  -webkit-mask-image: linear-gradient(to right, #000 0%, rgba(0,0,0,0.32) 42%, rgba(0,0,0,0.32) 58%, #000 100%);
+  mask-image: linear-gradient(to right, #000 0%, rgba(0,0,0,0.32) 42%, rgba(0,0,0,0.32) 58%, #000 100%);
 }
 /* On phones/tablets the viewport is narrower than the scene, so it renders
    taller — pull it back up toward the bottom edge so it stays visible
@@ -4508,10 +4520,11 @@ input.v4-results-search-input::placeholder {
   margin-bottom: 32px;
 }
 .v4-pdf-report-brand-logo {
-  height: 22px;
+  height: 30px;
   width: auto;
   display: block;
   opacity: 0.9;
+  transform: translateY(-17%);
 }
 .v4-pdf-report-brandbar-meta {
   font-size: 11px;
@@ -4806,10 +4819,11 @@ input.v4-results-search-input::placeholder {
   border-bottom: 1px solid rgba(3, 3, 2, 0.06);
 }
 .v4-winner-hero-brand-logo {
-  height: 18px;
+  height: 24px;
   width: auto;
   display: block;
   opacity: 0.85;
+  transform: translateY(-17%);
 }
 .v4-winner-hero-trophy-inline {
   display: inline-flex;

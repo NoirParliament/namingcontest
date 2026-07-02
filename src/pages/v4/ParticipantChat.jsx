@@ -449,10 +449,10 @@ export default function ParticipantChat() {
   // ── Render ─────────────────────────────────────────────────────────
   return (
     <div className="v4 lp-v3">
-      <div className="v4-screen">
-        <SegmentThemeBackdrop subId={contest.subSegmentId} />
+      <div className="v4-screen v4-screen--chat">
+        <SegmentThemeBackdrop subId={contest.subSegmentId} minimal />
         <main className="v4-review" role="main" ref={chatRef}>
-          <header className="v4-nav">
+          <header className="v4-nav v4-nav-clear">
             {/* Click logo → scroll the chat container to top (mimics
                 the "go to top of this page" expectation; we don't
                 navigate away since the user is mid-flow). */}

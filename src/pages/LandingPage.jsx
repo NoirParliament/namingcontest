@@ -18,7 +18,7 @@ import namingContestLogo from '../assets/namingcontestlogo-cropped.svg';
 import namingContestLogoWhite from '../assets/namingcontestlogo-white.svg';
 import '../styles/landing-v3.css';
 import '../styles/v4.css';
-import { readSetup } from '../utils/v4Brief';
+import { readSetup, getQuestionsFor } from '../utils/v4Brief';
 import { getSegmentTone } from '../data/v4/segmentTheme';
 import AvatarMenu from '../components/v4/AvatarMenu';
 import SignInModal from '../components/v4/SignInModal';
@@ -542,13 +542,10 @@ function Hero({ onStart }) {
       <div className="hero-inner hero-inner-split">
         <div className="hero-copy">
           <h1 className="h-display">
-            Run a naming contest <span className="em">without</span> the chaos
+            Run a <span className="em">naming</span> contest without the chaos
           </h1>
           <p className="sub">
             Skip the group chats and Google Sheets. Create a naming contest in minutes: invite participants, collect suggestions, vote on favorites, and crown a winner—all in one place.
-          </p>
-          <p className="sub">
-            Whether you’re naming a new company, a youth sports team, a WiFi network, or anything in between, NamingContest makes it easy to bring everyone together, stay organized, and find a name you love.
           </p>
           <div className="cta-row">
             <a href="#start" onClick={(e) => { e.preventDefault(); onStart(); }} className="btn btn-primary btn-lg">
@@ -560,82 +557,96 @@ function Hero({ onStart }) {
           </div>
         </div>
         <div className="hero-visual">
-          <HeroBriefSim />
+          <HeroBriefSim onStart={onStart} />
         </div>
       </div>
     </header>
   );
 }
 
-// A framed mini brief-chat that simulates setting up a sports contest —
-// the real setup flow in miniature. Bot questions type in, answers pop in
-// as dark user bubbles (same language as the actual BriefChat), the chat
-// scrolls itself, ends on "ready to launch", then fades and replays.
-const SIM_SCRIPT = [
-  { role: 'bot',  text: 'Let’s set up your contest. What are you naming?' },
-  { role: 'user', text: 'A company or startup' },
-  { role: 'bot',  text: 'Nice. What should we call it for now?' },
-  { role: 'user', text: 'Our fintech startup' },
-  { role: 'bot',  text: 'How many people will vote?' },
-  { role: 'user', text: 'Up to 45 voters · $19' },
-  { role: 'bot',  text: 'Any prize for the winning name?' },
-  { role: 'user', text: 'Dinner on the founders' },
+// The real b1 (company) brief, exactly as the live chat resolves it after
+// cuts/merges: projectSummary(+guide) · namingStyle(+guide) · targetAudience ·
+// competitors(+guide). Pulled from the same source of truth so it can't drift.
+const SIM_BRIEF = getQuestionsFor('b1', null);
+const SIM_ANSWERS = {
+  projectSummary: 'AI project management for distributed engineering teams.',
+  namingStyle: 'Suggestive',
+  targetAudience: 'Non-technical SMB owners, 35–55.',
+  competitors: 'Asana, Monday, ClickUp, Notion.',
+};
+// The whole walk-through: three synthetic openers (kind of naming, working
+// name, voter package) then the real brief questions. Every answer is just a
+// typed reply — the prompts are the real thing.
+const SIM_STEPS = [
+  { prompt: 'Let’s set up your business contest. First — which kind of naming is this?', answer: 'A company or startup' },
+  { prompt: 'Got it. What should we call this contest for a company or startup?', answer: 'Fintech startup' },
+  { prompt: 'How many people will vote?', answer: 'Up to 45 voters · $19' },
+  ...SIM_BRIEF.map((q) => ({ prompt: q.prompt, answer: SIM_ANSWERS[q.id] || '' })),
 ];
-const FIRST_USER_IDX = SIM_SCRIPT.findIndex((m) => m.role === 'user');
 
-function HeroBriefSim() {
-  const [shown, setShown] = useState(0);      // messages revealed so far
+// The hero's demo: a simple bot↔you chat that walks the real setup questions,
+// then rests on a clickable "start a contest" nudge. One cancellable async
+// timeline so it can't double-run under StrictMode / HMR.
+function HeroBriefSim({ onStart }) {
+  const [items, setItems] = useState([]);
   const [typing, setTyping] = useState(false);
-  const [leaving, setLeaving] = useState(false);
+  const [done, setDone] = useState(false);
   const chatRef = useRef(null);
 
   useEffect(() => {
-    let t;
-    if (leaving) {
-      t = setTimeout(() => { setShown(0); setLeaving(false); }, 700);
-    } else if (shown >= SIM_SCRIPT.length) {
-      t = setTimeout(() => setLeaving(true), 6200);
-    } else if (SIM_SCRIPT[shown].role === 'bot') {
+    let cancelled = false;
+    const timers = [];
+    const wait = (ms) => new Promise((res) => { timers.push(setTimeout(res, ms)); });
+    const push = (item) => { if (!cancelled) setItems((prev) => [...prev, item]); };
+    const bot = async (text) => {
       setTyping(true);
-      t = setTimeout(() => { setTyping(false); setShown(shown + 1); }, 1700);
-    } else {
-      t = setTimeout(() => setShown(shown + 1), 1400);
-    }
-    return () => clearTimeout(t);
-  }, [shown, leaving]);
+      await wait(1900);
+      if (cancelled) return;
+      setTyping(false);
+      push({ t: 'bot', text });
+      await wait(950);
+    };
+
+    (async () => {
+      await wait(500);
+      for (const s of SIM_STEPS) {
+        await bot(s.prompt);
+        push({ t: 'answer', text: s.answer });
+        await wait(1600);
+      }
+      await wait(400);
+      if (!cancelled) setDone(true);
+    })();
+
+    return () => { cancelled = true; timers.forEach(clearTimeout); };
+  }, []);
 
   // Smoothly follow the newest message, like a live thread scrolling.
   useEffect(() => {
     const el = chatRef.current;
     if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
-  }, [shown, typing]);
+  }, [items, typing, done]);
+
+  const goStart = (e) => { e.preventDefault(); onStart?.(); };
 
   return (
-    <div className="hero-sim" aria-hidden="true">
-      <div className={`hero-sim-chat${leaving ? ' is-leaving' : ''}`} ref={chatRef}>
-        {SIM_SCRIPT.slice(0, shown).map((m, i) =>
-          m.role === 'user' ? (
-            <div key={i} className="hsim-userrow">
-              <span className="hsim-bubble hsim-user">{m.text}</span>
-              {i === FIRST_USER_IDX
-                ? <img src={creatorProfile} className="hsim-avatar" alt="" />
-                : <span className="hsim-avatar hsim-avatar-blank" aria-hidden="true" />}
-            </div>
-          ) : (
-            <div key={i} className="hsim-bubble hsim-bot">{m.text}</div>
-          )
-        )}
-        {typing && (
-          <div className="hs-typing hsim-typing"><span /><span /><span /></div>
-        )}
-        {shown >= SIM_SCRIPT.length && (
-          <div className="hero-sim-live">
-            <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
-              <path d="M4 8.3l2.6 2.6L12 5.4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            Ready to launch
-          </div>
-        )}
+    <div className="hero-sim">
+      <div className="hero-sim-chat" ref={chatRef}>
+        <div className="hsim-flow v4">
+          {items.map((m, i) => {
+            if (m.t === 'bot') return <div key={i} className="v4-bubble">{m.text}</div>;
+            if (m.t === 'answer') return <div key={i} className="v4-bubble v4-bubble-user">{m.text}</div>;
+            return null;
+          })}
+          {typing && (
+            <div className="hs-typing hsim-typing"><span /><span /><span /></div>
+          )}
+          {done && (
+            <a href="#start" className="hsim-cta" onClick={goStart}>
+              Want to try the full process? <span className="hsim-cta-link">Start a contest <span className="hsim-cta-arrow">→</span></span>
+            </a>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -678,7 +689,7 @@ function Offerings({ onStart }) {
       <div className="section-head">
         <p className="eyebrow">Pick your path</p>
         <h2 className="h-display h2">Your name starts here</h2>
-        <p className="lede">Family group chat or Fortune 500 product launch—your contest is shaped to your group, your stakes, and what you’re naming.</p>
+        <p className="lede">Whether you’re naming a new company, a youth sports team, a WiFi network, or anything in between, NamingContest makes it easy to bring everyone together, stay organized, and find a name you love.</p>
       </div>
       <div className="offerings">
         {tiers.map(t => (
