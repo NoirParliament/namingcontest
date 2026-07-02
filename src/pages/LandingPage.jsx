@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, Link, Navigate } from 'react-router-dom';
 import personalDog from '../assets/personal-dog.png';
+import heroSportsScene from '../assets/a-sports-team.png';
 import teamPlayers from '../assets/team-players.png';
 import businessWoman from '../assets/business-woman.png';
 import sarahChen from '../assets/sarah-chen.png';
@@ -530,26 +531,88 @@ function HeroDecor() {
 /* ========== HERO ========== */
 function Hero({ onStart }) {
   return (
-    <header className="hero">
+    <header className="hero hero-split">
       <HeroDecor />
-      <HeroAnimation />
-      <div className="hero-inner">
-        <h1 className="h-display">
-          Run a naming contest <span className="em">without</span> the chaos
-        </h1>
-        <p className="sub">
-          Whether you’re naming a baby, a band, or a business, now it’s so easy to land on the name everyone backs.
-        </p>
-        <div className="cta-row">
-          <a href="#start" onClick={(e) => { e.preventDefault(); onStart(); }} className="btn btn-primary btn-lg">
-            Start a contest <span className="arrow">→</span>
-          </a>
-          <a href="#how" className="btn btn-secondary btn-lg">
-            See how it works
-          </a>
+      <div className="hero-bg-clip" aria-hidden="true">
+        <img src={heroSportsScene} className="hero-bg-illustration" alt="" />
+      </div>
+      <div className="hero-inner hero-inner-split">
+        <div className="hero-copy">
+          <h1 className="h-display">
+            Run a naming contest <span className="em">without</span> the chaos
+          </h1>
+          <p className="sub">
+            Skip the group chats and Google Sheets. Create a naming contest in minutes: invite participants, collect suggestions, vote on favorites, and crown a winner—all in one place.
+          </p>
+          <p className="sub">
+            Whether you’re naming a new company, a youth sports team, a WiFi network, or anything in between, NamingContest makes it easy to bring everyone together, stay organized, and find a name you love.
+          </p>
+          <div className="cta-row">
+            <a href="#start" onClick={(e) => { e.preventDefault(); onStart(); }} className="btn btn-primary btn-lg">
+              Start a contest <span className="arrow">→</span>
+            </a>
+            <a href="#how" className="btn btn-secondary btn-lg">
+              See how it works
+            </a>
+          </div>
+        </div>
+        <div className="hero-visual">
+          <HeroContestCard />
         </div>
       </div>
     </header>
+  );
+}
+
+// Static "live contest" mockup shown in the split hero — a leaderboard mid-vote
+// with a crowned winner, so visitors see the product's output at a glance.
+function HeroContestCard() {
+  const rows = [
+    { name: 'Brookside Rovers',    by: 'Marcus', votes: 18, pct: 100, win: true },
+    { name: 'North Park United',   by: 'Dan',    votes: 15, pct: 84 },
+    { name: 'Iron Boots FC',       by: 'Sam',    votes: 13, pct: 72 },
+    { name: 'Crown Heights AFC',   by: 'Ade',    votes: 11, pct: 61 },
+    { name: 'Riverside Wanderers', by: 'Priya',  votes: 9,  pct: 50 },
+    { name: 'The Brook Boys',      by: 'Tom',    votes: 8,  pct: 44 },
+  ];
+  return (
+    <div className="hero-card" aria-hidden="true">
+      <div className="hero-card-top">
+        <div>
+          <div className="hero-card-title">Sunday football crew</div>
+          <div className="hero-card-meta">15 names · 8 voters · 98 votes</div>
+        </div>
+        <span className="hero-card-status"><span className="hero-card-dot" />Voting</span>
+      </div>
+      <ul className="hero-card-list">
+        {rows.map((r, i) => (
+          <li key={i} className={`hero-card-row${r.win ? ' is-winner' : ''}`}>
+            <span className="hero-card-fill" style={{ width: `${r.pct}%` }} />
+            <span className="hero-card-rank">
+              {r.win ? (
+                <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+                  <path d="M1.6 5.2l3.1 2.6L8 2.6l3.3 5.2 3.1-2.6-1 7.2H2.6z" fill="currentColor" />
+                </svg>
+              ) : `#${i + 1}`}
+            </span>
+            <span className="hero-card-name">
+              <span className="hero-card-name-text">{r.name}</span>
+              <span className="hero-card-by">{r.by}</span>
+            </span>
+            <span className="hero-card-votes">{r.votes}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="hero-card-foot">
+        <span className="hero-card-avatars" aria-hidden="true">
+          <i style={{ background: '#a6dcb3' }} />
+          <i style={{ background: '#b3c4f0' }} />
+          <i style={{ background: '#fceebc' }} />
+          <i style={{ background: '#fadecc' }} />
+        </span>
+        <span className="hero-card-foot-text">8 people voting · closes in 3 days</span>
+      </div>
+    </div>
   );
 }
 
