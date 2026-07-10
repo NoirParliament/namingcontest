@@ -738,6 +738,40 @@ body.is-exiting {
   border: 1px solid transparent;
   box-shadow: 0 6px 20px -8px rgba(3, 3, 2, 0.22);
 }
+/* Skipped answers — ghosted outline pill instead of the solid dark bubble,
+   so a run of skipped questions reads as quiet, not like a wall of guilt. */
+.v4-bubble-user.v4-bubble-skipped {
+  background: transparent;
+  color: var(--v4-muted);
+  border: 1.5px dashed rgba(3, 3, 2, 0.28);
+  box-shadow: none;
+  font-weight: 500;
+}
+
+/* "Skip this question" — quiet text link under optional free-text inputs. */
+.v4-input-skip-link {
+  align-self: flex-start;
+  margin-top: 10px;
+  background: none;
+  border: none;
+  padding: 4px 2px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(3, 3, 2, 0.45);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(3, 3, 2, 0.18);
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+  opacity: 0;
+  animation: v4-fade-in 0.4s ease-out 0.25s forwards;
+}
+.v4-input-skip-link:hover {
+  color: rgba(3, 3, 2, 0.75);
+  text-decoration-color: rgba(3, 3, 2, 0.45);
+}
+
 .v4-bubble-user-icon {
   display: inline-flex;
   align-items: center;
@@ -4071,6 +4105,16 @@ input.v4-results-search-input::placeholder {
   opacity: 1;
   color: rgba(255, 255, 255, 0.85);
 }
+/* Skipped pill is transparent, so the white "Edit" hint would be invisible.
+   Recolor it muted-dark; hover reveal behaves like every other answer. */
+.v4-bubble-skipped .v4-bubble-edit-hint {
+  color: rgba(3, 3, 2, 0.5);
+  border-left-color: rgba(3, 3, 2, 0.15);
+}
+.v4-bubble-skipped:hover .v4-bubble-edit-hint,
+.v4-bubble-skipped:focus-visible .v4-bubble-edit-hint {
+  color: rgba(3, 3, 2, 0.7);
+}
 
 /* ============================================
    EDIT BLOCK — input affordance shown in place
@@ -4393,6 +4437,13 @@ input.v4-results-search-input::placeholder {
   font-weight: 500;
   color: var(--v4-muted);
   letter-spacing: 0;
+}
+
+/* Skipped brief answers in review — grey italic "Skipped" instead of a
+   value; the row stays clickable so the creator can fill it in before launch. */
+.v4-review-row-value.v4-review-row-skipped {
+  color: rgba(3, 3, 2, 0.4);
+  font-style: italic;
 }
 
 .v4-review-launch {

@@ -128,10 +128,26 @@ const SECTION_BREAK = {
   prompt: 'A few quick settings',
 };
 
+// Intro shown once, right before the brief questions begin (every tier and
+// segment) — sets the "everything from here is optional" expectation.
+// Rendered as a plain bot bubble (variant), not the small badge divider,
+// and held a beat longer so two sentences can actually be read.
+const BRIEF_INTRO = {
+  id: '_briefIntro',
+  section: '_meta',
+  type: 'narrator',
+  variant: 'bubble',
+  hold: 2800,
+  prompt: `Answer as many or as few questions as you'd like. We'll use your responses to create a clear set of guidelines for your contest participants.`,
+};
+
 // Display helper for compound answers
 function answerToDisplay(value) {
   if (value === true) return 'Yes';
   if (value === false) return 'No';
+  // Optional questions can be submitted empty ("answer as many or as few
+  // as you'd like") — label the reply bubble instead of leaving it blank.
+  if (value === '') return 'Skipped';
   if (value === '[configure-later]') return 'Configure after launch';
   // Multi-select chips → array of strings
   if (Array.isArray(value)) {
@@ -176,7 +192,13 @@ function persistAnswer(question, value) {
     return writeSetup({ voterTier: value });
   }
   if (question.section === 'brief') {
-    return writeSetup({ brief: { ...(current.brief || {}), [question.id]: value } });
+    // Skipped (empty) answers aren't stored — and editing an answer down to
+    // empty removes the previously stored value, so storage always mirrors
+    // what the creator actually provided.
+    const brief = { ...(current.brief || {}) };
+    if (value === '') delete brief[question.id];
+    else brief[question.id] = value;
+    return writeSetup({ brief });
   }
   if (question.section === 'settings') {
     return writeSetup({ settings: { ...(current.settings || {}), [question.id]: value } });
@@ -212,7 +234,7 @@ export default function BriefChat() {
 
     const brief = getQuestionsFor(subId, null).map((q) => ({ ...q, section: 'brief' }));
     const settings = SHARED_SETTINGS_QUESTIONS.map((q) => ({ ...q, section: 'settings' }));
-    list.push(...brief, SECTION_BREAK, ...settings);
+    list.push(BRIEF_INTRO, ...brief, SECTION_BREAK, ...settings);
     return list;
   }, [subId, initial]);
 
@@ -289,7 +311,7 @@ export default function BriefChat() {
           { question: currentQ, answer: null, display: null, article: null },
         ]);
         setIdx((i) => i + 1);
-      }, NARRATOR_HOLD);
+      }, currentQ.hold || NARRATOR_HOLD);
       return () => { clearTimeout(t1); clearTimeout(t2); };
     }
 
@@ -598,8 +620,12 @@ function HistoryTurn({ turn, isEditing, onStartEdit, onEditSubmit, onCancelEdit,
   const isNarrator = question.type === 'narrator';
   const isSegment = question.section === 'segment';
 
-  // Narrator (section break) — proper visual divider, not editable
+  // Narrator — not editable. Bubble variant (pre-brief intro) stays a plain
+  // bot bubble in history; section break keeps the badge divider.
   if (isNarrator) {
+    if (question.variant === 'bubble') {
+      return <div className="v4-bubble">{question.prompt}</div>;
+    }
     return (
       <SectionBreak
         text={question.prompt}
@@ -636,7 +662,7 @@ function HistoryTurn({ turn, isEditing, onStartEdit, onEditSubmit, onCancelEdit,
       {!isSegment && (
         <button
           type="button"
-          className="v4-bubble-user v4-bubble-editable"
+          className={`v4-bubble-user v4-bubble-editable${answer === '' ? ' v4-bubble-skipped' : ''}`}
           onClick={onStartEdit}
           aria-label={`Edit answer to: ${question.label || question.prompt}`}
         >
@@ -655,9 +681,13 @@ function HistoryTurn({ turn, isEditing, onStartEdit, onEditSubmit, onCancelEdit,
 function CurrentQuestion({ question, article, phase, userReply, onSubmit }) {
   const isNarrator = question.type === 'narrator';
 
-  // Narrator — visual divider, no input
+  // Narrator — no input. Two flavors: the badge divider (section break)
+  // and the plain-bubble variant (the pre-brief intro line).
   if (isNarrator) {
-    return phase >= 1 ? <SectionBreak text={question.prompt} /> : null;
+    if (phase < 1) return null;
+    return question.variant === 'bubble'
+      ? <div className="v4-bubble">{question.prompt}</div>
+      : <SectionBreak text={question.prompt} />;
   }
 
   return (
@@ -689,8 +719,8 @@ function CurrentQuestion({ question, article, phase, userReply, onSubmit }) {
       )}
 
       {userReply !== null && question.section !== 'segment' && (
-        <div className="v4-bubble v4-bubble-user">
-          <span>{typeof userReply === 'string' ? userReply : answerToDisplay(userReply)}</span>
+        <div className={`v4-bubble v4-bubble-user${userReply === '' ? ' v4-bubble-skipped' : ''}`}>
+          <span>{typeof userReply === 'string' ? (userReply === '' ? 'Skipped' : userReply) : answerToDisplay(userReply)}</span>
         </div>
       )}
     </>

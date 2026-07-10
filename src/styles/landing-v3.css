@@ -312,7 +312,7 @@
 .lp-v3 .hero-sim-live svg{color:#25a259;flex:none}
 @keyframes hsPop{from{opacity:0;transform:translateY(10px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes hsDot{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
-@media (prefers-reduced-motion:reduce){.lp-v3 .hsim-bubble,.lp-v3 .hs-typing,.lp-v3 .hero-sim-live{animation:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.lp-v3 .hsim-bubble,.lp-v3 .hs-typing,.lp-v3 .hero-sim-live,.lp-v3 .hero-card-race .hero-card-row{animation:none;opacity:1}.lp-v3 .hero-card-slot{transition:none}}
 
 .lp-v3 .hero-inner-split{width:100%;padding:clamp(52px,5vw,76px) var(--s-8) clamp(120px,15vw,180px)}
 
@@ -371,27 +371,80 @@
   box-shadow:0 24px 60px rgba(60,40,20,.13),0 3px 10px rgba(60,40,20,.06);
   padding:22px;
 }
-.lp-v3 .hero-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-.lp-v3 .hero-card-title{font-family:var(--font-display);font-weight:500;font-size:20px;line-height:1.1;color:var(--fg)}
+.lp-v3 .hero-card-top{display:flex;align-items:center;gap:10px}
+.lp-v3 .hero-card-badge{
+  flex:none;width:34px;height:34px;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--race-badge-bg,#bce5c8);color:var(--race-fg,#1f5430);
+  transition:background .5s ease,color .5s ease;
+}
+.lp-v3 .hero-card-title{font-family:var(--font-display);font-weight:500;font-size:20px;line-height:1.1;color:var(--fg);animation:raceTitleIn .45s ease both}
+/* Constant category tag, top-right — eyebrow treatment, deliberately muted. */
+.lp-v3 .hero-card-tag{
+  margin-left:auto;flex:none;
+  font-family:var(--font-text);font-size:10.5px;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;color:rgba(3,3,2,.38);
+}
+@keyframes raceTitleIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 .lp-v3 .hero-card-meta{font-family:var(--font-text);font-size:12px;color:rgba(0,0,0,.5);margin-top:4px}
-.lp-v3 .hero-card-status{flex:none;display:inline-flex;align-items:center;gap:6px;font-family:var(--font-text);font-size:11.5px;font-weight:600;letter-spacing:.02em;color:#1c7a42;background:#e6f5ec;padding:5px 11px;border-radius:999px}
-.lp-v3 .hero-card-dot{width:6px;height:6px;border-radius:50%;background:#25a259}
 .lp-v3 .hero-card-list{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:7px}
 .lp-v3 .hero-card-row{position:relative;display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:13px;background:#f4f2ee;overflow:hidden;isolation:isolate}
-.lp-v3 .hero-card-fill{position:absolute;left:0;top:0;bottom:0;z-index:-1;background:#e9e7e1}
-.lp-v3 .hero-card-row.is-winner{background:#dff0e4}
-.lp-v3 .hero-card-row.is-winner .hero-card-fill{background:#c8e7d2}
-.lp-v3 .hero-card-rank{flex:none;width:22px;text-align:center;font-family:var(--font-text);font-size:12px;font-weight:600;color:rgba(0,0,0,.4);display:inline-flex;align-items:center;justify-content:center}
-.lp-v3 .hero-card-row.is-winner .hero-card-rank{color:#1c7a42}
+.lp-v3 .hero-card-fill{position:absolute;left:0;top:0;bottom:0;z-index:-1;background:var(--race-fill,#e9e7e1)}
+.lp-v3 .hero-card-row.is-winner{background:var(--race-win-bg,#dff0e4)}
+.lp-v3 .hero-card-row.is-winner .hero-card-fill{background:var(--race-win-fill,#c8e7d2)}
+.lp-v3 .hero-card-rank{flex:none;width:22px;text-align:center;font-family:var(--font-text);font-size:12px;font-weight:600;color:rgba(0,0,0,.4);display:inline-flex;align-items:center;justify-content:center;transition:color .3s ease}
+.lp-v3 .hero-card-row.is-leading .hero-card-rank{color:var(--race-accent,#3f8850)}
+.lp-v3 .hero-card-row.is-winner .hero-card-rank{color:var(--race-fg,#1c7a42)}
+.lp-v3 .hero-card-row.is-winner .hero-card-votes{color:var(--race-fg,#1c7a42)}
 .lp-v3 .hero-card-name{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2}
 .lp-v3 .hero-card-name-text{font-family:var(--font-text);font-size:14px;font-weight:600;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lp-v3 .hero-card-by{font-family:var(--font-text);font-size:11.5px;color:rgba(0,0,0,.45);margin-top:1px}
 .lp-v3 .hero-card-votes{flex:none;font-family:var(--font-text);font-size:14px;font-weight:600;color:var(--fg);font-variant-numeric:tabular-nums}
 .lp-v3 .hero-card-foot{display:flex;align-items:center;gap:10px;margin-top:15px;padding-top:14px;border-top:1px solid rgba(0,0,0,.06)}
-.lp-v3 .hero-card-avatars{display:inline-flex;flex:none}
-.lp-v3 .hero-card-avatars i{width:20px;height:20px;border-radius:50%;border:2px solid #fffdfa;margin-left:-6px}
+.lp-v3 .hero-card-avatars{display:inline-flex;flex:none;align-items:center}
+/* Facepile: 16px face circle + 2px surface ring = 20px footprint, ~30%
+   overlap, left-most on top via inline z-index. The ring keeps overlapping
+   circles cleanly separated; face zoom + backfill come inline per avatar. */
+.lp-v3 .hero-card-avatars i{
+  position:relative;display:block;width:16px;height:16px;border-radius:50%;
+  border:2px solid #fffdfa;box-sizing:content-box;margin-left:-6px;
+}
 .lp-v3 .hero-card-avatars i:first-child{margin-left:0}
-.lp-v3 .hero-card-foot-text{font-family:var(--font-text);font-size:12px;color:rgba(0,0,0,.5)}
+.lp-v3 .hero-card-foot-text{font-family:var(--font-text);font-size:12px;color:rgba(0,0,0,.5);transition:opacity .5s ease}
+
+/* Vote race (v7) — rows live in absolutely-positioned slots; a rank change
+   slides the slot, so overtakes read as one smooth swap. The inner row
+   carries the hsPop entrance (split from the slot so the two transforms
+   can't fight). Entrance uses fill-mode BACKWARDS (not forwards) so the
+   crowned-phase opacity dim below can win once the pop has played. */
+.lp-v3 .hero-card-race{position:relative;margin-top:16px;height:calc(56px*4 + 7px*3);transition:opacity .5s ease}
+.lp-v3 .hero-card-slot{position:absolute;left:0;right:0;height:56px;transition:transform .6s cubic-bezier(.22,1,.36,1)}
+.lp-v3 .hero-card-race .hero-card-row{
+  height:100%;
+  animation:hsPop .5s cubic-bezier(.34,1.56,.64,1) backwards;
+  transition:background .45s ease,opacity .45s ease,transform .45s cubic-bezier(.34,1.56,.64,1),box-shadow .45s ease;
+}
+/* Crown beat: losers recede, the winner lifts on an accent shadow and its
+   fill sweeps to full. */
+.lp-v3 .hero-card-race.is-crowned .hero-card-row:not(.is-winner){opacity:.55}
+.lp-v3 .hero-card-race .hero-card-row.is-winner{transform:translateY(-2px);box-shadow:0 10px 22px var(--race-shadow,rgba(63,136,80,.24))}
+.lp-v3 .hero-card-fill{transition:width .3s ease}
+.lp-v3 .hero-card-row.is-winner .hero-card-fill{transition:width .8s cubic-bezier(.22,1,.36,1)}
+.lp-v3 .hero-card-rank{font-size:13px}
+.lp-v3 .hero-card-avatars i{background-size:260%;background-repeat:no-repeat}
+/* The crown drops onto the winning row with the hero's spring, then its
+   sparks twinkle on the same sparkle loop the old hero crown used. It sits
+   on the SLOT (the row clips overflow), perched on the top-left corner. */
+.lp-v3 .race-crown{position:absolute;top:-11px;left:-5px;z-index:2;font-size:20px;line-height:1;pointer-events:none;animation:raceCrownIn .5s cubic-bezier(.34,1.56,.64,1) both}
+.lp-v3 .race-crown-icon{display:block;transform:rotate(-14deg);filter:drop-shadow(0 2px 5px rgba(0,0,0,.18))}
+.lp-v3 .race-spark{position:absolute;font-size:9px;color:var(--race-accent,#3f8850);opacity:0}
+.lp-v3 .race-spark.s1{top:-6px;left:-10px;animation:sparkle 1.4s ease-out .15s infinite}
+.lp-v3 .race-spark.s2{top:-8px;right:-11px;animation:sparkle 1.4s ease-out .45s infinite}
+.lp-v3 .race-spark.s3{top:16px;right:-14px;animation:sparkle 1.4s ease-out .75s infinite}
+@keyframes raceCrownIn{0%{opacity:0;transform:translateY(-14px) scale(.4) rotate(-30deg)}62%{opacity:1;transform:translateY(1px) scale(1.14) rotate(4deg)}100%{opacity:1;transform:translateY(0) scale(1) rotate(0)}}
+/* Round handoff — results + live total fade, header stays put. */
+.lp-v3 .hero-card.is-leaving .hero-card-race,
+.lp-v3 .hero-card.is-leaving .hero-card-foot-text{opacity:0}
 
 @media (max-width:860px){
   .lp-v3 .hero-inner-split{grid-template-columns:1fr;text-align:center;gap:44px}

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, Link, Navigate } from 'react-router-dom';
+import { MusicNote, PawPrint, Buildings } from '@phosphor-icons/react';
 import personalDog from '../assets/personal-dog.png';
 import heroOfficeScene from '../assets/planning.png';
 import teamPlayers from '../assets/team-players.png';
@@ -557,22 +558,22 @@ function Hero({ onStart }) {
           </div>
         </div>
         <div className="hero-visual">
-          <HeroBriefSim onStart={onStart} />
+          <HeroVoteRace />
         </div>
       </div>
     </header>
   );
 }
 
-// The real b1 (company) brief, exactly as the live chat resolves it after
-// cuts/merges: projectSummary(+guide) · namingStyle(+guide) · targetAudience ·
-// competitors(+guide). Pulled from the same source of truth so it can't drift.
-const SIM_BRIEF = getQuestionsFor('b1', null);
+// The real b1 (company) brief questions, pulled from the same source of
+// truth as the live chat so the demo can't drift. The full set is 10
+// questions now — the reel walks just the first few so it stays short.
+const SIM_BRIEF = getQuestionsFor('b1', null).slice(0, 4);
 const SIM_ANSWERS = {
+  namingTarget: 'A brand-new company.',
   projectSummary: 'AI project management for distributed engineering teams.',
-  namingStyle: 'Suggestive',
-  targetAudience: 'Non-technical SMB owners, 35–55.',
-  competitors: 'Asana, Monday, ClickUp, Notion.',
+  nameCommunicate: 'Clarity, momentum, calm under pressure.',
+  brandPersonality: 'Professional, bold, approachable.',
 };
 // The whole walk-through: three synthetic openers (kind of naming, working
 // name, voter package) then the real brief questions. Every answer is just a
@@ -580,7 +581,7 @@ const SIM_ANSWERS = {
 const SIM_STEPS = [
   { prompt: 'Let’s set up your business contest. First — which kind of naming is this?', answer: 'A company or startup' },
   { prompt: 'Got it. What should we call this contest for a company or startup?', answer: 'Fintech startup' },
-  { prompt: 'How many people will vote?', answer: 'Up to 45 voters · $19' },
+  { prompt: 'How many people will vote?', answer: 'Up to 30 voters · $19' },
   ...SIM_BRIEF.map((q) => ({ prompt: q.prompt, answer: SIM_ANSWERS[q.id] || '' })),
 ];
 
@@ -647,6 +648,273 @@ function HeroBriefSim({ onStart }) {
             </a>
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+/* ========== HERO VOTE RACE (v7) ========== */
+// The hero's demo: a live leaderboard. Four name candidates race on votes,
+// ranks swap mid-count, and the leader gets crowned — then the card hands
+// off to the next tier's contest (group → personal → business) with fresh
+// names and that tier's accent color. Reads instantly as "people vote on
+// names, one wins" — and quietly shows the product works for companies,
+// pets, and bands alike.
+const RACE_SCENARIOS = [
+  {
+    id: 'group',
+    title: 'Indie band',
+    // Segment icons — the SAME ones the segment picker cards use (MusicNote
+    // for a band, PawPrint for a pet, Buildings for a company); tier tones
+    // for color.
+    Icon: MusicNote,
+    theme: {
+      '--race-fg': '#283b78', '--race-accent': '#4b68c3',
+      '--race-badge-bg': '#c4cff5', '--race-fill': '#dae2f8',
+      '--race-win-bg': '#e0e7f8', '--race-win-fill': '#cbd6f3',
+      '--race-shadow': 'rgba(75,104,195,.22)',
+    },
+    names: ['Velvet Static', 'Paper Tigers', 'Night Harbor', 'The Half Moons', 'Glass Atlas', 'Low Tide Club', 'Neon Prairie', 'Hazel Motors'],
+  },
+  {
+    id: 'personal',
+    title: 'Rescue dog',
+    Icon: PawPrint,
+    theme: {
+      '--race-fg': '#9c4818', '--race-accent': '#b25620',
+      '--race-badge-bg': '#fadecc', '--race-fill': '#f7ddc7',
+      '--race-win-bg': '#fbe7d5', '--race-win-fill': '#f5d5ba',
+      '--race-shadow': 'rgba(178,86,32,.22)',
+    },
+    names: ['Biscuit', 'Mochi', 'Juniper', 'Waffles', 'Peanut', 'Maple', 'Ziggy', 'Olive'],
+  },
+  {
+    id: 'business',
+    title: 'Fintech startup',
+    Icon: Buildings,
+    theme: {
+      '--race-fg': '#1f5430', '--race-accent': '#3f8850',
+      '--race-badge-bg': '#bce5c8', '--race-fill': '#d3ead9',
+      '--race-win-bg': '#dff0e4', '--race-win-fill': '#c8e7d2',
+      '--race-shadow': 'rgba(63,136,80,.24)',
+    },
+    names: ['Spire', 'Helix', 'Vantage', 'Cobalt', 'Lumen', 'Atlas', 'Northwind', 'Verge'],
+  },
+];
+const RACE_BY_POOL = ['Maya', 'Jonas', 'Priya', 'Leo', 'Sofia', 'Marcus', 'Elena', 'Tom'];
+const RACE_ROW_STEP = 63; // 56px row + 7px gap — keep in sync with the CSS
+
+// Footer avatar cluster — three circular face crops at equal visual weight.
+// Zoom + position are per-image: heads are different sizes in the source
+// photos (the bassist stands further from camera), so a shared zoom makes
+// faces look unevenly cropped. Blob color backfills transparent slivers.
+const RACE_AVATARS = [
+  { img: heroProfile1, size: '220%', pos: '46% 0%', bg: '#a6dcb3' },
+  { img: heroProfile3, size: '260%', pos: '29% 13%', bg: '#adbfee' },
+  { img: heroProfile5, size: '220%', pos: '50% 0%', bg: '#f9ded1' },
+];
+
+function HeroVoteRace() {
+  const [rows, setRows] = useState([]); // {key, name, by, final, votes}
+  const [phase, setPhase] = useState('waiting'); // waiting | racing | crowned | leaving
+  const [scen, setScen] = useState(RACE_SCENARIOS[0]);
+  // Submission pool this round — the leaderboard only shows the top 4, so
+  // the footer hints at the bigger pool. Participants each submit ~3 names
+  // (matches the real contest mechanics), so the two numbers stay plausible.
+  const [pool, setPool] = useState({ subs: 0, people: 0 });
+
+  useEffect(() => {
+    let cancelled = false;
+    const timers = [];
+    // Cancelled waits never resolve (their timeout is cleared), which
+    // parks the loop for good — same pattern as HeroBriefSim.
+    const wait = (ms) => new Promise((res) => { timers.push(setTimeout(res, ms)); });
+
+    // Per-scenario memory so a returning scenario doesn't repeat the same
+    // four names it showed last time around.
+    const lastNamesByScen = {};
+    let roundKey = 0;
+
+    const pickNames = (scenario) => {
+      const last = lastNamesByScen[scenario.id] || [];
+      const pool = scenario.names.filter((n) => !last.includes(n));
+      const picked = [];
+      while (picked.length < 4) {
+        const n = pool[Math.floor(Math.random() * pool.length)];
+        if (!picked.includes(n)) picked.push(n);
+      }
+      lastNamesByScen[scenario.id] = picked;
+      return picked;
+    };
+
+    (async () => {
+      await wait(500);
+      while (!cancelled) {
+        // Next tier's contest — theme + names swap together, in the gap
+        // between rounds, so there's never a half-themed frame.
+        const scenario = RACE_SCENARIOS[roundKey % RACE_SCENARIOS.length];
+        setScen(scenario);
+        const names = pickNames(scenario);
+        const people = [...RACE_BY_POOL].sort(() => Math.random() - 0.5).slice(0, 4);
+
+        // The round's arithmetic stays internally consistent: 14-19
+        // participants submit at most 3 names each, and the total votes on
+        // screen equal the submission count (everyone votes as much as
+        // they submitted), so the footer and the rows always add up.
+        const poolPeople = 14 + Math.floor(Math.random() * 6);
+        const subsCount = poolPeople * 3 - Math.floor(Math.random() * 3);
+        // Split exactly subsCount votes across the four finalists —
+        // winner ~35%, runner-up 2-3 behind, the rest trailing.
+        const winnerFinal = Math.round(subsCount * 0.35);
+        const secondFinal = winnerFinal - (2 + Math.floor(Math.random() * 2));
+        const thirdFinal = Math.round(subsCount * 0.2);
+        const finals = [
+          winnerFinal,
+          secondFinal,
+          thirdFinal,
+          subsCount - winnerFinal - secondFinal - thirdFinal,
+        ];
+        // Per-row pacing: the eventual winner starts slow and finishes
+        // strong while the runner-up sprints early — guarantees a visible
+        // lead swap mid-race without ever faking the totals.
+        const profiles = [
+          (p) => Math.pow(p, 1.7),
+          (p) => 1 - Math.pow(1 - p, 2.2),
+          (p) => p,
+          (p) => 1 - Math.pow(1 - p, 1.5),
+        ];
+        const base = names.map((name, i) => ({
+          key: `${roundKey}-${i}`,
+          name,
+          by: people[i],
+          final: finals[i],
+          profile: profiles[i],
+        }));
+        roundKey += 1;
+
+        if (cancelled) return;
+        setRows(base.map((r) => ({ ...r, votes: 0 })));
+        setPool({ people: poolPeople, subs: subsCount });
+        setPhase('racing');
+        await wait(700); // let the pop-in land before counting starts
+
+        // Organic tick loop — variable 140-260ms batches, like the live app.
+        const RACE_MS = 5200;
+        const start = Date.now();
+        for (;;) {
+          if (cancelled) return;
+          const p = Math.min(1, (Date.now() - start) / RACE_MS);
+          setRows(base.map((r) => ({ ...r, votes: Math.round(r.final * r.profile(p)) })));
+          if (p >= 1) break;
+          await wait(140 + Math.random() * 120);
+        }
+
+        await wait(450); // dramatic breath, then the crown
+        if (cancelled) return;
+        setPhase('crowned');
+        await wait(2600);
+        if (cancelled) return;
+        setPhase('leaving');
+        await wait(550);
+      }
+    })();
+
+    return () => { cancelled = true; timers.forEach(clearTimeout); };
+  }, []);
+
+  // Rank by current votes; ties break on final totals so order never jitters.
+  const ranked = [...rows].sort((a, b) => (b.votes - a.votes) || (b.final - a.final));
+  const rankOf = {};
+  ranked.forEach((r, i) => { rankOf[r.key] = i; });
+  const maxVotes = Math.max(1, ...rows.map((r) => r.final));
+  const total = rows.reduce((s, r) => s + r.votes, 0);
+  const crowned = phase === 'crowned' || phase === 'leaving';
+  const ScenIcon = scen.Icon;
+
+  return (
+    <div
+      className={`hero-card${phase === 'leaving' ? ' is-leaving' : ''}`}
+      style={scen.theme}
+      aria-hidden="true"
+    >
+      <div className="hero-card-top">
+        <span className="hero-card-badge">
+          <ScenIcon weight="duotone" size={18} />
+        </span>
+        {/* Keyed by scenario so the title fades in with each handoff. */}
+        <div className="hero-card-title" key={scen.id}>{scen.title}</div>
+        {/* Constant muted tag — quietly answers "what is this card?"
+            without repeating it in every rotating title. */}
+        <span className="hero-card-tag">Naming contest</span>
+      </div>
+      <div className={`hero-card-race${crowned ? ' is-crowned' : ''}`}>
+        {rows.map((r, i) => {
+          const rank = rankOf[r.key] ?? i;
+          const isWinner = crowned && rank === 0;
+          const isLeading = !crowned && rank === 0 && r.votes > 0;
+          // Whoever holds first place carries the full labels ("Suggested
+          // by …", "N votes") — they migrate to the new leader on overtakes.
+          const isTop = isWinner || isLeading;
+          return (
+            // Outer slot slides on rank change; inner row pops in — split so
+            // the hsPop transform animation can't fight the slide transform.
+            <div
+              key={r.key}
+              className="hero-card-slot"
+              style={{ transform: `translateY(${rank * RACE_ROW_STEP}px)` }}
+            >
+              <div
+                className={`hero-card-row${isWinner ? ' is-winner' : ''}${isLeading ? ' is-leading' : ''}`}
+                style={{ animationDelay: `${i * 90}ms` }}
+              >
+                <span
+                  className="hero-card-fill"
+                  style={{ width: isWinner ? '100%' : `${(r.votes / maxVotes) * 92}%` }}
+                />
+                <span className="hero-card-rank">{rank + 1}</span>
+                <span className="hero-card-name">
+                  <span className="hero-card-name-text">{r.name}</span>
+                  {/* Only the leader carries attribution — other rows are
+                      just name + count, so first place is clearly the story. */}
+                  {isTop && <span className="hero-card-by">Suggested by {r.by}</span>}
+                </span>
+                <span className="hero-card-votes">{r.votes}{isTop ? ' votes' : ''}</span>
+              </div>
+              {/* Crown lives on the slot, not the row — the row clips its
+                  overflow for the fill's rounded corners and would cut the
+                  crown off mid-drop. */}
+              {isWinner && (
+                <span className="race-crown">
+                  <span className="race-crown-icon">👑</span>
+                  <span className="race-spark s1">✦</span>
+                  <span className="race-spark s2">✦</span>
+                  <span className="race-spark s3">✦</span>
+                </span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <div className="hero-card-foot">
+        <span className="hero-card-avatars">
+          {RACE_AVATARS.map((a, i) => (
+            <i
+              key={i}
+              style={{
+                backgroundImage: `url(${a.img})`,
+                backgroundSize: a.size,
+                backgroundPosition: a.pos,
+                backgroundColor: a.bg,
+                zIndex: RACE_AVATARS.length - i, // left-most on top, standard stack order
+              }}
+            />
+          ))}
+        </span>
+        <span className="hero-card-foot-text">
+          {crowned
+            ? `Winner crowned after ${total} votes`
+            : `${pool.subs} names submitted by ${pool.people} participants`}
+        </span>
       </div>
     </div>
   );
@@ -732,7 +1000,7 @@ function HowItWorks() {
     <section className="section" id="how">
       <div className="section-head">
         <p className="eyebrow">The four steps</p>
-        <h2 className="h-display h2">From brief to winner</h2>
+        <h2 className="h-display h2">From launch to winning name</h2>
         <p className="lede">Swap Google Forms, Excel, and endless email threads for a platform actually meant for naming.</p>
       </div>
 
@@ -740,13 +1008,13 @@ function HowItWorks() {
         {/* 01 BRIEF */}
         <div className="why-item" data-tone="butter">
           <div className="why-text">
-            <div className="step-mark"><span className="step-num">01</span><span className="step-label">Brief</span></div>
-            <h3>Build a brief</h3>
-            <p>Pick a type, answer a few questions, the brief writes itself.</p>
+            <div className="step-mark"><span className="step-num">01</span><span className="step-label">Setup</span></div>
+            <h3>Answer questions</h3>
+            <p>Pick what you’re naming, answer a few quick questions, and you’re set.</p>
           </div>
           <div className="why-art">
             <div className="artifact art-brief">
-              <div className="a-head">New Contest · Brief</div>
+              <div className="a-head">New Contest · Setup</div>
               <div className="row"><span className="lbl">Brand</span><span className="val">Specialty coffee</span></div>
               <div className="row"><span className="lbl">Audience</span><span className="chip-row"><span className="mini-chip">Home brewers</span></span></div>
               <div className="row"><span className="lbl">Tone</span><span className="chip-row"><span className="mini-chip">Honest</span><span className="mini-chip">Warm</span></span></div>
@@ -974,7 +1242,7 @@ function FAQ() {
     },
     {
       q: 'What does it cost?',
-      a: <p className="faq-a">The price depends only on how many people you invite to vote: $9 for up to 15 voters, $19 for 30, or $39 for 60. You pay once per contest, with no subscription. Every contest includes the full naming method and guides.</p>
+      a: <p className="faq-a">The price depends only on how many people you invite to vote: $9 for up to 10 voters, $19 for 30, or $39 for 90. You pay once per contest, with no subscription. Every contest includes the full naming method and guides.</p>
     },
   ];
   return (

@@ -54,7 +54,8 @@ export const VOTER_ACTIONS = {
 
 export const FIELD_DEFS = {
   // Business
-  'business/company-name':       ['companyDesc', 'namingStyle', 'targetAudience', 'geoScope', 'competitors', 'submissionLimit', 'votingMethod', 'deadline'],
+  // b1 rewritten 2026-07-10 (client 10-question guide) — score the new ids.
+  'business/company-name':       ['namingTarget', 'nameCommunicate', 'brandPersonality', 'nameStyles', 'descriptiveEvocative', 'includeAvoid', 'admiredNames', 'practicalReqs'],
   'business/product-name':       ['prodDesc', 'parentBrand', 'architecture', 'primaryUser', 'differentiator', 'competitors', 'submissionLimit', 'deadline'],
   'business/project-name':       ['projDesc', 'projDuration', 'projNameType', 'submissionLimit', 'votingMethod', 'deadline'],
   'business/rebrand':            ['currentName', 'rebrandReason', 'companyDesc', 'namingStyle', 'competitors', 'submissionLimit', 'votingMethod', 'deadline'],
@@ -103,6 +104,15 @@ export const FIELD_LABELS = {
   projNameType: 'Name type',
   currentName: 'Current name',
   rebrandReason: 'Rebrand reason',
+  // b1 (company/startup) — 2026-07-10 client question set
+  nameCommunicate: 'What the name should communicate',
+  brandPersonality: 'Brand personality',
+  nameStyles: 'Name styles',
+  descriptiveEvocative: 'Descriptive vs evocative',
+  otherLanguages: 'Other languages',
+  includeAvoid: 'Include / avoid',
+  admiredNames: 'Admired names',
+  practicalReqs: 'Practical requirements',
   // Team
   sportLeague: 'Sport / league',
   ageGroup: 'Age group',

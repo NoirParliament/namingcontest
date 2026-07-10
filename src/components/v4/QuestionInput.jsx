@@ -31,8 +31,25 @@ const SEGMENT_ICONS = {
 export default function QuestionInput({ question, onSubmit, autoFocus = true }) {
   const { type } = question;
 
-  if (type === 'text')           return <TextInput question={question} onSubmit={onSubmit} autoFocus={autoFocus} />;
-  if (type === 'textarea')       return <TextareaInput question={question} onSubmit={onSubmit} autoFocus={autoFocus} />;
+  // Optional free-text questions get an explicit Skip affordance — the
+  // "answer as many or as few as you'd like" promise needs a visible way
+  // out, not just the secret empty-submit.
+  if (type === 'text') {
+    return (
+      <>
+        <TextInput question={question} onSubmit={onSubmit} autoFocus={autoFocus} />
+        {!question.required && <SkipLink onSkip={() => onSubmit('')} />}
+      </>
+    );
+  }
+  if (type === 'textarea') {
+    return (
+      <>
+        <TextareaInput question={question} onSubmit={onSubmit} autoFocus={autoFocus} />
+        {!question.required && <SkipLink onSkip={() => onSubmit('')} />}
+      </>
+    );
+  }
   if (type === 'chips')          return <ChipsInput question={question} onSubmit={onSubmit} />;
   if (type === 'multiChips')     return <MultiChipsInput question={question} onSubmit={onSubmit} />;
   if (type === 'radioCards')     return <RadioCardsInput question={question} onSubmit={onSubmit} />;
@@ -48,6 +65,15 @@ export default function QuestionInput({ question, onSubmit, autoFocus = true }) 
 
   // Heavy types not yet built — colorPicker, fileUpload, repeater
   return <DeferLaunchInput question={question} onSubmit={onSubmit} />;
+}
+
+// ── Skip link — shown under optional free-text inputs ───────────────
+function SkipLink({ onSkip }) {
+  return (
+    <button type="button" className="v4-input-skip-link" onClick={onSkip}>
+      Skip this question
+    </button>
+  );
 }
 
 // ── text (single line) ───────────────────────────────────────────────

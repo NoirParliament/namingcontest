@@ -97,8 +97,10 @@ export default function ReviewLaunch() {
     setEditTick((t) => t + 1);
   };
 
-  // Filter brief questions to only those that were answered
-  const filledBrief = briefQuestions.filter((q) => briefAnswers[q.id] !== undefined);
+  // Show every brief question — answered ones with their answer, skipped
+  // ones flagged (grey "Skipped") and still editable, so nothing silently
+  // vanishes and the creator can fill any gap right here before launch.
+  const isAnswered = (v) => v !== undefined && v !== null && v !== '';
   const filledSettings = SHARED_SETTINGS_QUESTIONS.filter((q) => settingsAnswers[q.id] !== undefined);
 
   // ?launch=1 (from the platform map) auto-opens the launch/checkout
@@ -130,11 +132,10 @@ export default function ReviewLaunch() {
   return (
     <div className="v4 lp-v3">
       <div className="v4-screen">
-        {/* Segment-themed backdrop — same blobs + scattered theme
-            icons + 2 anchor illustrations used by BriefChat, Manage,
-            Participant pages, etc. Review now reads as part of the
-            same family, washed in the segment's colours and props. */}
-        <SegmentThemeBackdrop subId={subId} />
+        {/* Per-segment soft glow + line-art scene — the same minimal backdrop
+            the winner/manage dashboard uses, so review reads as the same
+            world as the finish line. */}
+        <SegmentThemeBackdrop subId={subId} minimal />
 
         <main className="v4-review" role="main" ref={scrollRef}>
           {/* Glass nav — sticky inside review scroll */}
@@ -184,26 +185,31 @@ export default function ReviewLaunch() {
           {/* The brief — each row is now a button that opens the
               EditQuestionModal in place. The old "Edit" section link
               that bounced back to the brief chat is gone. */}
-          {filledBrief.length > 0 && (
+          {briefQuestions.length > 0 && (
             <section className="v4-review-section">
               <header className="v4-review-section-head">
                 <h2>Your brief</h2>
                 <span className="v4-review-section-hint">Click any answer to edit</span>
               </header>
               <ul className="v4-review-list v4-review-list-editable">
-                {filledBrief.map((q) => (
-                  <li key={q.id}>
-                    <button
-                      type="button"
-                      className="v4-review-row v4-review-row-edit"
-                      onClick={() => setEditingQuestion({ question: q, section: 'brief' })}
-                    >
-                      <span className="v4-review-row-label">{q.label}</span>
-                      <span className="v4-review-row-value">{formatAnswer(briefAnswers[q.id])}</span>
-                      <PencilSimple size={12} weight="bold" className="v4-review-row-edit-icon" />
-                    </button>
-                  </li>
-                ))}
+                {briefQuestions.map((q) => {
+                  const skipped = !isAnswered(briefAnswers[q.id]);
+                  return (
+                    <li key={q.id}>
+                      <button
+                        type="button"
+                        className="v4-review-row v4-review-row-edit"
+                        onClick={() => setEditingQuestion({ question: q, section: 'brief' })}
+                      >
+                        <span className="v4-review-row-label">{q.label}</span>
+                        <span className={`v4-review-row-value${skipped ? ' v4-review-row-skipped' : ''}`}>
+                          {skipped ? 'Skipped' : formatAnswer(briefAnswers[q.id])}
+                        </span>
+                        <PencilSimple size={12} weight="bold" className="v4-review-row-edit-icon" />
+                      </button>
+                    </li>
+                  );
+                })}
               </ul>
             </section>
           )}

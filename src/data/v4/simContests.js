@@ -413,13 +413,18 @@ export const SIM_CONTESTS = {
     settings: settings({
       customRequirements: { enabled: true, text: 'A .com or close variant should be gettable. Must work spoken aloud on a sales call.' },
     }),
+    // Brief keyed to the 2026-07-10 b1 question set (client 10-question guide).
     brief: {
+      namingTarget: 'A brand-new company — fintech for freelancers.',
       projectSummary: 'A fintech building simple cash-flow tools for freelancers and tiny businesses. Friendly, trustworthy, not corporate.',
-      companyDesc: "We build simple cash-flow forecasting and invoicing tools for freelancers and businesses under ten people. No accounting jargon — just a clear answer to “will I make rent next month?”",
-      namingStyle: 'suggestive',
-      targetAudience: "Freelancers and micro-business owners, 25–45, not finance-savvy, allergic to anything that feels like “enterprise software.”",
-      geoScope: 'Global / International',
-      competitors: 'QuickBooks, Wave, FreshBooks, Xero',
+      nameCommunicate: 'Calm and clarity — the feeling of finally being in control of your money.',
+      brandPersonality: 'Friendly, trustworthy, plain-spoken. Never corporate.',
+      nameStyles: 'Real words',
+      descriptiveEvocative: 'Evocative',
+      otherLanguages: 'Yes — open to it',
+      includeAvoid: 'Avoid anything with “ledger”, “books”, or crypto vibes. Competitors: QuickBooks, Wave, FreshBooks, Xero — don’t sound like them.',
+      admiredNames: 'Nest, Slack, Stripe — short, warm, confident, none of them describe the product literally.',
+      practicalReqs: 'A .com or close variant should be gettable. Must work spoken aloud on a sales call.',
     },
     allSubmissions: [
       { id: 'sim_b1_1',  text: 'Tally',      whyItFits: 'Counting made friendly; short, ownable, says the thing.', submitterName: 'Priya' },

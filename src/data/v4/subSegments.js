@@ -38,11 +38,15 @@ export const SUB_SEGMENTS = {
   },
   business: {
     label: 'business',
+    // 2026-07-10 client decision (Maria/Mark): business tier slimmed to two
+    // paths — product/initiative/rebrand naming all fold into the company
+    // brief's own description. b2–b4 kept below (commented) so they're
+    // restorable; their question sets/themes stay in the data files.
     options: [
       { id: 'b1', icon: 'Buildings',        tone: TONES.periwinkle, title: 'A company or startup',     body: 'Brand-new venture or established entity.' },
-      { id: 'b2', icon: 'Package',          tone: TONES.butter,     title: 'A product or service',     body: 'Software, physical good, or service offering.' },
-      { id: 'b3', icon: 'Target',           tone: TONES.blush,      title: 'A project or initiative',  body: 'Internal initiative, campaign, or program.' },
-      { id: 'b4', icon: 'ArrowsClockwise',  tone: TONES.mint,       title: 'A rebrand',                body: 'Refresh of an existing name.' },
+      // { id: 'b2', icon: 'Package',          tone: TONES.butter,     title: 'A product or service',     body: 'Software, physical good, or service offering.' },
+      // { id: 'b3', icon: 'Target',           tone: TONES.blush,      title: 'A project or initiative',  body: 'Internal initiative, campaign, or program.' },
+      // { id: 'b4', icon: 'ArrowsClockwise',  tone: TONES.mint,       title: 'A rebrand',                body: 'Refresh of an existing name.' },
       { id: 'b5', icon: 'PencilSimple',     tone: TONES.sky,        title: 'Something else',           body: 'Tell us about it in the brief.' },
     ],
   },
