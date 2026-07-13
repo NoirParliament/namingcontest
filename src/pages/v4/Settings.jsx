@@ -3,7 +3,7 @@
 // All "save" / "cancel plan" actions are mock for now; wire to real
 // backend (Supabase) and Stripe customer portal later.
 
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   X, EnvelopeSimple, User, CreditCard, Receipt, ArrowSquareOut,
@@ -16,6 +16,9 @@ import creatorProfile from '../../assets/creator-profile.png';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
 import { readSetup, writeSetup } from '../../utils/v4Brief';
+import { useAuth } from '../../lib/AuthContext';
+import { supabase } from '../../lib/supabaseClient';
+import UserAvatar from '../../components/v4/UserAvatar';
 import { readAllParticipations, getParticipantRow } from '../../utils/v4Participant';
 import { getMockContestById, MOCK_CONTESTS } from '../../data/v4/mockContests';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
@@ -117,12 +120,30 @@ export default function Settings() {
   const segmentTone = getSegmentTone(subId);
   const tierKey = setup.group || primaryJoined?.group || MOCK_ONGOING.tierKey;
 
-  // Account form state — photo + name + email, persisted to setup blob.
+  // Account identity now comes from the real session + profiles table.
+  // Email is read-only (it IS the sign-in identity). Display name loads
+  // from the profiles row and saves back to it, so it survives re-login.
+  const { user } = useAuth();
+  const email = user?.email || setup.userEmail || '';
   const [photo, setPhoto] = useState(setup.userPhoto || null);
-  const [email, setEmail] = useState(setup.userEmail || '');
   const [name, setName] = useState(setup.userName || '');
   const [savedFlash, setSavedFlash] = useState(false);
   const fileRef = useRef(null);
+
+  // Load the saved display name from the user's profile row on mount.
+  useEffect(() => {
+    if (!user?.id) return;
+    let active = true;
+    supabase
+      .from('profiles')
+      .select('display_name')
+      .eq('id', user.id)
+      .single()
+      .then(({ data }) => {
+        if (active && data?.display_name) setName(data.display_name);
+      });
+    return () => { active = false; };
+  }, [user?.id]);
 
   // Read uploaded image as a data URL → store it on the setup blob.
   // (Prototype-grade. In production, upload to Supabase Storage and
@@ -252,11 +273,16 @@ export default function Settings() {
     return { phase: 'Closed', daysLeft: 0 };
   }
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    // Email is read-only here — only the display name is editable
-    // through this form. (Photo persists on upload immediately.)
-    writeSetup({ userName: name.trim() });
+    // Email is read-only here — only the display name is editable.
+    // Persist to the real profile so it survives re-login; also mirror to
+    // the localStorage setup blob that other (still-mock) pages read.
+    const clean = name.trim();
+    if (user?.id) {
+      await supabase.from('profiles').update({ display_name: clean }).eq('id', user.id);
+    }
+    writeSetup({ userName: clean });
     setSavedFlash(true);
     setTimeout(() => setSavedFlash(false), 2200);
   };
@@ -290,10 +316,8 @@ export default function Settings() {
                 email={email}
                 name={name}
                 photo={photo}
-                /* Side-specific default profile picture: participant-profile
-                   when in participant mode (joined, no launched contest),
-                   creator-profile otherwise. A real upload still wins. */
-                defaultPhoto={!realContest && joinedRows.length > 0 ? participantProfile : creatorProfile}
+                /* No custom photo → generated avatar seeded by the user id. */
+                seed={user?.id}
                 tone={segmentTone}
                 activeContest={
                   currentContest
@@ -644,11 +668,11 @@ export default function Settings() {
                 aria-expanded={accountOpen}
               >
                 <span className="v4-settings-account-photo" aria-hidden="true">
-                  <img
-                    src={photo || (!realContest && joinedRows.length > 0 ? participantProfile : creatorProfile)}
-                    alt=""
-                    className={`v4-settings-account-photo-img ${photo ? 'is-custom' : 'is-default'}`}
-                  />
+                  {photo ? (
+                    <img src={photo} alt="" className="v4-settings-account-photo-img is-custom" />
+                  ) : (
+                    <UserAvatar seed={user?.id} size={40} />
+                  )}
                 </span>
                 <div className="v4-settings-account-meta">
                   <div className="v4-settings-account-name">
@@ -681,11 +705,11 @@ export default function Settings() {
                       }}
                       aria-label="Change profile photo"
                     >
-                      <img
-                        src={photo || (!realContest && joinedRows.length > 0 ? participantProfile : creatorProfile)}
-                        alt=""
-                        className={`v4-settings-photo-img ${photo ? 'is-custom' : 'is-default'}`}
-                      />
+                      {photo ? (
+                        <img src={photo} alt="" className="v4-settings-photo-img is-custom" />
+                      ) : (
+                        <UserAvatar seed={user?.id} size={96} />
+                      )}
                       <span className="v4-settings-photo-overlay" aria-hidden="true">
                         <Camera weight="duotone" size={20} />
                         <span>Change photo</span>

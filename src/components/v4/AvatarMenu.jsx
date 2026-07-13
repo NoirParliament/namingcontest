@@ -8,8 +8,9 @@ import { Gear, SignOut, ArrowRight, CaretDown } from '@phosphor-icons/react';
 import heroProfile1 from '../../assets/hero-profile-1.png';
 import { readAllParticipations } from '../../utils/v4Participant';
 import { supabase } from '../../lib/supabaseClient';
+import UserAvatar from './UserAvatar';
 
-export default function AvatarMenu({ email, name, photo, defaultPhoto, tone, activeContest }) {
+export default function AvatarMenu({ email, name, photo, defaultPhoto, seed, tone, activeContest }) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
   const navigate = useNavigate();
@@ -84,11 +85,16 @@ export default function AvatarMenu({ email, name, photo, defaultPhoto, tone, act
         aria-label="Account menu"
       >
         <span className="v4-avatar-photo-wrap" aria-hidden="true">
-          <img
-            src={photoSrc}
-            alt=""
-            className={`v4-avatar-photo ${isDefault ? 'is-default' : 'is-custom'}`}
-          />
+          {/* Real photo wins; otherwise the generated avatar (seeded by the
+              user id) — falling back to the legacy default image only for
+              callers that don't pass a seed yet. */}
+          {photo ? (
+            <img src={photo} alt="" className="v4-avatar-photo is-custom" />
+          ) : seed ? (
+            <UserAvatar seed={seed} size={28} />
+          ) : (
+            <img src={photoSrc} alt="" className={`v4-avatar-photo ${isDefault ? 'is-default' : 'is-custom'}`} />
+          )}
         </span>
         {/* Caret signals "this is a menu trigger, not just a photo".
             Rotates 180° when open for an extra clarity cue. */}

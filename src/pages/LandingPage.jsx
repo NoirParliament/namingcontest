@@ -146,7 +146,8 @@ export function Nav() {
               <AvatarMenu
                 email={authEmail}
                 name={authName}
-                photo={creatorProfile}
+                photo={setup.userPhoto || null}
+                seed={user?.id}
                 tone={segmentTone}
                 activeContest={activeContest}
               />
