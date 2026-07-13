@@ -24,6 +24,7 @@ import { getSegmentTone } from '../data/v4/segmentTheme';
 import AvatarMenu from '../components/v4/AvatarMenu';
 import SignInModal from '../components/v4/SignInModal';
 import { useAuth } from '../lib/AuthContext';
+import { supabase } from '../lib/supabaseClient';
 
 /* ========== ICONS ========== */
 const Star = () => <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.2 4.5 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7L8 1z"/></svg>;
@@ -116,18 +117,42 @@ export function Nav() {
   const isAuthed = !!user || !!(setup.userEmail || setup.contestId);
   const authEmail = user?.email || setup.userEmail;
   const authName = user?.user_metadata?.display_name || setup.userName || user?.email?.split('@')[0];
+
+  // A real user's latest contest, loaded from the DB, so the account menu can
+  // show it (and jump into it) from the homepage.
+  const [latestContest, setLatestContest] = useState(null);
+  useEffect(() => {
+    if (!user?.id) { setLatestContest(null); return; }
+    let active = true;
+    supabase
+      .from('contests')
+      .select('*')
+      .eq('creator_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => { if (active) setLatestContest(data || null); });
+    return () => { active = false; };
+  }, [user?.id]);
   const segmentTone = getSegmentTone(setup.subSegmentId || 'b1');
-  // Only the demo (localStorage) path shows a contest card here. A real
-  // signed-in user's contests come from the database (Phase 2), so we don't
-  // surface a stale mock contest for them.
-  const activeContest = (!user && setup.contestId)
+  // Real users → their latest DB contest (with its real phase). The demo
+  // (localStorage) path only applies when signed out.
+  const activeContest = latestContest
+    ? {
+        id: latestContest.id,
+        name: latestContest.working_name || 'Your contest',
+        phase: latestContest.status === 'submission' ? 'Submissions'
+          : latestContest.status === 'voting' ? 'Voting'
+          : latestContest.status === 'closed' ? 'Winner' : 'Live',
+        tone: getSegmentTone(latestContest.sub_segment_id || 'b1'),
+        to: `/v4/contest/${latestContest.id}`,
+      }
+    : (!user && setup.contestId)
     ? {
         id: setup.contestId,
         name: setup.workingName || 'Your contest',
-        // Mock voting phase to match the rest of the prototype.
         phase: 'Voting',
         daysLeft: setup.settings?.votingDays || 3,
-        // Contest-specific tone for the dropdown card.
         tone: segmentTone,
       }
     : null;
