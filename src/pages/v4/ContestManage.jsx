@@ -28,6 +28,7 @@ import {
 import { buildLiveData } from '../../utils/v4LiveData';
 import { getMockContestById } from '../../data/v4/mockContests';
 import { supabase } from '../../lib/supabaseClient';
+import { useAuth } from '../../lib/AuthContext';
 import {
   BRIEF_QUESTIONS, SHARED_SETTINGS_QUESTIONS,
 } from '../../data/v4/briefQuestions';
@@ -129,6 +130,18 @@ export default function ContestManage() {
   // crew"), render the page with that contest's data instead of the
   // user's real setup blob — otherwise the dashboard shows their
   // unrelated brief and segment, which is confusing.
+  const { user } = useAuth();
+  // Real signed-in identity for the account menu (avatar + email), so the
+  // manage page shows YOU, not the mock creator photo.
+  const [profile, setProfile] = useState(null);
+  useEffect(() => {
+    if (!user?.id) return;
+    let active = true;
+    supabase.from('profiles').select('*').eq('id', user.id).single()
+      .then(({ data }) => { if (active && data) setProfile(data); });
+    return () => { active = false; };
+  }, [user?.id]);
+
   const mockContest = getMockContestById(id);
   const realSetup = readSetup();
 
@@ -277,21 +290,40 @@ export default function ContestManage() {
   // mirrors what we do for `setup` above so the recap stays coherent.
   const liveSetup = useMemo(() => {
     const real = readSetup();
-    return mockContest
-      ? { ...real, ...mockContest, contestId: mockContest.id }
-      : real;
-  }, [editTick, mockContest]);
+    if (mockContest) return { ...real, ...mockContest, contestId: mockContest.id };
+    // Real contest → show ITS brief/settings (from the DB), not the stale
+    // localStorage blob, so the creator sees their actual answers.
+    if (dbContest) {
+      return {
+        ...real,
+        contestId: dbContest.id,
+        workingName: dbContest.working_name,
+        subSegmentId: dbContest.sub_segment_id,
+        group: dbContest.tier,
+        brief: dbContest.brief || {},
+        settings: dbContest.settings || {},
+      };
+    }
+    return real;
+  }, [editTick, mockContest, dbContest]);
   const liveBriefAnswers = liveSetup.brief || {};
   const liveSettingsAnswers = liveSetup.settings || {};
 
-  const handleEditSave = (newValue) => {
+  const handleEditSave = async (newValue) => {
     if (!editingQuestion) return;
     const { question, section } = editingQuestion;
-    const cur = readSetup();
-    if (section === 'brief') {
-      writeSetup({ brief: { ...(cur.brief || {}), [question.id]: newValue } });
-    } else if (section === 'settings') {
-      writeSetup({ settings: { ...(cur.settings || {}), [question.id]: newValue } });
+    if (dbContest && !mockContest && (section === 'brief' || section === 'settings')) {
+      // Real contest → persist the edit to the database and update state.
+      const updated = { ...(dbContest[section] || {}), [question.id]: newValue };
+      await supabase.from('contests').update({ [section]: updated }).eq('id', dbContest.id);
+      setDbContest((c) => (c ? { ...c, [section]: updated } : c));
+    } else {
+      const cur = readSetup();
+      if (section === 'brief') {
+        writeSetup({ brief: { ...(cur.brief || {}), [question.id]: newValue } });
+      } else if (section === 'settings') {
+        writeSetup({ settings: { ...(cur.settings || {}), [question.id]: newValue } });
+      }
     }
     setEditTick((t) => t + 1);
   };
@@ -329,17 +361,19 @@ export default function ContestManage() {
             </div>
             <div className="v4-nav-right">
               <AvatarMenu
-                email={setup.userEmail}
-                name={setup.userName}
-                photo={creatorProfile}
+                email={user?.email || setup.userEmail}
+                name={profile?.display_name || setup.userName}
+                photo={profile?.avatar_url || (mockContest ? creatorProfile : null)}
+                seed={user?.id}
                 tone={segmentTone}
                 activeContest={
                   setup.contestId
                     ? {
                         id: setup.contestId,
                         name: setup.workingName || 'Your contest',
-                        // Mock voting phase to match the rest of the page
-                        phase: 'Voting',
+                        // Real contests show their actual phase; mock demos
+                        // stay on the page's (voting) demo phase.
+                        phase: mockContest ? 'Voting' : (phase === 'submission' ? 'Submissions' : phase === 'winner' ? 'Winner' : 'Voting'),
                         daysLeft: votingDays,
                         tone: segmentTone,
                       }
