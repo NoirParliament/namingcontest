@@ -143,7 +143,7 @@ export default function AvatarMenu({ email, name, photo, defaultPhoto, seed, ton
                       </>
                     )}
                   </div>
-                  <div className="v4-avatar-dropdown-contest-name">
+                  <div className="v4-avatar-dropdown-contest-name" style={{ color: ct.fg }}>
                     {activeContest.name}
                   </div>
                 </div>
