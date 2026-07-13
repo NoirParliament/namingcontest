@@ -340,6 +340,23 @@ export default function ContestManage() {
     }
   };
 
+  // While a real contest is still loading, show a calm loading state rather
+  // than flashing the stale default ("Your Contest", blue) first.
+  if (!mockContest && dbLoading) {
+    return (
+      <div className="v4 lp-v3">
+        <div className="v4-screen">
+          <SegmentThemeBackdrop subId={dbContest?.sub_segment_id || 'b1'} minimal />
+          <main className="v4-review" role="main">
+            <div className="v4-review-inner" style={{ textAlign: 'center', paddingTop: 120 }}>
+              <p className="v4-review-subtitle">Loading your contest…</p>
+            </div>
+          </main>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="v4 lp-v3">
       <div className="v4-screen">

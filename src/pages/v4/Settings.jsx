@@ -105,6 +105,10 @@ export default function Settings() {
   // (/v4/map) still shows the mocks.
   const { user, loading: authLoading } = useAuth();
   const isRealUser = !!user;
+  // Real contests this user created (most-recent first). `latest` drives the
+  // page's segment color/background and the account-menu contest chip.
+  const [dbContests, setDbContests] = useState([]);
+  const latest = isRealUser ? (dbContests[0] || null) : null;
   // Every contest the user has joined (most-recent first) — read up here
   // so the page background can follow a participant's joined contest.
   const participations = useMemo(() => (isRealUser ? [] : readAllParticipations()), [isRealUser]);
@@ -124,7 +128,7 @@ export default function Settings() {
   const primaryJoined = participations[0]
     ? getMockContestById(participations[0].contestId)
     : null;
-  const subId = setup.subSegmentId || primaryJoined?.subSegmentId || (isRealUser ? 'b1' : MOCK_ONGOING.subSegmentId);
+  const subId = latest?.sub_segment_id || setup.subSegmentId || primaryJoined?.subSegmentId || (isRealUser ? 'b1' : MOCK_ONGOING.subSegmentId);
   const segmentTone = getSegmentTone(subId);
   const tierKey = setup.group || primaryJoined?.group || MOCK_ONGOING.tierKey;
 
@@ -140,8 +144,6 @@ export default function Settings() {
   // hold off the "Add your name" / "no email saved" empty-state text to avoid
   // a flash of it before the real values land.
   const [profileReady, setProfileReady] = useState(false);
-  // Real contests this user has created (from the DB).
-  const [dbContests, setDbContests] = useState([]);
   const fileRef = useRef(null);
   // True once the user edits the name — so a late-arriving profile fetch
   // can't clobber what they just typed (the bug that made saves "revert").
@@ -381,16 +383,21 @@ export default function Settings() {
                 seed={user?.id}
                 tone={segmentTone}
                 activeContest={
-                  currentContest
+                  latest
+                    ? {
+                        id: latest.id,
+                        name: latest.working_name || 'Your contest',
+                        phase: latest.status === 'submission' ? 'Submissions'
+                          : latest.status === 'voting' ? 'Voting'
+                          : latest.status === 'closed' ? 'Winner' : 'Live',
+                        tone: segmentTone,
+                      }
+                    : currentContest
                     ? {
                         id: currentContest.id,
                         name: currentContest.name,
                         ...describeContestStatus(currentContest),
                         tone: segmentTone,
-                        /* Participant-only mode → contest card in the
-                           dropdown stays on the workspace (creator
-                           manage page would be the wrong destination).
-                           Real-creator mode → default contest route. */
                         to: !realContest && joinedRows.length > 0
                           ? '/v4/settings'
                           : undefined,
