@@ -656,10 +656,10 @@ function HeroBriefSim({ onStart }) {
 /* ========== HERO SCOREBOARD (v8) ========== */
 // The hero's demo: a finished scoreboard. Each scene shows a crowned
 // winner over three runners-up, holds perfectly still, then hands off to
-// the next tier's contest (group → personal → business) with fresh names
-// and that tier's accent color. Static by client request — the earlier
-// live vote-race pulled attention off the headline copy. Numbers stay
-// internally consistent (names = 3× participants, votes sum to names).
+// the next tier's contest (group → personal → business) with that tier's
+// accent color. Each result is FIXED — a declared winner shouldn't change
+// as the card loops (client request). Numbers stay internally consistent
+// (names = 3× participants, votes sum to names).
 const RACE_SCENARIOS = [
   {
     id: 'group',
@@ -674,7 +674,15 @@ const RACE_SCENARIOS = [
       '--race-win-bg': '#e0e7f8', '--race-win-fill': '#cbd6f3',
       '--race-shadow': 'rgba(75,104,195,.22)',
     },
-    names: ['Velvet Static', 'Paper Tigers', 'Night Harbor', 'The Half Moons', 'Glass Atlas', 'Low Tide Club', 'Neon Prairie', 'Hazel Motors'],
+    // Fixed result — a declared winner shouldn't change each cycle (client
+    // request). Votes sum to the submission count (63 = 21 people × 3).
+    rows: [
+      { name: 'Paper Tigers', by: 'Jonas', votes: 24 },
+      { name: 'Night Harbor', by: 'Maya', votes: 19 },
+      { name: 'Velvet Static', by: 'Priya', votes: 12 },
+      { name: 'Glass Atlas', by: 'Leo', votes: 8 },
+    ],
+    pool: { subs: 63, people: 21 },
   },
   {
     id: 'personal',
@@ -686,7 +694,14 @@ const RACE_SCENARIOS = [
       '--race-win-bg': '#fbe7d5', '--race-win-fill': '#f5d5ba',
       '--race-shadow': 'rgba(178,86,32,.22)',
     },
-    names: ['Biscuit', 'Mochi', 'Juniper', 'Waffles', 'Peanut', 'Maple', 'Ziggy', 'Olive'],
+    // Fixed result (69 = 23 people × 3).
+    rows: [
+      { name: 'Biscuit', by: 'Maya', votes: 27 },
+      { name: 'Mochi', by: 'Leo', votes: 21 },
+      { name: 'Juniper', by: 'Sofia', votes: 13 },
+      { name: 'Peanut', by: 'Tom', votes: 8 },
+    ],
+    pool: { subs: 69, people: 23 },
   },
   {
     id: 'business',
@@ -698,10 +713,16 @@ const RACE_SCENARIOS = [
       '--race-win-bg': '#dff0e4', '--race-win-fill': '#c8e7d2',
       '--race-shadow': 'rgba(63,136,80,.24)',
     },
-    names: ['Spire', 'Helix', 'Vantage', 'Cobalt', 'Lumen', 'Atlas', 'Northwind', 'Verge'],
+    // Fixed result (66 = 22 people × 3).
+    rows: [
+      { name: 'Northwind', by: 'Priya', votes: 26 },
+      { name: 'Vantage', by: 'Marcus', votes: 20 },
+      { name: 'Helix', by: 'Elena', votes: 12 },
+      { name: 'Cobalt', by: 'Jonas', votes: 8 },
+    ],
+    pool: { subs: 66, people: 22 },
   },
 ];
-const RACE_BY_POOL = ['Maya', 'Jonas', 'Priya', 'Leo', 'Sofia', 'Marcus', 'Elena', 'Tom'];
 const RACE_ROW_STEP = 63; // 56px row + 7px gap — keep in sync with the CSS
 
 // Footer avatar cluster — three circular face crops at equal visual weight.
@@ -730,64 +751,25 @@ function HeroVoteRace() {
     // parks the loop for good — same pattern as HeroBriefSim.
     const wait = (ms) => new Promise((res) => { timers.push(setTimeout(res, ms)); });
 
-    // Per-scenario memory so a returning scenario doesn't repeat the same
-    // four names it showed last time around.
-    const lastNamesByScen = {};
     let roundKey = 0;
-
-    const pickNames = (scenario) => {
-      const last = lastNamesByScen[scenario.id] || [];
-      const pool = scenario.names.filter((n) => !last.includes(n));
-      const picked = [];
-      while (picked.length < 4) {
-        const n = pool[Math.floor(Math.random() * pool.length)];
-        if (!picked.includes(n)) picked.push(n);
-      }
-      lastNamesByScen[scenario.id] = picked;
-      return picked;
-    };
 
     (async () => {
       await wait(500);
       while (!cancelled) {
-        // Next tier's contest — theme + names swap together, in the gap
-        // between rounds, so there's never a half-themed frame.
+        // Cycle the tiers. Each scenario's result is FIXED (client request):
+        // a declared winner + votes shouldn't change every time the card
+        // loops back to it. Theme + rows swap together in the gap between
+        // rounds, so there's never a half-themed frame.
         const scenario = RACE_SCENARIOS[roundKey % RACE_SCENARIOS.length];
         setScen(scenario);
-        const names = pickNames(scenario);
-        const people = [...RACE_BY_POOL].sort(() => Math.random() - 0.5).slice(0, 4);
-
-        // The round's arithmetic stays internally consistent: 14-19
-        // participants submit at most 3 names each, and the total votes on
-        // screen equal the submission count (everyone votes as much as
-        // they submitted), so the footer and the rows always add up.
-        const poolPeople = 14 + Math.floor(Math.random() * 6);
-        const subsCount = poolPeople * 3 - Math.floor(Math.random() * 3);
-        // Split exactly subsCount votes across the four finalists —
-        // winner ~35%, runner-up 2-3 behind, the rest trailing.
-        const winnerFinal = Math.round(subsCount * 0.35);
-        const secondFinal = winnerFinal - (2 + Math.floor(Math.random() * 2));
-        const thirdFinal = Math.round(subsCount * 0.2);
-        const finals = [
-          winnerFinal,
-          secondFinal,
-          thirdFinal,
-          subsCount - winnerFinal - secondFinal - thirdFinal,
-        ];
-        const base = names.map((name, i) => ({
-          key: `${roundKey}-${i}`,
-          name,
-          by: people[i],
-          votes: finals[i],
-        }));
+        const base = scenario.rows.map((r, i) => ({ key: `${roundKey}-${i}`, ...r }));
         roundKey += 1;
 
         if (cancelled) return;
-        // Static scoreboard (client request): each scene renders directly
-        // in its final crowned state — one gentle pop-in, then perfectly
-        // still — so the motion never pulls the eye off the headline copy.
+        // Static scoreboard: each scene renders directly in its final
+        // crowned state — one gentle pop-in, then perfectly still.
         setRows(base);
-        setPool({ people: poolPeople, subs: subsCount });
+        setPool(scenario.pool);
         setPhase('crowned');
         await wait(6500); // hold the finished scoreboard, calm and readable
         if (cancelled) return;
