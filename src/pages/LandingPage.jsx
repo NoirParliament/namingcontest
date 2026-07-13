@@ -848,22 +848,16 @@ function HeroVoteRace() {
                 />
                 <span className="hero-card-rank">{rank + 1}</span>
                 <span className="hero-card-name">
-                  <span className="hero-card-name-text">{r.name}</span>
+                  <span className="hero-card-name-line">
+                    <span className="hero-card-name-text">{r.name}</span>
+                    {/* Plain-word winner marker — an icon can be misread as
+                        "currently first"; the word can't. */}
+                    {isWinner && <span className="race-winner-tag">Winner</span>}
+                  </span>
                   {isWinner && <span className="hero-card-by">Suggested by {r.by}</span>}
                 </span>
                 <span className="hero-card-votes">{r.votes}{isWinner ? ' votes' : ''}</span>
               </div>
-              {/* Crown lives on the slot, not the row — the row clips its
-                  overflow for the fill's rounded corners and would cut the
-                  crown off mid-drop. */}
-              {isWinner && (
-                <span className="race-crown">
-                  <span className="race-crown-icon">👑</span>
-                  <span className="race-spark s1">✦</span>
-                  <span className="race-spark s2">✦</span>
-                  <span className="race-spark s3">✦</span>
-                </span>
-              )}
             </div>
           );
         })}
