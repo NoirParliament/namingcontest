@@ -22,7 +22,7 @@ import { uploadUserFile } from '../../lib/uploads';
 import UserAvatar from '../../components/v4/UserAvatar';
 import { readAllParticipations, getParticipantRow } from '../../utils/v4Participant';
 import { getMockContestById, MOCK_CONTESTS } from '../../data/v4/mockContests';
-import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
+import { SegmentThemeBackdrop, getSegmentTone, getSegmentIcon } from '../../data/v4/segmentTheme';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import CatchwordConsultBlock from '../../components/v4/CatchwordConsultBlock';
 import '../../styles/landing-v3.css';
@@ -140,6 +140,8 @@ export default function Settings() {
   // hold off the "Add your name" / "no email saved" empty-state text to avoid
   // a flash of it before the real values land.
   const [profileReady, setProfileReady] = useState(false);
+  // Real contests this user has created (from the DB).
+  const [dbContests, setDbContests] = useState([]);
   const fileRef = useRef(null);
   // True once the user edits the name — so a late-arriving profile fetch
   // can't clobber what they just typed (the bug that made saves "revert").
@@ -168,6 +170,19 @@ export default function Settings() {
   // Only reveal the empty-state placeholders ("Add your name" / "no email
   // saved") once the session and profile have actually loaded.
   const identityLoading = authLoading || (isRealUser && !profileReady);
+
+  // Load this user's real contests (creator side) from the database.
+  useEffect(() => {
+    if (!user?.id) return;
+    let active = true;
+    supabase
+      .from('contests')
+      .select('*')
+      .eq('creator_id', user.id)
+      .order('created_at', { ascending: false })
+      .then(({ data }) => { if (active && data) setDbContests(data); });
+    return () => { active = false; };
+  }, [user?.id]);
 
   // Upload the chosen image to Supabase Storage and save its public URL on
   // the profile, so it persists across re-login and devices. Mirrors to the
@@ -432,6 +447,50 @@ export default function Settings() {
                   inline "Start a contest" prompt that lives politely
                   under the joined contests, so participants who never
                   intend to run one aren't pestered. */}
+            {/* Real contests you've created — read from the database. */}
+            {isRealUser && dbContests.length > 0 && (
+              <section className="v4-settings-section">
+                <header className="v4-settings-section-head">
+                  <ListBullets weight="duotone" size={18} />
+                  <h2>Contests you’re running</h2>
+                </header>
+                {dbContests.map((c) => {
+                  const cTone = getSegmentTone(c.sub_segment_id || 'b1');
+                  const CIcon = getSegmentIcon(c.sub_segment_id) || TIER_INFO[c.tier]?.Icon || Briefcase;
+                  const statusLabel = (c.status || 'live').replace('_', ' ');
+                  return (
+                    <div key={c.id} className="v4-settings-current" style={{ background: cTone.bg + '40' }}>
+                      <span
+                        className="v4-settings-current-icon"
+                        style={{ background: cTone.bg, color: cTone.fg }}
+                        aria-hidden="true"
+                      >
+                        <CIcon weight="duotone" size={22} />
+                      </span>
+                      <div className="v4-settings-current-text">
+                        <div className="v4-settings-current-eyebrow">
+                          <span className="v4-manage-live-dot" aria-hidden="true"></span>
+                          <span>{statusLabel.toUpperCase()}</span>
+                        </div>
+                        <div className="v4-settings-current-name">{c.working_name || 'Your contest'}</div>
+                        <div className="v4-settings-current-meta">
+                          {c.sub_segment_title || TIER_INFO[c.tier]?.label || 'Contest'}
+                          {c.price ? ` · paid $${c.price}` : ''}
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        onClick={() => navigate(`/v4/contest/${c.id}?phase=submission`)}
+                      >
+                        Manage <ArrowRight weight="bold" size={14} />
+                      </button>
+                    </div>
+                  );
+                })}
+              </section>
+            )}
+
             {realContest ? (
               <section className="v4-settings-section">
                 <header className="v4-settings-section-head">
