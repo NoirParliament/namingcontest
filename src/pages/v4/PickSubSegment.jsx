@@ -53,10 +53,11 @@ const SUB_SEGMENTS = {
   business: {
     label: 'business',
     options: [
-      // Business tier slimmed to two paths (client decision 2026-07-10) —
-      // kept in sync with data/v4/subSegments.js, the live source of truth.
-      { id: 'b1', Icon: Buildings,        tone: TONES.periwinkle, title: 'A company or startup',     body: 'Brand-new venture or established entity.' },
-      { id: 'b5', Icon: PencilSimple,     tone: TONES.sky,        title: 'Something else',           body: 'Tell us about it in the brief.' },
+      // Three business paths (client decision 2026-07-13) — kept in sync
+      // with data/v4/subSegments.js, the live source of truth.
+      { id: 'b1', Icon: Buildings,    tone: TONES.periwinkle, title: 'A company',      body: 'Brand-new venture or established entity.' },
+      { id: 'b2', Icon: Package,      tone: TONES.butter,     title: 'A product',      body: 'Software, physical good, or service offering.' },
+      { id: 'b5', Icon: PencilSimple, tone: TONES.sky,        title: 'Something else', body: 'Initiatives, off-sites, meeting rooms — anything that needs a name.' },
     ],
   },
 };

@@ -579,8 +579,8 @@ const SIM_ANSWERS = {
 // name, voter package) then the real brief questions. Every answer is just a
 // typed reply — the prompts are the real thing.
 const SIM_STEPS = [
-  { prompt: 'Let’s set up your business contest. First — which kind of naming is this?', answer: 'A company or startup' },
-  { prompt: 'Got it. What should we call this contest for a company or startup?', answer: 'Fintech startup' },
+  { prompt: 'Let’s set up your business contest. First — which kind of naming is this?', answer: 'A company' },
+  { prompt: 'Got it. What should we call this contest for a company?', answer: 'Fintech startup' },
   { prompt: 'How many people will vote?', answer: 'Up to 30 voters · $19' },
   ...SIM_BRIEF.map((q) => ({ prompt: q.prompt, answer: SIM_ANSWERS[q.id] || '' })),
 ];
@@ -653,13 +653,13 @@ function HeroBriefSim({ onStart }) {
   );
 }
 
-/* ========== HERO VOTE RACE (v7) ========== */
-// The hero's demo: a live leaderboard. Four name candidates race on votes,
-// ranks swap mid-count, and the leader gets crowned — then the card hands
-// off to the next tier's contest (group → personal → business) with fresh
-// names and that tier's accent color. Reads instantly as "people vote on
-// names, one wins" — and quietly shows the product works for companies,
-// pets, and bands alike.
+/* ========== HERO SCOREBOARD (v8) ========== */
+// The hero's demo: a finished scoreboard. Each scene shows a crowned
+// winner over three runners-up, holds perfectly still, then hands off to
+// the next tier's contest (group → personal → business) with fresh names
+// and that tier's accent color. Static by client request — the earlier
+// live vote-race pulled attention off the headline copy. Numbers stay
+// internally consistent (names = 3× participants, votes sum to names).
 const RACE_SCENARIOS = [
   {
     id: 'group',
@@ -715,8 +715,8 @@ const RACE_AVATARS = [
 ];
 
 function HeroVoteRace() {
-  const [rows, setRows] = useState([]); // {key, name, by, final, votes}
-  const [phase, setPhase] = useState('waiting'); // waiting | racing | crowned | leaving
+  const [rows, setRows] = useState([]); // {key, name, by, votes}
+  const [phase, setPhase] = useState('waiting'); // waiting | crowned | leaving
   const [scen, setScen] = useState(RACE_SCENARIOS[0]);
   // Submission pool this round — the leaderboard only shows the top 4, so
   // the footer hints at the bigger pool. Participants each submit ~3 names
@@ -774,45 +774,22 @@ function HeroVoteRace() {
           thirdFinal,
           subsCount - winnerFinal - secondFinal - thirdFinal,
         ];
-        // Per-row pacing: the eventual winner starts slow and finishes
-        // strong while the runner-up sprints early — guarantees a visible
-        // lead swap mid-race without ever faking the totals.
-        const profiles = [
-          (p) => Math.pow(p, 1.7),
-          (p) => 1 - Math.pow(1 - p, 2.2),
-          (p) => p,
-          (p) => 1 - Math.pow(1 - p, 1.5),
-        ];
         const base = names.map((name, i) => ({
           key: `${roundKey}-${i}`,
           name,
           by: people[i],
-          final: finals[i],
-          profile: profiles[i],
+          votes: finals[i],
         }));
         roundKey += 1;
 
         if (cancelled) return;
-        setRows(base.map((r) => ({ ...r, votes: 0 })));
+        // Static scoreboard (client request): each scene renders directly
+        // in its final crowned state — one gentle pop-in, then perfectly
+        // still — so the motion never pulls the eye off the headline copy.
+        setRows(base);
         setPool({ people: poolPeople, subs: subsCount });
-        setPhase('racing');
-        await wait(700); // let the pop-in land before counting starts
-
-        // Organic tick loop — variable 140-260ms batches, like the live app.
-        const RACE_MS = 5200;
-        const start = Date.now();
-        for (;;) {
-          if (cancelled) return;
-          const p = Math.min(1, (Date.now() - start) / RACE_MS);
-          setRows(base.map((r) => ({ ...r, votes: Math.round(r.final * r.profile(p)) })));
-          if (p >= 1) break;
-          await wait(140 + Math.random() * 120);
-        }
-
-        await wait(450); // dramatic breath, then the crown
-        if (cancelled) return;
         setPhase('crowned');
-        await wait(2600);
+        await wait(6500); // hold the finished scoreboard, calm and readable
         if (cancelled) return;
         setPhase('leaving');
         await wait(550);
@@ -822,12 +799,12 @@ function HeroVoteRace() {
     return () => { cancelled = true; timers.forEach(clearTimeout); };
   }, []);
 
-  // Rank by current votes; ties break on final totals so order never jitters.
-  const ranked = [...rows].sort((a, b) => (b.votes - a.votes) || (b.final - a.final));
+  // Rows arrive pre-sorted by votes (finals are built winner-first), but
+  // rank defensively anyway so the render never depends on array order.
+  const ranked = [...rows].sort((a, b) => b.votes - a.votes);
   const rankOf = {};
   ranked.forEach((r, i) => { rankOf[r.key] = i; });
-  const maxVotes = Math.max(1, ...rows.map((r) => r.final));
-  const total = rows.reduce((s, r) => s + r.votes, 0);
+  const maxVotes = Math.max(1, ...rows.map((r) => r.votes));
   const crowned = phase === 'crowned' || phase === 'leaving';
   const ScenIcon = scen.Icon;
 
@@ -850,11 +827,9 @@ function HeroVoteRace() {
       <div className={`hero-card-race${crowned ? ' is-crowned' : ''}`}>
         {rows.map((r, i) => {
           const rank = rankOf[r.key] ?? i;
+          // The winner carries the full labels ("Suggested by …",
+          // "N votes"); the rest stay abbreviated.
           const isWinner = crowned && rank === 0;
-          const isLeading = !crowned && rank === 0 && r.votes > 0;
-          // Whoever holds first place carries the full labels ("Suggested
-          // by …", "N votes") — they migrate to the new leader on overtakes.
-          const isTop = isWinner || isLeading;
           return (
             // Outer slot slides on rank change; inner row pops in — split so
             // the hsPop transform animation can't fight the slide transform.
@@ -864,7 +839,7 @@ function HeroVoteRace() {
               style={{ transform: `translateY(${rank * RACE_ROW_STEP}px)` }}
             >
               <div
-                className={`hero-card-row${isWinner ? ' is-winner' : ''}${isLeading ? ' is-leading' : ''}`}
+                className={`hero-card-row${isWinner ? ' is-winner' : ''}`}
                 style={{ animationDelay: `${i * 90}ms` }}
               >
                 <span
@@ -874,11 +849,9 @@ function HeroVoteRace() {
                 <span className="hero-card-rank">{rank + 1}</span>
                 <span className="hero-card-name">
                   <span className="hero-card-name-text">{r.name}</span>
-                  {/* Only the leader carries attribution — other rows are
-                      just name + count, so first place is clearly the story. */}
-                  {isTop && <span className="hero-card-by">Suggested by {r.by}</span>}
+                  {isWinner && <span className="hero-card-by">Suggested by {r.by}</span>}
                 </span>
-                <span className="hero-card-votes">{r.votes}{isTop ? ' votes' : ''}</span>
+                <span className="hero-card-votes">{r.votes}{isWinner ? ' votes' : ''}</span>
               </div>
               {/* Crown lives on the slot, not the row — the row clips its
                   overflow for the fill's rounded corners and would cut the
@@ -911,9 +884,7 @@ function HeroVoteRace() {
           ))}
         </span>
         <span className="hero-card-foot-text">
-          {crowned
-            ? `Winner crowned after ${total} votes`
-            : `${pool.subs} names submitted by ${pool.people} participants`}
+          {pool.subs > 0 && `${pool.subs} names submitted by ${pool.people} participants`}
         </span>
       </div>
     </div>

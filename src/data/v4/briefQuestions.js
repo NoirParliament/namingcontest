@@ -1047,6 +1047,13 @@ export const BRIEF_QUESTIONS = {
   },
 };
 
+// 2026-07-13 client decision (Maria/Mark): the Product path (b2) runs the
+// exact same questionnaire as Company (b1) — question ids are shared, so
+// stored briefs stay compatible either way. The legacy product set above
+// is kept intact for easy restore / when Maria sends product-specific
+// questions. Only the label differs.
+BRIEF_QUESTIONS.b2 = { ...BRIEF_QUESTIONS.b1, label: 'Product / service' };
+
 // ────────────────────────────────────────────────────────────────
 // 2. SHARED_SETTINGS_QUESTIONS — appended to every brief
 // ────────────────────────────────────────────────────────────────
@@ -1925,6 +1932,10 @@ export const ARTICLES = {
   ],
 };
 
+// b2 mirrors b1's questionnaire (2026-07-13 client decision), so it needs
+// b1's guides too — the mirrored questions reference their guideIds.
+ARTICLES.b2 = ARTICLES.b1;
+
 // ────────────────────────────────────────────────────────────────
 // 4. PRIMERS — per sub-segment "~90 second read" intros
 // ────────────────────────────────────────────────────────────────
@@ -2143,7 +2154,7 @@ export const INVITE_GUIDANCE = {
 export const CUT_QUESTIONS = {
   // b1 rewritten 2026-07-10 (client 10-question guide) — no cuts apply.
   b1: [],
-  b2: ['differentiator'], // merged into prodDesc
+  b2: [], // mirrors b1 since 2026-07-13 — its old 'differentiator' cut no longer applies
   b3: [],
   b4: [],
   b5: [],
@@ -2180,13 +2191,8 @@ export const MERGE_QUESTIONS = {
   t6: [{ keepId: 'projectSummary', merged: ['groupDesc'] }],
   p4: [{ keepId: 'projectSummary', merged: ['groupDesc'] }],
 
-  b2: [
-    {
-      keepId: 'prodDesc',
-      merged: ['differentiator'],
-      newPrompt: 'Describe your product and what makes it different from alternatives.',
-    },
-  ],
+  // b2 mirrors b1 since 2026-07-13 — its old prodDesc/differentiator merge
+  // no longer applies (those ids don't exist in the mirrored set).
   t2: [
     {
       keepId: 'nameType',

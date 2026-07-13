@@ -208,7 +208,7 @@ function seedCreatorBriefChat(contestId) {
     contestId: null,
     group: c?.group || 'business',
     subSegmentId: c?.subSegmentId || 'b1',
-    subSegmentTitle: c?.subSegmentTitle || 'A company or startup',
+    subSegmentTitle: c?.subSegmentTitle || 'A company',
     workingName: null,
     brief: {},
     settings: {},

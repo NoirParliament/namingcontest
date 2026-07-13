@@ -56,7 +56,8 @@ export const FIELD_DEFS = {
   // Business
   // b1 rewritten 2026-07-10 (client 10-question guide) — score the new ids.
   'business/company-name':       ['namingTarget', 'nameCommunicate', 'brandPersonality', 'nameStyles', 'descriptiveEvocative', 'includeAvoid', 'admiredNames', 'practicalReqs'],
-  'business/product-name':       ['prodDesc', 'parentBrand', 'architecture', 'primaryUser', 'differentiator', 'competitors', 'submissionLimit', 'deadline'],
+  // b2 mirrors b1's questionnaire (2026-07-13 client decision) — same ids.
+  'business/product-name':       ['namingTarget', 'nameCommunicate', 'brandPersonality', 'nameStyles', 'descriptiveEvocative', 'includeAvoid', 'admiredNames', 'practicalReqs'],
   'business/project-name':       ['projDesc', 'projDuration', 'projNameType', 'submissionLimit', 'votingMethod', 'deadline'],
   'business/rebrand':            ['currentName', 'rebrandReason', 'companyDesc', 'namingStyle', 'competitors', 'submissionLimit', 'votingMethod', 'deadline'],
   'business/other-business':     ['companyDesc', 'namingStyle', 'targetAudience', 'geoScope', 'competitors', 'submissionLimit', 'votingMethod', 'deadline'],

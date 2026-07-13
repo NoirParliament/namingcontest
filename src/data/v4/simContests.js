@@ -406,7 +406,7 @@ export const SIM_CONTESTS = {
   // ─────────────────────────── BUSINESS ───────────────────────────
   sim_b1: {
     id: 'sim_b1', group: 'business', subSegmentId: 'b1',
-    subSegmentTitle: 'Company or startup',
+    subSegmentTitle: 'Company',
     name: 'Our Fintech Startup', workingName: 'Our Fintech Startup',
     creator: { name: 'Priya', photoIndex: 5, role: 'Founder' },
     phase: 'Submission', launchedAt: recentLaunch(), Icon: Buildings,
