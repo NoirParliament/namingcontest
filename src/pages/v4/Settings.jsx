@@ -97,9 +97,16 @@ const MOCK_CLOSED = [
 export default function Settings() {
   const navigate = useNavigate();
   const setup = readSetup();
+  // A real Supabase session means a real account — suppress ALL the mock
+  // demo data (the "Sunday football crew" contest, closed history, joined
+  // rows) so a real user never sees or clicks a fake contest. Real contests
+  // arrive from the database in Phase 2. The non-authenticated demo path
+  // (/v4/map) still shows the mocks.
+  const { user } = useAuth();
+  const isRealUser = !!user;
   // Every contest the user has joined (most-recent first) — read up here
   // so the page background can follow a participant's joined contest.
-  const participations = useMemo(() => readAllParticipations(), []);
+  const participations = useMemo(() => (isRealUser ? [] : readAllParticipations()), [isRealUser]);
   // If the user has submitted anonymously to a contest, their workspace
   // identity reads "Anonymous" rather than their real name.
   const submittedAnonymously = participations.some(
@@ -116,14 +123,13 @@ export default function Settings() {
   const primaryJoined = participations[0]
     ? getMockContestById(participations[0].contestId)
     : null;
-  const subId = setup.subSegmentId || primaryJoined?.subSegmentId || MOCK_ONGOING.subSegmentId;
+  const subId = setup.subSegmentId || primaryJoined?.subSegmentId || (isRealUser ? 'b1' : MOCK_ONGOING.subSegmentId);
   const segmentTone = getSegmentTone(subId);
   const tierKey = setup.group || primaryJoined?.group || MOCK_ONGOING.tierKey;
 
-  // Account identity now comes from the real session + profiles table.
-  // Email is read-only (it IS the sign-in identity). Display name loads
-  // from the profiles row and saves back to it, so it survives re-login.
-  const { user } = useAuth();
+  // Account identity comes from the real session + profiles table. Email is
+  // read-only (it IS the sign-in identity). Display name loads from the
+  // profiles row and saves back to it, so it survives re-login.
   const email = user?.email || setup.userEmail || '';
   const [photo, setPhoto] = useState(setup.userPhoto || null);
   const [name, setName] = useState(setup.userName || '');
@@ -202,8 +208,8 @@ export default function Settings() {
   // demo viewers and disappears as soon as a real one exists.
   // Mock CLOSED + their billing entries ALWAYS show, so the past-history
   // sections never look empty even after the user creates their first.
-  const currentContest = realContest || mockOngoingContest;
-  const closedContests = MOCK_CLOSED;
+  const currentContest = realContest || (isRealUser ? null : mockOngoingContest);
+  const closedContests = isRealUser ? [] : MOCK_CLOSED;
 
   // ── PARTICIPANT-ROLE STATE ─────────────────────────────────────────
   // Same account can be both a creator AND a participant on contests

@@ -117,7 +117,10 @@ export function Nav() {
   const authEmail = user?.email || setup.userEmail;
   const authName = user?.user_metadata?.display_name || setup.userName || user?.email?.split('@')[0];
   const segmentTone = getSegmentTone(setup.subSegmentId || 'b1');
-  const activeContest = setup.contestId
+  // Only the demo (localStorage) path shows a contest card here. A real
+  // signed-in user's contests come from the database (Phase 2), so we don't
+  // surface a stale mock contest for them.
+  const activeContest = (!user && setup.contestId)
     ? {
         id: setup.contestId,
         name: setup.workingName || 'Your contest',
