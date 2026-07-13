@@ -15,6 +15,8 @@ import { BRIEF_QUESTIONS, SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQ
 import { SegmentThemeBackdrop, getSegmentTone, getSegmentIcon, getSegmentPalette } from '../../data/v4/segmentTheme';
 import LaunchModal from '../../components/v4/LaunchModal';
 import { priceForVoters, VOTER_TIER_QUESTION } from '../../data/v4/voterTiers';
+import { useAuth } from '../../lib/AuthContext';
+import { supabase } from '../../lib/supabaseClient';
 import EditQuestionModal from '../../components/v4/EditQuestionModal';
 import ExitLink from '../../components/v4/ExitLink';
 import '../../styles/landing-v3.css';
@@ -45,6 +47,7 @@ function formatAnswer(value) {
 
 export default function ReviewLaunch() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [launching, setLaunching] = useState(false);
   // Per-row edit modal state — same pattern as ContestManage's
   // brief recap, so editing happens in-place instead of bouncing
@@ -118,15 +121,49 @@ export default function ReviewLaunch() {
     setLaunchOpen(true);
   };
 
-  const handleLaunchSuccess = () => {
+  const handleLaunchSuccess = async () => {
     setLaunchOpen(false);
     setLaunching(true);
-    // PROTOTYPE: pin every launched contest to the mock demo contest
-    // so the dashboard is always populated regardless of what segment
-    // the user picked or what they filled in. Production would POST
-    // to backend and route to the real new contest ID instead.
-    writeSetup({ contestId: 'mock_ongoing_1', launchedAt: Date.now() });
-    setTimeout(() => navigate('/v4/contest/mock_ongoing_1?phase=submission'), 600);
+    const cur = readSetup();
+    const DAY = 86400000;
+    const now = Date.now();
+    const submissionDays = cur.settings?.submissionDays || 7;
+    const votingDays = cur.settings?.votingDays || 3;
+
+    // Create the real contest row. Payment is bypassed here (paid:true) —
+    // real Stripe lands in Phase 4. The brief + settings the chat collected
+    // go in as jsonb, keyed by the frozen question ids.
+    let newId = null;
+    if (user?.id) {
+      const { data, error } = await supabase
+        .from('contests')
+        .insert({
+          creator_id: user.id,
+          working_name: cur.workingName || null,
+          tier: cur.group || null,
+          sub_segment_id: cur.subSegmentId || null,
+          sub_segment_title: cur.subSegmentTitle || null,
+          brief: cur.brief || {},
+          settings: cur.settings || {},
+          voter_tier: cur.voterTier || null,
+          price: cur.voterTier ? priceForVoters(cur.voterTier) : null,
+          status: 'submission',
+          paid: true,
+          submission_ends_at: new Date(now + submissionDays * DAY).toISOString(),
+          voting_ends_at: new Date(now + (submissionDays + votingDays) * DAY).toISOString(),
+          launched_at: new Date(now).toISOString(),
+        })
+        .select('id')
+        .single();
+      if (error) console.error('[launch] contest insert failed:', error.message);
+      else newId = data.id;
+    }
+
+    // Bridge the new id to localStorage so the (still-mock) manage page can
+    // render this contest's brief. The workspace reads real contests from
+    // the DB (Slice 2). Fall back to the mock id if the insert didn't run.
+    writeSetup({ contestId: newId || 'mock_ongoing_1', launchedAt: now });
+    setTimeout(() => navigate('/v4/settings'), 600);
   };
 
   return (
