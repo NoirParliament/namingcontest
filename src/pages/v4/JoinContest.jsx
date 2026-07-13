@@ -38,8 +38,9 @@ const HERO_PROFILES = [
 import HeroAvatarsAnimation from '../../components/HeroAvatarsAnimation';
 
 import { getMockContestById } from '../../data/v4/mockContests';
-import { getSegmentTone, SEGMENT_THEME } from '../../data/v4/segmentTheme';
+import { getSegmentTone, getSegmentIcon, SEGMENT_THEME } from '../../data/v4/segmentTheme';
 import { readSetup, writeSetup } from '../../utils/v4Brief';
+import { supabase } from '../../lib/supabaseClient';
 import {
   readParticipation, joinContest, getParticipantRow,
 } from '../../utils/v4Participant';
@@ -62,8 +63,37 @@ export default function JoinContest() {
   const navigate = useNavigate();
   const emailRef = useRef(null);
 
-  // Resolve contest from the mock store. In production: fetch by ID.
-  const contest = getMockContestById(contestId);
+  // Resolve the contest: a mock demo id from the mock store, otherwise a real
+  // contest via get_join_info (public join-page fields only — no brief/price).
+  const mockContest = getMockContestById(contestId);
+  const [realContest, setRealContest] = useState(null);
+  const [contestLoading, setContestLoading] = useState(!mockContest);
+  useEffect(() => {
+    if (mockContest) return;
+    let active = true;
+    supabase.rpc('get_join_info', { cid: contestId }).then(({ data, error }) => {
+      if (!active) return;
+      if (error) console.error('[join] get_join_info failed:', error);
+      const r = data?.[0];
+      if (r) {
+        setRealContest({
+          id: r.id,
+          workingName: r.working_name,
+          subSegmentId: r.sub_segment_id,
+          subSegmentTitle: r.sub_segment_title,
+          group: r.tier,
+          status: r.status,
+          settings: r.settings || {},
+          brief: { projectSummary: r.project_summary },
+          Icon: getSegmentIcon(r.sub_segment_id),
+          creator: {},
+        });
+      }
+      setContestLoading(false);
+    });
+    return () => { active = false; };
+  }, [contestId, mockContest]);
+  const contest = mockContest || realContest;
 
   // Local state for the magic-link mini-flow inside this page.
   // 'cta'     — initial; only the big "Yes, I'm in" button is shown.
@@ -127,6 +157,21 @@ export default function JoinContest() {
       return () => clearTimeout(t);
     }
   }, [phase]);
+
+  // ── Loading a real contest ──────────────────────────────────────────
+  if (contestLoading) {
+    return (
+      <div className="v4 lp-v3">
+        <div className="v4-screen">
+          <main className="v4-review" role="main">
+            <div className="v4-review-inner" style={{ textAlign: 'center', paddingTop: 120 }}>
+              <p className="v4-review-subtitle">Loading the contest…</p>
+            </div>
+          </main>
+        </div>
+      </div>
+    );
+  }
 
   // ── Bad-link state ──────────────────────────────────────────────────
   if (!contest) {
