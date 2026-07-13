@@ -103,7 +103,7 @@ export default function Settings() {
   // rows) so a real user never sees or clicks a fake contest. Real contests
   // arrive from the database in Phase 2. The non-authenticated demo path
   // (/v4/map) still shows the mocks.
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const isRealUser = !!user;
   // Every contest the user has joined (most-recent first) — read up here
   // so the page background can follow a participant's joined contest.
@@ -136,6 +136,10 @@ export default function Settings() {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [name, setName] = useState(setup.userName || '');
   const [savedFlash, setSavedFlash] = useState(false);
+  // Until the profile fetch settles we don't know the real name/email, so we
+  // hold off the "Add your name" / "no email saved" empty-state text to avoid
+  // a flash of it before the real values land.
+  const [profileReady, setProfileReady] = useState(false);
   const fileRef = useRef(null);
   // True once the user edits the name — so a late-arriving profile fetch
   // can't clobber what they just typed (the bug that made saves "revert").
@@ -151,12 +155,19 @@ export default function Settings() {
       .eq('id', user.id)
       .single()
       .then(({ data, error }) => {
-        if (!active || error) return;
-        if (!nameEditedRef.current && data?.display_name) setName(data.display_name);
-        if (data?.avatar_url) setPhoto(data.avatar_url);
+        if (!active) return;
+        if (!error) {
+          if (!nameEditedRef.current && data?.display_name) setName(data.display_name);
+          if (data?.avatar_url) setPhoto(data.avatar_url);
+        }
+        setProfileReady(true);
       });
     return () => { active = false; };
   }, [user?.id]);
+
+  // Only reveal the empty-state placeholders ("Add your name" / "no email
+  // saved") once the session and profile have actually loaded.
+  const identityLoading = authLoading || (isRealUser && !profileReady);
 
   // Upload the chosen image to Supabase Storage and save its public URL on
   // the profile, so it persists across re-login and devices. Mirrors to the
@@ -703,10 +714,12 @@ export default function Settings() {
                 </span>
                 <div className="v4-settings-account-meta">
                   <div className="v4-settings-account-name">
-                    {submittedAnonymously ? 'Anonymous' : (name || 'Add your name')}
+                    {submittedAnonymously
+                      ? 'Anonymous'
+                      : (name || (identityLoading ? ' ' : 'Add your name'))}
                   </div>
                   <div className="v4-settings-account-email">
-                    {email || 'no email saved'}
+                    {email || (identityLoading ? ' ' : 'no email saved')}
                   </div>
                 </div>
                 <span className="v4-settings-account-action">
