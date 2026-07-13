@@ -182,7 +182,12 @@ export default function Settings() {
       .select('*')
       .eq('creator_id', user.id)
       .order('created_at', { ascending: false })
-      .then(({ data }) => { if (active && data) setDbContests(data); });
+      .then(({ data, error }) => {
+        if (!active) return;
+        if (error) console.error('[workspace] contests query failed:', error);
+        else console.log('[workspace] contests loaded:', data?.length ?? 0, data);
+        if (data) setDbContests(data);
+      });
     return () => { active = false; };
   }, [user?.id]);
 
