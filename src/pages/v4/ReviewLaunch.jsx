@@ -49,6 +49,9 @@ export default function ReviewLaunch() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [launching, setLaunching] = useState(false);
+  // Set after a GUEST launch — shows the "check your email" screen while the
+  // Edge Function has created their account + contest and emailed the link.
+  const [pendingEmail, setPendingEmail] = useState(null);
   // Per-row edit modal state — same pattern as ContestManage's
   // brief recap, so editing happens in-place instead of bouncing
   // the user back to the full chat.
@@ -121,50 +124,82 @@ export default function ReviewLaunch() {
     setLaunchOpen(true);
   };
 
-  const handleLaunchSuccess = async () => {
-    setLaunchOpen(false);
-    setLaunching(true);
+  // Assemble the contest row from the current localStorage draft. Payment is
+  // bypassed (paid:true) until Phase 4; brief + settings go in as jsonb.
+  const buildContestRow = () => {
     const cur = readSetup();
     const DAY = 86400000;
     const now = Date.now();
     const submissionDays = cur.settings?.submissionDays || 7;
     const votingDays = cur.settings?.votingDays || 3;
+    return {
+      working_name: cur.workingName || null,
+      tier: cur.group || null,
+      sub_segment_id: cur.subSegmentId || null,
+      sub_segment_title: cur.subSegmentTitle || null,
+      brief: cur.brief || {},
+      settings: cur.settings || {},
+      voter_tier: cur.voterTier || null,
+      price: cur.voterTier ? priceForVoters(cur.voterTier) : null,
+      status: 'submission',
+      paid: true,
+      submission_ends_at: new Date(now + submissionDays * DAY).toISOString(),
+      voting_ends_at: new Date(now + (submissionDays + votingDays) * DAY).toISOString(),
+      launched_at: new Date(now).toISOString(),
+    };
+  };
 
-    // Create the real contest row. Payment is bypassed here (paid:true) —
-    // real Stripe lands in Phase 4. The brief + settings the chat collected
-    // go in as jsonb, keyed by the frozen question ids.
-    let newId = null;
+  const handleLaunchSuccess = async (email) => {
+    setLaunchOpen(false);
+    const row = buildContestRow();
+
     if (user?.id) {
+      // Already signed in → create the contest directly under this account.
+      setLaunching(true);
       const { data, error } = await supabase
         .from('contests')
-        .insert({
-          creator_id: user.id,
-          working_name: cur.workingName || null,
-          tier: cur.group || null,
-          sub_segment_id: cur.subSegmentId || null,
-          sub_segment_title: cur.subSegmentTitle || null,
-          brief: cur.brief || {},
-          settings: cur.settings || {},
-          voter_tier: cur.voterTier || null,
-          price: cur.voterTier ? priceForVoters(cur.voterTier) : null,
-          status: 'submission',
-          paid: true,
-          submission_ends_at: new Date(now + submissionDays * DAY).toISOString(),
-          voting_ends_at: new Date(now + (submissionDays + votingDays) * DAY).toISOString(),
-          launched_at: new Date(now).toISOString(),
-        })
+        .insert({ creator_id: user.id, ...row })
         .select('id')
         .single();
-      if (error) console.error('[launch] contest insert failed:', error.message);
-      else newId = data.id;
+      if (error) console.error('[launch] insert failed:', error.message);
+      writeSetup({ contestId: data?.id || null, launchedAt: Date.now() });
+      setTimeout(() => navigate('/v4/settings'), 600);
+      return;
     }
 
-    // Bridge the new id to localStorage so the (still-mock) manage page can
-    // render this contest's brief. The workspace reads real contests from
-    // the DB (Slice 2). Fall back to the mock id if the insert didn't run.
-    writeSetup({ contestId: newId || 'mock_ongoing_1', launchedAt: now });
-    setTimeout(() => navigate('/v4/settings'), 600);
+    // Guest (or an existing account signing in fresh) → the Edge Function
+    // creates the account + contest server-side and emails a magic link.
+    const redirectTo = `${window.location.origin}/v4/settings`;
+    const { error } = await supabase.functions.invoke('launch-contest', {
+      body: { email, redirectTo, row },
+    });
+    if (error) {
+      console.error('[launch] function failed:', error.message);
+      window.alert('Something went wrong launching your contest. Please try again.');
+      return;
+    }
+    setPendingEmail(email);
   };
+
+  // Guest launch → "your contest is live, check your email for the login link."
+  if (pendingEmail) {
+    return (
+      <div className="v4 lp-v3">
+        <div className="v4-screen">
+          <SegmentThemeBackdrop subId={subId} minimal />
+          <main className="v4-review" role="main">
+            <div className="v4-review-inner" style={{ textAlign: 'center', paddingTop: 72 }}>
+              <h1 className="v4-review-title">Your contest is live 🎉</h1>
+              <p className="v4-review-subtitle" style={{ maxWidth: 440, margin: '14px auto 0' }}>
+                We emailed a magic link to <strong>{pendingEmail}</strong>. Open it to log
+                in and manage your contest.
+              </p>
+            </div>
+          </main>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="v4 lp-v3">
