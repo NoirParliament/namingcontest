@@ -129,6 +129,9 @@ export default function Settings() {
   const [name, setName] = useState(setup.userName || '');
   const [savedFlash, setSavedFlash] = useState(false);
   const fileRef = useRef(null);
+  // True once the user edits the name — so a late-arriving profile fetch
+  // can't clobber what they just typed (the bug that made saves "revert").
+  const nameEditedRef = useRef(false);
 
   // Load the saved display name from the user's profile row on mount.
   useEffect(() => {
@@ -140,7 +143,7 @@ export default function Settings() {
       .eq('id', user.id)
       .single()
       .then(({ data }) => {
-        if (active && data?.display_name) setName(data.display_name);
+        if (active && !nameEditedRef.current && data?.display_name) setName(data.display_name);
       });
     return () => { active = false; };
   }, [user?.id]);
@@ -280,9 +283,16 @@ export default function Settings() {
     // the localStorage setup blob that other (still-mock) pages read.
     const clean = name.trim();
     if (user?.id) {
-      await supabase.from('profiles').update({ display_name: clean }).eq('id', user.id);
+      const { data, error } = await supabase
+        .from('profiles')
+        .update({ display_name: clean })
+        .eq('id', user.id)
+        .select();
+      if (error) console.error('[profile save] failed:', error.message);
+      else if (!data?.length) console.warn('[profile save] 0 rows updated (check RLS)');
     }
     writeSetup({ userName: clean });
+    nameEditedRef.current = false; // saved value is now the source of truth
     setSavedFlash(true);
     setTimeout(() => setSavedFlash(false), 2200);
   };
@@ -760,7 +770,7 @@ export default function Settings() {
                         type="text"
                         className="v4-settings-input"
                         value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={(e) => { nameEditedRef.current = true; setName(e.target.value); }}
                         placeholder="What should we call you?"
                       />
                     </label>
