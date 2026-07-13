@@ -400,6 +400,7 @@ export default function Settings() {
                           : latest.status === 'voting' ? 'Voting'
                           : latest.status === 'closed' ? 'Winner' : 'Live',
                         tone: segmentTone,
+                        contest: latest, // passed via nav state → Manage opens instantly
                       }
                     : currentContest
                     ? {

@@ -123,6 +123,7 @@ export default function AvatarMenu({ email, name, photo, defaultPhoto, seed, ton
                    default route. Used by participant pages to send the
                    user to /status instead of the creator's manage page. */
                 to={activeContest.to || `/v4/contest/${activeContest.id}`}
+                state={activeContest.contest ? { contest: activeContest.contest } : undefined}
                 className="v4-avatar-dropdown-contest"
                 role="menuitem"
                 onClick={() => setOpen(false)}
@@ -147,7 +148,7 @@ export default function AvatarMenu({ email, name, photo, defaultPhoto, seed, ton
                     {activeContest.name}
                   </div>
                 </div>
-                <ArrowRight weight="bold" size={14} className="v4-avatar-dropdown-contest-arrow" />
+                <ArrowRight weight="bold" size={14} className="v4-avatar-dropdown-contest-arrow" style={{ color: ct.fg }} />
               </Link>
             </>
             );

@@ -131,7 +131,13 @@ export function Nav() {
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle()
-      .then(({ data }) => { if (active) setLatestContest(data || null); });
+      .then(({ data }) => {
+        if (!active) return;
+        setLatestContest(data || null);
+        if (data?.sub_segment_id) {
+          try { localStorage.setItem('v4_last_sub', data.sub_segment_id); } catch { /* ignore */ }
+        }
+      });
     return () => { active = false; };
   }, [user?.id]);
   const segmentTone = getSegmentTone(setup.subSegmentId || 'b1');
@@ -146,6 +152,7 @@ export function Nav() {
           : latestContest.status === 'closed' ? 'Winner' : 'Live',
         tone: getSegmentTone(latestContest.sub_segment_id || 'b1'),
         to: `/v4/contest/${latestContest.id}`,
+        contest: latestContest, // passed via nav state → Manage opens instantly
       }
     : (!user && setup.contestId)
     ? {
