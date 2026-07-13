@@ -848,13 +848,16 @@ function HeroVoteRace() {
                 />
                 <span className="hero-card-rank">{rank + 1}</span>
                 <span className="hero-card-name">
-                  <span className="hero-card-name-line">
-                    <span className="hero-card-name-text">{r.name}</span>
-                    {/* Plain-word winner marker — an icon can be misread as
-                        "currently first"; the word can't. */}
-                    {isWinner && <span className="race-winner-tag">Winner</span>}
-                  </span>
-                  {isWinner && <span className="hero-card-by">Suggested by {r.by}</span>}
+                  <span className="hero-card-name-text">{r.name}</span>
+                  {/* Winner marker folded into the byline — the name line
+                      stays clean and the outcome + credit read as one
+                      sentence. A plain word can't be misread the way an
+                      icon can. */}
+                  {isWinner && (
+                    <span className="hero-card-by">
+                      <b className="race-winner-word">Winner</b> · suggested by {r.by}
+                    </span>
+                  )}
                 </span>
                 <span className="hero-card-votes">{r.votes}{isWinner ? ' votes' : ''}</span>
               </div>
