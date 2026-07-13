@@ -172,17 +172,25 @@ export default function ReviewLaunch() {
       return;
     }
 
-    // Guest (or an existing account signing in fresh) → the Edge Function
-    // creates the account + contest server-side and emails a magic link.
+    // Guest (or an existing account signing in fresh):
+    //  1. the Edge Function creates the account + contest server-side, then
+    //  2. the APP sends the login magic link via signInWithOtp — this one
+    //     carries the browser's PKCE verifier, so clicking it actually logs
+    //     them in (unlike a server-generated link).
     const redirectTo = `${window.location.origin}/v4/settings`;
-    const { error } = await supabase.functions.invoke('launch-contest', {
+    const { error: fnError } = await supabase.functions.invoke('launch-contest', {
       body: { email, redirectTo, row },
     });
-    if (error) {
-      console.error('[launch] function failed:', error.message);
-      window.alert('Something went wrong launching your contest. Please try again.');
+    if (fnError) {
+      console.error('[launch] function failed:', fnError);
+      window.alert('Something went wrong launching your contest:\n\n' + (fnError.message || fnError));
       return;
     }
+    const { error: otpError } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: redirectTo },
+    });
+    if (otpError) console.error('[launch] login link failed:', otpError.message);
     setPendingEmail(email);
   };
 

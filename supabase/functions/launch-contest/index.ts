@@ -53,24 +53,12 @@ Deno.serve(async (req) => {
       .single();
     if (insErr) throw insErr;
 
-    // Email the "your contest is live" magic link via Resend.
-    const RESEND = Deno.env.get('RESEND_API_KEY');
-    if (RESEND) {
-      await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${RESEND}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          from: 'NamingContest <onboarding@resend.dev>',
-          to: [email],
-          subject: 'Your naming contest is live 🎉',
-          html:
-            `<p>Your contest <strong>${row.working_name ?? 'is'}</strong> is live and collecting names.</p>` +
-            `<p><a href="${link.properties.action_link}">Log in to manage it →</a></p>`,
-        }),
-      });
-    }
-
-    return json({ ok: true, contestId: created.id });
+    // NOTE: the login email is sent by the APP (supabase.auth.signInWithOtp)
+    // right after this returns — not here — because a link generated
+    // server-side (admin.generateLink) doesn't carry the browser's PKCE
+    // verifier, so clicking it wouldn't actually establish the session.
+    // Here we only needed generateLink to create-or-find the user id.
+    return json({ ok: true, contestId: created.id, userId });
   } catch (e) {
     return json({ error: (e as Error)?.message ?? String(e) }, 500);
   }

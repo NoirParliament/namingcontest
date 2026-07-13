@@ -160,7 +160,9 @@ export default function Settings() {
         if (!active) return;
         if (!error) {
           if (!nameEditedRef.current && data?.display_name) setName(data.display_name);
-          if (data?.avatar_url) setPhoto(data.avatar_url);
+          // DB is the source of truth for a real user's photo — clear any
+          // stale localStorage photo when the profile has none.
+          setPhoto(data?.avatar_url || null);
         }
         setProfileReady(true);
       });
@@ -219,8 +221,10 @@ export default function Settings() {
     writeSetup({ userPhoto: null });
   };
 
-  // Real contest from setup (only present after the user has launched).
-  const realContest = setup.contestId ? {
+  // Real contest from setup — DEMO PATH ONLY. Real accounts read their
+  // contests from the DB (dbContests), never from localStorage, so stale
+  // localStorage can't surface a mock contest to a logged-in user.
+  const realContest = (!isRealUser && setup.contestId) ? {
     id: setup.contestId,
     name: setup.workingName || 'Your contest',
     tierKey,
