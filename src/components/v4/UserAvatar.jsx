@@ -4,8 +4,10 @@
 // upload a real photo, which takes over.
 import Avatar from 'boring-avatars';
 
-// Warm, on-brand palette for the generated avatars.
-const USER_AVATAR_COLORS = ['#F5B851', '#EC7357', '#4B68C3', '#57B894', '#E86AA6'];
+// The app's brand pastel palette — same 5 colors every other boring-avatar
+// in the app uses (segmentTheme's DEFAULT_PALETTE: blush, butter, mint, sky,
+// periwinkle), so user avatars sit in the same visual family.
+const USER_AVATAR_COLORS = ['#fadecc', '#fceebc', '#a6dcb3', '#c4dffb', '#b3c4f0'];
 
 export default function UserAvatar({ seed, photoUrl, size = 40, className = '' }) {
   if (photoUrl) {
