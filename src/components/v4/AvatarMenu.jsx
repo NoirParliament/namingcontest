@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Gear, SignOut, ArrowRight, CaretDown } from '@phosphor-icons/react';
 import heroProfile1 from '../../assets/hero-profile-1.png';
 import { readAllParticipations } from '../../utils/v4Participant';
+import { supabase } from '../../lib/supabaseClient';
 
 export default function AvatarMenu({ email, name, photo, defaultPhoto, tone, activeContest }) {
   const [open, setOpen] = useState(false);
@@ -54,7 +55,9 @@ export default function AvatarMenu({ email, name, photo, defaultPhoto, tone, act
   }, [open]);
 
   const handleSignOut = () => {
-    // Prototype: clears the v4 setup blob. Real auth call lands here later.
+    // End the real Supabase session, then clear the prototype's local blob
+    // so no stale mock identity lingers after sign-out.
+    supabase.auth.signOut();
     try { localStorage.removeItem('v4_contest_setup'); } catch {}
     // Same body-fade exit treatment as ExitLink/BrandLink, so signing
     // out has the gentle "leaving" feel instead of a jump-cut to the

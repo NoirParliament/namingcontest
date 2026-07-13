@@ -15,82 +15,16 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  X, PaperPlaneTilt, ArrowRight, UsersThree,
+  X, PaperPlaneTilt, UsersThree,
 } from '@phosphor-icons/react';
-import { readSetup, writeSetup } from '../../utils/v4Brief';
-import { joinContest, clearParticipation, recordSubmission } from '../../utils/v4Participant';
-import { MOCK_CONTESTS } from '../../data/v4/mockContests';
+import { readSetup } from '../../utils/v4Brief';
+import { useAuth } from '../../lib/AuthContext';
 import keyImg from '../../assets/key.png';
 import messageImg from '../../assets/message.png';
 // Pull landing-v3 styles in so the modal's .btn-primary / .btn-secondary
 // (and their hover-slide animation) resolve correctly even when the modal
 // is mounted outside the v4 page tree (e.g. triggered from the landing).
 import '../../styles/landing-v3.css';
-
-// Creator destination — the demo flow:
-//   1. If the user already has a real contestId on their setup (because
-//      they actually walked through pick → brief → launch), route to
-//      that contest's manage page.
-//   2. Otherwise seed the demo football contest as "their" launched
-//      contest (workingName, contestId, subSegmentId, group, launchedAt)
-//      so the manage page renders and the workspace shows a real
-//      "Running" card. Also clears any prior participant state so the
-//      demo isn't mixed (creator and participant on the same contest
-//      reads confusingly).
-function applyCreatorSignIn(email) {
-  const e = (email || '').toLowerCase();
-  const existing = readSetup();
-  // Always persist the email + clear participant artifacts on creator
-  // sign-in so the next page render reflects a clean creator view.
-  clearParticipation('mock_ongoing_1');
-
-  if (existing.contestId) {
-    writeSetup({ userEmail: e });
-    return `/v4/contest/${existing.contestId}`;
-  }
-
-  // Seed demo creator state from mock_ongoing_1. ContestManage reads
-  // contest meta from MOCK_CONTESTS, so it'll render correctly.
-  const seed = MOCK_CONTESTS.mock_ongoing_1;
-  writeSetup({
-    userEmail: e,
-    contestId: seed.id,
-    workingName: seed.workingName,
-    subSegmentId: seed.subSegmentId,
-    group: seed.group,
-    launchedAt: Date.now(),
-  });
-  return `/v4/contest/${seed.id}`;
-}
-
-// Participant destination — workspace with the football contest seeded
-// in the "Joined" section. Wipes any creator-side contest fields so the
-// "Running" section shows the quiet "start a contest" nudge instead.
-function applyParticipantSignIn(email) {
-  const e = (email || 'demo@participant.com').toLowerCase();
-  const displayName = e.split('@')[0];
-  writeSetup({
-    userEmail: e,
-    userName: displayName,
-    contestId: null,
-    workingName: null,
-    subSegmentId: null,
-    group: null,
-    launchedAt: null,
-  });
-  // Demo: ALWAYS reset participation on participant sign-in, then
-  // SEED 3 mock submissions so the workspace lands in the
-  // post-submission state with the live countdown + greyed-out vote
-  // button visible immediately. (The fresh-participant chat flow is
-  // accessible via /v4/join/mock_ongoing_1, which also resets.)
-  joinContest('mock_ongoing_1', { name: displayName, email: e });
-  [
-    { text: 'Iron Boots FC',     whyItFits: `Sounds like Saturday-night football in the mud — and a long bus home.` },
-    { text: 'Brookside Rovers',  whyItFits: `Local geography wins community loyalty. Easy chant: “ROVERS!”` },
-    { text: 'North Park United', whyItFits: `Direct, two-syllable, chantable. Names the pitch.` },
-  ].forEach((n) => recordSubmission('mock_ongoing_1', n));
-  return '/v4/settings';
-}
 
 // Per-mode button icon + label. The modal leads with whichever mode it
 // was opened in (creator by default; participant when opened from the
@@ -103,11 +37,13 @@ const MODE_META = {
 
 export default function SignInModal({ open, onClose, initialMode = 'creator' }) {
   const [email, setEmail] = useState('');
-  const [phase, setPhase] = useState('input'); // 'input' | 'sent' | 'success'
+  const [phase, setPhase] = useState('input'); // 'input' | 'sent'
   const [mode, setMode] = useState(initialMode); // 'creator' | 'participant'
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
   const inputRef = useRef(null);
   const navigate = useNavigate();
+  const { signInWithEmail } = useAuth();
 
   // Reset on open / close on Escape
   useEffect(() => {
@@ -115,6 +51,7 @@ export default function SignInModal({ open, onClose, initialMode = 'creator' }) 
     setPhase('input');
     setMode(initialMode);
     setSubmitting(false);
+    setError('');
     setEmail(readSetup().userEmail || '');
     const t = setTimeout(() => inputRef.current?.focus(), 80);
     const onKey = (e) => { if (e.key === 'Escape') onClose?.(); };
@@ -127,20 +64,25 @@ export default function SignInModal({ open, onClose, initialMode = 'creator' }) 
 
   if (!open) return null;
 
-  // Validate email + simulate "sending" the magic link. The selected
-  // mode is captured at send time and carried through to the success
-  // callback below.
-  const sendLink = (nextMode) => {
+  // Validate email + send a REAL Supabase magic link. The chosen mode is
+  // carried on the redirect URL (?as=…) so the landing can route creators
+  // vs. participants later. Same email = same account either way.
+  const sendLink = async (nextMode) => {
+    setError('');
     if (!/^\S+@\S+\.\S+$/.test(email.trim())) {
-      window.alert('Please enter a valid email address.');
+      setError('Please enter a valid email address.');
       return;
     }
     setMode(nextMode);
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
-      setPhase('sent');
-    }, 600);
+    const redirectTo = `${window.location.origin}/v4/settings?as=${nextMode}`;
+    const { error: sendError } = await signInWithEmail(email, redirectTo);
+    setSubmitting(false);
+    if (sendError) {
+      setError(sendError.message || 'Could not send the link. Please try again.');
+      return;
+    }
+    setPhase('sent');
   };
 
   // The PRIMARY action follows how the modal was opened: a participant
@@ -152,24 +94,6 @@ export default function SignInModal({ open, onClose, initialMode = 'creator' }) 
   const secondaryMode = primaryMode === 'creator' ? 'participant' : 'creator';
   const PrimaryIcon = MODE_META[primaryMode].Icon;
   const SecondaryIcon = MODE_META[secondaryMode].Icon;
-
-  // "Open the link" demo shortcut — branches on the captured mode.
-  // Lands straight on the destination (workspace / contest) with the
-  // app's standard fade-out; no intermediate "Welcome back" card.
-  const handleSimulateClick = () => {
-    const dest = mode === 'participant'
-      ? applyParticipantSignIn(email.trim())
-      : applyCreatorSignIn(email.trim());
-    document.body.classList.add('is-exiting');
-    setTimeout(() => {
-      onClose?.();
-      // Skip the fade-IN on the destination so it doesn't double-flash.
-      document.body.style.transition = 'none';
-      document.body.classList.remove('is-exiting');
-      navigate(dest);
-      requestAnimationFrame(() => { document.body.style.transition = ''; });
-    }, 180);
-  };
 
   return (
     /* The .v4 wrapper scopes the CSS custom properties (--v4-bg, etc.)
@@ -246,6 +170,15 @@ export default function SignInModal({ open, onClose, initialMode = 'creator' }) 
               </button>
             </form>
 
+            {error && (
+              <p className="v4-signin-error" role="alert" style={{
+                margin: '10px 2px 0', fontSize: '13px', lineHeight: 1.4,
+                color: '#a8321f', fontFamily: 'var(--font-text)',
+              }}>
+                {error}
+              </p>
+            )}
+
             <div className="v4-signin-divider" aria-hidden="true">
               <span>or</span>
             </div>
@@ -287,19 +220,7 @@ export default function SignInModal({ open, onClose, initialMode = 'creator' }) 
             <h2 className="v4-signin-title">Check your email</h2>
             <p className="v4-signin-subtitle">
               We sent a sign-in link to <strong>{email}</strong>. Open it to
-              continue — the link works for 15 minutes.
-            </p>
-
-            <button
-              type="button"
-              className="btn btn-primary btn-lg v4-signin-submit"
-              onClick={handleSimulateClick}
-            >
-              Open the link <ArrowRight weight="bold" size={14} />
-            </button>
-            <p className="v4-signin-foot v4-signin-foot-demo">
-              ↑ Demo shortcut. In production this button wouldn’t exist —
-              you’d just click the link in your inbox.
+              continue — the link works for 60 minutes.
             </p>
 
             <button
