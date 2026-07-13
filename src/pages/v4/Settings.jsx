@@ -185,8 +185,7 @@ export default function Settings() {
       .then(({ data, error }) => {
         if (!active) return;
         if (error) console.error('[workspace] contests query failed:', error);
-        else console.log('[workspace] contests loaded:', data?.length ?? 0, data);
-        if (data) setDbContests(data);
+        else if (data) setDbContests(data);
       });
     return () => { active = false; };
   }, [user?.id]);

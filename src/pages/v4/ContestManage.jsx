@@ -27,6 +27,7 @@ import {
 } from '../../utils/v4Brief';
 import { buildLiveData } from '../../utils/v4LiveData';
 import { getMockContestById } from '../../data/v4/mockContests';
+import { supabase } from '../../lib/supabaseClient';
 import {
   BRIEF_QUESTIONS, SHARED_SETTINGS_QUESTIONS,
 } from '../../data/v4/briefQuestions';
@@ -130,19 +131,47 @@ export default function ContestManage() {
   // unrelated brief and segment, which is confusing.
   const mockContest = getMockContestById(id);
   const realSetup = readSetup();
+
+  // Real (DB) contest — fetched when the id isn't a mock demo. A just-launched
+  // contest has no submissions yet, so liveData stays empty (no fake votes).
+  const [dbContest, setDbContest] = useState(null);
+  const [dbLoading, setDbLoading] = useState(!mockContest);
+  useEffect(() => {
+    if (mockContest) { setDbLoading(false); return; }
+    let active = true;
+    supabase.from('contests').select('*').eq('id', id).single().then(({ data }) => {
+      if (!active) return;
+      setDbContest(data || null);
+      setDbLoading(false);
+    });
+    return () => { active = false; };
+  }, [id, mockContest]);
+
   const setup = mockContest
-    ? {
-        ...realSetup,
-        ...mockContest,
-        contestId: mockContest.id,
-      }
-    : realSetup;
+    ? { ...realSetup, ...mockContest, contestId: mockContest.id }
+    : dbContest
+      ? {
+          contestId: dbContest.id,
+          workingName: dbContest.working_name,
+          subSegmentId: dbContest.sub_segment_id,
+          subSegmentTitle: dbContest.sub_segment_title,
+          group: dbContest.tier,
+          brief: dbContest.brief || {},
+          settings: dbContest.settings || {},
+          voterTier: dbContest.voter_tier,
+          launchedAt: dbContest.launched_at ? new Date(dbContest.launched_at).getTime() : Date.now(),
+        }
+      : realSetup;
   const subId = setup.subSegmentId || 'b1';
-  // Phase resolution — defaults to 'voting' for prototype demos. The
-  // URL ?phase= param lets us flip a mock contest through every stage
-  // without rebuilding mock data.
+
+  // Phase: a mock/demo contest uses the URL ?phase= param (defaults to
+  // voting). A real contest uses its DB status — a fresh launch is in the
+  // submission phase — unless the URL explicitly overrides it.
   const phaseParam = searchParams.get('phase');
-  const phase = PHASES.includes(phaseParam) ? phaseParam : 'voting';
+  const STATUS_PHASE = { submission: 'submission', voting: 'voting', closed: 'winner' };
+  const phase = PHASES.includes(phaseParam)
+    ? phaseParam
+    : (dbContest ? (STATUS_PHASE[dbContest.status] || 'submission') : 'voting');
   // Sub-state of the "winner" phase: nameId of the picked winner, or
   // null when the creator still needs to pick. ?winner=n1 prefills for
   // demo. In production this would come from setup.winner.
