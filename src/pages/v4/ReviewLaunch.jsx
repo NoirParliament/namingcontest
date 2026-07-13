@@ -161,8 +161,13 @@ export default function ReviewLaunch() {
         .insert({ creator_id: user.id, ...row })
         .select('id')
         .single();
-      if (error) console.error('[launch] insert failed:', error.message);
-      writeSetup({ contestId: data?.id || null, launchedAt: Date.now() });
+      if (error) {
+        console.error('[launch] insert failed:', error);
+        setLaunching(false);
+        window.alert('Could not create your contest:\n\n' + (error.message || JSON.stringify(error)));
+        return;
+      }
+      writeSetup({ contestId: data.id, launchedAt: Date.now() });
       setTimeout(() => navigate('/v4/settings'), 600);
       return;
     }
