@@ -8,7 +8,7 @@
 // Future: dashboard list links here per contest
 
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, useLocation, Link } from 'react-router-dom';
 import {
   X, Heart, UsersThree, Briefcase,
   Copy, Check, EnvelopeSimple, ShareNetwork,
@@ -145,16 +145,19 @@ export default function ContestManage() {
   const mockContest = getMockContestById(id);
   const realSetup = readSetup();
 
-  // Real (DB) contest — fetched when the id isn't a mock demo. A just-launched
-  // contest has no submissions yet, so liveData stays empty (no fake votes).
-  const [dbContest, setDbContest] = useState(null);
-  const [dbLoading, setDbLoading] = useState(!mockContest);
+  // Real (DB) contest. If the workspace passed the contest via navigation
+  // state, use it immediately (no loading flash / correct color instantly);
+  // otherwise fetch it. Either way we refresh from the DB in the background.
+  const location = useLocation();
+  const preloaded = location.state?.contest || null;
+  const [dbContest, setDbContest] = useState(preloaded);
+  const [dbLoading, setDbLoading] = useState(!mockContest && !preloaded);
   useEffect(() => {
     if (mockContest) { setDbLoading(false); return; }
     let active = true;
     supabase.from('contests').select('*').eq('id', id).single().then(({ data }) => {
       if (!active) return;
-      setDbContest(data || null);
+      if (data) setDbContest(data);
       setDbLoading(false);
     });
     return () => { active = false; };
@@ -343,10 +346,12 @@ export default function ContestManage() {
   // While a real contest is still loading, show a calm loading state rather
   // than flashing the stale default ("Your Contest", blue) first.
   if (!mockContest && dbLoading) {
+    let loadingSub = dbContest?.sub_segment_id;
+    if (!loadingSub) { try { loadingSub = localStorage.getItem('v4_last_sub'); } catch { /* ignore */ } }
     return (
       <div className="v4 lp-v3">
         <div className="v4-screen">
-          <SegmentThemeBackdrop subId={dbContest?.sub_segment_id || 'b1'} minimal />
+          <SegmentThemeBackdrop subId={loadingSub || 'b1'} minimal />
           <main className="v4-review" role="main">
             <div className="v4-review-inner" style={{ textAlign: 'center', paddingTop: 120 }}>
               <p className="v4-review-subtitle">Loading your contest…</p>

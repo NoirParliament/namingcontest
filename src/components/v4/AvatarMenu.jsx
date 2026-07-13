@@ -129,8 +129,8 @@ export default function AvatarMenu({ email, name, photo, defaultPhoto, seed, ton
                 style={{ background: ct.bg + '40' }}
               >
                 <div className="v4-avatar-dropdown-contest-text">
-                  <div className="v4-avatar-dropdown-contest-eyebrow">
-                    <span className="v4-manage-live-dot" aria-hidden="true"></span>
+                  <div className="v4-avatar-dropdown-contest-eyebrow" style={{ color: ct.fg }}>
+                    <span className="v4-manage-live-dot" aria-hidden="true" style={{ background: ct.fg }}></span>
                     <span>{(activeContest.phase || 'LIVE').toUpperCase()}</span>
                     {activeContest.daysLeft != null && (
                       <>

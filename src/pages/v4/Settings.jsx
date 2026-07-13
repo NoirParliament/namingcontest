@@ -128,7 +128,10 @@ export default function Settings() {
   const primaryJoined = participations[0]
     ? getMockContestById(participations[0].contestId)
     : null;
-  const subId = latest?.sub_segment_id || setup.subSegmentId || primaryJoined?.subSegmentId || (isRealUser ? 'b1' : MOCK_ONGOING.subSegmentId);
+  // Cached last segment → instant correct color on the Namespace page before
+  // the contests query returns (avoids a blue flash).
+  const cachedSub = isRealUser ? (() => { try { return localStorage.getItem('v4_last_sub'); } catch { return null; } })() : null;
+  const subId = latest?.sub_segment_id || cachedSub || setup.subSegmentId || primaryJoined?.subSegmentId || (isRealUser ? 'b1' : MOCK_ONGOING.subSegmentId);
   const segmentTone = getSegmentTone(subId);
   const tierKey = setup.group || primaryJoined?.group || MOCK_ONGOING.tierKey;
 
@@ -186,8 +189,14 @@ export default function Settings() {
       .order('created_at', { ascending: false })
       .then(({ data, error }) => {
         if (!active) return;
-        if (error) console.error('[workspace] contests query failed:', error);
-        else if (data) setDbContests(data);
+        if (error) { console.error('[workspace] contests query failed:', error); return; }
+        if (data) {
+          setDbContests(data);
+          // Cache the latest segment for an instant-color next visit.
+          if (data[0]?.sub_segment_id) {
+            try { localStorage.setItem('v4_last_sub', data[0].sub_segment_id); } catch {}
+          }
+        }
       });
     return () => { active = false; };
   }, [user?.id]);
@@ -496,7 +505,7 @@ export default function Settings() {
                       <button
                         type="button"
                         className="btn btn-primary btn-sm"
-                        onClick={() => navigate(`/v4/contest/${c.id}?phase=submission`)}
+                        onClick={() => navigate(`/v4/contest/${c.id}?phase=submission`, { state: { contest: c } })}
                       >
                         Manage <ArrowRight weight="bold" size={14} />
                       </button>
