@@ -18,6 +18,7 @@ import BrandLink from '../../components/v4/BrandLink';
 import { readSetup, writeSetup } from '../../utils/v4Brief';
 import { useAuth } from '../../lib/AuthContext';
 import { supabase } from '../../lib/supabaseClient';
+import { uploadUserFile } from '../../lib/uploads';
 import UserAvatar from '../../components/v4/UserAvatar';
 import { readAllParticipations, getParticipantRow } from '../../utils/v4Participant';
 import { getMockContestById, MOCK_CONTESTS } from '../../data/v4/mockContests';
@@ -132,6 +133,7 @@ export default function Settings() {
   // profiles row and saves back to it, so it survives re-login.
   const email = user?.email || setup.userEmail || '';
   const [photo, setPhoto] = useState(setup.userPhoto || null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [name, setName] = useState(setup.userName || '');
   const [savedFlash, setSavedFlash] = useState(false);
   const fileRef = useRef(null);
@@ -145,19 +147,21 @@ export default function Settings() {
     let active = true;
     supabase
       .from('profiles')
-      .select('display_name')
+      .select('*') // '*' is resilient if avatar_url isn't migrated in yet
       .eq('id', user.id)
       .single()
-      .then(({ data }) => {
-        if (active && !nameEditedRef.current && data?.display_name) setName(data.display_name);
+      .then(({ data, error }) => {
+        if (!active || error) return;
+        if (!nameEditedRef.current && data?.display_name) setName(data.display_name);
+        if (data?.avatar_url) setPhoto(data.avatar_url);
       });
     return () => { active = false; };
   }, [user?.id]);
 
-  // Read uploaded image as a data URL → store it on the setup blob.
-  // (Prototype-grade. In production, upload to Supabase Storage and
-  // persist the public URL instead.)
-  const handlePhotoFile = (file) => {
+  // Upload the chosen image to Supabase Storage and save its public URL on
+  // the profile, so it persists across re-login and devices. Mirrors to the
+  // localStorage setup blob that other (still-mock) pages read.
+  const handlePhotoFile = async (file) => {
     if (!file) return;
     if (!/^image\//.test(file.type)) {
       window.alert('Please choose an image file (PNG, JPG, etc.).');
@@ -167,18 +171,25 @@ export default function Settings() {
       window.alert('Image must be under 5 MB.');
       return;
     }
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const dataUrl = e.target?.result;
-      if (typeof dataUrl === 'string') {
-        setPhoto(dataUrl);
-        writeSetup({ userPhoto: dataUrl });
+    setUploadingPhoto(true);
+    try {
+      const url = await uploadUserFile({ file, folder: 'avatar' });
+      setPhoto(url);
+      if (user?.id) {
+        await supabase.from('profiles').update({ avatar_url: url }).eq('id', user.id);
       }
-    };
-    reader.readAsDataURL(file);
+      writeSetup({ userPhoto: url });
+    } catch (err) {
+      window.alert(err.message || 'Upload failed. Please try again.');
+    } finally {
+      setUploadingPhoto(false);
+    }
   };
-  const handleRemovePhoto = () => {
+  const handleRemovePhoto = async () => {
     setPhoto(null);
+    if (user?.id) {
+      await supabase.from('profiles').update({ avatar_url: null }).eq('id', user.id);
+    }
     writeSetup({ userPhoto: null });
   };
 
@@ -744,9 +755,10 @@ export default function Settings() {
                           type="button"
                           className="btn btn-secondary btn-sm"
                           onClick={() => fileRef.current?.click()}
+                          disabled={uploadingPhoto}
                         >
                           <Camera weight="bold" size={14} />
-                          Upload new photo
+                          {uploadingPhoto ? 'Uploading…' : 'Upload new photo'}
                         </button>
                         {photo && (
                           <button
