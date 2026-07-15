@@ -30,6 +30,8 @@ import { SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
 import { readParticipation, recordVotes } from '../../utils/v4Participant';
 import { showSubmitter, anonymityMode } from '../../utils/v4Anonymity';
 import AvatarMenu from '../../components/v4/AvatarMenu';
+import { useAuth } from '../../lib/AuthContext';
+import { supabase } from '../../lib/supabaseClient';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -107,21 +109,90 @@ function shuffleStable(arr, seed) {
 export default function ParticipantVote() {
   const { id: contestId } = useParams();
   const navigate = useNavigate();
-  const contest = getMockContestById(contestId);
-  const participation = readParticipation(contestId);
+  const { user } = useAuth();
+  const mockContest = getMockContestById(contestId);
   const chatRef = useRef(null);
   const didFirstAutoscrollRef = useRef(false);
+
+  // ── Real contest data (DB) ─────────────────────────────────────────
+  // Load the contest, all its submissions, this user's existing votes, and
+  // their profile (avatar/name). The votes DB triggers enforce phase, member-
+  // ship, no-self-vote and the ≤3 cap — the UI mirrors those rules for UX.
+  const [dbContest, setDbContest] = useState(null);
+  const [dbSubs, setDbSubs] = useState([]);
+  const [myVoteIds, setMyVoteIds] = useState([]);
+  const [profile, setProfile] = useState(null);
+  const [dbLoading, setDbLoading] = useState(!mockContest);
+  useEffect(() => {
+    if (mockContest || !user?.id) return;
+    let active = true;
+    Promise.all([
+      supabase.from('contests').select('*').eq('id', contestId).single(),
+      supabase.from('submissions')
+        .select('id, text, rationale, credited, user_id, vote_count, created_at')
+        .eq('contest_id', contestId)
+        .order('created_at', { ascending: true }),
+      supabase.from('votes').select('submission_id').eq('contest_id', contestId).eq('user_id', user.id),
+      supabase.from('profiles').select('display_name, avatar_url').eq('id', user.id).single(),
+    ]).then(([c, s, v, p]) => {
+      if (!active) return;
+      setDbContest(c.data || null);
+      setDbSubs(s.data || []);
+      setMyVoteIds((v.data || []).map((r) => r.submission_id));
+      setProfile(p.data || null);
+      setDbLoading(false);
+      if (c.data?.sub_segment_id) {
+        try { localStorage.setItem('v4_last_sub', c.data.sub_segment_id); } catch { /* ignore */ }
+      }
+    });
+    return () => { active = false; };
+  }, [contestId, mockContest, user?.id]);
+  const isRealContest = !mockContest && !!dbContest;
+
+  const contest = mockContest || (dbContest ? {
+    id: dbContest.id,
+    name: dbContest.working_name,
+    workingName: dbContest.working_name,
+    subSegmentId: dbContest.sub_segment_id,
+    subSegmentTitle: dbContest.sub_segment_title,
+    group: dbContest.tier,
+    settings: dbContest.settings || {},
+    brief: dbContest.brief || {},
+    status: dbContest.status,
+    creator: {},
+  } : null);
+  const participation = mockContest ? readParticipation(contestId) : null;
 
   const subId = contest?.subSegmentId;
   const tone = subId ? getSegmentTone(subId) : null;
   const setup = readSetup();
-  const userEmail = setup.userEmail || '';
-  const userName = setup.userName || (userEmail.split('@')[0] || 'You');
-  const userPhoto = setup.userPhoto || null;
+  // Identity: real session for a real contest, else the demo setup blob.
+  const userEmail = isRealContest ? (user?.email || '') : (setup.userEmail || '');
+  const userName = isRealContest
+    ? (profile?.display_name || user?.email?.split('@')[0] || 'You')
+    : (setup.userName || (userEmail.split('@')[0] || 'You'));
+  const userPhoto = isRealContest ? (profile?.avatar_url || null) : (setup.userPhoto || null);
   const creatorName = contest?.creator?.name || 'the organizer';
-  const votingLimit = contest?.settings?.votingLimit || 3;
-  const allSubmissions = contest?.allSubmissions || [];
-  const alreadyVoted = (participation?.votedFor || []).length > 0;
+  // The DB trigger hard-caps at 3 picks, so clamp the real cap there even if a
+  // creator's settings say otherwise (avoids a confusing DB rejection).
+  const rawVotingLimit = contest?.settings?.votingLimit || 3;
+  const votingLimit = isRealContest ? Math.min(rawVotingLimit, 3) : rawVotingLimit;
+  const allSubmissions = mockContest
+    ? (contest?.allSubmissions || [])
+    : dbSubs
+        // You can't vote for your own name — drop it from the votable list.
+        .filter((s) => s.user_id !== user?.id)
+        .map((s) => ({
+          id: s.id,
+          text: s.text,
+          whyItFits: s.rationale || '',
+          // Submitter identity for real contests is deferred (anonymity +
+          // profile-name join TBD); cards show the name + rationale only.
+          submitterName: null,
+          credited: s.credited,
+        }));
+  const alreadyVoted = mockContest ? (participation?.votedFor || []).length > 0 : myVoteIds.length > 0;
+  const [saving, setSaving] = useState(false);
   const { rows: briefRows, settingsRows } = useMemo(
     () => buildBriefRows(contest),
     [contest]
@@ -142,6 +213,15 @@ export default function ParticipantVote() {
   const [selectedIds, setSelectedIds] = useState(() =>
     participation?.votedFor ? [...participation.votedFor] : []
   );
+  // Real contest: once this user's existing votes load, seed the selection
+  // (once) so a returning voter sees their current picks and can update them.
+  const didInitVotesRef = useRef(false);
+  useEffect(() => {
+    if (isRealContest && !didInitVotesRef.current) {
+      didInitVotesRef.current = true;
+      setSelectedIds([...myVoteIds]);
+    }
+  }, [isRealContest, myVoteIds]);
   const [search, setSearch] = useState('');
   const [sortMode, setSortMode] = useState('random');
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -188,10 +268,33 @@ export default function ParticipantVote() {
   }, [introStage]);
 
   // Guards
-  if (!contest) return <Navigate to="/v4/settings" replace />;
-  if (!participation) return <Navigate to={`/v4/join/${contestId}`} replace />;
-  const hasSubmittedNames = (participation.submittedNames || []).length > 0;
-  if (!hasSubmittedNames) return <Navigate to={`/v4/contest/${contestId}/submit`} replace />;
+  if (!mockContest) {
+    // Real contest: wait for the load, then only allow voting in the voting
+    // phase. Otherwise send the participant to the right place for the stage.
+    if (dbLoading) {
+      return (
+        <div className="v4 lp-v3"><div className="v4-screen">
+          <SegmentThemeBackdrop subId={subId} minimal />
+        </div></div>
+      );
+    }
+    if (!dbContest) return <Navigate to="/v4/settings" replace />;
+    if (contest.status !== 'voting') {
+      return (
+        <Navigate
+          to={contest.status === 'closed'
+            ? `/v4/contest/${contestId}/winner`
+            : `/v4/contest/${contestId}/submit`}
+          replace
+        />
+      );
+    }
+  } else {
+    if (!contest) return <Navigate to="/v4/settings" replace />;
+    if (!participation) return <Navigate to={`/v4/join/${contestId}`} replace />;
+    const hasSubmittedNames = (participation.submittedNames || []).length > 0;
+    if (!hasSubmittedNames) return <Navigate to={`/v4/contest/${contestId}/submit`} replace />;
+  }
 
   // Handlers
   const toggleVote = (id) => {
@@ -202,10 +305,37 @@ export default function ParticipantVote() {
     });
   };
 
-  const handleSubmitVotes = () => {
-    if (selectedIds.length === 0) return;
-    recordVotes(contestId, selectedIds);
-    navigate(`/v4/contest/${contestId}/vote-thanks`, { replace: true });
+  const handleSubmitVotes = async () => {
+    if (selectedIds.length === 0 || saving) return;
+    if (!isRealContest) {
+      recordVotes(contestId, selectedIds);
+      navigate(`/v4/contest/${contestId}/vote-thanks`, { replace: true });
+      return;
+    }
+    // Real contest: diff against existing votes so re-submitting updates them.
+    // Delete removed picks first (frees room under the ≤3 cap), then insert
+    // the new ones. Server triggers still enforce every rule.
+    setSaving(true);
+    const existing = new Set(myVoteIds);
+    const selected = new Set(selectedIds);
+    const toDelete = [...existing].filter((id) => !selected.has(id));
+    const toInsert = [...selected].filter((id) => !existing.has(id));
+    try {
+      if (toDelete.length) {
+        const { error } = await supabase.from('votes')
+          .delete().eq('contest_id', contestId).eq('user_id', user.id).in('submission_id', toDelete);
+        if (error) throw error;
+      }
+      if (toInsert.length) {
+        const rows = toInsert.map((sid) => ({ contest_id: contestId, submission_id: sid, user_id: user.id }));
+        const { error } = await supabase.from('votes').insert(rows);
+        if (error) throw error;
+      }
+      navigate(`/v4/contest/${contestId}/vote-thanks`, { replace: true });
+    } catch (err) {
+      window.alert(err.message || 'Could not save your votes. Please try again.');
+      setSaving(false);
+    }
   };
 
   return (
@@ -234,7 +364,9 @@ export default function ParticipantVote() {
               <AvatarMenu
                 email={userEmail}
                 name={userName}
-                photo={participantProfile}
+                photo={isRealContest ? userPhoto : participantProfile}
+                /* Real user with no photo → avatar generated from their id. */
+                seed={isRealContest ? user?.id : undefined}
                 tone={tone}
                 activeContest={{
                   id: contest.id,
@@ -439,10 +571,10 @@ export default function ParticipantVote() {
                   type="button"
                   className="btn btn-primary btn-lg"
                   onClick={handleSubmitVotes}
-                  disabled={selectedIds.length === 0}
+                  disabled={selectedIds.length === 0 || saving}
                 >
                   <PaperPlaneTilt weight="bold" size={14} />
-                  {alreadyVoted ? 'Update my votes' : 'Submit my votes'}
+                  {saving ? 'Saving…' : alreadyVoted ? 'Update my votes' : 'Submit my votes'}
                   <span className="arrow">→</span>
                 </button>
               </div>
