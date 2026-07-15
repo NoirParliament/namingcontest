@@ -124,14 +124,11 @@ export default function ReviewLaunch() {
     setLaunchOpen(true);
   };
 
-  // Assemble the contest row from the current localStorage draft. Payment is
-  // bypassed (paid:true) until Phase 4; brief + settings go in as jsonb.
+  // Assemble the contest row from the current localStorage draft. It starts as
+  // an UNPAID DRAFT — confirm-launch sets paid/status/timestamps once Stripe
+  // confirms payment. brief + settings go in as jsonb.
   const buildContestRow = () => {
     const cur = readSetup();
-    const DAY = 86400000;
-    const now = Date.now();
-    const submissionDays = cur.settings?.submissionDays || 7;
-    const votingDays = cur.settings?.votingDays || 3;
     return {
       working_name: cur.workingName || null,
       tier: cur.group || null,
@@ -141,57 +138,61 @@ export default function ReviewLaunch() {
       settings: cur.settings || {},
       voter_tier: cur.voterTier || null,
       price: cur.voterTier ? priceForVoters(cur.voterTier) : null,
-      status: 'submission',
-      paid: true,
-      submission_ends_at: new Date(now + submissionDays * DAY).toISOString(),
-      voting_ends_at: new Date(now + (submissionDays + votingDays) * DAY).toISOString(),
-      launched_at: new Date(now).toISOString(),
+      status: 'draft',
+      paid: false,
     };
   };
 
-  const handleLaunchSuccess = async (email) => {
-    setLaunchOpen(false);
+  // STEP 1 (called by the launch modal before charging the card): create the
+  // draft contest — directly for a signed-in creator, or via the Edge Function
+  // for a guest (which also creates their account) — then a Stripe
+  // PaymentIntent for its price. Returns the client secret to confirm the card.
+  const createDraftAndIntent = async (email) => {
     const row = buildContestRow();
-
+    let contestId;
     if (user?.id) {
-      // Already signed in → create the contest directly under this account.
-      setLaunching(true);
       const { data, error } = await supabase
         .from('contests')
         .insert({ creator_id: user.id, ...row })
         .select('id')
         .single();
-      if (error) {
-        console.error('[launch] insert failed:', error);
-        setLaunching(false);
-        window.alert('Could not create your contest:\n\n' + (error.message || JSON.stringify(error)));
-        return;
-      }
-      writeSetup({ contestId: data.id, launchedAt: Date.now() });
-      setTimeout(() => navigate('/v4/settings'), 600);
-      return;
+      if (error) throw new Error(error.message || 'Could not create your contest.');
+      contestId = data.id;
+    } else {
+      const { data, error } = await supabase.functions.invoke('launch-contest', { body: { email, row } });
+      if (error) throw new Error(error.message || 'Could not start your contest.');
+      if (data?.error) throw new Error(data.error);
+      contestId = data.contestId;
     }
+    const { data: pi, error: piErr } = await supabase.functions.invoke('create-payment-intent', { body: { contestId } });
+    if (piErr) throw new Error(piErr.message || 'Could not set up payment.');
+    if (pi?.error) throw new Error(pi.error);
+    return { contestId, clientSecret: pi.clientSecret, paymentIntentId: pi.paymentIntentId };
+  };
 
-    // Guest (or an existing account signing in fresh):
-    //  1. the Edge Function creates the account + contest server-side, then
-    //  2. the APP sends the login magic link via signInWithOtp — this one
-    //     carries the browser's PKCE verifier, so clicking it actually logs
-    //     them in (unlike a server-generated link).
-    const redirectTo = `${window.location.origin}/v4/settings`;
-    const { error: fnError } = await supabase.functions.invoke('launch-contest', {
-      body: { email, redirectTo, row },
-    });
-    if (fnError) {
-      console.error('[launch] function failed:', fnError);
-      window.alert('Something went wrong launching your contest:\n\n' + (fnError.message || fnError));
-      return;
+  // STEP 2 (called by the modal after the card is confirmed): verify the
+  // payment server-side and flip the contest live, then route.
+  const handlePaid = async ({ contestId, paymentIntentId, email }) => {
+    const { data, error } = await supabase.functions.invoke('confirm-launch', { body: { contestId, paymentIntentId } });
+    if (error || data?.error) {
+      window.alert(
+        'Your payment went through, but we hit a snag activating the contest:\n\n' +
+        (data?.error || error?.message || 'unknown error') +
+        '\n\nIt will still appear once finalized — please refresh in a moment.'
+      );
     }
-    const { error: otpError } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: redirectTo },
-    });
-    if (otpError) console.error('[launch] login link failed:', otpError.message);
-    setPendingEmail(email);
+    setLaunchOpen(false);
+    if (user?.id) {
+      writeSetup({ contestId, launchedAt: Date.now() });
+      setTimeout(() => navigate(`/v4/contest/${contestId}`), 400);
+    } else {
+      // Guest → send the login magic link (carries the browser PKCE verifier),
+      // then show "check your email; your contest is live."
+      const redirectTo = `${window.location.origin}/v4/settings`;
+      const { error: otpError } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo } });
+      if (otpError) console.error('[launch] login link failed:', otpError.message);
+      setPendingEmail(email);
+    }
   };
 
   // Guest launch → "your contest is live, check your email for the login link."
@@ -357,7 +358,8 @@ export default function ReviewLaunch() {
           tier={setup.group || 'personal'}
           palette={segmentPalette}
           onClose={() => setLaunchOpen(false)}
-          onSuccess={handleLaunchSuccess}
+          onCreateIntent={createDraftAndIntent}
+          onPaid={handlePaid}
         />
 
         {/* Per-row edit modal — same flow as ContestManage's brief

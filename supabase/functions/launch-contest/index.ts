@@ -1,15 +1,15 @@
 // Edge Function: launch-contest
 //
-// Called at checkout when the creator is NOT logged in. Using the service_role
+// Called at launch when the creator is NOT logged in. Using the service_role
 // key (server-only), it:
-//   1. creates-or-finds the account for the paid email,
-//   2. creates the contest under that account (live), and
-//   3. emails a magic link ("your contest is live — log in to manage it").
+//   1. creates-or-finds the account for the email, and
+//   2. creates the contest under that account as an UNPAID DRAFT.
 //
-// This is also the hook Stripe's webhook will call in Phase 4 (payment
-// confirmed → launch the contest). Deploy via the Supabase dashboard and set
-// the RESEND_API_KEY secret. SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY are
-// injected automatically.
+// The contest only goes live after payment: the app creates a PaymentIntent
+// (create-payment-intent), confirms the card, and confirm-launch flips the
+// draft to live. The APP sends the login magic link (signInWithOtp) so it
+// carries the browser's PKCE verifier. SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY
+// are injected automatically.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const cors = {
@@ -45,10 +45,12 @@ Deno.serve(async (req) => {
     if (linkErr) throw linkErr;
     const userId = link.user.id;
 
-    // Create the contest under that user (service_role bypasses RLS).
+    // Create the contest under that user as an UNPAID DRAFT (service_role
+    // bypasses RLS). confirm-launch flips it live once payment succeeds — so
+    // force draft/unpaid here regardless of what the client sent.
     const { data: created, error: insErr } = await admin
       .from('contests')
-      .insert({ creator_id: userId, ...row })
+      .insert({ creator_id: userId, ...row, status: 'draft', paid: false })
       .select('id')
       .single();
     if (insErr) throw insErr;
