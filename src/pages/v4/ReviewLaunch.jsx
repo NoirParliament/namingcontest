@@ -173,7 +173,7 @@ export default function ReviewLaunch() {
   // STEP 2 (called by the modal after the card is confirmed): verify the
   // payment server-side and flip the contest live, then route.
   const handlePaid = async ({ contestId, paymentIntentId, email }) => {
-    const { data, error } = await supabase.functions.invoke('confirm-launch', { body: { contestId, paymentIntentId } });
+    const { data, error } = await supabase.functions.invoke('confirm-launch', { body: { contestId, paymentIntentId, origin: window.location.origin } });
     if (error || data?.error) {
       window.alert(
         'Your payment went through, but we hit a snag activating the contest:\n\n' +
