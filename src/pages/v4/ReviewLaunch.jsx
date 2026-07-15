@@ -233,7 +233,7 @@ export default function ReviewLaunch() {
 
         <main className="v4-review" role="main" ref={scrollRef}>
           {/* Glass nav — sticky inside review scroll */}
-          <header className={`v4-nav ${isScrolled ? 'is-scrolled' : ''}`}>
+          <header className={`v4-nav v4-nav-clear ${isScrolled ? 'is-scrolled' : ''}`}>
             <BrandLink />
             <div className="v4-progress">
               <span className="v4-step-dot is-done"></span>
