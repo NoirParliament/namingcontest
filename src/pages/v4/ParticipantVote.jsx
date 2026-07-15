@@ -211,11 +211,12 @@ export default function ParticipantVote() {
   const INTRO_AUTO_TIMINGS = { 0: 700, 1: 900, 3: 1000, 5: 800 };
 
   // ── Voter credit gate ───────────────────────────────────────────────
-  // A voter who never submitted a name hasn't chosen how to be credited yet.
-  // Ask once, up front: share a name (→ becomes their profile name) or vote
-  // anonymously. Submitters already made this choice in the submit chat, so
-  // they skip it. 'done' means the gate is cleared and the normal intro runs.
-  const [creditStep, setCreditStep] = useState('done'); // 'ask' | 'name' | 'done'
+  // A voter who never submitted a name has no profile name on record here yet.
+  // Votes are always private, so there's no "credit vs anonymous" to decide —
+  // we simply ask for a name to save to their profile (optional, skippable).
+  // Submitters already gave a name in the submit chat, so they skip this.
+  // 'done' means the gate is cleared and the normal intro runs.
+  const [creditStep, setCreditStep] = useState('done'); // 'name' | 'done'
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const creditInitRef = useRef(false);
@@ -223,7 +224,7 @@ export default function ParticipantVote() {
     if (creditInitRef.current || !isRealContest || dbLoading) return;
     creditInitRef.current = true;
     const submittedByMe = dbSubs.some((s) => s.user_id === user?.id);
-    if (!submittedByMe) setCreditStep('ask');
+    if (!submittedByMe) setCreditStep('name');
   }, [isRealContest, dbLoading, dbSubs, user?.id]);
   // Save the shared name as this voter's profile name (their choice becomes
   // their Namespace name), then clear the gate.
@@ -411,51 +412,39 @@ export default function ParticipantVote() {
           </header>
 
           <div className="v4-chat-inner v4-pvote-inner">
-            {/* ── Voter credit gate (before the vote flow) ─────────── */}
+            {/* ── Voter name gate (pure voters only) ───────────────
+                Votes are always private, so this isn't a credit/anonymity
+                choice — just an optional name for their profile. */}
             {creditStep !== 'done' && (
               <>
                 <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
                   <span>
-                    Before you vote on <em>{contest.workingName || contest.name}</em> —
-                    how should we credit you?
+                    One quick thing before you vote on{' '}
+                    <em>{contest.workingName || contest.name}</em> —
                   </span>
                 </div>
-                {creditStep === 'ask' && (
-                  <>
-                    <div className="v4-bubble" style={{ animationDelay: '0.12s' }}>
-                      <span>
-                        Add your name to the record as a voter, or keep it
-                        anonymous? Either way, your individual votes stay private.
-                      </span>
-                    </div>
-                    <div className="v4-chips-row" role="radiogroup" aria-label="How should we credit you?">
-                      <button type="button" className="v4-chip" onClick={() => setCreditStep('name')}>
-                        Share my name
-                      </button>
-                      <button type="button" className="v4-chip" onClick={() => setCreditStep('done')}>
-                        Vote anonymously
-                      </button>
-                    </div>
-                  </>
-                )}
-                {creditStep === 'name' && (
-                  <>
-                    <div className="v4-bubble v4-bubble-user" style={{ animationDelay: '0.05s' }}>
-                      <span>Share my name</span>
-                    </div>
-                    <div className="v4-bubble" style={{ animationDelay: '0.12s' }}>
-                      <span>Great — what name should we use?</span>
-                    </div>
-                    <CreditNameEntry
-                      firstName={firstName}
-                      lastName={lastName}
-                      onFirstChange={setFirstName}
-                      onLastChange={setLastName}
-                      onConfirm={confirmVoterName}
-                      confirmLabel="Use this name"
-                    />
-                  </>
-                )}
+                <div className="v4-bubble" style={{ animationDelay: '0.12s' }}>
+                  <span>
+                    What name should we save for your profile? Every vote is
+                    private, so this is only how you show up in your own
+                    Namespace — it’s never shown next to your votes.
+                  </span>
+                </div>
+                <CreditNameEntry
+                  firstName={firstName}
+                  lastName={lastName}
+                  onFirstChange={setFirstName}
+                  onLastChange={setLastName}
+                  onConfirm={confirmVoterName}
+                  confirmLabel="Save name"
+                />
+                <button
+                  type="button"
+                  className="v4-credit-decline"
+                  onClick={() => setCreditStep('done')}
+                >
+                  Skip — I’d rather not
+                </button>
               </>
             )}
 
