@@ -237,6 +237,11 @@ export default function ContestManage() {
       .channel(`contest-live-${cid}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'submissions', filter: `contest_id=eq.${cid}` }, load)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'votes', filter: `contest_id=eq.${cid}` }, load)
+      // The cron phase flip (submission→voting→closed) updates the contest row;
+      // pick it up live so the stage, journey and countdowns move on their own.
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'contests', filter: `id=eq.${cid}` }, (payload) => {
+        if (payload.new) setDbContest(payload.new);
+      })
       .subscribe();
     const onFocus = () => load();
     window.addEventListener('focus', onFocus);
@@ -315,10 +320,16 @@ export default function ContestManage() {
   const filledBrief = briefQuestions.filter((q) => briefAnswers[q.id] !== undefined);
   const filledSettings = SHARED_SETTINGS_QUESTIONS.filter((q) => settingsAnswers[q.id] !== undefined);
 
-  // Phase timing — derived from settings
+  // Phase timing. A real contest reads its actual submission_ends_at /
+  // voting_ends_at — the very timestamps the cron job flips on — so the
+  // countdowns can never disagree with the real transition. Mock/demo (or a
+  // contest missing the columns) falls back to the settings day counts.
   const launchedAt = setup.launchedAt || Date.now();
-  const submissionDays = settingsAnswers.submissionDays || 7;
-  const votingDays = settingsAnswers.votingDays || 3;
+  const MS_DAY = 86400000;
+  const subEndsAt = !mockContest && dbContest?.submission_ends_at ? new Date(dbContest.submission_ends_at).getTime() : null;
+  const voteEndsAt = !mockContest && dbContest?.voting_ends_at ? new Date(dbContest.voting_ends_at).getTime() : null;
+  const submissionDays = subEndsAt ? Math.max(1, Math.round((subEndsAt - launchedAt) / MS_DAY)) : (settingsAnswers.submissionDays || 7);
+  const votingDays = (voteEndsAt && subEndsAt) ? Math.max(1, Math.round((voteEndsAt - subEndsAt) / MS_DAY)) : (settingsAnswers.votingDays || 3);
 
   const [copied, setCopied] = useState(false);
   // ?pick=1 (from the platform map) auto-opens the pick-winner modal so
