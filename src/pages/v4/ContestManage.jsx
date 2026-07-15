@@ -19,6 +19,7 @@ import {
   Palette, CaretDown, UploadSimple,
 } from '@phosphor-icons/react';
 import Avatar from 'boring-avatars';
+import UserAvatar from '../../components/v4/UserAvatar';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
 import creatorProfile from '../../assets/creator-profile.png';
@@ -185,9 +186,12 @@ export default function ContestManage() {
   // submission phase — unless the URL explicitly overrides it.
   const phaseParam = searchParams.get('phase');
   const STATUS_PHASE = { submission: 'submission', voting: 'voting', closed: 'winner' };
-  const phase = PHASES.includes(phaseParam)
-    ? phaseParam
-    : (dbContest ? (STATUS_PHASE[dbContest.status] || 'submission') : 'voting');
+  const phase = mockContest
+    // Demo/mock contests are driven by the URL ?phase= (defaults to voting).
+    ? (PHASES.includes(phaseParam) ? phaseParam : 'voting')
+    // A real contest ALWAYS follows its true DB status — never a URL override —
+    // so the stage pill, journey and countdowns can't disagree with reality.
+    : (dbContest ? (STATUS_PHASE[dbContest.status] || 'submission') : 'submission');
   // Sub-state of the "winner" phase: nameId of the picked winner, or
   // null when the creator still needs to pick. ?winner=n1 prefills for
   // demo. In production this would come from setup.winner.
@@ -215,12 +219,13 @@ export default function ContestManage() {
       ]);
       if (!active) return;
       const subs = subsRes.data || [];
-      // Resolve display names for credited submitters (profiles_read is open).
+      // Resolve names + avatars for credited submitters (profiles_read is open)
+      // so the dashboard shows the same face each participant sees for itself.
       const ids = [...new Set(subs.filter((s) => s.credited).map((s) => s.user_id))];
       let profs = {};
       if (ids.length) {
-        const { data: pr } = await supabase.from('profiles').select('id, display_name').in('id', ids);
-        (pr || []).forEach((p) => { profs[p.id] = p.display_name; });
+        const { data: pr } = await supabase.from('profiles').select('id, display_name, avatar_url').in('id', ids);
+        (pr || []).forEach((p) => { profs[p.id] = { name: p.display_name, avatarUrl: p.avatar_url }; });
       }
       if (!active) return;
       setRealSubs(subs);
@@ -250,6 +255,13 @@ export default function ContestManage() {
       : buildLiveDataFromReal(realSubs || [], profilesById, realParticipantCount, phase),
     [mockContest, phase, realSubs, profilesById, realParticipantCount]
   );
+
+  // The brief can only be edited BEFORE the first real submission arrives —
+  // once participants have answered the brief, changing it under them would be
+  // unfair. Demo/mock contests stay fully editable. While the real submissions
+  // are still loading (null) we keep it locked so the edit affordance can't
+  // flash then vanish.
+  const briefEditable = mockContest ? true : (realSubs !== null && realSubs.length === 0);
   const getLiveParticipantById = (pid) =>
     liveData.participants.find((p) => p.id === pid) || null;
   // Resolve winner data (only meaningful when isWinnerPicked).
@@ -930,41 +942,57 @@ export default function ContestManage() {
                 )}
               </div>
 
-              <div className="v4-manage-share-foot">
-                <div className="v4-manage-share-avatars" aria-hidden="true">
-                  {/* Boring Avatars of the first 3 actual participants
-                      — same vocabulary used in Live Results, so the
-                      faces stay consistent across surfaces. Falls
-                      back to the demo names if no participants yet. */}
-                  {(liveData.participants.slice(0, 3).length > 0
-                    ? liveData.participants.slice(0, 3).map((p) => p.name)
-                    : ['Sam O’Brien', 'Marcus Wright', 'Dan Patel']
-                  ).map((nm, i) => (
-                    <span
-                      key={i}
-                      className="v4-manage-share-avatar"
-                      style={{ '--avatar-feature': '#030302' }}
-                    >
-                      <Avatar
-                        name={nm}
-                        size={30}
-                        variant="beam"
-                        colors={segmentPalette}
-                        square={false}
-                      />
+              {(() => {
+                const featured = liveData.participants.slice(0, 3);
+                // Real contest, nobody yet → no fake faces; a plain nudge.
+                if (featured.length === 0) {
+                  return (
+                    <div className="v4-manage-share-foot">
+                      <span className="v4-manage-share-meta-bold">
+                        {phase === 'submission'
+                          ? 'No one’s joined yet — share the link to get your first names in.'
+                          : 'No one’s joined yet — share the link to gather votes.'}
+                      </span>
+                    </div>
+                  );
+                }
+                const names = featured.map((p) => p.name);
+                const remaining = Math.max(0, stats.participants - names.length);
+                return (
+                  <div className="v4-manage-share-foot">
+                    <div className="v4-manage-share-avatars" aria-hidden="true">
+                      {/* The first 3 actual participants — real contests use
+                          each person's own avatar (the same face they see for
+                          themselves); the demo uses segment-tinted boring
+                          avatars keyed by name. */}
+                      {featured.map((p, i) => (
+                        <span
+                          key={p.id || i}
+                          className="v4-manage-share-avatar"
+                          style={{ '--avatar-feature': '#030302' }}
+                        >
+                          {mockContest ? (
+                            <Avatar
+                              name={p.name}
+                              size={30}
+                              variant="beam"
+                              colors={segmentPalette}
+                              square={false}
+                            />
+                          ) : (
+                            <UserAvatar seed={p.avatarSeed} photoUrl={p.avatarUrl} size={30} />
+                          )}
+                        </span>
+                      ))}
+                    </div>
+                    <span className="v4-manage-share-meta-bold">
+                      {remaining > 0
+                        ? `${names.join(', ')} and ${remaining} others joined`
+                        : `${names.join(', ')} joined`}
                     </span>
-                  ))}
-                </div>
-                <span className="v4-manage-share-meta-bold">
-                  {(() => {
-                    const featured = liveData.participants.slice(0, 3).map((p) => p.name);
-                    const remaining = Math.max(0, stats.participants - featured.length);
-                    return remaining > 0
-                      ? `${featured.join(', ')} and ${remaining} others joined`
-                      : `${featured.join(', ')} joined`;
-                  })()}
-                </span>
-              </div>
+                  </div>
+                );
+              })()}
             </section>
             )}
 
@@ -1130,6 +1158,7 @@ export default function ContestManage() {
                 filledSettings={filledSettings}
                 briefAnswers={liveBriefAnswers}
                 settingsAnswers={liveSettingsAnswers}
+                editable={briefEditable}
                 onEditBrief={(q) => setEditingQuestion({ question: q, section: 'brief' })}
                 onEditSettings={(q) => setEditingQuestion({ question: q, section: 'settings' })}
               />
@@ -1282,10 +1311,26 @@ export default function ContestManage() {
 // ── Brief recap collapser — each row is clickable, opens edit modal ──
 function BriefRecapCollapser({
   filledBrief, filledSettings, briefAnswers, settingsAnswers,
-  onEditBrief, onEditSettings,
+  onEditBrief, onEditSettings, editable = true,
 }) {
   const [open, setOpen] = useState(false);
   const totalAnswered = filledBrief.length + filledSettings.length;
+
+  // Once editing is locked (a real contest with submissions in), rows are
+  // plain read-only lines — no pencil, no click — so the creator can still
+  // review the brief but can't change it under the participants.
+  const Row = ({ q, value, onEdit }) => editable ? (
+    <button type="button" className="v4-manage-recap-row" onClick={() => onEdit?.(q)}>
+      <span className="v4-manage-recap-row-label">{q.label}</span>
+      <span className="v4-manage-recap-row-value">{formatAnswer(value)}</span>
+      <PencilSimple weight="regular" size={12} className="v4-manage-recap-row-edit" />
+    </button>
+  ) : (
+    <div className="v4-manage-recap-row is-readonly">
+      <span className="v4-manage-recap-row-label">{q.label}</span>
+      <span className="v4-manage-recap-row-value">{formatAnswer(value)}</span>
+    </div>
+  );
 
   return (
     <section className={`v4-manage-recap ${open ? 'is-open' : ''}`}>
@@ -1298,7 +1343,7 @@ function BriefRecapCollapser({
           <CalendarBlank weight="duotone" size={16} />
         </span>
         <span className="v4-manage-recap-text">
-          Your brief · {totalAnswered} answered · click any to edit
+          Your brief · {totalAnswered} answered{editable ? ' · click any to edit' : ' · locked (entries are in)'}
         </span>
         <span className="v4-manage-recap-meta">
           {open ? 'Hide' : 'Show'}
@@ -1313,17 +1358,7 @@ function BriefRecapCollapser({
               <ul className="v4-manage-recap-list">
                 {filledBrief.map((q) => (
                   <li key={q.id}>
-                    <button
-                      type="button"
-                      className="v4-manage-recap-row"
-                      onClick={() => onEditBrief?.(q)}
-                    >
-                      <span className="v4-manage-recap-row-label">{q.label}</span>
-                      <span className="v4-manage-recap-row-value">
-                        {formatAnswer(briefAnswers[q.id])}
-                      </span>
-                      <PencilSimple weight="regular" size={12} className="v4-manage-recap-row-edit" />
-                    </button>
+                    <Row q={q} value={briefAnswers[q.id]} onEdit={onEditBrief} />
                   </li>
                 ))}
               </ul>
@@ -1335,17 +1370,7 @@ function BriefRecapCollapser({
               <ul className="v4-manage-recap-list">
                 {filledSettings.map((q) => (
                   <li key={q.id}>
-                    <button
-                      type="button"
-                      className="v4-manage-recap-row"
-                      onClick={() => onEditSettings?.(q)}
-                    >
-                      <span className="v4-manage-recap-row-label">{q.label}</span>
-                      <span className="v4-manage-recap-row-value">
-                        {formatAnswer(settingsAnswers[q.id])}
-                      </span>
-                      <PencilSimple weight="regular" size={12} className="v4-manage-recap-row-edit" />
-                    </button>
+                    <Row q={q} value={settingsAnswers[q.id]} onEdit={onEditSettings} />
                   </li>
                 ))}
               </ul>

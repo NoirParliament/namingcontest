@@ -613,7 +613,7 @@ export default function Settings() {
                       <button
                         type="button"
                         className="btn btn-primary btn-sm"
-                        onClick={() => navigate(`/v4/contest/${c.id}?phase=submission`, { state: { contest: c } })}
+                        onClick={() => navigate(`/v4/contest/${c.id}`, { state: { contest: c } })}
                       >
                         Manage <ArrowRight weight="bold" size={14} />
                       </button>

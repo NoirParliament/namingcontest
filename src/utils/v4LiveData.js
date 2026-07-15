@@ -121,7 +121,8 @@ function timeAgo(iso) {
 // only surfaced once the contest is past the submission phase.
 export function buildLiveDataFromReal(subs, profilesById = {}, participantCount = 0, phase = 'submission') {
   const showVotes = phase !== 'submission';
-  const displayNameFor = (s) => (s.credited ? (profilesById[s.user_id] || 'Someone') : 'Anonymous');
+  const profOf = (s) => profilesById[s.user_id] || null;
+  const displayNameFor = (s) => (s.credited ? (profOf(s)?.name || 'Someone') : 'Anonymous');
 
   // Group submissions by their real author (credited → by user_id; uncredited
   // → a single shared "anon" bucket) so the participants view is accurate.
@@ -139,6 +140,12 @@ export function buildLiveDataFromReal(subs, profilesById = {}, participantCount 
         initials: nm === 'Anonymous' ? '?' : initialsOf(nm),
         anonymous: nm === 'Anonymous',
         tone: TONES[participants.length % TONES.length],
+        // Seed the same avatar the participant sees for themselves: the
+        // boring-avatar generated from their auth id (or their uploaded photo).
+        // Anonymous authors are never tied back to their id — a stable bucket
+        // seed keeps their avatar consistent without identifying them.
+        avatarSeed: key === 'anon' ? 'anon' : s.user_id,
+        avatarUrl: s.credited ? (profOf(s)?.avatarUrl || null) : null,
       });
     }
   });
