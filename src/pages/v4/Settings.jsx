@@ -222,9 +222,9 @@ export default function Settings() {
       const [pRes, sRes] = await Promise.all([
         supabase
           .from('participants')
-          .select('created_at, contests(*)')
+          .select('joined_at, contests(*)')
           .eq('user_id', user.id)
-          .order('created_at', { ascending: false }),
+          .order('joined_at', { ascending: false }),
         supabase.from('submissions').select('contest_id').eq('user_id', user.id),
       ]);
       if (!active) return;
