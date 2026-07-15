@@ -332,6 +332,12 @@ export default function ParticipantVote() {
         />
       );
     }
+    // Voting is one-shot: once you've cast your picks they're locked in, so a
+    // returning voter goes to the confirmation (votes in · winner coming),
+    // not back into a re-votable ballot.
+    if (myVoteIds.length > 0) {
+      return <Navigate to={`/v4/contest/${contestId}/vote-thanks`} replace />;
+    }
   } else {
     if (!contest) return <Navigate to="/v4/settings" replace />;
     if (!participation) return <Navigate to={`/v4/join/${contestId}`} replace />;

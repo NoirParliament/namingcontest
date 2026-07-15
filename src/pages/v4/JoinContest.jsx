@@ -116,13 +116,15 @@ export default function JoinContest() {
     if (!realContest || !user?.id) return;
     let active = true;
     (async () => {
-      const [p, s] = await Promise.all([
+      const [p, s, v] = await Promise.all([
         supabase.from('participants').select('id').eq('contest_id', realContest.id).eq('user_id', user.id).maybeSingle(),
         supabase.from('submissions').select('id').eq('contest_id', realContest.id).eq('user_id', user.id).limit(1),
+        supabase.from('votes').select('id').eq('contest_id', realContest.id).eq('user_id', user.id).limit(1),
       ]);
       if (!active) return;
       let isParticipant = !!p.data;
       const hasSubmitted = (s.data || []).length > 0;
+      const hasVoted = (v.data || []).length > 0;
 
       if (!isParticipant) {
         let pending = null;
@@ -138,7 +140,9 @@ export default function JoinContest() {
 
       if (!active || !isParticipant) return;
       const base = `/v4/contest/${realContest.id}`;
-      if (realContest.status === 'voting') navigate(`${base}/vote`, { replace: true });
+      // Voting is one-shot — a voter who already cast picks lands on the
+      // confirmation, not a re-votable ballot.
+      if (realContest.status === 'voting') navigate(hasVoted ? `${base}/vote-thanks` : `${base}/vote`, { replace: true });
       else if (realContest.status === 'closed') navigate(`${base}/reveal`, { replace: true });
       else navigate(hasSubmitted ? `${base}/thanks` : `${base}/submit`, { replace: true });
     })();

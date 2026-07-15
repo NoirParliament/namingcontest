@@ -125,6 +125,7 @@ export default function Settings() {
   // color. `primaryJoinedReal` is the newest joined contest.
   const [dbJoined, setDbJoined] = useState([]);
   const [submittedIds, setSubmittedIds] = useState(() => new Set());
+  const [votedIds, setVotedIds] = useState(() => new Set());
   // A cancelled contest you joined is no longer actionable — drop it.
   const activeJoined = useMemo(
     () => dbJoined.filter((c) => c.status !== 'cancelled'),
@@ -234,13 +235,14 @@ export default function Settings() {
     if (!user?.id) return;
     let active = true;
     (async () => {
-      const [pRes, sRes] = await Promise.all([
+      const [pRes, sRes, vRes] = await Promise.all([
         supabase
           .from('participants')
           .select('joined_at, contests(*)')
           .eq('user_id', user.id)
           .order('joined_at', { ascending: false }),
         supabase.from('submissions').select('contest_id').eq('user_id', user.id),
+        supabase.from('votes').select('contest_id').eq('user_id', user.id),
       ]);
       if (!active) return;
       if (pRes.error) console.error('[workspace] joined contests query failed:', pRes.error);
@@ -251,6 +253,9 @@ export default function Settings() {
       }
       if (!sRes.error && Array.isArray(sRes.data)) {
         setSubmittedIds(new Set(sRes.data.map((r) => r.contest_id)));
+      }
+      if (!vRes.error && Array.isArray(vRes.data)) {
+        setVotedIds(new Set(vRes.data.map((r) => r.contest_id)));
       }
     })();
     return () => { active = false; };
@@ -467,7 +472,8 @@ export default function Settings() {
                         // Take the participant straight back to where they are.
                         to: `/v4/contest/${primaryJoinedReal.id}/${
                           primaryJoinedReal.status === 'closed' ? 'winner'
-                          : primaryJoinedReal.status === 'voting' ? 'vote'
+                          : primaryJoinedReal.status === 'voting'
+                            ? (votedIds.has(primaryJoinedReal.id) ? 'vote-thanks' : 'vote')
                           : submittedIds.has(primaryJoinedReal.id) ? 'thanks' : 'submit'
                         }`,
                       }
@@ -522,9 +528,14 @@ export default function Settings() {
                   const cTone = getSegmentTone(c.sub_segment_id || 'b1');
                   const CIcon = getSegmentIcon(c.sub_segment_id) || Briefcase;
                   const hasSubmitted = submittedIds.has(c.id);
+                  const hasVoted = votedIds.has(c.id);
                   const status = c.status || 'submission';
                   let label, to, cta;
                   if (status === 'closed') { label = 'WINNER'; to = `/v4/contest/${c.id}/winner`; cta = 'See who won'; }
+                  // Voting is one-shot: once you've voted, the row shows a
+                  // locked "Voted" state that opens the confirmation, not a
+                  // re-votable ballot.
+                  else if (status === 'voting' && hasVoted) { label = 'VOTED'; to = `/v4/contest/${c.id}/vote-thanks`; cta = 'View your votes'; }
                   else if (status === 'voting') { label = 'VOTING OPEN'; to = `/v4/contest/${c.id}/vote`; cta = 'Vote now'; }
                   else if (hasSubmitted) { label = 'SUBMITTED'; to = `/v4/contest/${c.id}/thanks`; cta = 'See your names'; }
                   else { label = 'SUBMISSIONS OPEN'; to = `/v4/contest/${c.id}/submit`; cta = 'Suggest a name'; }
