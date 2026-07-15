@@ -341,7 +341,7 @@ export default function ParticipantVote() {
   return (
     <div className="v4 lp-v3">
       <div className="v4-screen">
-        <SegmentThemeBackdrop subId={subId} />
+        <SegmentThemeBackdrop subId={subId} minimal />
         <main className="v4-review" role="main" ref={chatRef}>
           <header className="v4-nav">
             <button
