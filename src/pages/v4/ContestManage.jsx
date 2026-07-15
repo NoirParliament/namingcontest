@@ -25,7 +25,7 @@ import creatorProfile from '../../assets/creator-profile.png';
 import {
   readSetup, writeSetup, getSegmentLabel,
 } from '../../utils/v4Brief';
-import { buildLiveData } from '../../utils/v4LiveData';
+import { buildLiveData, buildLiveDataFromReal } from '../../utils/v4LiveData';
 import { getMockContestById } from '../../data/v4/mockContests';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../../lib/AuthContext';
@@ -193,12 +193,62 @@ export default function ContestManage() {
   // demo. In production this would come from setup.winner.
   const winnerNameId = searchParams.get('winner') || setup.winner?.nameId || null;
   const isWinnerPicked = phase === 'winner' && !!winnerNameId;
-  // Per-contest live dataset — derived from THIS contest's own
-  // submissions (not a shared football set), with vote counts gated by
-  // phase (zero/hidden during the submission window).
+  // ── Real submissions + live vote counts (creator dashboard) ─────────
+  // For a real contest, load its actual submissions (with the denormalized
+  // vote_count), the joined-participant count, and submitter display names.
+  // A realtime channel re-loads on any submission/vote change so the creator
+  // watches entries and votes arrive live; window focus is a fallback.
+  const [realSubs, setRealSubs] = useState(null);
+  const [realParticipantCount, setRealParticipantCount] = useState(0);
+  const [profilesById, setProfilesById] = useState({});
+  useEffect(() => {
+    if (mockContest || !dbContest?.id) return;
+    const cid = dbContest.id;
+    let active = true;
+    const load = async () => {
+      const [subsRes, partRes] = await Promise.all([
+        supabase.from('submissions')
+          .select('id, text, rationale, credited, user_id, vote_count, created_at')
+          .eq('contest_id', cid)
+          .order('created_at', { ascending: true }),
+        supabase.from('participants').select('id', { count: 'exact', head: true }).eq('contest_id', cid),
+      ]);
+      if (!active) return;
+      const subs = subsRes.data || [];
+      // Resolve display names for credited submitters (profiles_read is open).
+      const ids = [...new Set(subs.filter((s) => s.credited).map((s) => s.user_id))];
+      let profs = {};
+      if (ids.length) {
+        const { data: pr } = await supabase.from('profiles').select('id, display_name').in('id', ids);
+        (pr || []).forEach((p) => { profs[p.id] = p.display_name; });
+      }
+      if (!active) return;
+      setRealSubs(subs);
+      setRealParticipantCount(partRes.count || 0);
+      setProfilesById(profs);
+    };
+    load();
+    const channel = supabase
+      .channel(`contest-live-${cid}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'submissions', filter: `contest_id=eq.${cid}` }, load)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'votes', filter: `contest_id=eq.${cid}` }, load)
+      .subscribe();
+    const onFocus = () => load();
+    window.addEventListener('focus', onFocus);
+    return () => {
+      active = false;
+      supabase.removeChannel(channel);
+      window.removeEventListener('focus', onFocus);
+    };
+  }, [mockContest, dbContest?.id]);
+
+  // Per-contest live dataset. Mock/demo contests derive a synthetic set from
+  // their own allSubmissions; a real contest uses its real DB rows + counts.
   const liveData = useMemo(
-    () => buildLiveData(mockContest, phase),
-    [mockContest, phase]
+    () => mockContest
+      ? buildLiveData(mockContest, phase)
+      : buildLiveDataFromReal(realSubs || [], profilesById, realParticipantCount, phase),
+    [mockContest, phase, realSubs, profilesById, realParticipantCount]
   );
   const getLiveParticipantById = (pid) =>
     liveData.participants.find((p) => p.id === pid) || null;
@@ -809,6 +859,7 @@ export default function ContestManage() {
                 names={liveData.names}
                 participants={liveData.participants}
                 phase={phase}
+                simulateVotes={!!mockContest}
               />
             )}
 

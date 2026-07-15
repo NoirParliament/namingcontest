@@ -45,6 +45,10 @@ export default function LiveResults({
   names = [],
   participants = [],
   phase = 'voting',
+  // Mock/demo contests fake a live "votes arriving" tick; real contests get
+  // their live updates from the DB (realtime), so their counts must never be
+  // fabricated. Pass false for real data.
+  simulateVotes = true,
 }) {
   const [view, setView] = useState('names');     // 'names' | 'participants'
   const [search, setSearch] = useState('');
@@ -146,6 +150,7 @@ export default function LiveResults({
           names={names}
           getParticipantById={getParticipantById}
           showVotes={showVotes}
+          simulateVotes={simulateVotes}
           search={search}
           expandedId={expandedId}
           onToggle={(id) => setExpandedId(expandedId === id ? null : id)}
@@ -176,7 +181,7 @@ export default function LiveResults({
 
 // ── NAMES VIEW ──────────────────────────────────────────────────────
 function NamesList({
-  names, getParticipantById, showVotes, search, expandedId, onToggle,
+  names, getParticipantById, showVotes, simulateVotes = true, search, expandedId, onToggle,
   showAll, collapsedCount, onShowAllChange, tone, palette,
 }) {
   const scrollerRef = useRef(null);
@@ -189,6 +194,7 @@ function NamesList({
   const [bonusVotes, setBonusVotes] = useState({}); // { nameId: +N }
   const [pulsedId, setPulsedId] = useState(null);
   useEffect(() => {
+    if (!simulateVotes) return;      // real contest — never fabricate votes
     if (!showVotes) return;          // submission phase has no votes yet
     if (!names || names.length === 0) return;
     if (typeof window === 'undefined') return;
@@ -206,7 +212,7 @@ function NamesList({
       window.setTimeout(() => setPulsedId((cur) => (cur === pickId ? null : cur)), 1100);
     }, 12000);
     return () => clearInterval(interval);
-  }, [showVotes, names]);
+  }, [simulateVotes, showVotes, names]);
 
   // Combined vote = mock baseline + simulated ticks. The filtered
   // sort below uses this, so the leaderboard re-orders as votes
