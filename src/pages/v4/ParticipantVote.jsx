@@ -25,11 +25,12 @@ import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import participantProfile from '../../assets/participant-profile.png';
 import { getMockContestById } from '../../data/v4/mockContests';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
-import { readSetup, getQuestionsFor } from '../../utils/v4Brief';
+import { readSetup, writeSetup, getQuestionsFor } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
 import { readParticipation, recordVotes } from '../../utils/v4Participant';
 import { showSubmitter, anonymityMode } from '../../utils/v4Anonymity';
 import AvatarMenu from '../../components/v4/AvatarMenu';
+import CreditNameEntry from '../../components/v4/CreditNameEntry';
 import { useAuth } from '../../lib/AuthContext';
 import { supabase } from '../../lib/supabaseClient';
 import '../../styles/landing-v3.css';
@@ -209,6 +210,34 @@ export default function ParticipantVote() {
   const [introStage, setIntroStage] = useState(0);
   const INTRO_AUTO_TIMINGS = { 0: 700, 1: 900, 3: 1000, 5: 800 };
 
+  // ── Voter credit gate ───────────────────────────────────────────────
+  // A voter who never submitted a name hasn't chosen how to be credited yet.
+  // Ask once, up front: share a name (→ becomes their profile name) or vote
+  // anonymously. Submitters already made this choice in the submit chat, so
+  // they skip it. 'done' means the gate is cleared and the normal intro runs.
+  const [creditStep, setCreditStep] = useState('done'); // 'ask' | 'name' | 'done'
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const creditInitRef = useRef(false);
+  useEffect(() => {
+    if (creditInitRef.current || !isRealContest || dbLoading) return;
+    creditInitRef.current = true;
+    const submittedByMe = dbSubs.some((s) => s.user_id === user?.id);
+    if (!submittedByMe) setCreditStep('ask');
+  }, [isRealContest, dbLoading, dbSubs, user?.id]);
+  // Save the shared name as this voter's profile name (their choice becomes
+  // their Namespace name), then clear the gate.
+  const confirmVoterName = () => {
+    const nm = `${firstName.trim()} ${lastName.trim()}`.trim();
+    if (nm && user?.id) {
+      setProfile((p) => ({ ...(p || {}), display_name: nm }));
+      try { writeSetup({ userName: nm }); } catch { /* ignore */ }
+      supabase.from('profiles').update({ display_name: nm }).eq('id', user.id)
+        .then(({ error }) => { if (error) console.error('[voter credit] profile update failed:', error); });
+    }
+    setCreditStep('done');
+  };
+
   // Voting state
   const [selectedIds, setSelectedIds] = useState(() =>
     participation?.votedFor ? [...participation.votedFor] : []
@@ -250,13 +279,15 @@ export default function ParticipantVote() {
 
   useEffect(() => { setVisibleCount(PAGE_SIZE); }, [search, sortMode]);
 
-  // Intro reveal auto-pacer.
+  // Intro reveal auto-pacer — held until the credit gate is cleared so the
+  // voter answers "how should we credit you?" before the vote flow begins.
   useEffect(() => {
+    if (creditStep !== 'done') return;
     const delay = INTRO_AUTO_TIMINGS[introStage];
     if (!delay) return;
     const t = setTimeout(() => setIntroStage((s) => s + 1), delay);
     return () => clearTimeout(t);
-  }, [introStage]);
+  }, [introStage, creditStep]);
 
   // Autoscroll on stage changes (but not on initial mount — start at top).
   useEffect(() => {
@@ -380,8 +411,56 @@ export default function ParticipantVote() {
           </header>
 
           <div className="v4-chat-inner v4-pvote-inner">
+            {/* ── Voter credit gate (before the vote flow) ─────────── */}
+            {creditStep !== 'done' && (
+              <>
+                <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
+                  <span>
+                    Before you vote on <em>{contest.workingName || contest.name}</em> —
+                    how should we credit you?
+                  </span>
+                </div>
+                {creditStep === 'ask' && (
+                  <>
+                    <div className="v4-bubble" style={{ animationDelay: '0.12s' }}>
+                      <span>
+                        Add your name to the record as a voter, or keep it
+                        anonymous? Either way, your individual votes stay private.
+                      </span>
+                    </div>
+                    <div className="v4-chips-row" role="radiogroup" aria-label="How should we credit you?">
+                      <button type="button" className="v4-chip" onClick={() => setCreditStep('name')}>
+                        Share my name
+                      </button>
+                      <button type="button" className="v4-chip" onClick={() => setCreditStep('done')}>
+                        Vote anonymously
+                      </button>
+                    </div>
+                  </>
+                )}
+                {creditStep === 'name' && (
+                  <>
+                    <div className="v4-bubble v4-bubble-user" style={{ animationDelay: '0.05s' }}>
+                      <span>Share my name</span>
+                    </div>
+                    <div className="v4-bubble" style={{ animationDelay: '0.12s' }}>
+                      <span>Great — what name should we use?</span>
+                    </div>
+                    <CreditNameEntry
+                      firstName={firstName}
+                      lastName={lastName}
+                      onFirstChange={setFirstName}
+                      onLastChange={setLastName}
+                      onConfirm={confirmVoterName}
+                      confirmLabel="Use this name"
+                    />
+                  </>
+                )}
+              </>
+            )}
+
             {/* ── Stage 0 → typing for welcome ─────────────────────── */}
-            {introStage === 0 && (
+            {creditStep === 'done' && introStage === 0 && (
               <div className="v4-typing" aria-hidden="true">
                 <span></span><span></span><span></span>
               </div>
