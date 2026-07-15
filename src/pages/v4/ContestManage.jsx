@@ -1212,10 +1212,25 @@ export default function ContestManage() {
           confirmLabel="Cancel contest"
           cancelLabel="Keep it"
           onClose={() => setCancelOpen(false)}
-          onConfirm={() => {
-            // Mark the contest as cancelled in setup + record an entry
-            // the workspace renders under a "Cancelled" section, then
-            // send the creator to the workspace where they'll see it.
+          onConfirm={async () => {
+            // Real contest → move it to the terminal 'cancelled' status in the
+            // DB. That stops new names/votes/joins (enforced by triggers) and
+            // drops it from the creator's active list.
+            if (!mockContest && dbContest?.id) {
+              const { error } = await supabase
+                .from('contests')
+                .update({ status: 'cancelled' })
+                .eq('id', dbContest.id);
+              if (error) {
+                window.alert('Could not cancel the contest: ' + (error.message || error));
+                return;
+              }
+              setCancelOpen(false);
+              navigate('/v4/settings');
+              return;
+            }
+            // Demo/mock path — record a cosmetic cancelled entry in setup so the
+            // workspace shows a "Cancelled" section.
             const cur = readSetup();
             const cancelledList = Array.isArray(cur.cancelledContests)
               ? cur.cancelledContests

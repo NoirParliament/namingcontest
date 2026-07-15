@@ -484,11 +484,19 @@ export default function ParticipantChat() {
 
   // Confirm the credited name → save it as the account/profile name (so it
   // shows in the avatar menu + workspace) and advance past the credit step.
+  // For a real signed-in user we persist it to their profile row, so the name
+  // they choose to be credited under becomes their name in the Namespace and
+  // credits their submissions everywhere — automatically.
   const confirmName = () => {
     const nm = `${firstName.trim()} ${lastName.trim()}`.trim();
     if (nm) {
       writeSetup({ userName: nm });
       setConfirmedName(nm);
+      if (user?.id) {
+        setProfile((p) => ({ ...(p || {}), display_name: nm }));
+        supabase.from('profiles').update({ display_name: nm }).eq('id', user.id)
+          .then(({ error }) => { if (error) console.error('[credit name] profile update failed:', error); });
+      }
     }
     setCreditMe(true);
     setIntroStage(5);

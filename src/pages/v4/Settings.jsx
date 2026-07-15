@@ -108,14 +108,29 @@ export default function Settings() {
   // Real contests this user created (most-recent first). `latest` drives the
   // page's segment color/background and the account-menu contest chip.
   const [dbContests, setDbContests] = useState([]);
-  const latest = isRealUser ? (dbContests[0] || null) : null;
+  // Cancelled contests are terminal — keep them out of the active list and
+  // out of the color/menu signal; they get their own quiet section instead.
+  const activeContests = useMemo(
+    () => dbContests.filter((c) => c.status !== 'cancelled'),
+    [dbContests]
+  );
+  const cancelledDbContests = useMemo(
+    () => dbContests.filter((c) => c.status === 'cancelled'),
+    [dbContests]
+  );
+  const latest = isRealUser ? (activeContests[0] || null) : null;
   // Real contests this user has JOINED (as a participant), most-recent first,
   // plus the set of contest ids they've already submitted to. Loaded from the
   // DB so the Namespace lists a participant's invitations and can follow their
   // color. `primaryJoinedReal` is the newest joined contest.
   const [dbJoined, setDbJoined] = useState([]);
   const [submittedIds, setSubmittedIds] = useState(() => new Set());
-  const primaryJoinedReal = isRealUser ? (dbJoined[0] || null) : null;
+  // A cancelled contest you joined is no longer actionable — drop it.
+  const activeJoined = useMemo(
+    () => dbJoined.filter((c) => c.status !== 'cancelled'),
+    [dbJoined]
+  );
+  const primaryJoinedReal = isRealUser ? (activeJoined[0] || null) : null;
   // Every contest the user has joined (most-recent first) — read up here
   // so the page background can follow a participant's joined contest.
   const participations = useMemo(() => (isRealUser ? [] : readAllParticipations()), [isRealUser]);
@@ -486,7 +501,7 @@ export default function Settings() {
               <p className="v4-settings-subtitle">
                 {realContest
                   ? 'Your contests, billing, and account in one place.'
-                  : (joinedRows.length > 0 || dbJoined.length > 0 || dbContests.length > 0)
+                  : (joinedRows.length > 0 || activeJoined.length > 0 || activeContests.length > 0)
                     ? 'Your contests and account, in one place.'
                     : 'Your account — and the home for any contest you run or join.'}
               </p>
@@ -497,13 +512,13 @@ export default function Settings() {
                 (before your own running contests) because they're the
                 time-sensitive ones. Each row routes to exactly where the
                 participant is in that contest's lifecycle. */}
-            {isRealUser && dbJoined.length > 0 && (
+            {isRealUser && activeJoined.length > 0 && (
               <section className="v4-settings-section">
                 <header className="v4-settings-section-head">
                   <ListBullets weight="duotone" size={18} />
                   <h2>Contests you’ve joined</h2>
                 </header>
-                {dbJoined.map((c) => {
+                {activeJoined.map((c) => {
                   const cTone = getSegmentTone(c.sub_segment_id || 'b1');
                   const CIcon = getSegmentIcon(c.sub_segment_id) || Briefcase;
                   const hasSubmitted = submittedIds.has(c.id);
@@ -579,14 +594,15 @@ export default function Settings() {
                   inline "Start a contest" prompt that lives politely
                   under the joined contests, so participants who never
                   intend to run one aren't pestered. */}
-            {/* Real contests you've created — read from the database. */}
-            {isRealUser && dbContests.length > 0 && (
+            {/* Real contests you've created — read from the database.
+                Cancelled ones are excluded here (shown in their own section). */}
+            {isRealUser && activeContests.length > 0 && (
               <section className="v4-settings-section">
                 <header className="v4-settings-section-head">
                   <ListBullets weight="duotone" size={18} />
                   <h2>Contests you’re running</h2>
                 </header>
-                {dbContests.map((c) => {
+                {activeContests.map((c) => {
                   const cTone = getSegmentTone(c.sub_segment_id || 'b1');
                   const CIcon = getSegmentIcon(c.sub_segment_id) || TIER_INFO[c.tier]?.Icon || Briefcase;
                   const statusLabel = (c.status || 'live').replace('_', ' ');
@@ -620,6 +636,33 @@ export default function Settings() {
                     </div>
                   );
                 })}
+              </section>
+            )}
+
+            {/* ── CANCELLED (real) ─────────────────────────────────
+                Contests the creator ended. Muted rows, no actions —
+                just a record that they were cancelled. */}
+            {isRealUser && cancelledDbContests.length > 0 && (
+              <section className="v4-settings-section">
+                <header className="v4-settings-section-head">
+                  <X weight="bold" size={18} />
+                  <h2>Cancelled contests</h2>
+                </header>
+                {cancelledDbContests.map((c) => (
+                  <div key={c.id} className="v4-settings-contest-row v4-settings-contest-row-cancelled">
+                    <span className="v4-settings-contest-row-icon" aria-hidden="true">
+                      <X weight="bold" size={16} />
+                    </span>
+                    <div className="v4-settings-contest-row-text">
+                      <div className="v4-settings-contest-row-eyebrow">
+                        <span>Cancelled</span>
+                      </div>
+                      <div className="v4-settings-contest-row-name">
+                        {c.working_name || 'Untitled contest'}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </section>
             )}
 
