@@ -192,10 +192,11 @@ export default function ContestManage() {
     // A real contest ALWAYS follows its true DB status — never a URL override —
     // so the stage pill, journey and countdowns can't disagree with reality.
     : (dbContest ? (STATUS_PHASE[dbContest.status] || 'submission') : 'submission');
-  // Sub-state of the "winner" phase: nameId of the picked winner, or
-  // null when the creator still needs to pick. ?winner=n1 prefills for
-  // demo. In production this would come from setup.winner.
-  const winnerNameId = searchParams.get('winner') || setup.winner?.nameId || null;
+  // Sub-state of the "winner" phase: the picked winner's id, or null when the
+  // creator still needs to pick. A real contest stores it on the row
+  // (winner_submission_id); the demo uses ?winner= / setup.winner.
+  const winnerNameId = (!mockContest ? dbContest?.winner_submission_id : null)
+    || searchParams.get('winner') || setup.winner?.nameId || null;
   const isWinnerPicked = phase === 'winner' && !!winnerNameId;
   // ── Real submissions + live vote counts (creator dashboard) ─────────
   // For a real contest, load its actual submissions (with the denormalized
@@ -1306,18 +1307,26 @@ export default function ContestManage() {
           prize={liveSettingsAnswers.submitterPrize}
           names={liveData.names}
           participants={liveData.participants}
-          onConfirm={(nameId) => {
+          onConfirm={async (nameId) => {
             // Close the modal first so the celebration is unobstructed,
-            // then flip the URL into the picked sub-state. ContestManage
-            // re-renders into the winner celebration view, which animates
-            // in (see .v4-winner-* CSS). A confetti burst punctuates the
-            // moment so it feels like a real "win," not a state change.
+            // then flip into the picked sub-state. ContestManage re-renders
+            // into the winner celebration view (see .v4-winner-* CSS), with a
+            // confetti burst so it feels like a real "win," not a state change.
             setPickWinnerOpen(false);
-            // Persist the crowned winner so the workspace (My Namespace)
-            // reflects "winner picked" instead of still showing voting.
-            // Keyed by contestId so it only applies to this contest.
             const winnerText = liveData.names.find((n) => n.id === nameId)?.text || null;
-            writeSetup({ winner: { contestId: id, nameId, name: winnerText } });
+            if (!mockContest && dbContest?.id) {
+              // Real contest → persist the winner on the contest row. This is
+              // what the participant winner/reveal pages read.
+              const { error } = await supabase
+                .from('contests')
+                .update({ winner_submission_id: nameId })
+                .eq('id', dbContest.id);
+              if (error) { window.alert('Could not save the winner: ' + (error.message || error)); return; }
+              setDbContest((c) => (c ? { ...c, winner_submission_id: nameId } : c));
+            } else {
+              // Demo — keyed by contestId so it only applies to this contest.
+              writeSetup({ winner: { contestId: id, nameId, name: winnerText } });
+            }
             // Scroll the internal review container (NOT window) — the
             // page itself doesn't scroll on v4 surfaces; .v4-review is
             // the overflow:auto container.

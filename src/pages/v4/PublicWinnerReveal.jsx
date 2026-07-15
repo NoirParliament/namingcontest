@@ -30,6 +30,7 @@ import BrandLink from '../../components/v4/BrandLink';
 import { getMockContestById } from '../../data/v4/mockContests';
 import { getSegmentTone, SEGMENT_THEME } from '../../data/v4/segmentTheme';
 import { buildLiveData } from '../../utils/v4LiveData';
+import { supabase } from '../../lib/supabaseClient';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -55,23 +56,51 @@ function launchBoom(fire) {
 
 export default function PublicWinnerReveal() {
   const { id: contestId } = useParams();
-  const contest = getMockContestById(contestId);
-  const subId = contest?.subSegmentId;
+  const mockContest = getMockContestById(contestId);
+
+  // Real contest → fetch the public winner info (SECURITY DEFINER, closed-only,
+  // callable signed-out). Mock demo → derive from buildLiveData.
+  const [real, setReal] = useState(null);
+  const [dbLoading, setDbLoading] = useState(!mockContest);
+  useEffect(() => {
+    if (mockContest) return;
+    let active = true;
+    supabase.rpc('get_winner_info', { cid: contestId }).then(({ data, error }) => {
+      if (!active) return;
+      if (error) console.error('[reveal] get_winner_info failed:', error);
+      setReal(data?.[0] || null);
+      setDbLoading(false);
+      if (data?.[0]?.sub_segment_id) {
+        try { localStorage.setItem('v4_last_sub', data[0].sub_segment_id); } catch { /* ignore */ }
+      }
+    });
+    return () => { active = false; };
+  }, [mockContest, contestId]);
+
+  const live = mockContest ? buildLiveData(mockContest, 'winner') : { names: [], stats: { votes: 0, participants: 0 } };
+  const subId = mockContest ? mockContest.subSegmentId : real?.sub_segment_id;
   const tone = subId ? getSegmentTone(subId) : null;
   const segmentBg = SEGMENT_THEME[subId]?.blobs?.[0] || tone?.bg || '#a6dcb3';
 
-  const creatorName = contest?.creator?.name || 'the organizer';
-  const contestName = contest?.workingName || contest?.name || 'the contest';
+  const creatorName = mockContest ? (mockContest.creator?.name || 'the organizer') : (real?.creator_name || 'the organizer');
+  const contestName = mockContest ? (mockContest.workingName || mockContest.name || 'the contest') : (real?.working_name || 'the contest');
 
-  // Resolve the winning name from contest.winnerSubId or top vote.
-  const live = contest ? buildLiveData(contest, 'winner') : { names: [], stats: { votes: 0, participants: 0 } };
-  const winner =
-    live.names.find((n) => n.id === contest?.winnerSubId) ||
-    [...live.names].sort((a, b) => b.voteCount - a.voteCount)[0] ||
-    null;
-  const totalVotes = live.stats.votes;
-  const totalNames = live.names.length;
-  const totalParticipants = live.stats.participants;
+  const winner = mockContest
+    ? (live.names.find((n) => n.id === mockContest.winnerSubId)
+        || [...live.names].sort((a, b) => b.voteCount - a.voteCount)[0]
+        || null)
+    : (real?.winner_text ? {
+        id: 'winner',
+        text: real.winner_text,
+        whyItFits: real.winner_rationale || '',
+        submitterName: real.winner_submitter_name,
+        anonymous: !real.winner_credited,
+        voteCount: real.winner_votes || 0,
+      } : null);
+  // Postgres returns bigint counts as strings — coerce for display + math.
+  const totalVotes = mockContest ? live.stats.votes : Number(real?.total_votes || 0);
+  const totalNames = mockContest ? live.names.length : Number(real?.total_names || 0);
+  const totalParticipants = mockContest ? live.stats.participants : Number(real?.total_participants || 0);
 
   // ── Confetti (identical to ParticipantWinner) ────────────────────
   const canvasRef = useRef(null);
@@ -133,8 +162,12 @@ export default function PublicWinnerReveal() {
 
   const scrollRef = useRef(null);
 
-  if (!contest) return <Navigate to="/" replace />;
-  // No winner resolvable — the reveal makes no sense, kick to landing.
+  // Real contest still loading — hold with a bare screen (no flash of "/").
+  if (!mockContest && dbLoading) {
+    return <div className="v4 lp-v3"><div className="v4-screen" /></div>;
+  }
+  // Not a known contest / not closed / no winner resolvable → kick to landing.
+  if (mockContest ? !mockContest : !real) return <Navigate to="/" replace />;
   if (!winner) return <Navigate to="/" replace />;
 
   const voteLine = `${winner.voteCount}${typeof totalVotes === 'number' ? ` of ${totalVotes}` : ''} votes`;

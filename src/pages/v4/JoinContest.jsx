@@ -126,7 +126,10 @@ export default function JoinContest() {
       const hasSubmitted = (s.data || []).length > 0;
       const hasVoted = (v.data || []).length > 0;
 
+      const base = `/v4/contest/${realContest.id}`;
       if (!isParticipant) {
+        // Closed contest → a non-participant just sees the public result.
+        if (realContest.status === 'closed') { navigate(`${base}/reveal`, { replace: true }); return; }
         let pending = null;
         try { pending = localStorage.getItem('v4_pending_join'); } catch { /* ignore */ }
         if (pending !== realContest.id) return; // not joined, no pending → show invitation
@@ -139,11 +142,11 @@ export default function JoinContest() {
       }
 
       if (!active || !isParticipant) return;
-      const base = `/v4/contest/${realContest.id}`;
       // Voting is one-shot — a voter who already cast picks lands on the
-      // confirmation, not a re-votable ballot.
+      // confirmation, not a re-votable ballot. A participant on a closed
+      // contest gets the personalized winner view (non-participants: /reveal).
       if (realContest.status === 'voting') navigate(hasVoted ? `${base}/vote-thanks` : `${base}/vote`, { replace: true });
-      else if (realContest.status === 'closed') navigate(`${base}/reveal`, { replace: true });
+      else if (realContest.status === 'closed') navigate(`${base}/winner`, { replace: true });
       else navigate(hasSubmitted ? `${base}/thanks` : `${base}/submit`, { replace: true });
     })();
     return () => { active = false; };
