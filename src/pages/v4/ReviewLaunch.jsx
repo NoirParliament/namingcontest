@@ -186,11 +186,19 @@ export default function ReviewLaunch() {
       writeSetup({ contestId, launchedAt: Date.now() });
       setTimeout(() => navigate(`/v4/contest/${contestId}`), 400);
     } else {
-      // Guest → send the login magic link (carries the browser PKCE verifier),
-      // then show "check your email; your contest is live."
+      // Guest → send the login magic link (carries the browser PKCE verifier,
+      // so it logs them in when clicked from this same browser), landing on
+      // their Namespace where the now-live contest appears.
       const redirectTo = `${window.location.origin}/v4/settings`;
       const { error: otpError } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo } });
-      if (otpError) console.error('[launch] login link failed:', otpError.message);
+      if (otpError) {
+        console.error('[launch] login link failed:', otpError.message);
+        window.alert(
+          'Your contest is paid and live, but we could not send the login email:\n\n' +
+          otpError.message +
+          '\n\nYou can sign in from the homepage with the same email to reach it.'
+        );
+      }
       setPendingEmail(email);
     }
   };
