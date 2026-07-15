@@ -153,9 +153,13 @@ export default function ParticipantWinner() {
     ? (!!winner && (participation?.submittedNames || []).some((s) => s.text === winner.text))
     : dbIWon;
 
-  const prize = contest?.settings?.submitterPrize?.enabled
+  const prizeOffered = contest?.settings?.submitterPrize?.enabled
     ? contest?.settings?.submitterPrize
     : null;
+  // An anonymous winning entry forfeits the prize — the creator has no one to
+  // award it to. So only surface the prize for a credited winner.
+  const prize = (prizeOffered && !winner?.anonymous) ? prizeOffered : null;
+  const prizeForfeited = !!prizeOffered && !!winner?.anonymous;
 
   // ONE opening boom, then a steady gold rain top→bottom. Rendered onto
   // our OWN canvas (canvasRef) so it sits BEHIND the central content
@@ -299,7 +303,9 @@ export default function ParticipantWinner() {
               </h1>
               <p className="v4-pthanks-sub">
                 {iWon ? (
-                  <>Your name took the crown — {voteLine} in.</>
+                  prizeForfeited
+                    ? <>Your name took the crown — {voteLine} in. You entered anonymously, so the prize isn’t awarded.</>
+                    : <>Your name took the crown — {voteLine} in.</>
                 ) : (
                   <>
                     {winner.anonymous || !winner.submitterName
