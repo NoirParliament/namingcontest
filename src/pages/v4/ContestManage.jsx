@@ -1208,7 +1208,13 @@ export default function ContestManage() {
           open={cancelOpen}
           danger
           title="Cancel this contest?"
-          body="This can’t be undone — every name and vote so far will be discarded."
+          body={
+            <>
+              This can’t be undone. Every name and vote so far will be discarded,
+              and the {!mockContest && dbContest?.price ? <strong>${dbContest.price}</strong> : ''} launch
+              fee you paid is <strong>non-refundable</strong>.
+            </>
+          }
           confirmLabel="Cancel contest"
           cancelLabel="Keep it"
           onClose={() => setCancelOpen(false)}
