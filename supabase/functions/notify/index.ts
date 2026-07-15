@@ -54,9 +54,9 @@ function eyebrow(color: string) {
 }
 function votingOpenHtml(name: string, url: string) {
   return shell(`${eyebrow('#1f5430')}
-    <h1 style="font-size:26px;line-height:1.2;margin:14px 0 6px;font-weight:700;">Voting&rsquo;s open 🗳️</h1>
-    <p style="font-size:15px;line-height:1.55;color:rgba(3,3,2,0.7);margin:0 0 22px;">The names are in for &ldquo;<strong style="color:#030302;">${name}</strong>&rdquo;. Come pick your favorites &mdash; your votes help crown the winner.</p>
-    ${cta(url, 'Vote now →')}${footer()}`);
+    <h1 style="font-size:26px;line-height:1.2;margin:14px 0 6px;font-weight:700;">Your vote is needed</h1>
+    <p style="font-size:15px;line-height:1.55;color:rgba(3,3,2,0.7);margin:0 0 22px;">The names are in for &ldquo;<strong style="color:#030302;">${name}</strong>&rdquo;, and yours is one of the votes that picks the winner. It only takes a minute.</p>
+    ${cta(url, 'Cast your vote →')}${footer()}`);
 }
 function winnerHtml(name: string, winnerText: string, url: string) {
   return shell(`${eyebrow('#8a6a14')}
@@ -128,7 +128,7 @@ Deno.serve(async (req) => {
     if (type === 'voting_open') {
       messages = emails.map((to) => ({
         from: FROM, to,
-        subject: `Voting's open — ${name}`,
+        subject: `Your vote is needed — ${name}`,
         html: votingOpenHtml(name, joinUrl),
       }));
     } else {
