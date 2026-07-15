@@ -343,7 +343,7 @@ export default function ParticipantVote() {
       <div className="v4-screen">
         <SegmentThemeBackdrop subId={subId} minimal />
         <main className="v4-review" role="main" ref={chatRef}>
-          <header className="v4-nav">
+          <header className="v4-nav v4-nav-clear">
             <button
               type="button"
               className="v4-brand v4-brand-button"
