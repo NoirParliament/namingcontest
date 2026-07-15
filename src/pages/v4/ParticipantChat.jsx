@@ -26,6 +26,8 @@ import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 // creator side's default (heroProfile1) and Marcus the inviter (profile-4).
 import participantProfile from '../../assets/participant-profile.png';
 import { getMockContestById } from '../../data/v4/mockContests';
+import { supabase } from '../../lib/supabaseClient';
+import { useAuth } from '../../lib/AuthContext';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
 import { readSetup, writeSetup } from '../../utils/v4Brief';
 import { readParticipation, recordSubmission, writeParticipation } from '../../utils/v4Participant';
@@ -180,8 +182,37 @@ export default function ParticipantChat() {
   const { id: contestId } = useParams();
   const navigate = useNavigate();
   const fadeNav = useFadeNav();
-  const contest = getMockContestById(contestId);
-  const participation = readParticipation(contestId);
+  const { user } = useAuth();
+
+  // Mock demo contest, or a real one loaded from the DB (a participant can
+  // read the full contest — brief + settings — via RLS once they've joined).
+  const mockContest = getMockContestById(contestId);
+  const [dbContest, setDbContest] = useState(null);
+  const [dbLoading, setDbLoading] = useState(!mockContest);
+  useEffect(() => {
+    if (mockContest) return;
+    let active = true;
+    supabase.from('contests').select('*').eq('id', contestId).single().then(({ data }) => {
+      if (!active) return;
+      setDbContest(data || null);
+      setDbLoading(false);
+    });
+    return () => { active = false; };
+  }, [contestId, mockContest]);
+  const isRealContest = !mockContest && !!dbContest;
+  const contest = mockContest || (dbContest ? {
+    id: dbContest.id,
+    subSegmentId: dbContest.sub_segment_id,
+    subSegmentTitle: dbContest.sub_segment_title,
+    group: dbContest.tier,
+    settings: dbContest.settings || {},
+    brief: dbContest.brief || {},
+    creator: {},
+  } : null);
+  // Real participants got here by joining (real participant row); the DB
+  // submission trigger still enforces membership, so we don't gate on the
+  // localStorage participation for real contests.
+  const participation = mockContest ? readParticipation(contestId) : (isRealContest ? { submittedNames: [] } : null);
 
   // Resolve the creator-set cap. Numbers are used as-is; 'Unlimited'
   // (a valid numberChips option) maps to a high ceiling so the slot
@@ -318,6 +349,20 @@ export default function ParticipantChat() {
     return () => clearTimeout(t);
   }, [introStage]);
 
+  // Real contest still loading — hold, don't bounce to settings.
+  if (!mockContest && dbLoading) {
+    return (
+      <div className="v4 lp-v3">
+        <div className="v4-screen">
+          <main className="v4-review" role="main">
+            <div className="v4-review-inner" style={{ textAlign: 'center', paddingTop: 120 }}>
+              <p className="v4-review-subtitle">Loading the contest…</p>
+            </div>
+          </main>
+        </div>
+      </div>
+    );
+  }
   if (!contest) return <Navigate to="/v4/settings" replace />;
   if (!participation) return <Navigate to={`/v4/join/${contestId}`} replace />;
   if (alreadySubmitted.length > 0) {
@@ -380,7 +425,28 @@ export default function ParticipantChat() {
 
   // Record all drafts (with the chosen credit visibility) then head to
   // the thanks page. `anonymous` only matters in participant-choose mode.
-  const recordAndGo = (anonymous) => {
+  const recordAndGo = async (anonymous) => {
+    if (isRealContest && user?.id) {
+      // Real contest → write each name to the submissions table (the DB
+      // trigger enforces membership + the max-3 cap).
+      for (const entry of drafts) {
+        const { error } = await supabase.from('submissions').insert({
+          contest_id: contestId,
+          user_id: user.id,
+          text: entry.text,
+          rationale: entry.whyItFits || null,
+          credited: !anonymous,
+        });
+        if (error) {
+          console.error('[submit] failed:', error);
+          window.alert('Could not submit your name: ' + (error.message || error));
+          return;
+        }
+      }
+      navigate(`/v4/contest/${contestId}/thanks`, { replace: true });
+      return;
+    }
+    // Mock demo path.
     drafts.forEach((entry) =>
       recordSubmission(contestId, {
         text: entry.text,
@@ -390,11 +456,7 @@ export default function ParticipantChat() {
         anonymous,
       })
     );
-    // Remember the participant-level choice so the workspace can show
-    // them as "Anonymous" once they've submitted anonymously.
     if (anonymous) writeParticipation(contestId, { anonymous: true });
-    // replace: true so browser-back doesn't bounce into the
-    // already-submitted chat.
     navigate(`/v4/contest/${contestId}/thanks`, { replace: true });
   };
 
