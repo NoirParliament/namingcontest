@@ -19,12 +19,12 @@ language sql
 security definer
 stable
 set search_path = auth, public
-as $$
+as $emails$
   select u.email
   from participants p
   join auth.users u on u.id = p.user_id
   where p.contest_id = cid and u.email is not null;
-$$;
+$emails$;
 revoke all on function public.contest_participant_emails(uuid) from public, anon, authenticated;
 grant execute on function public.contest_participant_emails(uuid) to service_role;
 
@@ -34,7 +34,7 @@ returns trigger
 language plpgsql
 security definer
 set search_path = public
-as $$
+as $fn$
 declare
   v_secret text := current_setting('app.notify_secret', true);
   v_url text := 'https://kgcggyuoezaygyawnlcs.supabase.co/functions/v1/notify';
@@ -63,7 +63,7 @@ begin
 
   return new;
 end;
-$$;
+$fn$;
 
 drop trigger if exists contest_change_notify on contests;
 create trigger contest_change_notify
