@@ -188,17 +188,24 @@ export default function ParticipantChat() {
   // read the full contest — brief + settings — via RLS once they've joined).
   const mockContest = getMockContestById(contestId);
   const [dbContest, setDbContest] = useState(null);
+  const [mySubs, setMySubs] = useState([]);
   const [dbLoading, setDbLoading] = useState(!mockContest);
   useEffect(() => {
-    if (mockContest) return;
+    if (mockContest || !user?.id) return;
     let active = true;
-    supabase.from('contests').select('*').eq('id', contestId).single().then(({ data }) => {
+    // Load the contest AND this user's existing submissions, so a returning
+    // submitter is recognised (and gets sent to the thanks page below).
+    Promise.all([
+      supabase.from('contests').select('*').eq('id', contestId).single(),
+      supabase.from('submissions').select('text').eq('contest_id', contestId).eq('user_id', user.id),
+    ]).then(([c, s]) => {
       if (!active) return;
-      setDbContest(data || null);
+      setDbContest(c.data || null);
+      setMySubs((s.data || []).map((r) => ({ text: r.text })));
       setDbLoading(false);
     });
     return () => { active = false; };
-  }, [contestId, mockContest]);
+  }, [contestId, mockContest, user?.id]);
   const isRealContest = !mockContest && !!dbContest;
   const contest = mockContest || (dbContest ? {
     id: dbContest.id,
@@ -212,7 +219,7 @@ export default function ParticipantChat() {
   // Real participants got here by joining (real participant row); the DB
   // submission trigger still enforces membership, so we don't gate on the
   // localStorage participation for real contests.
-  const participation = mockContest ? readParticipation(contestId) : (isRealContest ? { submittedNames: [] } : null);
+  const participation = mockContest ? readParticipation(contestId) : (isRealContest ? { submittedNames: mySubs } : null);
 
   // Resolve the creator-set cap. Numbers are used as-is; 'Unlimited'
   // (a valid numberChips option) maps to a high ceiling so the slot
