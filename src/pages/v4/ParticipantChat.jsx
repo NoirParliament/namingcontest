@@ -203,6 +203,11 @@ export default function ParticipantChat() {
       setDbContest(c.data || null);
       setMySubs((s.data || []).map((r) => ({ text: r.text })));
       setDbLoading(false);
+      // Remember this contest's segment so the Namespace page can paint the
+      // participant's contest color instantly when they navigate there next.
+      if (c.data?.sub_segment_id) {
+        try { localStorage.setItem('v4_last_sub', c.data.sub_segment_id); } catch { /* ignore */ }
+      }
     });
     return () => { active = false; };
   }, [contestId, mockContest, user?.id]);

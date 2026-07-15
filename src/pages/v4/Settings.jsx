@@ -109,6 +109,13 @@ export default function Settings() {
   // page's segment color/background and the account-menu contest chip.
   const [dbContests, setDbContests] = useState([]);
   const latest = isRealUser ? (dbContests[0] || null) : null;
+  // Real contests this user has JOINED (as a participant), most-recent first,
+  // plus the set of contest ids they've already submitted to. Loaded from the
+  // DB so the Namespace lists a participant's invitations and can follow their
+  // color. `primaryJoinedReal` is the newest joined contest.
+  const [dbJoined, setDbJoined] = useState([]);
+  const [submittedIds, setSubmittedIds] = useState(() => new Set());
+  const primaryJoinedReal = isRealUser ? (dbJoined[0] || null) : null;
   // Every contest the user has joined (most-recent first) — read up here
   // so the page background can follow a participant's joined contest.
   const participations = useMemo(() => (isRealUser ? [] : readAllParticipations()), [isRealUser]);
@@ -131,7 +138,11 @@ export default function Settings() {
   // Cached last segment → instant correct color on the Namespace page before
   // the contests query returns (avoids a blue flash).
   const cachedSub = isRealUser ? (() => { try { return localStorage.getItem('v4_last_sub'); } catch { return null; } })() : null;
-  const subId = latest?.sub_segment_id || cachedSub || setup.subSegmentId || primaryJoined?.subSegmentId || (isRealUser ? 'b1' : MOCK_ONGOING.subSegmentId);
+  // Color priority for a real user: their own launched contest wins; else the
+  // contest they most recently *looked at* (cachedSub — written by the manage
+  // page and by the participant chat/thanks/join pages), which is exactly the
+  // contest they came from; else their newest joined contest; else fallbacks.
+  const subId = latest?.sub_segment_id || cachedSub || primaryJoinedReal?.sub_segment_id || setup.subSegmentId || primaryJoined?.subSegmentId || (isRealUser ? 'b1' : MOCK_ONGOING.subSegmentId);
   const segmentTone = getSegmentTone(subId);
   const tierKey = setup.group || primaryJoined?.group || MOCK_ONGOING.tierKey;
 
@@ -198,6 +209,35 @@ export default function Settings() {
           }
         }
       });
+    return () => { active = false; };
+  }, [user?.id]);
+
+  // Load this user's real JOINED contests (participant side) + which ones
+  // they've already submitted to, so the "Contests you've joined" section and
+  // the page color reflect a participant's invitations too.
+  useEffect(() => {
+    if (!user?.id) return;
+    let active = true;
+    (async () => {
+      const [pRes, sRes] = await Promise.all([
+        supabase
+          .from('participants')
+          .select('created_at, contests(*)')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false }),
+        supabase.from('submissions').select('contest_id').eq('user_id', user.id),
+      ]);
+      if (!active) return;
+      if (pRes.error) console.error('[workspace] joined contests query failed:', pRes.error);
+      else if (Array.isArray(pRes.data)) {
+        // Drop rows whose contest RLS hid, and any the user themselves created
+        // (those already show under "Contests you're running").
+        setDbJoined(pRes.data.map((r) => r.contests).filter((c) => c && c.creator_id !== user.id));
+      }
+      if (!sRes.error && Array.isArray(sRes.data)) {
+        setSubmittedIds(new Set(sRes.data.map((r) => r.contest_id)));
+      }
+    })();
     return () => { active = false; };
   }, [user?.id]);
 
@@ -402,6 +442,20 @@ export default function Settings() {
                         tone: segmentTone,
                         contest: latest, // passed via nav state → Manage opens instantly
                       }
+                    : primaryJoinedReal
+                    ? {
+                        id: primaryJoinedReal.id,
+                        name: primaryJoinedReal.working_name || 'Contest',
+                        phase: primaryJoinedReal.status === 'voting' ? 'Voting'
+                          : primaryJoinedReal.status === 'closed' ? 'Winner' : 'Submissions',
+                        tone: segmentTone,
+                        // Take the participant straight back to where they are.
+                        to: `/v4/contest/${primaryJoinedReal.id}/${
+                          primaryJoinedReal.status === 'closed' ? 'winner'
+                          : primaryJoinedReal.status === 'voting' ? 'vote'
+                          : submittedIds.has(primaryJoinedReal.id) ? 'thanks' : 'submit'
+                        }`,
+                      }
                     : currentContest
                     ? {
                         id: currentContest.id,
@@ -432,11 +486,64 @@ export default function Settings() {
               <p className="v4-settings-subtitle">
                 {realContest
                   ? 'Your contests, billing, and account in one place.'
-                  : joinedRows.length > 0
+                  : (joinedRows.length > 0 || dbJoined.length > 0 || dbContests.length > 0)
                     ? 'Your contests and account, in one place.'
                     : 'Your account — and the home for any contest you run or join.'}
               </p>
             </div>
+
+            {/* ── CONTESTS YOU'VE JOINED (real) ─────────────────────
+                Participant invitations from the database. Shown first
+                (before your own running contests) because they're the
+                time-sensitive ones. Each row routes to exactly where the
+                participant is in that contest's lifecycle. */}
+            {isRealUser && dbJoined.length > 0 && (
+              <section className="v4-settings-section">
+                <header className="v4-settings-section-head">
+                  <ListBullets weight="duotone" size={18} />
+                  <h2>Contests you’ve joined</h2>
+                </header>
+                {dbJoined.map((c) => {
+                  const cTone = getSegmentTone(c.sub_segment_id || 'b1');
+                  const CIcon = getSegmentIcon(c.sub_segment_id) || Briefcase;
+                  const hasSubmitted = submittedIds.has(c.id);
+                  const status = c.status || 'submission';
+                  let label, to, cta;
+                  if (status === 'closed') { label = 'WINNER'; to = `/v4/contest/${c.id}/winner`; cta = 'See who won'; }
+                  else if (status === 'voting') { label = 'VOTING OPEN'; to = `/v4/contest/${c.id}/vote`; cta = 'Vote now'; }
+                  else if (hasSubmitted) { label = 'SUBMITTED'; to = `/v4/contest/${c.id}/thanks`; cta = 'See your names'; }
+                  else { label = 'SUBMISSIONS OPEN'; to = `/v4/contest/${c.id}/submit`; cta = 'Suggest a name'; }
+                  return (
+                    <div key={c.id} className="v4-settings-current" style={{ background: cTone.bg + '40' }}>
+                      <span
+                        className="v4-settings-current-icon"
+                        style={{ background: cTone.bg, color: cTone.fg }}
+                        aria-hidden="true"
+                      >
+                        <CIcon weight="duotone" size={22} />
+                      </span>
+                      <div className="v4-settings-current-text">
+                        <div className="v4-settings-current-eyebrow">
+                          {status !== 'closed' && <span className="v4-manage-live-dot" aria-hidden="true"></span>}
+                          <span>{label}</span>
+                        </div>
+                        <div className="v4-settings-current-name">{c.working_name || 'Contest'}</div>
+                        <div className="v4-settings-current-meta">
+                          {c.sub_segment_title || 'Contest'} · you’re a participant
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        onClick={() => navigate(to)}
+                      >
+                        {cta} <ArrowRight weight="bold" size={14} />
+                      </button>
+                    </div>
+                  );
+                })}
+              </section>
+            )}
 
             {/* ── CONTESTS YOU'VE JOINED ────────────────────────────
                 Joined contests come FIRST: if you signed in as a

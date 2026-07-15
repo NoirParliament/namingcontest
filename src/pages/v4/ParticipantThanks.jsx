@@ -72,6 +72,10 @@ export default function ParticipantThanks() {
       setDbContest(c.data || null);
       setMySubs((s.data || []).map((r) => ({ text: r.text })));
       setDbLoading(false);
+      // Cache this contest's segment so Namespace paints its color instantly.
+      if (c.data?.sub_segment_id) {
+        try { localStorage.setItem('v4_last_sub', c.data.sub_segment_id); } catch { /* ignore */ }
+      }
     });
     return () => { active = false; };
   }, [contestId, mockContest, user?.id]);

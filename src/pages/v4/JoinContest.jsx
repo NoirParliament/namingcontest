@@ -90,6 +90,10 @@ export default function JoinContest() {
           Icon: getSegmentIcon(r.sub_segment_id),
           creator: {},
         });
+        // Cache the segment so Namespace paints this contest's color instantly.
+        if (r.sub_segment_id) {
+          try { localStorage.setItem('v4_last_sub', r.sub_segment_id); } catch { /* ignore */ }
+        }
       }
       setContestLoading(false);
     });
