@@ -97,26 +97,42 @@ export default function JoinContest() {
   }, [contestId, mockContest]);
   const contest = mockContest || realContest;
 
-  // Complete a pending join: a guest who clicked "I'm in" got a magic link;
-  // when they land back here signed in, create their real participant row and
-  // send them into the submission chat.
+  // On arrival at a real contest while signed in: figure out where this
+  // person belongs and skip the invitation entirely if they're already in.
+  //   • already a participant → route by stage (submitted→thanks, else→submit;
+  //     voting→vote; closed→reveal)
+  //   • not a participant but a join is pending (clicked "I'm in" + returned
+  //     via magic link) → create the participant row, then route
+  //   • otherwise → stay and show the invitation
   useEffect(() => {
     if (!realContest || !user?.id) return;
-    let pending = null;
-    try { pending = localStorage.getItem('v4_pending_join'); } catch { /* ignore */ }
-    if (pending !== realContest.id) return;
     let active = true;
     (async () => {
-      const { error } = await supabase
-        .from('participants')
-        .insert({ contest_id: realContest.id, user_id: user.id });
-      // 23505 = already joined → fine, proceed.
-      if (error && error.code !== '23505') {
-        console.error('[join] participant insert failed:', error);
-        return;
+      const [p, s] = await Promise.all([
+        supabase.from('participants').select('id').eq('contest_id', realContest.id).eq('user_id', user.id).maybeSingle(),
+        supabase.from('submissions').select('id').eq('contest_id', realContest.id).eq('user_id', user.id).limit(1),
+      ]);
+      if (!active) return;
+      let isParticipant = !!p.data;
+      const hasSubmitted = (s.data || []).length > 0;
+
+      if (!isParticipant) {
+        let pending = null;
+        try { pending = localStorage.getItem('v4_pending_join'); } catch { /* ignore */ }
+        if (pending !== realContest.id) return; // not joined, no pending → show invitation
+        const { error } = await supabase
+          .from('participants')
+          .insert({ contest_id: realContest.id, user_id: user.id });
+        if (error && error.code !== '23505') { console.error('[join] participant insert failed:', error); return; }
+        try { localStorage.removeItem('v4_pending_join'); } catch { /* ignore */ }
+        isParticipant = true;
       }
-      try { localStorage.removeItem('v4_pending_join'); } catch { /* ignore */ }
-      if (active) navigate(`/v4/contest/${realContest.id}/submit`);
+
+      if (!active || !isParticipant) return;
+      const base = `/v4/contest/${realContest.id}`;
+      if (realContest.status === 'voting') navigate(`${base}/vote`, { replace: true });
+      else if (realContest.status === 'closed') navigate(`${base}/reveal`, { replace: true });
+      else navigate(hasSubmitted ? `${base}/thanks` : `${base}/submit`, { replace: true });
     })();
     return () => { active = false; };
   }, [realContest, user?.id, navigate]);
