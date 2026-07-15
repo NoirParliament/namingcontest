@@ -88,7 +88,11 @@ export default function JoinContest() {
           settings: r.settings || {},
           brief: { projectSummary: r.project_summary },
           Icon: getSegmentIcon(r.sub_segment_id),
-          creator: {},
+          // Real inviter + real phase deadlines so the header, countdown and
+          // footer flow reflect the contest's true stage.
+          creator: { name: r.creator_name || 'The organizer' },
+          submissionEndsAt: r.submission_ends_at ? new Date(r.submission_ends_at).getTime() : null,
+          votingEndsAt: r.voting_ends_at ? new Date(r.voting_ends_at).getTime() : null,
         });
         // Cache the segment so Namespace paints this contest's color instantly.
         if (r.sub_segment_id) {
@@ -262,7 +266,30 @@ export default function JoinContest() {
   const creatorPhoto = HERO_PROFILES[(creator.photoIndex || 1) - 1] || heroProfile1;
   const subSegmentLabel = contest.subSegmentTitle || 'naming contest';
   const submissionLimit = contest.settings?.submissionLimit || 3;
-  const submissionDeadline = formatDeadline(contest.settings?.submissionDays);
+
+  // Normalized lifecycle stage — for a real contest this is the true DB status;
+  // a mock demo maps its phase string. Drives the header deadline + footer flow.
+  const stage = mockContest
+    ? (contest.phase?.toLowerCase() === 'voting' ? 'voting'
+      : contest.phase?.toLowerCase() === 'winner' ? 'closed' : 'submission')
+    : (contest.status || 'submission');
+
+  // Phase-aware deadline pill: submissions vs voting close, from the contest's
+  // real end timestamps (mock falls back to its settings day count).
+  const daysUntil = (ts) => (ts ? Math.max(0, Math.ceil((ts - Date.now()) / 86400000)) : null);
+  let deadlineLabel = null;
+  let deadlineWhen = null;
+  if (stage === 'submission') {
+    deadlineLabel = 'Submissions close';
+    deadlineWhen = mockContest
+      ? formatDeadline(contest.settings?.submissionDays)
+      : formatDeadline(daysUntil(contest.submissionEndsAt));
+  } else if (stage === 'voting') {
+    deadlineLabel = 'Voting closes';
+    deadlineWhen = mockContest
+      ? formatDeadline(contest.settings?.votingDays)
+      : formatDeadline(daysUntil(contest.votingEndsAt));
+  }
 
   // Short "what is this" line under the headline. Sourced from the
   // dedicated `projectSummary` brief field — the first question every
@@ -292,7 +319,12 @@ export default function JoinContest() {
       setPhase('cta');
       return;
     }
-    setTimeout(() => navigate(`/v4/contest/${realContest.id}/submit`), 500);
+    // Land where the stage actually is — during voting you can't submit.
+    const base = `/v4/contest/${realContest.id}`;
+    const dest = realContest.status === 'voting' ? `${base}/vote`
+      : realContest.status === 'closed' ? `${base}/reveal`
+      : `${base}/submit`;
+    setTimeout(() => navigate(dest), 500);
   };
 
   // ── Magic-link handlers ────────────────────────────────────────────
@@ -409,10 +441,10 @@ export default function JoinContest() {
               </span>
             </div>
             <div className="v4-nav-right">
-              {submissionDeadline && (
+              {deadlineLabel && deadlineWhen && (
                 <span className="v4-join-nav-deadline">
                   <Clock weight="duotone" size={14} />
-                  Submissions close <strong>{submissionDeadline}</strong>
+                  {deadlineLabel} <strong>{deadlineWhen}</strong>
                 </span>
               )}
             </div>
@@ -545,8 +577,10 @@ export default function JoinContest() {
                   />
                   <h3 className="v4-join-sent-title">Magic link sent</h3>
                   <p className="v4-join-sent-sub">
-                    Check <strong>{email}</strong> — open the link to
-                    jump into the brief and start suggesting names.
+                    Check <strong>{email}</strong> — open the link to{' '}
+                    {stage === 'voting'
+                      ? 'jump in and vote on the names.'
+                      : 'jump into the brief and start suggesting names.'}
                   </p>
                   {!realContest && (
                     <>
@@ -599,32 +633,48 @@ export default function JoinContest() {
               as the nav so logo / deadline / steps share an alignment
               grid down both edges of the screen. */}
           <footer className="v4-join-foot">
-            {/* "Suggest names" is the user's CURRENT step (they're
-                on the join page = about to submit). Later steps are
-                muted so the progression reads at a glance. */}
-            <ol className="v4-join-flow">
-              <li className="v4-join-flow-step is-current">
-                <span className="v4-join-flow-dot" aria-hidden="true" />
-                <span className="v4-join-flow-label">
-                  <strong>Suggest names</strong>
-                  <em>You’re here · ~5 minutes</em>
-                </span>
-              </li>
-              <li className="v4-join-flow-step is-upcoming">
-                <span className="v4-join-flow-dot" aria-hidden="true" />
-                <span className="v4-join-flow-label">
-                  <strong>Come back to vote</strong>
-                  <em>When names close</em>
-                </span>
-              </li>
-              <li className="v4-join-flow-step is-upcoming">
-                <span className="v4-join-flow-dot" aria-hidden="true" />
-                <span className="v4-join-flow-label">
-                  <strong>See who won</strong>
-                  <em>Shoutout if it’s yours</em>
-                </span>
-              </li>
-            </ol>
+            {/* The flow reflects the contest's real stage: the active step is
+                where a joiner lands right now (submissions open → suggest;
+                voting open → vote; closed → see who won). */}
+            {(() => {
+              const currentStep = stage === 'voting' ? 1 : stage === 'closed' ? 2 : 0;
+              const steps = [
+                {
+                  title: 'Suggest names',
+                  em: currentStep === 0 ? 'You’re here · ~5 minutes'
+                    : 'Names are in',
+                },
+                {
+                  title: 'Vote on the names',
+                  em: currentStep === 1 ? 'You’re here · pick your favorites'
+                    : currentStep < 1 ? 'When names close'
+                    : 'Voting done',
+                },
+                {
+                  title: 'See who won',
+                  em: currentStep === 2 ? 'You’re here · results are in'
+                    : 'Shoutout if it’s yours',
+                },
+              ];
+              return (
+                <ol className="v4-join-flow">
+                  {steps.map((s, i) => (
+                    <li
+                      key={s.title}
+                      className={`v4-join-flow-step ${
+                        i === currentStep ? 'is-current' : i < currentStep ? 'is-done' : 'is-upcoming'
+                      }`}
+                    >
+                      <span className="v4-join-flow-dot" aria-hidden="true" />
+                      <span className="v4-join-flow-label">
+                        <strong>{s.title}</strong>
+                        <em>{s.em}</em>
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              );
+            })()}
           </footer>
         </main>
       </div>
