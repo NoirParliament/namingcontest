@@ -155,10 +155,10 @@ export default function Settings() {
   // the contests query returns (avoids a blue flash).
   const cachedSub = isRealUser ? (() => { try { return localStorage.getItem('v4_last_sub'); } catch { return null; } })() : null;
   // Color priority for a real user: their own launched contest wins; else the
-  // contest they most recently *looked at* (cachedSub — written by the manage
-  // page and by the participant chat/thanks/join pages), which is exactly the
-  // contest they came from; else their newest joined contest; else fallbacks.
-  const subId = latest?.sub_segment_id || cachedSub || primaryJoinedReal?.sub_segment_id || setup.subSegmentId || primaryJoined?.subSegmentId || (isRealUser ? 'b1' : MOCK_ONGOING.subSegmentId);
+  // contest actually shown on this page — their newest joined contest — so the
+  // background matches that card. cachedSub is only the instant pre-load guess
+  // (before the joined query returns) to avoid a color flash; then fallbacks.
+  const subId = latest?.sub_segment_id || primaryJoinedReal?.sub_segment_id || cachedSub || setup.subSegmentId || primaryJoined?.subSegmentId || (isRealUser ? 'b1' : MOCK_ONGOING.subSegmentId);
   const segmentTone = getSegmentTone(subId);
   const tierKey = setup.group || primaryJoined?.group || MOCK_ONGOING.tierKey;
 
