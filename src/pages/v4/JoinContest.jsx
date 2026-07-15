@@ -41,6 +41,7 @@ import { getMockContestById } from '../../data/v4/mockContests';
 import { getSegmentTone, getSegmentIcon, SEGMENT_THEME } from '../../data/v4/segmentTheme';
 import { readSetup, writeSetup } from '../../utils/v4Brief';
 import { supabase } from '../../lib/supabaseClient';
+import { useAuth } from '../../lib/AuthContext';
 import {
   readParticipation, joinContest, getParticipantRow,
 } from '../../utils/v4Participant';
@@ -61,6 +62,7 @@ function formatDeadline(daysAhead) {
 export default function JoinContest() {
   const { contestId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const emailRef = useRef(null);
 
   // Resolve the contest: a mock demo id from the mock store, otherwise a real
@@ -94,6 +96,30 @@ export default function JoinContest() {
     return () => { active = false; };
   }, [contestId, mockContest]);
   const contest = mockContest || realContest;
+
+  // Complete a pending join: a guest who clicked "I'm in" got a magic link;
+  // when they land back here signed in, create their real participant row and
+  // send them into the submission chat.
+  useEffect(() => {
+    if (!realContest || !user?.id) return;
+    let pending = null;
+    try { pending = localStorage.getItem('v4_pending_join'); } catch { /* ignore */ }
+    if (pending !== realContest.id) return;
+    let active = true;
+    (async () => {
+      const { error } = await supabase
+        .from('participants')
+        .insert({ contest_id: realContest.id, user_id: user.id });
+      // 23505 = already joined → fine, proceed.
+      if (error && error.code !== '23505') {
+        console.error('[join] participant insert failed:', error);
+        return;
+      }
+      try { localStorage.removeItem('v4_pending_join'); } catch { /* ignore */ }
+      if (active) navigate(`/v4/contest/${realContest.id}/submit`);
+    })();
+    return () => { active = false; };
+  }, [realContest, user?.id, navigate]);
 
   // Local state for the magic-link mini-flow inside this page.
   // 'cta'     — initial; only the big "Yes, I'm in" button is shown.
@@ -234,19 +260,55 @@ export default function JoinContest() {
   // the segment's theme; bubbles flip to white-on-tint so they read.
   const segmentBg = SEGMENT_THEME[subId]?.blobs?.[0] || tone.bg;
 
+  // Create the real participant row (idempotent) and go to submission.
+  const completeJoinAndGo = async () => {
+    setPhase('success');
+    const { error } = await supabase
+      .from('participants')
+      .insert({ contest_id: realContest.id, user_id: user.id });
+    if (error && error.code !== '23505') {
+      console.error('[join] participant insert failed:', error);
+      window.alert('Could not join the contest: ' + (error.message || error));
+      setPhase('cta');
+      return;
+    }
+    setTimeout(() => navigate(`/v4/contest/${realContest.id}/submit`), 500);
+  };
+
   // ── Magic-link handlers ────────────────────────────────────────────
   const handleRevealForm = () => {
+    // Real contest + already signed in → join immediately, no email needed.
+    if (realContest && user?.id) { completeJoinAndGo(); return; }
     setPhase('form');
   };
 
-  const handleSendLink = (e) => {
+  const handleSendLink = async (e) => {
     e?.preventDefault();
     if (!/^\S+@\S+\.\S+$/.test(email.trim())) {
       window.alert('Please enter a valid email address so we can send your link.');
       return;
     }
     setPhase('sending');
-    setTimeout(() => setPhase('sent'), 700);
+    if (realContest) {
+      // Real contest → send a real magic link; the pending-join effect above
+      // creates the participant row when they return signed in.
+      try { localStorage.setItem('v4_pending_join', realContest.id); } catch { /* ignore */ }
+      const redirectTo = `${window.location.origin}/v4/join/${realContest.id}`;
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email.trim(),
+        options: { emailRedirectTo: redirectTo },
+      });
+      if (error) {
+        console.error('[join] magic link failed:', error);
+        window.alert('Could not send your link: ' + (error.message || error));
+        setPhase('form');
+        return;
+      }
+      setPhase('sent');
+    } else {
+      // Mock demo path — keep the simulated send.
+      setTimeout(() => setPhase('sent'), 700);
+    }
   };
 
   const handleOpenLink = () => {
@@ -466,17 +528,21 @@ export default function JoinContest() {
                     Check <strong>{email}</strong> — open the link to
                     jump into the brief and start suggesting names.
                   </p>
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-lg"
-                    onClick={handleOpenLink}
-                  >
-                    Open the link <span className="arrow">→</span>
-                  </button>
-                  <p className="v4-join-form-fine v4-join-form-fine-demo">
-                    ↑ Demo shortcut. In production this is just the link
-                    in your email.
-                  </p>
+                  {!realContest && (
+                    <>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-lg"
+                        onClick={handleOpenLink}
+                      >
+                        Open the link <span className="arrow">→</span>
+                      </button>
+                      <p className="v4-join-form-fine v4-join-form-fine-demo">
+                        ↑ Demo shortcut. In production this is just the link
+                        in your email.
+                      </p>
+                    </>
+                  )}
                   <button
                     type="button"
                     className="v4-signin-link"
