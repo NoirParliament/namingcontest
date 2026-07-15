@@ -231,6 +231,16 @@ export default function ParticipantChat() {
   const userEmail = setup.userEmail || '';
   const userName = setup.userName || (userEmail.split('@')[0] || 'You');
   const userPhoto = setup.userPhoto || null;
+  // Real signed-in identity for the account menu (so it shows YOU, not the
+  // mock participant photo).
+  const [profile, setProfile] = useState(null);
+  useEffect(() => {
+    if (!user?.id) return;
+    let active = true;
+    supabase.from('profiles').select('*').eq('id', user.id).single()
+      .then(({ data }) => { if (active && data) setProfile(data); });
+    return () => { active = false; };
+  }, [user?.id]);
   const articles = useMemo(
     () => (contest ? getParticipantArticles(contest.subSegmentId) : []),
     [contest]
@@ -531,9 +541,10 @@ export default function ParticipantChat() {
             </div>
             <div className="v4-nav-right">
               <AvatarMenu
-                email={userEmail}
-                name={userName}
-                photo={participantProfile}
+                email={user?.email || userEmail}
+                name={profile?.display_name || userName}
+                photo={profile?.avatar_url || (isRealContest ? null : participantProfile)}
+                seed={user?.id}
                 tone={tone}
                 activeContest={{
                   id: contest.id,

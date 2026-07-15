@@ -12,7 +12,7 @@
 // nothing actionable until voting opens. They can leave via the nav
 // logo if they want out.
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, Navigate } from 'react-router-dom';
 import { Clock, LockSimple } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
@@ -27,6 +27,8 @@ import heroProfile6 from '../../assets/hero-profile-6.png';
 import HeroAvatarsAnimation from '../../components/HeroAvatarsAnimation';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import { getMockContestById } from '../../data/v4/mockContests';
+import { supabase } from '../../lib/supabaseClient';
+import { useAuth } from '../../lib/AuthContext';
 import { getSegmentTone, SEGMENT_THEME } from '../../data/v4/segmentTheme';
 import { readSetup } from '../../utils/v4Brief';
 import { readParticipation } from '../../utils/v4Participant';
@@ -53,8 +55,38 @@ function ctaEta(c) {
 export default function ParticipantThanks() {
   const { id: contestId } = useParams();
   const navigate = useNavigate();
-  const contest = getMockContestById(contestId);
-  const participation = readParticipation(contestId);
+  const { user } = useAuth();
+
+  const mockContest = getMockContestById(contestId);
+  const [dbContest, setDbContest] = useState(null);
+  const [mySubs, setMySubs] = useState([]);
+  const [dbLoading, setDbLoading] = useState(!mockContest);
+  useEffect(() => {
+    if (mockContest || !user?.id) return;
+    let active = true;
+    Promise.all([
+      supabase.from('contests').select('*').eq('id', contestId).single(),
+      supabase.from('submissions').select('text').eq('contest_id', contestId).eq('user_id', user.id),
+    ]).then(([c, s]) => {
+      if (!active) return;
+      setDbContest(c.data || null);
+      setMySubs((s.data || []).map((r) => ({ text: r.text })));
+      setDbLoading(false);
+    });
+    return () => { active = false; };
+  }, [contestId, mockContest, user?.id]);
+  const isRealContest = !mockContest && !!dbContest;
+  const contest = mockContest || (dbContest ? {
+    id: dbContest.id,
+    workingName: dbContest.working_name,
+    subSegmentId: dbContest.sub_segment_id,
+    settings: dbContest.settings || {},
+    launchedAt: dbContest.launched_at ? new Date(dbContest.launched_at).getTime() : null,
+    creator: {},
+  } : null);
+  const participation = mockContest
+    ? readParticipation(contestId)
+    : (isRealContest ? { submittedNames: mySubs } : null);
   const subId = contest?.subSegmentId;
   const tone = subId ? getSegmentTone(subId) : null;
   const segmentBg = SEGMENT_THEME[subId]?.blobs?.[0] || tone?.bg || '#a6dcb3';
@@ -94,6 +126,15 @@ export default function ParticipantThanks() {
   const visibleSubmitted = expanded ? submitted : submitted.slice(0, VISIBLE_LIMIT);
   const overflowCount = Math.max(0, submitted.length - VISIBLE_LIMIT);
 
+  if (!mockContest && dbLoading) {
+    return (
+      <div className="v4 lp-v3"><div className="v4-screen"><main className="v4-review" role="main">
+        <div className="v4-review-inner" style={{ textAlign: 'center', paddingTop: 120 }}>
+          <p className="v4-review-subtitle">Loading…</p>
+        </div>
+      </main></div></div>
+    );
+  }
   if (!contest) return <Navigate to="/v4/settings" replace />;
   if (!participation) return <Navigate to={`/v4/join/${contestId}`} replace />;
 
@@ -148,9 +189,10 @@ export default function ParticipantThanks() {
             </div>
             <div className="v4-nav-right">
               <AvatarMenu
-                email={userEmail}
+                email={user?.email || userEmail}
                 name={userName}
-                photo={participantProfile}
+                photo={isRealContest ? null : participantProfile}
+                seed={user?.id}
                 tone={tone}
                 activeContest={{
                   id: contest.id,
