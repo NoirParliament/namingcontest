@@ -290,9 +290,23 @@ export default function ParticipantChat() {
   // entry; in public mode the name entry shows straight away (crediting is
   // mandatory). The entered name is saved as the account/profile name.
   const [creditChosen, setCreditChosen] = useState(false);
-  // Two separate fields, always empty to start (no email-derived prefill).
+  // Two separate fields. Empty by default, BUT if the account already has a
+  // real name on file (not the email-prefix default), prefill it once so a
+  // returning creditor just confirms "share as <name>" instead of retyping.
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const namePrefilledRef = useRef(false);
+  useEffect(() => {
+    if (namePrefilledRef.current) return;
+    const nm = (profile?.display_name || '').trim();
+    if (!nm) return;
+    const emailPrefix = (user?.email || userEmail || '').split('@')[0].trim().toLowerCase();
+    if (nm.toLowerCase() === emailPrefix) return; // just the email default — not a real name
+    namePrefilledRef.current = true;
+    const parts = nm.split(/\s+/);
+    setFirstName(parts[0] || '');
+    setLastName(parts.slice(1).join(' ') || '');
+  }, [profile?.display_name, user?.email, userEmail]);
   const [confirmedName, setConfirmedName] = useState(null);
   // Public (mandatory-credit) mode: the participant can decline sharing
   // their name, which means they can't take part — we say so gracefully.
