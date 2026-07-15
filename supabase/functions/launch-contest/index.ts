@@ -36,14 +36,23 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     );
 
-    // Create-or-find the user by email and get a magic link in one call.
-    const { data: link, error: linkErr } = await admin.auth.admin.generateLink({
-      type: 'magiclink',
-      email,
-      options: redirectTo ? { redirectTo } : undefined,
-    });
-    if (linkErr) throw linkErr;
-    const userId = link.user.id;
+    // Find-or-create the user WITHOUT minting a magic link. (Generating a link
+    // here stamps a "link sent" time on the user, which made the app's real
+    // signInWithOtp seconds later trip Supabase's per-email 60s cooldown on a
+    // single launch.) Look up the id first; create the account if it's new.
+    let userId: string | undefined;
+    const { data: existingId } = await admin.rpc('auth_user_id_by_email', { p_email: email });
+    if (existingId) {
+      userId = existingId as string;
+    } else {
+      const { data: created, error: createErr } = await admin.auth.admin.createUser({
+        email,
+        email_confirm: true, // magic-link account, no password
+      });
+      if (createErr) throw createErr;
+      userId = created.user.id;
+    }
+    if (!userId) throw new Error('Could not resolve a user for this email.');
 
     // Create the contest under that user as an UNPAID DRAFT (service_role
     // bypasses RLS). confirm-launch flips it live once payment succeeds — so
