@@ -230,8 +230,15 @@ export default function ParticipantVote() {
     if (creditInitRef.current || !isRealContest || dbLoading) return;
     creditInitRef.current = true;
     const submittedByMe = dbSubs.some((s) => s.user_id === user?.id);
-    if (!submittedByMe) setCreditStep('name');
-  }, [isRealContest, dbLoading, dbSubs, user?.id]);
+    // Only ask when they have no real name yet. A freshly auto-created account
+    // defaults its display_name to the email local-part (e.g. "matt" from
+    // matt@…); anything else means they've already named themselves (via a
+    // submission, Settings, or another contest) and shouldn't be re-asked.
+    const emailPrefix = (user?.email || '').split('@')[0].trim().toLowerCase();
+    const nameNow = (profile?.display_name || '').trim();
+    const hasRealName = !!nameNow && nameNow.toLowerCase() !== emailPrefix;
+    if (!submittedByMe && !hasRealName) setCreditStep('name');
+  }, [isRealContest, dbLoading, dbSubs, user?.id, user?.email, profile?.display_name]);
   // Save the shared name as this voter's profile name (their choice becomes
   // their Namespace name), then clear the gate.
   const confirmVoterName = () => {
