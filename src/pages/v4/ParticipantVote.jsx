@@ -193,6 +193,12 @@ export default function ParticipantVote() {
           credited: s.credited,
         }));
   const alreadyVoted = mockContest ? (participation?.votedFor || []).length > 0 : myVoteIds.length > 0;
+  // Did this person submit a name to THIS contest? Drives the welcome copy
+  // (a returning submitter vs a first-time voter) and whether we ask for a
+  // profile name later.
+  const iSubmitted = mockContest
+    ? (participation?.submittedNames?.length || 0) > 0
+    : dbSubs.some((s) => s.user_id === user?.id);
   const [saving, setSaving] = useState(false);
   const { rows: briefRows, settingsRows } = useMemo(
     () => buildBriefRows(contest),
@@ -280,15 +286,13 @@ export default function ParticipantVote() {
 
   useEffect(() => { setVisibleCount(PAGE_SIZE); }, [search, sortMode]);
 
-  // Intro reveal auto-pacer — held until the credit gate is cleared so the
-  // voter answers "how should we credit you?" before the vote flow begins.
+  // Intro reveal auto-pacer.
   useEffect(() => {
-    if (creditStep !== 'done') return;
     const delay = INTRO_AUTO_TIMINGS[introStage];
     if (!delay) return;
     const t = setTimeout(() => setIntroStage((s) => s + 1), delay);
     return () => clearTimeout(t);
-  }, [introStage, creditStep]);
+  }, [introStage]);
 
   // Autoscroll on stage changes (but not on initial mount — start at top).
   useEffect(() => {
@@ -412,54 +416,20 @@ export default function ParticipantVote() {
           </header>
 
           <div className="v4-chat-inner v4-pvote-inner">
-            {/* ── Voter name gate (pure voters only) ───────────────
-                Votes are always private, so this isn't a credit/anonymity
-                choice — just an optional name for their profile. */}
-            {creditStep !== 'done' && (
-              <>
-                <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
-                  <span>
-                    One quick thing before you vote on{' '}
-                    <em>{contest.workingName || contest.name}</em> —
-                  </span>
-                </div>
-                <div className="v4-bubble" style={{ animationDelay: '0.12s' }}>
-                  <span>
-                    What name should we save for your profile? Every vote is
-                    private, so this is only how you show up in your own
-                    Namespace — it’s never shown next to your votes.
-                  </span>
-                </div>
-                <CreditNameEntry
-                  firstName={firstName}
-                  lastName={lastName}
-                  onFirstChange={setFirstName}
-                  onLastChange={setLastName}
-                  onConfirm={confirmVoterName}
-                  confirmLabel="Save name"
-                />
-                <button
-                  type="button"
-                  className="v4-credit-decline"
-                  onClick={() => setCreditStep('done')}
-                >
-                  Skip — I’d rather not
-                </button>
-              </>
-            )}
-
             {/* ── Stage 0 → typing for welcome ─────────────────────── */}
-            {creditStep === 'done' && introStage === 0 && (
+            {introStage === 0 && (
               <div className="v4-typing" aria-hidden="true">
                 <span></span><span></span><span></span>
               </div>
             )}
 
-            {/* ── Stage 1+ → welcome bubble ─────────────────────────── */}
+            {/* ── Stage 1+ → welcome bubble. Copy depends on whether this
+                person suggested names here (a returning submitter) or is a
+                first-time voter. ─────────────────────────────────────── */}
             {introStage >= 1 && (
               <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
                 <span>
-                  You’re back — voting’s open for{' '}
+                  {iSubmitted ? 'You’re back — voting’s open for ' : 'Voting’s open for '}
                   <em>{contest.workingName || contest.name}</em>.{' '}
                   {alreadyVoted
                     ? 'You can update your picks any time before voting closes.'
@@ -545,8 +515,38 @@ export default function ParticipantVote() {
               </div>
             )}
 
+            {/* ── Stage 6a → name gate for pure voters. Sits AFTER the
+                intro (welcome + brief refresher), right before the cards.
+                Votes are always private, so this only sets a profile name. */}
+            {introStage >= 6 && creditStep !== 'done' && (
+              <>
+                <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
+                  <span>
+                    One quick thing before the names — what should we save as
+                    your profile name? Every vote is private, so this is only
+                    how you show up in your own Namespace, never next to your votes.
+                  </span>
+                </div>
+                <CreditNameEntry
+                  firstName={firstName}
+                  lastName={lastName}
+                  onFirstChange={setFirstName}
+                  onLastChange={setLastName}
+                  onConfirm={confirmVoterName}
+                  confirmLabel="Save name"
+                />
+                <button
+                  type="button"
+                  className="v4-credit-decline"
+                  onClick={() => setCreditStep('done')}
+                >
+                  Skip — I’d rather not
+                </button>
+              </>
+            )}
+
             {/* ── Stage 6 → vote prompt + toolbar + cards ───────────── */}
-            {introStage >= 6 && (
+            {introStage >= 6 && creditStep === 'done' && (
               <>
                 <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
                   <span>
@@ -626,8 +626,9 @@ export default function ParticipantVote() {
             )}
           </div>
 
-          {/* Sticky bottom bar — only after stage 6 (vote cards visible) */}
-          {introStage >= 6 && (
+          {/* Sticky bottom bar — only once the cards are visible (after the
+              intro and any pure-voter name step). */}
+          {introStage >= 6 && creditStep === 'done' && (
             <div className="v4-pvote-bottom">
               <div className="v4-pvote-bottom-inner">
                 <span className="v4-pvote-bottom-count">
