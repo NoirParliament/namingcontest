@@ -98,6 +98,90 @@ export function buildLiveData(contest, phase = 'voting') {
   };
 }
 
+// Compact "3h ago" / "2d ago" from an ISO timestamp.
+function timeAgo(iso) {
+  if (!iso) return 'recently';
+  const then = new Date(iso).getTime();
+  if (!Number.isFinite(then)) return 'recently';
+  const secs = Math.max(0, Math.floor((Date.now() - then) / 1000));
+  if (secs < 60) return 'just now';
+  const mins = Math.floor(secs / 60);
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
+}
+
+// Real (DB) equivalent of buildLiveData: build the same {names, participants,
+// showVotes, stats} shape from real submission rows + a userId→displayName
+// map. Anonymity is driven by each row's `credited` flag (uncredited rows
+// collapse into one "Anonymous" submitter). Vote counts are the real
+// denormalized submissions.vote_count (kept in sync by a DB trigger) and are
+// only surfaced once the contest is past the submission phase.
+export function buildLiveDataFromReal(subs, profilesById = {}, participantCount = 0, phase = 'submission') {
+  const showVotes = phase !== 'submission';
+  const profOf = (s) => profilesById[s.user_id] || null;
+  const displayNameFor = (s) => (s.credited ? (profOf(s)?.name || 'Someone') : 'Anonymous');
+
+  // Group submissions by their real author (credited → by user_id; uncredited
+  // → a single shared "anon" bucket) so the participants view is accurate.
+  const keyToId = new Map();
+  const participants = [];
+  subs.forEach((s) => {
+    const key = s.credited ? `u:${s.user_id}` : 'anon';
+    if (!keyToId.has(key)) {
+      const nm = displayNameFor(s);
+      const id = key === 'anon' ? 'anon' : `pp${participants.length + 1}`;
+      keyToId.set(key, id);
+      participants.push({
+        id,
+        name: nm,
+        initials: nm === 'Anonymous' ? '?' : initialsOf(nm),
+        anonymous: nm === 'Anonymous',
+        tone: TONES[participants.length % TONES.length],
+        // Seed the same avatar the participant sees for themselves: the
+        // boring-avatar generated from their auth id (or their uploaded photo).
+        // Anonymous authors are never tied back to their id — a stable bucket
+        // seed keeps their avatar consistent without identifying them.
+        avatarSeed: key === 'anon' ? 'anon' : s.user_id,
+        avatarUrl: s.credited ? (profOf(s)?.avatarUrl || null) : null,
+      });
+    }
+  });
+
+  const names = subs.map((s) => {
+    const key = s.credited ? `u:${s.user_id}` : 'anon';
+    const nm = displayNameFor(s);
+    return {
+      id: s.id,
+      text: s.text,
+      submittedBy: keyToId.get(key),
+      submitterName: nm,
+      anonymous: nm === 'Anonymous',
+      voteCount: showVotes ? (s.vote_count || 0) : 0,
+      submittedAgo: timeAgo(s.created_at),
+      whyItFits: s.rationale || '',
+    };
+  });
+
+  const totalVotes = names.reduce((sum, n) => sum + n.voteCount, 0);
+  const leading = showVotes ? [...names].sort((a, b) => b.voteCount - a.voteCount)[0] : null;
+
+  return {
+    names,
+    participants,
+    showVotes,
+    stats: {
+      submissions: names.length,
+      // Prefer the real joined-participant count; fall back to submitters.
+      participants: participantCount || participants.length,
+      votes: totalVotes,
+      leadingName: leading?.text || '—',
+    },
+  };
+}
+
 // Per-participant rollup over a derived names list. votedOnCount is a
 // deterministic stand-in (no real vote graph in the prototype).
 export function participantStatsFrom(names, participant) {

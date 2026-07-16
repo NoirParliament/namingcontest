@@ -89,7 +89,8 @@ function paletteVars(palette) {
 export default function LaunchModal({
   open,
   onClose,
-  onSuccess,
+  onCreateIntent,
+  onPaid,
   contextLabel = '',
   tier = 'personal',
   palette,
@@ -99,7 +100,8 @@ export default function LaunchModal({
     <Elements stripe={getStripe()} options={{ appearance: STRIPE_APPEARANCE }}>
       <LaunchModalInner
         onClose={onClose}
-        onSuccess={onSuccess}
+        onCreateIntent={onCreateIntent}
+        onPaid={onPaid}
         contextLabel={contextLabel}
         tier={tier}
         palette={palette}
@@ -108,7 +110,7 @@ export default function LaunchModal({
   );
 }
 
-function LaunchModalInner({ onClose, onSuccess, contextLabel, tier, palette }) {
+function LaunchModalInner({ onClose, onCreateIntent, onPaid, contextLabel, tier, palette }) {
   const stripe = useStripe();
   const elements = useElements();
   const emailRef = useRef(null);
@@ -148,44 +150,44 @@ function LaunchModalInner({ onClose, onSuccess, contextLabel, tier, palette }) {
     setSubmitting(true);
     setCardError('');
 
-    // PROTOTYPE: validate card via Stripe (creates a payment method but
-    // doesn't charge — that requires a backend Payment Intent endpoint).
-    // When backend is ready, swap this for stripe.confirmPayment().
-    const cardElement = elements.getElement(CardElement);
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: 'card',
-      card: cardElement,
-      billing_details: { email: email.trim() },
-    });
-
-    if (error) {
-      setCardError(error.message || 'Payment failed. Please try again.');
-      setSubmitting(false);
-      return;
-    }
-
-    // Stub successful payment + auth — stash receipt + email
     try {
-      const raw = localStorage.getItem('v4_contest_setup');
-      const cur = raw ? JSON.parse(raw) : {};
-      localStorage.setItem(
-        'v4_contest_setup',
-        JSON.stringify({
-          ...cur,
-          userEmail: email.trim(),
-          paymentMethodId: paymentMethod.id, // Stripe payment method ID
-          paidAmount: price,
-          paidTier: tier,
-          paidVoterTier: voterTier,
-        })
-      );
-    } catch {}
+      // 1. Create the draft contest + a PaymentIntent for its price (the price
+      //    is read server-side from the contest, never trusted from here).
+      const { contestId, clientSecret, paymentIntentId } = await onCreateIntent(email.trim());
 
-    setSubmitted(true);
-    // Brief celebration pause before proceeding
-    setTimeout(() => {
-      onSuccess?.(email.trim(), paymentMethod.id);
-    }, 1200);
+      // 2. Confirm the card against that intent — the real charge.
+      const cardElement = elements.getElement(CardElement);
+      const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: { card: cardElement, billing_details: { email: email.trim() } },
+      });
+      if (error) {
+        setCardError(error.message || 'Payment failed. Please try again.');
+        setSubmitting(false);
+        return;
+      }
+      if (paymentIntent?.status !== 'succeeded') {
+        setCardError('Payment could not be completed. Please try another card.');
+        setSubmitting(false);
+        return;
+      }
+
+      // 3. Paid — mirror the email to the setup blob, celebrate, then hand off
+      //    to onPaid (verifies server-side + flips the contest live + routes).
+      try {
+        const raw = localStorage.getItem('v4_contest_setup');
+        const cur = raw ? JSON.parse(raw) : {};
+        localStorage.setItem(
+          'v4_contest_setup',
+          JSON.stringify({ ...cur, userEmail: email.trim(), paidAmount: price, paidTier: tier, paidVoterTier: voterTier })
+        );
+      } catch { /* ignore */ }
+
+      setSubmitted(true);
+      setTimeout(() => onPaid?.({ contestId, paymentIntentId, email: email.trim() }), 1200);
+    } catch (err) {
+      setCardError(err?.message || 'Something went wrong. Please try again.');
+      setSubmitting(false);
+    }
   };
 
   return (

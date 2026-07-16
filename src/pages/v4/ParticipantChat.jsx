@@ -26,6 +26,8 @@ import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 // creator side's default (heroProfile1) and Marcus the inviter (profile-4).
 import participantProfile from '../../assets/participant-profile.png';
 import { getMockContestById } from '../../data/v4/mockContests';
+import { supabase } from '../../lib/supabaseClient';
+import { useAuth } from '../../lib/AuthContext';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
 import { readSetup, writeSetup } from '../../utils/v4Brief';
 import { readParticipation, recordSubmission, writeParticipation } from '../../utils/v4Participant';
@@ -37,6 +39,7 @@ import { getQuestionsFor } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
 import GuideExpandable from '../../components/v4/GuideExpandable';
 import AvatarMenu from '../../components/v4/AvatarMenu';
+import CreditNameEntry from '../../components/v4/CreditNameEntry';
 import { useFadeNav } from '../../components/v4/useFadeNav';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
@@ -180,8 +183,49 @@ export default function ParticipantChat() {
   const { id: contestId } = useParams();
   const navigate = useNavigate();
   const fadeNav = useFadeNav();
-  const contest = getMockContestById(contestId);
-  const participation = readParticipation(contestId);
+  const { user } = useAuth();
+
+  // Mock demo contest, or a real one loaded from the DB (a participant can
+  // read the full contest — brief + settings — via RLS once they've joined).
+  const mockContest = getMockContestById(contestId);
+  const [dbContest, setDbContest] = useState(null);
+  const [mySubs, setMySubs] = useState([]);
+  const [dbLoading, setDbLoading] = useState(!mockContest);
+  useEffect(() => {
+    if (mockContest || !user?.id) return;
+    let active = true;
+    // Load the contest AND this user's existing submissions, so a returning
+    // submitter is recognised (and gets sent to the thanks page below).
+    Promise.all([
+      supabase.from('contests').select('*').eq('id', contestId).single(),
+      supabase.from('submissions').select('text').eq('contest_id', contestId).eq('user_id', user.id),
+    ]).then(([c, s]) => {
+      if (!active) return;
+      setDbContest(c.data || null);
+      setMySubs((s.data || []).map((r) => ({ text: r.text })));
+      setDbLoading(false);
+      // Remember this contest's segment so the Namespace page can paint the
+      // participant's contest color instantly when they navigate there next.
+      if (c.data?.sub_segment_id) {
+        try { localStorage.setItem('v4_last_sub', c.data.sub_segment_id); } catch { /* ignore */ }
+      }
+    });
+    return () => { active = false; };
+  }, [contestId, mockContest, user?.id]);
+  const isRealContest = !mockContest && !!dbContest;
+  const contest = mockContest || (dbContest ? {
+    id: dbContest.id,
+    subSegmentId: dbContest.sub_segment_id,
+    subSegmentTitle: dbContest.sub_segment_title,
+    group: dbContest.tier,
+    settings: dbContest.settings || {},
+    brief: dbContest.brief || {},
+    creator: {},
+  } : null);
+  // Real participants got here by joining (real participant row); the DB
+  // submission trigger still enforces membership, so we don't gate on the
+  // localStorage participation for real contests.
+  const participation = mockContest ? readParticipation(contestId) : (isRealContest ? { submittedNames: mySubs } : null);
 
   // Resolve the creator-set cap. Numbers are used as-is; 'Unlimited'
   // (a valid numberChips option) maps to a high ceiling so the slot
@@ -200,6 +244,16 @@ export default function ParticipantChat() {
   const userEmail = setup.userEmail || '';
   const userName = setup.userName || (userEmail.split('@')[0] || 'You');
   const userPhoto = setup.userPhoto || null;
+  // Real signed-in identity for the account menu (so it shows YOU, not the
+  // mock participant photo).
+  const [profile, setProfile] = useState(null);
+  useEffect(() => {
+    if (!user?.id) return;
+    let active = true;
+    supabase.from('profiles').select('*').eq('id', user.id).single()
+      .then(({ data }) => { if (active && data) setProfile(data); });
+    return () => { active = false; };
+  }, [user?.id]);
   const articles = useMemo(
     () => (contest ? getParticipantArticles(contest.subSegmentId) : []),
     [contest]
@@ -236,9 +290,23 @@ export default function ParticipantChat() {
   // entry; in public mode the name entry shows straight away (crediting is
   // mandatory). The entered name is saved as the account/profile name.
   const [creditChosen, setCreditChosen] = useState(false);
-  // Two separate fields, always empty to start (no email-derived prefill).
+  // Two separate fields. Empty by default, BUT if the account already has a
+  // real name on file (not the email-prefix default), prefill it once so a
+  // returning creditor just confirms "share as <name>" instead of retyping.
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const namePrefilledRef = useRef(false);
+  useEffect(() => {
+    if (namePrefilledRef.current) return;
+    const nm = (profile?.display_name || '').trim();
+    if (!nm) return;
+    const emailPrefix = (user?.email || userEmail || '').split('@')[0].trim().toLowerCase();
+    if (nm.toLowerCase() === emailPrefix) return; // just the email default — not a real name
+    namePrefilledRef.current = true;
+    const parts = nm.split(/\s+/);
+    setFirstName(parts[0] || '');
+    setLastName(parts.slice(1).join(' ') || '');
+  }, [profile?.display_name, user?.email, userEmail]);
   const [confirmedName, setConfirmedName] = useState(null);
   // Public (mandatory-credit) mode: the participant can decline sharing
   // their name, which means they can't take part — we say so gracefully.
@@ -318,6 +386,20 @@ export default function ParticipantChat() {
     return () => clearTimeout(t);
   }, [introStage]);
 
+  // Real contest still loading — hold, don't bounce to settings.
+  if (!mockContest && dbLoading) {
+    return (
+      <div className="v4 lp-v3">
+        <div className="v4-screen">
+          <main className="v4-review" role="main">
+            <div className="v4-review-inner" style={{ textAlign: 'center', paddingTop: 120 }}>
+              <p className="v4-review-subtitle">Loading the contest…</p>
+            </div>
+          </main>
+        </div>
+      </div>
+    );
+  }
   if (!contest) return <Navigate to="/v4/settings" replace />;
   if (!participation) return <Navigate to={`/v4/join/${contestId}`} replace />;
   if (alreadySubmitted.length > 0) {
@@ -380,7 +462,28 @@ export default function ParticipantChat() {
 
   // Record all drafts (with the chosen credit visibility) then head to
   // the thanks page. `anonymous` only matters in participant-choose mode.
-  const recordAndGo = (anonymous) => {
+  const recordAndGo = async (anonymous) => {
+    if (isRealContest && user?.id) {
+      // Real contest → write each name to the submissions table (the DB
+      // trigger enforces membership + the max-3 cap).
+      for (const entry of drafts) {
+        const { error } = await supabase.from('submissions').insert({
+          contest_id: contestId,
+          user_id: user.id,
+          text: entry.text,
+          rationale: entry.whyItFits || null,
+          credited: !anonymous,
+        });
+        if (error) {
+          console.error('[submit] failed:', error);
+          window.alert('Could not submit your name: ' + (error.message || error));
+          return;
+        }
+      }
+      navigate(`/v4/contest/${contestId}/thanks`, { replace: true });
+      return;
+    }
+    // Mock demo path.
     drafts.forEach((entry) =>
       recordSubmission(contestId, {
         text: entry.text,
@@ -390,21 +493,25 @@ export default function ParticipantChat() {
         anonymous,
       })
     );
-    // Remember the participant-level choice so the workspace can show
-    // them as "Anonymous" once they've submitted anonymously.
     if (anonymous) writeParticipation(contestId, { anonymous: true });
-    // replace: true so browser-back doesn't bounce into the
-    // already-submitted chat.
     navigate(`/v4/contest/${contestId}/thanks`, { replace: true });
   };
 
   // Confirm the credited name → save it as the account/profile name (so it
   // shows in the avatar menu + workspace) and advance past the credit step.
+  // For a real signed-in user we persist it to their profile row, so the name
+  // they choose to be credited under becomes their name in the Namespace and
+  // credits their submissions everywhere — automatically.
   const confirmName = () => {
     const nm = `${firstName.trim()} ${lastName.trim()}`.trim();
     if (nm) {
       writeSetup({ userName: nm });
       setConfirmedName(nm);
+      if (user?.id) {
+        setProfile((p) => ({ ...(p || {}), display_name: nm }));
+        supabase.from('profiles').update({ display_name: nm }).eq('id', user.id)
+          .then(({ error }) => { if (error) console.error('[credit name] profile update failed:', error); });
+      }
     }
     setCreditMe(true);
     setIntroStage(5);
@@ -469,9 +576,10 @@ export default function ParticipantChat() {
             </div>
             <div className="v4-nav-right">
               <AvatarMenu
-                email={userEmail}
-                name={userName}
-                photo={participantProfile}
+                email={user?.email || userEmail}
+                name={profile?.display_name || userName}
+                photo={profile?.avatar_url || (isRealContest ? null : participantProfile)}
+                seed={user?.id}
                 tone={tone}
                 activeContest={{
                   id: contest.id,
@@ -1092,42 +1200,6 @@ function DraftBubble({
 // ── Credit name entry — a text field + confirm, used when the
 // participant opts to be credited (or when the host made it mandatory).
 // The confirmed name is saved as the account/profile name.
-function CreditNameEntry({ firstName, lastName, onFirstChange, onLastChange, onConfirm, confirmLabel }) {
-  const canConfirm = firstName.trim().length > 0;
-  const submitOnEnter = (e) => { if (e.key === 'Enter' && canConfirm) onConfirm(); };
-  return (
-    <div className="v4-credit-name">
-      <input
-        type="text"
-        className="v4-settings-input v4-credit-name-input"
-        value={firstName}
-        onChange={(e) => onFirstChange(e.target.value)}
-        onKeyDown={submitOnEnter}
-        placeholder="First name"
-        aria-label="First name"
-        autoFocus
-      />
-      <input
-        type="text"
-        className="v4-settings-input v4-credit-name-input"
-        value={lastName}
-        onChange={(e) => onLastChange(e.target.value)}
-        onKeyDown={submitOnEnter}
-        placeholder="Last name"
-        aria-label="Last name"
-      />
-      <button
-        type="button"
-        className="v4-chip v4-credit-name-confirm"
-        onClick={onConfirm}
-        disabled={!canConfirm}
-      >
-        {confirmLabel}
-      </button>
-    </div>
-  );
-}
-
 // ── Read-only checklist before submit ──────────────────────────────
 function ChecklistCard({ items }) {
   return (

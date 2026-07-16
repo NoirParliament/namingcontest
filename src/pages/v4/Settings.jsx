@@ -3,7 +3,7 @@
 // All "save" / "cancel plan" actions are mock for now; wire to real
 // backend (Supabase) and Stripe customer portal later.
 
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   X, EnvelopeSimple, User, CreditCard, Receipt, ArrowSquareOut,
@@ -16,9 +16,13 @@ import creatorProfile from '../../assets/creator-profile.png';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
 import { readSetup, writeSetup } from '../../utils/v4Brief';
+import { useAuth } from '../../lib/AuthContext';
+import { supabase } from '../../lib/supabaseClient';
+import { uploadUserFile } from '../../lib/uploads';
+import UserAvatar from '../../components/v4/UserAvatar';
 import { readAllParticipations, getParticipantRow } from '../../utils/v4Participant';
 import { getMockContestById, MOCK_CONTESTS } from '../../data/v4/mockContests';
-import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
+import { SegmentThemeBackdrop, getSegmentTone, getSegmentIcon } from '../../data/v4/segmentTheme';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import CatchwordConsultBlock from '../../components/v4/CatchwordConsultBlock';
 import '../../styles/landing-v3.css';
@@ -94,9 +98,43 @@ const MOCK_CLOSED = [
 export default function Settings() {
   const navigate = useNavigate();
   const setup = readSetup();
+  // A real Supabase session means a real account — suppress ALL the mock
+  // demo data (the "Sunday football crew" contest, closed history, joined
+  // rows) so a real user never sees or clicks a fake contest. Real contests
+  // arrive from the database in Phase 2. The non-authenticated demo path
+  // (/v4/map) still shows the mocks.
+  const { user, loading: authLoading } = useAuth();
+  const isRealUser = !!user;
+  // Real contests this user created (most-recent first). `latest` drives the
+  // page's segment color/background and the account-menu contest chip.
+  const [dbContests, setDbContests] = useState([]);
+  // Cancelled contests are terminal — keep them out of the active list and
+  // out of the color/menu signal; they get their own quiet section instead.
+  const activeContests = useMemo(
+    () => dbContests.filter((c) => c.status !== 'cancelled'),
+    [dbContests]
+  );
+  const cancelledDbContests = useMemo(
+    () => dbContests.filter((c) => c.status === 'cancelled'),
+    [dbContests]
+  );
+  const latest = isRealUser ? (activeContests[0] || null) : null;
+  // Real contests this user has JOINED (as a participant), most-recent first,
+  // plus the set of contest ids they've already submitted to. Loaded from the
+  // DB so the Namespace lists a participant's invitations and can follow their
+  // color. `primaryJoinedReal` is the newest joined contest.
+  const [dbJoined, setDbJoined] = useState([]);
+  const [submittedIds, setSubmittedIds] = useState(() => new Set());
+  const [votedIds, setVotedIds] = useState(() => new Set());
+  // A cancelled contest you joined is no longer actionable — drop it.
+  const activeJoined = useMemo(
+    () => dbJoined.filter((c) => c.status !== 'cancelled'),
+    [dbJoined]
+  );
+  const primaryJoinedReal = isRealUser ? (activeJoined[0] || null) : null;
   // Every contest the user has joined (most-recent first) — read up here
   // so the page background can follow a participant's joined contest.
-  const participations = useMemo(() => readAllParticipations(), []);
+  const participations = useMemo(() => (isRealUser ? [] : readAllParticipations()), [isRealUser]);
   // If the user has submitted anonymously to a contest, their workspace
   // identity reads "Anonymous" rather than their real name.
   const submittedAnonymously = participations.some(
@@ -113,21 +151,120 @@ export default function Settings() {
   const primaryJoined = participations[0]
     ? getMockContestById(participations[0].contestId)
     : null;
-  const subId = setup.subSegmentId || primaryJoined?.subSegmentId || MOCK_ONGOING.subSegmentId;
+  // Cached last segment → instant correct color on the Namespace page before
+  // the contests query returns (avoids a blue flash).
+  const cachedSub = isRealUser ? (() => { try { return localStorage.getItem('v4_last_sub'); } catch { return null; } })() : null;
+  // Color priority for a real user: their own launched contest wins; else the
+  // contest actually shown on this page — their newest joined contest — so the
+  // background matches that card. cachedSub is only the instant pre-load guess
+  // (before the joined query returns) to avoid a color flash; then fallbacks.
+  const subId = latest?.sub_segment_id || primaryJoinedReal?.sub_segment_id || cachedSub || setup.subSegmentId || primaryJoined?.subSegmentId || (isRealUser ? 'b1' : MOCK_ONGOING.subSegmentId);
   const segmentTone = getSegmentTone(subId);
   const tierKey = setup.group || primaryJoined?.group || MOCK_ONGOING.tierKey;
 
-  // Account form state — photo + name + email, persisted to setup blob.
+  // Account identity comes from the real session + profiles table. Email is
+  // read-only (it IS the sign-in identity). Display name loads from the
+  // profiles row and saves back to it, so it survives re-login.
+  const email = user?.email || setup.userEmail || '';
   const [photo, setPhoto] = useState(setup.userPhoto || null);
-  const [email, setEmail] = useState(setup.userEmail || '');
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [name, setName] = useState(setup.userName || '');
   const [savedFlash, setSavedFlash] = useState(false);
+  // Until the profile fetch settles we don't know the real name/email, so we
+  // hold off the "Add your name" / "no email saved" empty-state text to avoid
+  // a flash of it before the real values land.
+  const [profileReady, setProfileReady] = useState(false);
   const fileRef = useRef(null);
+  // True once the user edits the name — so a late-arriving profile fetch
+  // can't clobber what they just typed (the bug that made saves "revert").
+  const nameEditedRef = useRef(false);
 
-  // Read uploaded image as a data URL → store it on the setup blob.
-  // (Prototype-grade. In production, upload to Supabase Storage and
-  // persist the public URL instead.)
-  const handlePhotoFile = (file) => {
+  // Load the saved display name from the user's profile row on mount.
+  useEffect(() => {
+    if (!user?.id) return;
+    let active = true;
+    supabase
+      .from('profiles')
+      .select('*') // '*' is resilient if avatar_url isn't migrated in yet
+      .eq('id', user.id)
+      .single()
+      .then(({ data, error }) => {
+        if (!active) return;
+        if (!error) {
+          if (!nameEditedRef.current && data?.display_name) setName(data.display_name);
+          // DB is the source of truth for a real user's photo — clear any
+          // stale localStorage photo when the profile has none.
+          setPhoto(data?.avatar_url || null);
+        }
+        setProfileReady(true);
+      });
+    return () => { active = false; };
+  }, [user?.id]);
+
+  // Only reveal the empty-state placeholders ("Add your name" / "no email
+  // saved") once the session and profile have actually loaded.
+  const identityLoading = authLoading || (isRealUser && !profileReady);
+
+  // Load this user's real contests (creator side) from the database.
+  useEffect(() => {
+    if (!user?.id) return;
+    let active = true;
+    supabase
+      .from('contests')
+      .select('*')
+      .eq('creator_id', user.id)
+      .order('created_at', { ascending: false })
+      .then(({ data, error }) => {
+        if (!active) return;
+        if (error) { console.error('[workspace] contests query failed:', error); return; }
+        if (data) {
+          setDbContests(data);
+          // Cache the latest segment for an instant-color next visit.
+          if (data[0]?.sub_segment_id) {
+            try { localStorage.setItem('v4_last_sub', data[0].sub_segment_id); } catch {}
+          }
+        }
+      });
+    return () => { active = false; };
+  }, [user?.id]);
+
+  // Load this user's real JOINED contests (participant side) + which ones
+  // they've already submitted to, so the "Contests you've joined" section and
+  // the page color reflect a participant's invitations too.
+  useEffect(() => {
+    if (!user?.id) return;
+    let active = true;
+    (async () => {
+      const [pRes, sRes, vRes] = await Promise.all([
+        supabase
+          .from('participants')
+          .select('joined_at, contests(*)')
+          .eq('user_id', user.id)
+          .order('joined_at', { ascending: false }),
+        supabase.from('submissions').select('contest_id').eq('user_id', user.id),
+        supabase.from('votes').select('contest_id').eq('user_id', user.id),
+      ]);
+      if (!active) return;
+      if (pRes.error) console.error('[workspace] joined contests query failed:', pRes.error);
+      else if (Array.isArray(pRes.data)) {
+        // Drop rows whose contest RLS hid, and any the user themselves created
+        // (those already show under "Contests you're running").
+        setDbJoined(pRes.data.map((r) => r.contests).filter((c) => c && c.creator_id !== user.id));
+      }
+      if (!sRes.error && Array.isArray(sRes.data)) {
+        setSubmittedIds(new Set(sRes.data.map((r) => r.contest_id)));
+      }
+      if (!vRes.error && Array.isArray(vRes.data)) {
+        setVotedIds(new Set(vRes.data.map((r) => r.contest_id)));
+      }
+    })();
+    return () => { active = false; };
+  }, [user?.id]);
+
+  // Upload the chosen image to Supabase Storage and save its public URL on
+  // the profile, so it persists across re-login and devices. Mirrors to the
+  // localStorage setup blob that other (still-mock) pages read.
+  const handlePhotoFile = async (file) => {
     if (!file) return;
     if (!/^image\//.test(file.type)) {
       window.alert('Please choose an image file (PNG, JPG, etc.).');
@@ -137,23 +274,32 @@ export default function Settings() {
       window.alert('Image must be under 5 MB.');
       return;
     }
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const dataUrl = e.target?.result;
-      if (typeof dataUrl === 'string') {
-        setPhoto(dataUrl);
-        writeSetup({ userPhoto: dataUrl });
+    setUploadingPhoto(true);
+    try {
+      const url = await uploadUserFile({ file, folder: 'avatar' });
+      setPhoto(url);
+      if (user?.id) {
+        await supabase.from('profiles').update({ avatar_url: url }).eq('id', user.id);
       }
-    };
-    reader.readAsDataURL(file);
+      writeSetup({ userPhoto: url });
+    } catch (err) {
+      window.alert(err.message || 'Upload failed. Please try again.');
+    } finally {
+      setUploadingPhoto(false);
+    }
   };
-  const handleRemovePhoto = () => {
+  const handleRemovePhoto = async () => {
     setPhoto(null);
+    if (user?.id) {
+      await supabase.from('profiles').update({ avatar_url: null }).eq('id', user.id);
+    }
     writeSetup({ userPhoto: null });
   };
 
-  // Real contest from setup (only present after the user has launched).
-  const realContest = setup.contestId ? {
+  // Real contest from setup — DEMO PATH ONLY. Real accounts read their
+  // contests from the DB (dbContests), never from localStorage, so stale
+  // localStorage can't surface a mock contest to a logged-in user.
+  const realContest = (!isRealUser && setup.contestId) ? {
     id: setup.contestId,
     name: setup.workingName || 'Your contest',
     tierKey,
@@ -178,8 +324,8 @@ export default function Settings() {
   // demo viewers and disappears as soon as a real one exists.
   // Mock CLOSED + their billing entries ALWAYS show, so the past-history
   // sections never look empty even after the user creates their first.
-  const currentContest = realContest || mockOngoingContest;
-  const closedContests = MOCK_CLOSED;
+  const currentContest = realContest || (isRealUser ? null : mockOngoingContest);
+  const closedContests = isRealUser ? [] : MOCK_CLOSED;
 
   // ── PARTICIPANT-ROLE STATE ─────────────────────────────────────────
   // Same account can be both a creator AND a participant on contests
@@ -252,11 +398,23 @@ export default function Settings() {
     return { phase: 'Closed', daysLeft: 0 };
   }
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    // Email is read-only here — only the display name is editable
-    // through this form. (Photo persists on upload immediately.)
-    writeSetup({ userName: name.trim() });
+    // Email is read-only here — only the display name is editable.
+    // Persist to the real profile so it survives re-login; also mirror to
+    // the localStorage setup blob that other (still-mock) pages read.
+    const clean = name.trim();
+    if (user?.id) {
+      const { data, error } = await supabase
+        .from('profiles')
+        .update({ display_name: clean })
+        .eq('id', user.id)
+        .select();
+      if (error) console.error('[profile save] failed:', error.message);
+      else if (!data?.length) console.warn('[profile save] 0 rows updated (check RLS)');
+    }
+    writeSetup({ userName: clean });
+    nameEditedRef.current = false; // saved value is now the source of truth
     setSavedFlash(true);
     setTimeout(() => setSavedFlash(false), 2200);
   };
@@ -290,22 +448,41 @@ export default function Settings() {
                 email={email}
                 name={name}
                 photo={photo}
-                /* Side-specific default profile picture: participant-profile
-                   when in participant mode (joined, no launched contest),
-                   creator-profile otherwise. A real upload still wins. */
-                defaultPhoto={!realContest && joinedRows.length > 0 ? participantProfile : creatorProfile}
+                /* No custom photo → generated avatar seeded by the user id. */
+                seed={user?.id}
                 tone={segmentTone}
                 activeContest={
-                  currentContest
+                  latest
+                    ? {
+                        id: latest.id,
+                        name: latest.working_name || 'Your contest',
+                        phase: latest.status === 'submission' ? 'Submissions'
+                          : latest.status === 'voting' ? 'Voting'
+                          : latest.status === 'closed' ? 'Winner' : 'Live',
+                        tone: segmentTone,
+                        contest: latest, // passed via nav state → Manage opens instantly
+                      }
+                    : primaryJoinedReal
+                    ? {
+                        id: primaryJoinedReal.id,
+                        name: primaryJoinedReal.working_name || 'Contest',
+                        phase: primaryJoinedReal.status === 'voting' ? 'Voting'
+                          : primaryJoinedReal.status === 'closed' ? 'Winner' : 'Submissions',
+                        tone: segmentTone,
+                        // Take the participant straight back to where they are.
+                        to: `/v4/contest/${primaryJoinedReal.id}/${
+                          primaryJoinedReal.status === 'closed' ? 'winner'
+                          : primaryJoinedReal.status === 'voting'
+                            ? (votedIds.has(primaryJoinedReal.id) ? 'vote-thanks' : 'vote')
+                          : submittedIds.has(primaryJoinedReal.id) ? 'thanks' : 'submit'
+                        }`,
+                      }
+                    : currentContest
                     ? {
                         id: currentContest.id,
                         name: currentContest.name,
                         ...describeContestStatus(currentContest),
                         tone: segmentTone,
-                        /* Participant-only mode → contest card in the
-                           dropdown stays on the workspace (creator
-                           manage page would be the wrong destination).
-                           Real-creator mode → default contest route. */
                         to: !realContest && joinedRows.length > 0
                           ? '/v4/settings'
                           : undefined,
@@ -330,11 +507,69 @@ export default function Settings() {
               <p className="v4-settings-subtitle">
                 {realContest
                   ? 'Your contests, billing, and account in one place.'
-                  : joinedRows.length > 0
+                  : (joinedRows.length > 0 || activeJoined.length > 0 || activeContests.length > 0)
                     ? 'Your contests and account, in one place.'
                     : 'Your account — and the home for any contest you run or join.'}
               </p>
             </div>
+
+            {/* ── CONTESTS YOU'VE JOINED (real) ─────────────────────
+                Participant invitations from the database. Shown first
+                (before your own running contests) because they're the
+                time-sensitive ones. Each row routes to exactly where the
+                participant is in that contest's lifecycle. */}
+            {isRealUser && activeJoined.length > 0 && (
+              <section className="v4-settings-section">
+                <header className="v4-settings-section-head">
+                  <ListBullets weight="duotone" size={18} />
+                  <h2>Contests you’ve joined</h2>
+                </header>
+                {activeJoined.map((c) => {
+                  const cTone = getSegmentTone(c.sub_segment_id || 'b1');
+                  const CIcon = getSegmentIcon(c.sub_segment_id) || Briefcase;
+                  const hasSubmitted = submittedIds.has(c.id);
+                  const hasVoted = votedIds.has(c.id);
+                  const status = c.status || 'submission';
+                  let label, to, cta;
+                  if (status === 'closed') { label = 'WINNER'; to = `/v4/contest/${c.id}/winner`; cta = 'See who won'; }
+                  // Voting is one-shot: once you've voted, the row shows a
+                  // locked "Voted" state that opens the confirmation, not a
+                  // re-votable ballot.
+                  else if (status === 'voting' && hasVoted) { label = 'VOTED'; to = `/v4/contest/${c.id}/vote-thanks`; cta = 'View your votes'; }
+                  else if (status === 'voting') { label = 'VOTING OPEN'; to = `/v4/contest/${c.id}/vote`; cta = 'Vote now'; }
+                  else if (hasSubmitted) { label = 'SUBMITTED'; to = `/v4/contest/${c.id}/thanks`; cta = 'See your names'; }
+                  else { label = 'SUBMISSIONS OPEN'; to = `/v4/contest/${c.id}/submit`; cta = 'Suggest a name'; }
+                  return (
+                    <div key={c.id} className="v4-settings-current" style={{ background: cTone.bg + '40' }}>
+                      <span
+                        className="v4-settings-current-icon"
+                        style={{ background: cTone.bg, color: cTone.fg }}
+                        aria-hidden="true"
+                      >
+                        <CIcon weight="duotone" size={22} />
+                      </span>
+                      <div className="v4-settings-current-text">
+                        <div className="v4-settings-current-eyebrow">
+                          {status !== 'closed' && <span className="v4-manage-live-dot" aria-hidden="true"></span>}
+                          <span>{label}</span>
+                        </div>
+                        <div className="v4-settings-current-name">{c.working_name || 'Contest'}</div>
+                        <div className="v4-settings-current-meta">
+                          {c.sub_segment_title || 'Contest'} · you’re a participant
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        onClick={() => navigate(to)}
+                      >
+                        {cta} <ArrowRight weight="bold" size={14} />
+                      </button>
+                    </div>
+                  );
+                })}
+              </section>
+            )}
 
             {/* ── CONTESTS YOU'VE JOINED ────────────────────────────
                 Joined contests come FIRST: if you signed in as a
@@ -370,6 +605,78 @@ export default function Settings() {
                   inline "Start a contest" prompt that lives politely
                   under the joined contests, so participants who never
                   intend to run one aren't pestered. */}
+            {/* Real contests you've created — read from the database.
+                Cancelled ones are excluded here (shown in their own section). */}
+            {isRealUser && activeContests.length > 0 && (
+              <section className="v4-settings-section">
+                <header className="v4-settings-section-head">
+                  <ListBullets weight="duotone" size={18} />
+                  <h2>Contests you’re running</h2>
+                </header>
+                {activeContests.map((c) => {
+                  const cTone = getSegmentTone(c.sub_segment_id || 'b1');
+                  const CIcon = getSegmentIcon(c.sub_segment_id) || TIER_INFO[c.tier]?.Icon || Briefcase;
+                  const statusLabel = (c.status || 'live').replace('_', ' ');
+                  return (
+                    <div key={c.id} className="v4-settings-current" style={{ background: cTone.bg + '40' }}>
+                      <span
+                        className="v4-settings-current-icon"
+                        style={{ background: cTone.bg, color: cTone.fg }}
+                        aria-hidden="true"
+                      >
+                        <CIcon weight="duotone" size={22} />
+                      </span>
+                      <div className="v4-settings-current-text">
+                        <div className="v4-settings-current-eyebrow">
+                          <span className="v4-manage-live-dot" aria-hidden="true"></span>
+                          <span>{statusLabel.toUpperCase()}</span>
+                        </div>
+                        <div className="v4-settings-current-name">{c.working_name || 'Your contest'}</div>
+                        <div className="v4-settings-current-meta">
+                          {c.sub_segment_title || TIER_INFO[c.tier]?.label || 'Contest'}
+                          {c.price ? ` · paid $${c.price}` : ''}
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        onClick={() => navigate(`/v4/contest/${c.id}`, { state: { contest: c } })}
+                      >
+                        Manage <ArrowRight weight="bold" size={14} />
+                      </button>
+                    </div>
+                  );
+                })}
+              </section>
+            )}
+
+            {/* ── CANCELLED (real) ─────────────────────────────────
+                Contests the creator ended. Muted rows, no actions —
+                just a record that they were cancelled. */}
+            {isRealUser && cancelledDbContests.length > 0 && (
+              <section className="v4-settings-section">
+                <header className="v4-settings-section-head">
+                  <X weight="bold" size={18} />
+                  <h2>Cancelled contests</h2>
+                </header>
+                {cancelledDbContests.map((c) => (
+                  <div key={c.id} className="v4-settings-contest-row v4-settings-contest-row-cancelled">
+                    <span className="v4-settings-contest-row-icon" aria-hidden="true">
+                      <X weight="bold" size={16} />
+                    </span>
+                    <div className="v4-settings-contest-row-text">
+                      <div className="v4-settings-contest-row-eyebrow">
+                        <span>Cancelled</span>
+                      </div>
+                      <div className="v4-settings-contest-row-name">
+                        {c.working_name || 'Untitled contest'}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </section>
+            )}
+
             {realContest ? (
               <section className="v4-settings-section">
                 <header className="v4-settings-section-head">
@@ -644,18 +951,20 @@ export default function Settings() {
                 aria-expanded={accountOpen}
               >
                 <span className="v4-settings-account-photo" aria-hidden="true">
-                  <img
-                    src={photo || (!realContest && joinedRows.length > 0 ? participantProfile : creatorProfile)}
-                    alt=""
-                    className={`v4-settings-account-photo-img ${photo ? 'is-custom' : 'is-default'}`}
-                  />
+                  {photo ? (
+                    <img src={photo} alt="" className="v4-settings-account-photo-img is-custom" />
+                  ) : (
+                    <UserAvatar seed={user?.id} size={40} />
+                  )}
                 </span>
                 <div className="v4-settings-account-meta">
                   <div className="v4-settings-account-name">
-                    {submittedAnonymously ? 'Anonymous' : (name || 'Add your name')}
+                    {submittedAnonymously
+                      ? 'Anonymous'
+                      : (name || (identityLoading ? ' ' : 'Add your name'))}
                   </div>
                   <div className="v4-settings-account-email">
-                    {email || 'no email saved'}
+                    {email || (identityLoading ? ' ' : 'no email saved')}
                   </div>
                 </div>
                 <span className="v4-settings-account-action">
@@ -681,11 +990,11 @@ export default function Settings() {
                       }}
                       aria-label="Change profile photo"
                     >
-                      <img
-                        src={photo || (!realContest && joinedRows.length > 0 ? participantProfile : creatorProfile)}
-                        alt=""
-                        className={`v4-settings-photo-img ${photo ? 'is-custom' : 'is-default'}`}
-                      />
+                      {photo ? (
+                        <img src={photo} alt="" className="v4-settings-photo-img is-custom" />
+                      ) : (
+                        <UserAvatar seed={user?.id} size={96} />
+                      )}
                       <span className="v4-settings-photo-overlay" aria-hidden="true">
                         <Camera weight="duotone" size={20} />
                         <span>Change photo</span>
@@ -704,9 +1013,10 @@ export default function Settings() {
                           type="button"
                           className="btn btn-secondary btn-sm"
                           onClick={() => fileRef.current?.click()}
+                          disabled={uploadingPhoto}
                         >
                           <Camera weight="bold" size={14} />
-                          Upload new photo
+                          {uploadingPhoto ? 'Uploading…' : 'Upload new photo'}
                         </button>
                         {photo && (
                           <button
@@ -736,7 +1046,7 @@ export default function Settings() {
                         type="text"
                         className="v4-settings-input"
                         value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={(e) => { nameEditedRef.current = true; setName(e.target.value); }}
                         placeholder="What should we call you?"
                       />
                     </label>

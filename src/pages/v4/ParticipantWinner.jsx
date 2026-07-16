@@ -27,6 +27,8 @@ import { getSegmentTone, SEGMENT_THEME } from '../../data/v4/segmentTheme';
 import { readSetup } from '../../utils/v4Brief';
 import { readParticipation } from '../../utils/v4Participant';
 import { buildLiveData } from '../../utils/v4LiveData';
+import { useAuth } from '../../lib/AuthContext';
+import { supabase } from '../../lib/supabaseClient';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -57,8 +59,64 @@ function launchBoom(fire) {
 
 export default function ParticipantWinner() {
   const { id: contestId } = useParams();
-  const contest = getMockContestById(contestId);
-  const participation = readParticipation(contestId);
+  const { user } = useAuth();
+  const mockContest = getMockContestById(contestId);
+
+  // ── Real contest winner (DB) ────────────────────────────────────────
+  // Load the closed contest, its submissions (to resolve the winner + vote
+  // totals), and the names of the creator + winning submitter + this viewer.
+  const [dbContest, setDbContest] = useState(null);
+  const [winnerSub, setWinnerSub] = useState(null);
+  const [dbCreatorName, setDbCreatorName] = useState('the organizer');
+  const [dbTotalVotes, setDbTotalVotes] = useState(0);
+  const [dbMySubCount, setDbMySubCount] = useState(0);
+  const [dbIWon, setDbIWon] = useState(false);
+  const [profile, setProfile] = useState(null);
+  const [dbLoading, setDbLoading] = useState(!mockContest);
+  useEffect(() => {
+    if (mockContest || !user?.id) return;
+    let active = true;
+    (async () => {
+      const cRes = await supabase.from('contests').select('*').eq('id', contestId).single();
+      const row = cRes.data;
+      if (!row) { if (active) setDbLoading(false); return; }
+      const sRes = await supabase
+        .from('submissions')
+        .select('id, text, rationale, credited, user_id, vote_count')
+        .eq('contest_id', contestId);
+      const subs = sRes.data || [];
+      const win = subs.find((s) => s.id === row.winner_submission_id)
+        || [...subs].sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0))[0]
+        || null;
+      const ids = [...new Set([row.creator_id, win?.user_id, user.id].filter(Boolean))];
+      let profs = {};
+      if (ids.length) {
+        const pRes = await supabase.from('profiles').select('id, display_name, avatar_url').in('id', ids);
+        (pRes.data || []).forEach((p) => { profs[p.id] = p; });
+      }
+      if (!active) return;
+      setDbContest(row);
+      setWinnerSub(win ? { ...win, submitterName: win.credited ? (profs[win.user_id]?.display_name || 'Someone') : null } : null);
+      setDbCreatorName(profs[row.creator_id]?.display_name || 'the organizer');
+      setDbTotalVotes(subs.reduce((sum, s) => sum + (s.vote_count || 0), 0));
+      setDbMySubCount(subs.filter((s) => s.user_id === user.id).length);
+      setDbIWon(!!win && win.user_id === user.id);
+      setProfile(profs[user.id] || null);
+      setDbLoading(false);
+      if (row.sub_segment_id) { try { localStorage.setItem('v4_last_sub', row.sub_segment_id); } catch { /* ignore */ } }
+    })();
+    return () => { active = false; };
+  }, [mockContest, contestId, user?.id]);
+  const isRealContest = !mockContest && !!dbContest;
+
+  const contest = mockContest || (dbContest ? {
+    id: dbContest.id,
+    workingName: dbContest.working_name,
+    subSegmentId: dbContest.sub_segment_id,
+    settings: dbContest.settings || {},
+    creator: { name: dbCreatorName },
+  } : null);
+  const participation = mockContest ? readParticipation(contestId) : null;
   const subId = contest?.subSegmentId;
   const tone = subId ? getSegmentTone(subId) : null;
   const segmentBg = SEGMENT_THEME[subId]?.blobs?.[0] || tone?.bg || '#a6dcb3';
@@ -66,30 +124,42 @@ export default function ParticipantWinner() {
   const creatorName = contest?.creator?.name || 'the organizer';
   const contestName = contest?.workingName || contest?.name || 'the contest';
 
-  // Authed user.
+  // Authed user identity.
   const setup = readSetup();
-  const userEmail = setup.userEmail || '';
-  const userName = setup.userName || (userEmail.split('@')[0] || 'You');
-  const userPhoto = setup.userPhoto || null;
+  const userEmail = isRealContest ? (user?.email || '') : (setup.userEmail || '');
+  const userName = isRealContest
+    ? (profile?.display_name || user?.email?.split('@')[0] || 'You')
+    : (setup.userName || (userEmail.split('@')[0] || 'You'));
+  const userPhoto = isRealContest ? (profile?.avatar_url || null) : (setup.userPhoto || null);
 
-  // Resolve the winning name: explicit winnerSubId (possibly from the
-  // per-contest override) else the top-voted name.
-  const live = contest ? buildLiveData(contest, 'winner') : { names: [], stats: { votes: 0 } };
-  const winner =
-    live.names.find((n) => n.id === contest?.winnerSubId) ||
-    [...live.names].sort((a, b) => b.voteCount - a.voteCount)[0] ||
-    null;
-  const totalVotes = live.stats.votes;
+  // Resolve the winning name. Real contests read the winning submission off the
+  // DB; the mock resolves it from buildLiveData (explicit id or top-voted).
+  const live = mockContest ? buildLiveData(mockContest, 'winner') : { names: [], stats: { votes: 0 } };
+  const winner = mockContest
+    ? (live.names.find((n) => n.id === mockContest.winnerSubId)
+        || [...live.names].sort((a, b) => b.voteCount - a.voteCount)[0]
+        || null)
+    : (winnerSub ? {
+        id: winnerSub.id,
+        text: winnerSub.text,
+        whyItFits: winnerSub.rationale || '',
+        submitterName: winnerSub.submitterName,
+        anonymous: !winnerSub.credited,
+        voteCount: winnerSub.vote_count || 0,
+      } : null);
+  const totalVotes = mockContest ? live.stats.votes : dbTotalVotes;
+  const submittedCount = mockContest ? (participation?.submittedNames?.length || 0) : dbMySubCount;
+  const iWon = mockContest
+    ? (!!winner && (participation?.submittedNames || []).some((s) => s.text === winner.text))
+    : dbIWon;
 
-  // Did the participant's own name win? Submitted names carry psub_ ids,
-  // so match on the text instead.
-  const submitted = participation?.submittedNames || [];
-  const submittedCount = submitted.length;
-  const iWon = !!winner && submitted.some((s) => s.text === winner.text);
-
-  const prize = contest?.settings?.submitterPrize?.enabled
+  const prizeOffered = contest?.settings?.submitterPrize?.enabled
     ? contest?.settings?.submitterPrize
     : null;
+  // An anonymous winning entry forfeits the prize — the creator has no one to
+  // award it to. So only surface the prize for a credited winner.
+  const prize = (prizeOffered && !winner?.anonymous) ? prizeOffered : null;
+  const prizeForfeited = !!prizeOffered && !!winner?.anonymous;
 
   // ONE opening boom, then a steady gold rain top→bottom. Rendered onto
   // our OWN canvas (canvasRef) so it sits BEHIND the central content
@@ -153,10 +223,22 @@ export default function ParticipantWinner() {
     }
   };
 
-  if (!contest) return <Navigate to="/v4/settings" replace />;
-  if (!participation) return <Navigate to={`/v4/join/${contestId}`} replace />;
-  // No winner resolvable (e.g. empty contest) — fall back to the
-  // vote-thanks waiting room rather than render an empty reveal.
+  if (!mockContest) {
+    // Not signed in → send to the public reveal (this page is the personalized
+    // participant view). Wait for the load, then require a real contest.
+    if (!user) return <Navigate to={`/v4/contest/${contestId}/reveal`} replace />;
+    if (dbLoading) {
+      return (
+        <div className="v4 lp-v3"><div className="v4-screen" /></div>
+      );
+    }
+    if (!dbContest) return <Navigate to="/v4/settings" replace />;
+  } else {
+    if (!contest) return <Navigate to="/v4/settings" replace />;
+    if (!participation) return <Navigate to={`/v4/join/${contestId}`} replace />;
+  }
+  // No winner resolvable (e.g. empty contest, or none crowned yet) — fall back
+  // to the vote-thanks waiting room rather than render an empty reveal.
   if (!winner) return <Navigate to={`/v4/contest/${contestId}/vote-thanks`} replace />;
 
   const voteLine = `${winner.voteCount}${typeof totalVotes === 'number' ? ` of ${totalVotes}` : ''} votes`;
@@ -189,7 +271,8 @@ export default function ParticipantWinner() {
               <AvatarMenu
                 email={userEmail}
                 name={userName}
-                photo={participantProfile}
+                photo={isRealContest ? userPhoto : participantProfile}
+                seed={isRealContest ? user?.id : undefined}
                 tone={tone}
                 activeContest={{
                   id: contest.id,
@@ -220,7 +303,9 @@ export default function ParticipantWinner() {
               </h1>
               <p className="v4-pthanks-sub">
                 {iWon ? (
-                  <>Your name took the crown — {voteLine} in.</>
+                  prizeForfeited
+                    ? <>Your name took the crown — {voteLine} in. You entered anonymously, so the prize isn’t awarded.</>
+                    : <>Your name took the crown — {voteLine} in.</>
                 ) : (
                   <>
                     {winner.anonymous || !winner.submitterName

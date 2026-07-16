@@ -38,8 +38,10 @@ const HERO_PROFILES = [
 import HeroAvatarsAnimation from '../../components/HeroAvatarsAnimation';
 
 import { getMockContestById } from '../../data/v4/mockContests';
-import { getSegmentTone, SEGMENT_THEME } from '../../data/v4/segmentTheme';
+import { getSegmentTone, getSegmentIcon, SEGMENT_THEME } from '../../data/v4/segmentTheme';
 import { readSetup, writeSetup } from '../../utils/v4Brief';
+import { supabase } from '../../lib/supabaseClient';
+import { useAuth } from '../../lib/AuthContext';
 import {
   readParticipation, joinContest, getParticipantRow,
 } from '../../utils/v4Participant';
@@ -60,10 +62,95 @@ function formatDeadline(daysAhead) {
 export default function JoinContest() {
   const { contestId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const emailRef = useRef(null);
 
-  // Resolve contest from the mock store. In production: fetch by ID.
-  const contest = getMockContestById(contestId);
+  // Resolve the contest: a mock demo id from the mock store, otherwise a real
+  // contest via get_join_info (public join-page fields only — no brief/price).
+  const mockContest = getMockContestById(contestId);
+  const [realContest, setRealContest] = useState(null);
+  const [contestLoading, setContestLoading] = useState(!mockContest);
+  useEffect(() => {
+    if (mockContest) return;
+    let active = true;
+    supabase.rpc('get_join_info', { cid: contestId }).then(({ data, error }) => {
+      if (!active) return;
+      if (error) console.error('[join] get_join_info failed:', error);
+      const r = data?.[0];
+      if (r) {
+        setRealContest({
+          id: r.id,
+          workingName: r.working_name,
+          subSegmentId: r.sub_segment_id,
+          subSegmentTitle: r.sub_segment_title,
+          group: r.tier,
+          status: r.status,
+          settings: r.settings || {},
+          brief: { projectSummary: r.project_summary },
+          Icon: getSegmentIcon(r.sub_segment_id),
+          // Real inviter + real phase deadlines so the header, countdown and
+          // footer flow reflect the contest's true stage.
+          creator: { name: r.creator_name || 'The organizer' },
+          submissionEndsAt: r.submission_ends_at ? new Date(r.submission_ends_at).getTime() : null,
+          votingEndsAt: r.voting_ends_at ? new Date(r.voting_ends_at).getTime() : null,
+        });
+        // Cache the segment so Namespace paints this contest's color instantly.
+        if (r.sub_segment_id) {
+          try { localStorage.setItem('v4_last_sub', r.sub_segment_id); } catch { /* ignore */ }
+        }
+      }
+      setContestLoading(false);
+    });
+    return () => { active = false; };
+  }, [contestId, mockContest]);
+  const contest = mockContest || realContest;
+
+  // On arrival at a real contest while signed in: figure out where this
+  // person belongs and skip the invitation entirely if they're already in.
+  //   • already a participant → route by stage (submitted→thanks, else→submit;
+  //     voting→vote; closed→reveal)
+  //   • not a participant but a join is pending (clicked "I'm in" + returned
+  //     via magic link) → create the participant row, then route
+  //   • otherwise → stay and show the invitation
+  useEffect(() => {
+    if (!realContest || !user?.id) return;
+    let active = true;
+    (async () => {
+      const [p, s, v] = await Promise.all([
+        supabase.from('participants').select('id').eq('contest_id', realContest.id).eq('user_id', user.id).maybeSingle(),
+        supabase.from('submissions').select('id').eq('contest_id', realContest.id).eq('user_id', user.id).limit(1),
+        supabase.from('votes').select('id').eq('contest_id', realContest.id).eq('user_id', user.id).limit(1),
+      ]);
+      if (!active) return;
+      let isParticipant = !!p.data;
+      const hasSubmitted = (s.data || []).length > 0;
+      const hasVoted = (v.data || []).length > 0;
+
+      const base = `/v4/contest/${realContest.id}`;
+      if (!isParticipant) {
+        // Closed contest → a non-participant just sees the public result.
+        if (realContest.status === 'closed') { navigate(`${base}/reveal`, { replace: true }); return; }
+        let pending = null;
+        try { pending = localStorage.getItem('v4_pending_join'); } catch { /* ignore */ }
+        if (pending !== realContest.id) return; // not joined, no pending → show invitation
+        const { error } = await supabase
+          .from('participants')
+          .insert({ contest_id: realContest.id, user_id: user.id });
+        if (error && error.code !== '23505') { console.error('[join] participant insert failed:', error); return; }
+        try { localStorage.removeItem('v4_pending_join'); } catch { /* ignore */ }
+        isParticipant = true;
+      }
+
+      if (!active || !isParticipant) return;
+      // Voting is one-shot — a voter who already cast picks lands on the
+      // confirmation, not a re-votable ballot. A participant on a closed
+      // contest gets the personalized winner view (non-participants: /reveal).
+      if (realContest.status === 'voting') navigate(hasVoted ? `${base}/vote-thanks` : `${base}/vote`, { replace: true });
+      else if (realContest.status === 'closed') navigate(`${base}/winner`, { replace: true });
+      else navigate(hasSubmitted ? `${base}/thanks` : `${base}/submit`, { replace: true });
+    })();
+    return () => { active = false; };
+  }, [realContest, user?.id, navigate]);
 
   // Local state for the magic-link mini-flow inside this page.
   // 'cta'     — initial; only the big "Yes, I'm in" button is shown.
@@ -128,6 +215,21 @@ export default function JoinContest() {
     }
   }, [phase]);
 
+  // ── Loading a real contest ──────────────────────────────────────────
+  if (contestLoading) {
+    return (
+      <div className="v4 lp-v3">
+        <div className="v4-screen">
+          <main className="v4-review" role="main">
+            <div className="v4-review-inner" style={{ textAlign: 'center', paddingTop: 120 }}>
+              <p className="v4-review-subtitle">Loading the contest…</p>
+            </div>
+          </main>
+        </div>
+      </div>
+    );
+  }
+
   // ── Bad-link state ──────────────────────────────────────────────────
   if (!contest) {
     return (
@@ -171,7 +273,30 @@ export default function JoinContest() {
   const creatorPhoto = HERO_PROFILES[(creator.photoIndex || 1) - 1] || heroProfile1;
   const subSegmentLabel = contest.subSegmentTitle || 'naming contest';
   const submissionLimit = contest.settings?.submissionLimit || 3;
-  const submissionDeadline = formatDeadline(contest.settings?.submissionDays);
+
+  // Normalized lifecycle stage — for a real contest this is the true DB status;
+  // a mock demo maps its phase string. Drives the header deadline + footer flow.
+  const stage = mockContest
+    ? (contest.phase?.toLowerCase() === 'voting' ? 'voting'
+      : contest.phase?.toLowerCase() === 'winner' ? 'closed' : 'submission')
+    : (contest.status || 'submission');
+
+  // Phase-aware deadline pill: submissions vs voting close, from the contest's
+  // real end timestamps (mock falls back to its settings day count).
+  const daysUntil = (ts) => (ts ? Math.max(0, Math.ceil((ts - Date.now()) / 86400000)) : null);
+  let deadlineLabel = null;
+  let deadlineWhen = null;
+  if (stage === 'submission') {
+    deadlineLabel = 'Submissions close';
+    deadlineWhen = mockContest
+      ? formatDeadline(contest.settings?.submissionDays)
+      : formatDeadline(daysUntil(contest.submissionEndsAt));
+  } else if (stage === 'voting') {
+    deadlineLabel = 'Voting closes';
+    deadlineWhen = mockContest
+      ? formatDeadline(contest.settings?.votingDays)
+      : formatDeadline(daysUntil(contest.votingEndsAt));
+  }
 
   // Short "what is this" line under the headline. Sourced from the
   // dedicated `projectSummary` brief field — the first question every
@@ -189,19 +314,60 @@ export default function JoinContest() {
   // the segment's theme; bubbles flip to white-on-tint so they read.
   const segmentBg = SEGMENT_THEME[subId]?.blobs?.[0] || tone.bg;
 
+  // Create the real participant row (idempotent) and go to submission.
+  const completeJoinAndGo = async () => {
+    setPhase('success');
+    const { error } = await supabase
+      .from('participants')
+      .insert({ contest_id: realContest.id, user_id: user.id });
+    if (error && error.code !== '23505') {
+      console.error('[join] participant insert failed:', error);
+      window.alert('Could not join the contest: ' + (error.message || error));
+      setPhase('cta');
+      return;
+    }
+    // Land where the stage actually is — during voting you can't submit.
+    const base = `/v4/contest/${realContest.id}`;
+    const dest = realContest.status === 'voting' ? `${base}/vote`
+      : realContest.status === 'closed' ? `${base}/reveal`
+      : `${base}/submit`;
+    setTimeout(() => navigate(dest), 500);
+  };
+
   // ── Magic-link handlers ────────────────────────────────────────────
   const handleRevealForm = () => {
+    // Real contest + already signed in → join immediately, no email needed.
+    if (realContest && user?.id) { completeJoinAndGo(); return; }
     setPhase('form');
   };
 
-  const handleSendLink = (e) => {
+  const handleSendLink = async (e) => {
     e?.preventDefault();
     if (!/^\S+@\S+\.\S+$/.test(email.trim())) {
       window.alert('Please enter a valid email address so we can send your link.');
       return;
     }
     setPhase('sending');
-    setTimeout(() => setPhase('sent'), 700);
+    if (realContest) {
+      // Real contest → send a real magic link; the pending-join effect above
+      // creates the participant row when they return signed in.
+      try { localStorage.setItem('v4_pending_join', realContest.id); } catch { /* ignore */ }
+      const redirectTo = `${window.location.origin}/v4/join/${realContest.id}`;
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email.trim(),
+        options: { emailRedirectTo: redirectTo },
+      });
+      if (error) {
+        console.error('[join] magic link failed:', error);
+        window.alert('Could not send your link: ' + (error.message || error));
+        setPhase('form');
+        return;
+      }
+      setPhase('sent');
+    } else {
+      // Mock demo path — keep the simulated send.
+      setTimeout(() => setPhase('sent'), 700);
+    }
   };
 
   const handleOpenLink = () => {
@@ -282,10 +448,10 @@ export default function JoinContest() {
               </span>
             </div>
             <div className="v4-nav-right">
-              {submissionDeadline && (
+              {deadlineLabel && deadlineWhen && (
                 <span className="v4-join-nav-deadline">
                   <Clock weight="duotone" size={14} />
-                  Submissions close <strong>{submissionDeadline}</strong>
+                  {deadlineLabel} <strong>{deadlineWhen}</strong>
                 </span>
               )}
             </div>
@@ -418,20 +584,26 @@ export default function JoinContest() {
                   />
                   <h3 className="v4-join-sent-title">Magic link sent</h3>
                   <p className="v4-join-sent-sub">
-                    Check <strong>{email}</strong> — open the link to
-                    jump into the brief and start suggesting names.
+                    Check <strong>{email}</strong> — open the link to{' '}
+                    {stage === 'voting'
+                      ? 'jump in and vote on the names.'
+                      : 'jump into the brief and start suggesting names.'}
                   </p>
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-lg"
-                    onClick={handleOpenLink}
-                  >
-                    Open the link <span className="arrow">→</span>
-                  </button>
-                  <p className="v4-join-form-fine v4-join-form-fine-demo">
-                    ↑ Demo shortcut. In production this is just the link
-                    in your email.
-                  </p>
+                  {!realContest && (
+                    <>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-lg"
+                        onClick={handleOpenLink}
+                      >
+                        Open the link <span className="arrow">→</span>
+                      </button>
+                      <p className="v4-join-form-fine v4-join-form-fine-demo">
+                        ↑ Demo shortcut. In production this is just the link
+                        in your email.
+                      </p>
+                    </>
+                  )}
                   <button
                     type="button"
                     className="v4-signin-link"
@@ -468,32 +640,48 @@ export default function JoinContest() {
               as the nav so logo / deadline / steps share an alignment
               grid down both edges of the screen. */}
           <footer className="v4-join-foot">
-            {/* "Suggest names" is the user's CURRENT step (they're
-                on the join page = about to submit). Later steps are
-                muted so the progression reads at a glance. */}
-            <ol className="v4-join-flow">
-              <li className="v4-join-flow-step is-current">
-                <span className="v4-join-flow-dot" aria-hidden="true" />
-                <span className="v4-join-flow-label">
-                  <strong>Suggest names</strong>
-                  <em>You’re here · ~5 minutes</em>
-                </span>
-              </li>
-              <li className="v4-join-flow-step is-upcoming">
-                <span className="v4-join-flow-dot" aria-hidden="true" />
-                <span className="v4-join-flow-label">
-                  <strong>Come back to vote</strong>
-                  <em>When names close</em>
-                </span>
-              </li>
-              <li className="v4-join-flow-step is-upcoming">
-                <span className="v4-join-flow-dot" aria-hidden="true" />
-                <span className="v4-join-flow-label">
-                  <strong>See who won</strong>
-                  <em>Shoutout if it’s yours</em>
-                </span>
-              </li>
-            </ol>
+            {/* The flow reflects the contest's real stage: the active step is
+                where a joiner lands right now (submissions open → suggest;
+                voting open → vote; closed → see who won). */}
+            {(() => {
+              const currentStep = stage === 'voting' ? 1 : stage === 'closed' ? 2 : 0;
+              const steps = [
+                {
+                  title: 'Suggest names',
+                  em: currentStep === 0 ? 'You’re here · ~5 minutes'
+                    : 'Names are in',
+                },
+                {
+                  title: 'Vote on the names',
+                  em: currentStep === 1 ? 'You’re here · pick your favorites'
+                    : currentStep < 1 ? 'When names close'
+                    : 'Voting done',
+                },
+                {
+                  title: 'See who won',
+                  em: currentStep === 2 ? 'You’re here · results are in'
+                    : 'Shoutout if it’s yours',
+                },
+              ];
+              return (
+                <ol className="v4-join-flow">
+                  {steps.map((s, i) => (
+                    <li
+                      key={s.title}
+                      className={`v4-join-flow-step ${
+                        i === currentStep ? 'is-current' : i < currentStep ? 'is-done' : 'is-upcoming'
+                      }`}
+                    >
+                      <span className="v4-join-flow-dot" aria-hidden="true" />
+                      <span className="v4-join-flow-label">
+                        <strong>{s.title}</strong>
+                        <em>{s.em}</em>
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              );
+            })()}
           </footer>
         </main>
       </div>

@@ -2819,6 +2819,14 @@ input.v4-launch-email-input::placeholder {
   /* Soft ink tint — single hover language across the internal system. */
   background: rgba(0, 0, 0, 0.04);
 }
+/* Locked once entries are in: a plain reference line — no click, no hover. */
+.v4-manage-recap-row.is-readonly {
+  cursor: default;
+  grid-template-columns: 200px 1fr;
+}
+.v4-manage-recap-row.is-readonly:hover {
+  background: transparent;
+}
 .v4-manage-recap-row:focus-visible {
   background: rgba(0, 0, 0, 0.04);
   box-shadow: 0 0 0 3px var(--v4-ring);

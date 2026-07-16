@@ -8,7 +8,7 @@
 // Future: dashboard list links here per contest
 
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, useLocation, Link } from 'react-router-dom';
 import {
   X, Heart, UsersThree, Briefcase,
   Copy, Check, EnvelopeSimple, ShareNetwork,
@@ -19,14 +19,17 @@ import {
   Palette, CaretDown, UploadSimple,
 } from '@phosphor-icons/react';
 import Avatar from 'boring-avatars';
+import UserAvatar from '../../components/v4/UserAvatar';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
 import creatorProfile from '../../assets/creator-profile.png';
 import {
   readSetup, writeSetup, getSegmentLabel,
 } from '../../utils/v4Brief';
-import { buildLiveData } from '../../utils/v4LiveData';
+import { buildLiveData, buildLiveDataFromReal } from '../../utils/v4LiveData';
 import { getMockContestById } from '../../data/v4/mockContests';
+import { supabase } from '../../lib/supabaseClient';
+import { useAuth } from '../../lib/AuthContext';
 import {
   BRIEF_QUESTIONS, SHARED_SETTINGS_QUESTIONS,
 } from '../../data/v4/briefQuestions';
@@ -128,33 +131,143 @@ export default function ContestManage() {
   // crew"), render the page with that contest's data instead of the
   // user's real setup blob — otherwise the dashboard shows their
   // unrelated brief and segment, which is confusing.
+  const { user } = useAuth();
+  // Real signed-in identity for the account menu (avatar + email), so the
+  // manage page shows YOU, not the mock creator photo.
+  const [profile, setProfile] = useState(null);
+  useEffect(() => {
+    if (!user?.id) return;
+    let active = true;
+    supabase.from('profiles').select('*').eq('id', user.id).single()
+      .then(({ data }) => { if (active && data) setProfile(data); });
+    return () => { active = false; };
+  }, [user?.id]);
+
   const mockContest = getMockContestById(id);
   const realSetup = readSetup();
+
+  // Real (DB) contest. If the workspace passed the contest via navigation
+  // state, use it immediately (no loading flash / correct color instantly);
+  // otherwise fetch it. Either way we refresh from the DB in the background.
+  const location = useLocation();
+  const preloaded = location.state?.contest || null;
+  const [dbContest, setDbContest] = useState(preloaded);
+  const [dbLoading, setDbLoading] = useState(!mockContest && !preloaded);
+  useEffect(() => {
+    if (mockContest) { setDbLoading(false); return; }
+    let active = true;
+    supabase.from('contests').select('*').eq('id', id).single().then(({ data }) => {
+      if (!active) return;
+      if (data) setDbContest(data);
+      setDbLoading(false);
+    });
+    return () => { active = false; };
+  }, [id, mockContest]);
+
   const setup = mockContest
-    ? {
-        ...realSetup,
-        ...mockContest,
-        contestId: mockContest.id,
-      }
-    : realSetup;
+    ? { ...realSetup, ...mockContest, contestId: mockContest.id }
+    : dbContest
+      ? {
+          contestId: dbContest.id,
+          workingName: dbContest.working_name,
+          subSegmentId: dbContest.sub_segment_id,
+          subSegmentTitle: dbContest.sub_segment_title,
+          group: dbContest.tier,
+          brief: dbContest.brief || {},
+          settings: dbContest.settings || {},
+          voterTier: dbContest.voter_tier,
+          launchedAt: dbContest.launched_at ? new Date(dbContest.launched_at).getTime() : Date.now(),
+        }
+      : realSetup;
   const subId = setup.subSegmentId || 'b1';
-  // Phase resolution — defaults to 'voting' for prototype demos. The
-  // URL ?phase= param lets us flip a mock contest through every stage
-  // without rebuilding mock data.
+
+  // Phase: a mock/demo contest uses the URL ?phase= param (defaults to
+  // voting). A real contest uses its DB status — a fresh launch is in the
+  // submission phase — unless the URL explicitly overrides it.
   const phaseParam = searchParams.get('phase');
-  const phase = PHASES.includes(phaseParam) ? phaseParam : 'voting';
-  // Sub-state of the "winner" phase: nameId of the picked winner, or
-  // null when the creator still needs to pick. ?winner=n1 prefills for
-  // demo. In production this would come from setup.winner.
-  const winnerNameId = searchParams.get('winner') || setup.winner?.nameId || null;
+  const STATUS_PHASE = { submission: 'submission', voting: 'voting', closed: 'winner' };
+  const phase = mockContest
+    // Demo/mock contests are driven by the URL ?phase= (defaults to voting).
+    ? (PHASES.includes(phaseParam) ? phaseParam : 'voting')
+    // A real contest ALWAYS follows its true DB status — never a URL override —
+    // so the stage pill, journey and countdowns can't disagree with reality.
+    : (dbContest ? (STATUS_PHASE[dbContest.status] || 'submission') : 'submission');
+  // Sub-state of the "winner" phase: the picked winner's id, or null when the
+  // creator still needs to pick. A real contest stores it on the row
+  // (winner_submission_id); the demo uses ?winner= / setup.winner.
+  const winnerNameId = (!mockContest ? dbContest?.winner_submission_id : null)
+    || searchParams.get('winner') || setup.winner?.nameId || null;
   const isWinnerPicked = phase === 'winner' && !!winnerNameId;
-  // Per-contest live dataset — derived from THIS contest's own
-  // submissions (not a shared football set), with vote counts gated by
-  // phase (zero/hidden during the submission window).
+  // ── Real submissions + live vote counts (creator dashboard) ─────────
+  // For a real contest, load its actual submissions (with the denormalized
+  // vote_count), the joined-participant count, and submitter display names.
+  // A realtime channel re-loads on any submission/vote change so the creator
+  // watches entries and votes arrive live; window focus is a fallback.
+  const [realSubs, setRealSubs] = useState(null);
+  const [realParticipantCount, setRealParticipantCount] = useState(0);
+  const [profilesById, setProfilesById] = useState({});
+  useEffect(() => {
+    if (mockContest || !dbContest?.id) return;
+    const cid = dbContest.id;
+    let active = true;
+    const load = async () => {
+      const [subsRes, partRes] = await Promise.all([
+        supabase.from('submissions')
+          .select('id, text, rationale, credited, user_id, vote_count, created_at')
+          .eq('contest_id', cid)
+          .order('created_at', { ascending: true }),
+        supabase.from('participants').select('id', { count: 'exact', head: true }).eq('contest_id', cid),
+      ]);
+      if (!active) return;
+      const subs = subsRes.data || [];
+      // Resolve names + avatars for credited submitters (profiles_read is open)
+      // so the dashboard shows the same face each participant sees for itself.
+      const ids = [...new Set(subs.filter((s) => s.credited).map((s) => s.user_id))];
+      let profs = {};
+      if (ids.length) {
+        const { data: pr } = await supabase.from('profiles').select('id, display_name, avatar_url').in('id', ids);
+        (pr || []).forEach((p) => { profs[p.id] = { name: p.display_name, avatarUrl: p.avatar_url }; });
+      }
+      if (!active) return;
+      setRealSubs(subs);
+      setRealParticipantCount(partRes.count || 0);
+      setProfilesById(profs);
+    };
+    load();
+    const channel = supabase
+      .channel(`contest-live-${cid}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'submissions', filter: `contest_id=eq.${cid}` }, load)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'votes', filter: `contest_id=eq.${cid}` }, load)
+      // The cron phase flip (submission→voting→closed) updates the contest row;
+      // pick it up live so the stage, journey and countdowns move on their own.
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'contests', filter: `id=eq.${cid}` }, (payload) => {
+        if (payload.new) setDbContest(payload.new);
+      })
+      .subscribe();
+    const onFocus = () => load();
+    window.addEventListener('focus', onFocus);
+    return () => {
+      active = false;
+      supabase.removeChannel(channel);
+      window.removeEventListener('focus', onFocus);
+    };
+  }, [mockContest, dbContest?.id]);
+
+  // Per-contest live dataset. Mock/demo contests derive a synthetic set from
+  // their own allSubmissions; a real contest uses its real DB rows + counts.
   const liveData = useMemo(
-    () => buildLiveData(mockContest, phase),
-    [mockContest, phase]
+    () => mockContest
+      ? buildLiveData(mockContest, phase)
+      : buildLiveDataFromReal(realSubs || [], profilesById, realParticipantCount, phase),
+    [mockContest, phase, realSubs, profilesById, realParticipantCount]
   );
+
+  // The brief can only be edited BEFORE the first real submission arrives —
+  // once participants have answered the brief, changing it under them would be
+  // unfair. Demo/mock contests stay fully editable. While the real submissions
+  // are still loading (null) we keep it locked so the edit affordance can't
+  // flash then vanish.
+  const briefEditable = mockContest ? true : (realSubs !== null && realSubs.length === 0);
   const getLiveParticipantById = (pid) =>
     liveData.participants.find((p) => p.id === pid) || null;
   // Resolve winner data (only meaningful when isWinnerPicked).
@@ -208,10 +321,16 @@ export default function ContestManage() {
   const filledBrief = briefQuestions.filter((q) => briefAnswers[q.id] !== undefined);
   const filledSettings = SHARED_SETTINGS_QUESTIONS.filter((q) => settingsAnswers[q.id] !== undefined);
 
-  // Phase timing — derived from settings
+  // Phase timing. A real contest reads its actual submission_ends_at /
+  // voting_ends_at — the very timestamps the cron job flips on — so the
+  // countdowns can never disagree with the real transition. Mock/demo (or a
+  // contest missing the columns) falls back to the settings day counts.
   const launchedAt = setup.launchedAt || Date.now();
-  const submissionDays = settingsAnswers.submissionDays || 7;
-  const votingDays = settingsAnswers.votingDays || 3;
+  const MS_DAY = 86400000;
+  const subEndsAt = !mockContest && dbContest?.submission_ends_at ? new Date(dbContest.submission_ends_at).getTime() : null;
+  const voteEndsAt = !mockContest && dbContest?.voting_ends_at ? new Date(dbContest.voting_ends_at).getTime() : null;
+  const submissionDays = subEndsAt ? Math.max(1, Math.round((subEndsAt - launchedAt) / MS_DAY)) : (settingsAnswers.submissionDays || 7);
+  const votingDays = (voteEndsAt && subEndsAt) ? Math.max(1, Math.round((voteEndsAt - subEndsAt) / MS_DAY)) : (settingsAnswers.votingDays || 3);
 
   const [copied, setCopied] = useState(false);
   // ?pick=1 (from the platform map) auto-opens the pick-winner modal so
@@ -248,21 +367,40 @@ export default function ContestManage() {
   // mirrors what we do for `setup` above so the recap stays coherent.
   const liveSetup = useMemo(() => {
     const real = readSetup();
-    return mockContest
-      ? { ...real, ...mockContest, contestId: mockContest.id }
-      : real;
-  }, [editTick, mockContest]);
+    if (mockContest) return { ...real, ...mockContest, contestId: mockContest.id };
+    // Real contest → show ITS brief/settings (from the DB), not the stale
+    // localStorage blob, so the creator sees their actual answers.
+    if (dbContest) {
+      return {
+        ...real,
+        contestId: dbContest.id,
+        workingName: dbContest.working_name,
+        subSegmentId: dbContest.sub_segment_id,
+        group: dbContest.tier,
+        brief: dbContest.brief || {},
+        settings: dbContest.settings || {},
+      };
+    }
+    return real;
+  }, [editTick, mockContest, dbContest]);
   const liveBriefAnswers = liveSetup.brief || {};
   const liveSettingsAnswers = liveSetup.settings || {};
 
-  const handleEditSave = (newValue) => {
+  const handleEditSave = async (newValue) => {
     if (!editingQuestion) return;
     const { question, section } = editingQuestion;
-    const cur = readSetup();
-    if (section === 'brief') {
-      writeSetup({ brief: { ...(cur.brief || {}), [question.id]: newValue } });
-    } else if (section === 'settings') {
-      writeSetup({ settings: { ...(cur.settings || {}), [question.id]: newValue } });
+    if (dbContest && !mockContest && (section === 'brief' || section === 'settings')) {
+      // Real contest → persist the edit to the database and update state.
+      const updated = { ...(dbContest[section] || {}), [question.id]: newValue };
+      await supabase.from('contests').update({ [section]: updated }).eq('id', dbContest.id);
+      setDbContest((c) => (c ? { ...c, [section]: updated } : c));
+    } else {
+      const cur = readSetup();
+      if (section === 'brief') {
+        writeSetup({ brief: { ...(cur.brief || {}), [question.id]: newValue } });
+      } else if (section === 'settings') {
+        writeSetup({ settings: { ...(cur.settings || {}), [question.id]: newValue } });
+      }
     }
     setEditTick((t) => t + 1);
   };
@@ -278,6 +416,25 @@ export default function ContestManage() {
       // Fallback or noop
     }
   };
+
+  // While a real contest is still loading, show a calm loading state rather
+  // than flashing the stale default ("Your Contest", blue) first.
+  if (!mockContest && dbLoading) {
+    let loadingSub = dbContest?.sub_segment_id;
+    if (!loadingSub) { try { loadingSub = localStorage.getItem('v4_last_sub'); } catch { /* ignore */ } }
+    return (
+      <div className="v4 lp-v3">
+        <div className="v4-screen">
+          <SegmentThemeBackdrop subId={loadingSub || 'b1'} minimal />
+          <main className="v4-review" role="main">
+            <div className="v4-review-inner" style={{ textAlign: 'center', paddingTop: 120 }}>
+              <p className="v4-review-subtitle">Loading your contest…</p>
+            </div>
+          </main>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="v4 lp-v3">
@@ -300,17 +457,19 @@ export default function ContestManage() {
             </div>
             <div className="v4-nav-right">
               <AvatarMenu
-                email={setup.userEmail}
-                name={setup.userName}
-                photo={creatorProfile}
+                email={user?.email || setup.userEmail}
+                name={profile?.display_name || setup.userName}
+                photo={profile?.avatar_url || (mockContest ? creatorProfile : null)}
+                seed={user?.id}
                 tone={segmentTone}
                 activeContest={
                   setup.contestId
                     ? {
                         id: setup.contestId,
                         name: setup.workingName || 'Your contest',
-                        // Mock voting phase to match the rest of the page
-                        phase: 'Voting',
+                        // Real contests show their actual phase; mock demos
+                        // stay on the page's (voting) demo phase.
+                        phase: mockContest ? 'Voting' : (phase === 'submission' ? 'Submissions' : phase === 'winner' ? 'Winner' : 'Voting'),
                         daysLeft: votingDays,
                         tone: segmentTone,
                       }
@@ -724,6 +883,7 @@ export default function ContestManage() {
                 names={liveData.names}
                 participants={liveData.participants}
                 phase={phase}
+                simulateVotes={!!mockContest}
               />
             )}
 
@@ -794,41 +954,57 @@ export default function ContestManage() {
                 )}
               </div>
 
-              <div className="v4-manage-share-foot">
-                <div className="v4-manage-share-avatars" aria-hidden="true">
-                  {/* Boring Avatars of the first 3 actual participants
-                      — same vocabulary used in Live Results, so the
-                      faces stay consistent across surfaces. Falls
-                      back to the demo names if no participants yet. */}
-                  {(liveData.participants.slice(0, 3).length > 0
-                    ? liveData.participants.slice(0, 3).map((p) => p.name)
-                    : ['Sam O’Brien', 'Marcus Wright', 'Dan Patel']
-                  ).map((nm, i) => (
-                    <span
-                      key={i}
-                      className="v4-manage-share-avatar"
-                      style={{ '--avatar-feature': '#030302' }}
-                    >
-                      <Avatar
-                        name={nm}
-                        size={30}
-                        variant="beam"
-                        colors={segmentPalette}
-                        square={false}
-                      />
+              {(() => {
+                const featured = liveData.participants.slice(0, 3);
+                // Real contest, nobody yet → no fake faces; a plain nudge.
+                if (featured.length === 0) {
+                  return (
+                    <div className="v4-manage-share-foot">
+                      <span className="v4-manage-share-meta-bold">
+                        {phase === 'submission'
+                          ? 'No one’s joined yet — share the link to get your first names in.'
+                          : 'No one’s joined yet — share the link to gather votes.'}
+                      </span>
+                    </div>
+                  );
+                }
+                const names = featured.map((p) => p.name);
+                const remaining = Math.max(0, stats.participants - names.length);
+                return (
+                  <div className="v4-manage-share-foot">
+                    <div className="v4-manage-share-avatars" aria-hidden="true">
+                      {/* The first 3 actual participants — real contests use
+                          each person's own avatar (the same face they see for
+                          themselves); the demo uses segment-tinted boring
+                          avatars keyed by name. */}
+                      {featured.map((p, i) => (
+                        <span
+                          key={p.id || i}
+                          className="v4-manage-share-avatar"
+                          style={{ '--avatar-feature': '#030302' }}
+                        >
+                          {mockContest ? (
+                            <Avatar
+                              name={p.name}
+                              size={30}
+                              variant="beam"
+                              colors={segmentPalette}
+                              square={false}
+                            />
+                          ) : (
+                            <UserAvatar seed={p.avatarSeed} photoUrl={p.avatarUrl} size={30} />
+                          )}
+                        </span>
+                      ))}
+                    </div>
+                    <span className="v4-manage-share-meta-bold">
+                      {remaining > 0
+                        ? `${names.join(', ')} and ${remaining} others joined`
+                        : `${names.join(', ')} joined`}
                     </span>
-                  ))}
-                </div>
-                <span className="v4-manage-share-meta-bold">
-                  {(() => {
-                    const featured = liveData.participants.slice(0, 3).map((p) => p.name);
-                    const remaining = Math.max(0, stats.participants - featured.length);
-                    return remaining > 0
-                      ? `${featured.join(', ')} and ${remaining} others joined`
-                      : `${featured.join(', ')} joined`;
-                  })()}
-                </span>
-              </div>
+                  </div>
+                );
+              })()}
             </section>
             )}
 
@@ -994,6 +1170,7 @@ export default function ContestManage() {
                 filledSettings={filledSettings}
                 briefAnswers={liveBriefAnswers}
                 settingsAnswers={liveSettingsAnswers}
+                editable={briefEditable}
                 onEditBrief={(q) => setEditingQuestion({ question: q, section: 'brief' })}
                 onEditSettings={(q) => setEditingQuestion({ question: q, section: 'settings' })}
               />
@@ -1043,14 +1220,35 @@ export default function ContestManage() {
           open={cancelOpen}
           danger
           title="Cancel this contest?"
-          body="This can’t be undone — every name and vote so far will be discarded."
+          body={
+            <>
+              This can’t be undone. Every name and vote so far will be discarded,
+              and the {!mockContest && dbContest?.price ? <strong>${dbContest.price}</strong> : ''} launch
+              fee you paid is <strong>non-refundable</strong>.
+            </>
+          }
           confirmLabel="Cancel contest"
           cancelLabel="Keep it"
           onClose={() => setCancelOpen(false)}
-          onConfirm={() => {
-            // Mark the contest as cancelled in setup + record an entry
-            // the workspace renders under a "Cancelled" section, then
-            // send the creator to the workspace where they'll see it.
+          onConfirm={async () => {
+            // Real contest → move it to the terminal 'cancelled' status in the
+            // DB. That stops new names/votes/joins (enforced by triggers) and
+            // drops it from the creator's active list.
+            if (!mockContest && dbContest?.id) {
+              const { error } = await supabase
+                .from('contests')
+                .update({ status: 'cancelled' })
+                .eq('id', dbContest.id);
+              if (error) {
+                window.alert('Could not cancel the contest: ' + (error.message || error));
+                return;
+              }
+              setCancelOpen(false);
+              navigate('/v4/settings');
+              return;
+            }
+            // Demo/mock path — record a cosmetic cancelled entry in setup so the
+            // workspace shows a "Cancelled" section.
             const cur = readSetup();
             const cancelledList = Array.isArray(cur.cancelledContests)
               ? cur.cancelledContests
@@ -1109,18 +1307,26 @@ export default function ContestManage() {
           prize={liveSettingsAnswers.submitterPrize}
           names={liveData.names}
           participants={liveData.participants}
-          onConfirm={(nameId) => {
+          onConfirm={async (nameId) => {
             // Close the modal first so the celebration is unobstructed,
-            // then flip the URL into the picked sub-state. ContestManage
-            // re-renders into the winner celebration view, which animates
-            // in (see .v4-winner-* CSS). A confetti burst punctuates the
-            // moment so it feels like a real "win," not a state change.
+            // then flip into the picked sub-state. ContestManage re-renders
+            // into the winner celebration view (see .v4-winner-* CSS), with a
+            // confetti burst so it feels like a real "win," not a state change.
             setPickWinnerOpen(false);
-            // Persist the crowned winner so the workspace (My Namespace)
-            // reflects "winner picked" instead of still showing voting.
-            // Keyed by contestId so it only applies to this contest.
             const winnerText = liveData.names.find((n) => n.id === nameId)?.text || null;
-            writeSetup({ winner: { contestId: id, nameId, name: winnerText } });
+            if (!mockContest && dbContest?.id) {
+              // Real contest → persist the winner on the contest row. This is
+              // what the participant winner/reveal pages read.
+              const { error } = await supabase
+                .from('contests')
+                .update({ winner_submission_id: nameId })
+                .eq('id', dbContest.id);
+              if (error) { window.alert('Could not save the winner: ' + (error.message || error)); return; }
+              setDbContest((c) => (c ? { ...c, winner_submission_id: nameId } : c));
+            } else {
+              // Demo — keyed by contestId so it only applies to this contest.
+              writeSetup({ winner: { contestId: id, nameId, name: winnerText } });
+            }
             // Scroll the internal review container (NOT window) — the
             // page itself doesn't scroll on v4 surfaces; .v4-review is
             // the overflow:auto container.
@@ -1146,10 +1352,26 @@ export default function ContestManage() {
 // ── Brief recap collapser — each row is clickable, opens edit modal ──
 function BriefRecapCollapser({
   filledBrief, filledSettings, briefAnswers, settingsAnswers,
-  onEditBrief, onEditSettings,
+  onEditBrief, onEditSettings, editable = true,
 }) {
   const [open, setOpen] = useState(false);
   const totalAnswered = filledBrief.length + filledSettings.length;
+
+  // Once editing is locked (a real contest with submissions in), rows are
+  // plain read-only lines — no pencil, no click — so the creator can still
+  // review the brief but can't change it under the participants.
+  const Row = ({ q, value, onEdit }) => editable ? (
+    <button type="button" className="v4-manage-recap-row" onClick={() => onEdit?.(q)}>
+      <span className="v4-manage-recap-row-label">{q.label}</span>
+      <span className="v4-manage-recap-row-value">{formatAnswer(value)}</span>
+      <PencilSimple weight="regular" size={12} className="v4-manage-recap-row-edit" />
+    </button>
+  ) : (
+    <div className="v4-manage-recap-row is-readonly">
+      <span className="v4-manage-recap-row-label">{q.label}</span>
+      <span className="v4-manage-recap-row-value">{formatAnswer(value)}</span>
+    </div>
+  );
 
   return (
     <section className={`v4-manage-recap ${open ? 'is-open' : ''}`}>
@@ -1162,7 +1384,7 @@ function BriefRecapCollapser({
           <CalendarBlank weight="duotone" size={16} />
         </span>
         <span className="v4-manage-recap-text">
-          Your brief · {totalAnswered} answered · click any to edit
+          Your brief · {totalAnswered} answered{editable ? ' · click any to edit' : ' · locked (entries are in)'}
         </span>
         <span className="v4-manage-recap-meta">
           {open ? 'Hide' : 'Show'}
@@ -1177,17 +1399,7 @@ function BriefRecapCollapser({
               <ul className="v4-manage-recap-list">
                 {filledBrief.map((q) => (
                   <li key={q.id}>
-                    <button
-                      type="button"
-                      className="v4-manage-recap-row"
-                      onClick={() => onEditBrief?.(q)}
-                    >
-                      <span className="v4-manage-recap-row-label">{q.label}</span>
-                      <span className="v4-manage-recap-row-value">
-                        {formatAnswer(briefAnswers[q.id])}
-                      </span>
-                      <PencilSimple weight="regular" size={12} className="v4-manage-recap-row-edit" />
-                    </button>
+                    <Row q={q} value={briefAnswers[q.id]} onEdit={onEditBrief} />
                   </li>
                 ))}
               </ul>
@@ -1199,17 +1411,7 @@ function BriefRecapCollapser({
               <ul className="v4-manage-recap-list">
                 {filledSettings.map((q) => (
                   <li key={q.id}>
-                    <button
-                      type="button"
-                      className="v4-manage-recap-row"
-                      onClick={() => onEditSettings?.(q)}
-                    >
-                      <span className="v4-manage-recap-row-label">{q.label}</span>
-                      <span className="v4-manage-recap-row-value">
-                        {formatAnswer(settingsAnswers[q.id])}
-                      </span>
-                      <PencilSimple weight="regular" size={12} className="v4-manage-recap-row-edit" />
-                    </button>
+                    <Row q={q} value={settingsAnswers[q.id]} onEdit={onEditSettings} />
                   </li>
                 ))}
               </ul>

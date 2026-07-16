@@ -7,8 +7,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Gear, SignOut, ArrowRight, CaretDown } from '@phosphor-icons/react';
 import heroProfile1 from '../../assets/hero-profile-1.png';
 import { readAllParticipations } from '../../utils/v4Participant';
+import { supabase } from '../../lib/supabaseClient';
+import UserAvatar from './UserAvatar';
 
-export default function AvatarMenu({ email, name, photo, defaultPhoto, tone, activeContest }) {
+export default function AvatarMenu({ email, name, photo, defaultPhoto, seed, tone, activeContest }) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
   const navigate = useNavigate();
@@ -54,7 +56,9 @@ export default function AvatarMenu({ email, name, photo, defaultPhoto, tone, act
   }, [open]);
 
   const handleSignOut = () => {
-    // Prototype: clears the v4 setup blob. Real auth call lands here later.
+    // End the real Supabase session, then clear the prototype's local blob
+    // so no stale mock identity lingers after sign-out.
+    supabase.auth.signOut();
     try { localStorage.removeItem('v4_contest_setup'); } catch {}
     // Same body-fade exit treatment as ExitLink/BrandLink, so signing
     // out has the gentle "leaving" feel instead of a jump-cut to the
@@ -81,11 +85,16 @@ export default function AvatarMenu({ email, name, photo, defaultPhoto, tone, act
         aria-label="Account menu"
       >
         <span className="v4-avatar-photo-wrap" aria-hidden="true">
-          <img
-            src={photoSrc}
-            alt=""
-            className={`v4-avatar-photo ${isDefault ? 'is-default' : 'is-custom'}`}
-          />
+          {/* Real photo wins; otherwise the generated avatar (seeded by the
+              user id) — falling back to the legacy default image only for
+              callers that don't pass a seed yet. */}
+          {photo ? (
+            <img src={photo} alt="" className="v4-avatar-photo is-custom" />
+          ) : seed ? (
+            <UserAvatar seed={seed} size={28} />
+          ) : (
+            <img src={photoSrc} alt="" className={`v4-avatar-photo ${isDefault ? 'is-default' : 'is-custom'}`} />
+          )}
         </span>
         {/* Caret signals "this is a menu trigger, not just a photo".
             Rotates 180° when open for an extra clarity cue. */}
@@ -114,14 +123,15 @@ export default function AvatarMenu({ email, name, photo, defaultPhoto, tone, act
                    default route. Used by participant pages to send the
                    user to /status instead of the creator's manage page. */
                 to={activeContest.to || `/v4/contest/${activeContest.id}`}
+                state={activeContest.contest ? { contest: activeContest.contest } : undefined}
                 className="v4-avatar-dropdown-contest"
                 role="menuitem"
                 onClick={() => setOpen(false)}
                 style={{ background: ct.bg + '40' }}
               >
                 <div className="v4-avatar-dropdown-contest-text">
-                  <div className="v4-avatar-dropdown-contest-eyebrow">
-                    <span className="v4-manage-live-dot" aria-hidden="true"></span>
+                  <div className="v4-avatar-dropdown-contest-eyebrow" style={{ color: ct.fg }}>
+                    <span className="v4-manage-live-dot" aria-hidden="true" style={{ background: ct.fg }}></span>
                     <span>{(activeContest.phase || 'LIVE').toUpperCase()}</span>
                     {activeContest.daysLeft != null && (
                       <>
@@ -134,11 +144,11 @@ export default function AvatarMenu({ email, name, photo, defaultPhoto, tone, act
                       </>
                     )}
                   </div>
-                  <div className="v4-avatar-dropdown-contest-name">
+                  <div className="v4-avatar-dropdown-contest-name" style={{ color: ct.fg }}>
                     {activeContest.name}
                   </div>
                 </div>
-                <ArrowRight weight="bold" size={14} className="v4-avatar-dropdown-contest-arrow" />
+                <ArrowRight weight="bold" size={14} className="v4-avatar-dropdown-contest-arrow" style={{ color: ct.fg }} />
               </Link>
             </>
             );

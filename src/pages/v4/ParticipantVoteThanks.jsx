@@ -7,7 +7,7 @@
 // the user's picks visually carry through from /vote. Countdown to
 // the winner lives inside the footer timeline's current step. No CTA.
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, Navigate } from 'react-router-dom';
 import { Trophy, LockSimple } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
@@ -26,6 +26,8 @@ import { getSegmentTone, SEGMENT_THEME } from '../../data/v4/segmentTheme';
 import { readSetup } from '../../utils/v4Brief';
 import { readParticipation } from '../../utils/v4Participant';
 import { showSubmitter } from '../../utils/v4Anonymity';
+import { useAuth } from '../../lib/AuthContext';
+import { supabase } from '../../lib/supabaseClient';
 import useCountdown, { pad2 } from '../../utils/useCountdown';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
@@ -46,30 +48,80 @@ function ctaEta(c) {
 export default function ParticipantVoteThanks() {
   const { id: contestId } = useParams();
   const navigate = useNavigate();
-  const contest = getMockContestById(contestId);
-  const participation = readParticipation(contestId);
+  const { user } = useAuth();
+  const mockContest = getMockContestById(contestId);
+  // Real contest: load the contest, this user's votes (with the voted
+  // submissions embedded for the cards), their submission count, and profile.
+  const [dbContest, setDbContest] = useState(null);
+  const [dbVotes, setDbVotes] = useState([]);
+  const [mySubCount, setMySubCount] = useState(0);
+  const [profile, setProfile] = useState(null);
+  const [dbLoading, setDbLoading] = useState(!mockContest);
+  useEffect(() => {
+    if (mockContest || !user?.id) return;
+    let active = true;
+    Promise.all([
+      supabase.from('contests').select('*').eq('id', contestId).single(),
+      supabase.from('votes')
+        .select('submission_id, submissions(id, text, rationale, credited)')
+        .eq('contest_id', contestId).eq('user_id', user.id),
+      supabase.from('submissions').select('id').eq('contest_id', contestId).eq('user_id', user.id),
+      supabase.from('profiles').select('display_name, avatar_url').eq('id', user.id).single(),
+    ]).then(([c, v, s, p]) => {
+      if (!active) return;
+      setDbContest(c.data || null);
+      setDbVotes(v.data || []);
+      setMySubCount((s.data || []).length);
+      setProfile(p.data || null);
+      setDbLoading(false);
+      if (c.data?.sub_segment_id) {
+        try { localStorage.setItem('v4_last_sub', c.data.sub_segment_id); } catch { /* ignore */ }
+      }
+    });
+    return () => { active = false; };
+  }, [contestId, mockContest, user?.id]);
+  const isRealContest = !mockContest && !!dbContest;
+
+  const contest = mockContest || (dbContest ? {
+    id: dbContest.id,
+    name: dbContest.working_name,
+    workingName: dbContest.working_name,
+    subSegmentId: dbContest.sub_segment_id,
+    settings: dbContest.settings || {},
+    launchedAt: dbContest.launched_at ? new Date(dbContest.launched_at).getTime() : null,
+    creator: {},
+  } : null);
+  const participation = mockContest ? readParticipation(contestId) : null;
   const subId = contest?.subSegmentId;
   const tone = subId ? getSegmentTone(subId) : null;
   const segmentBg = SEGMENT_THEME[subId]?.blobs?.[0] || tone?.bg || '#a6dcb3';
 
   const creatorName = contest?.creator?.name || 'the organizer';
   const contestName = contest?.workingName || contest?.name || 'the contest';
-  const votedIds = participation?.votedFor || [];
-  const votedCount = votedIds.length;
-  const submittedCount = participation?.submittedNames?.length || 0;
 
-  // Authed user.
+  // Authed user identity.
   const setup = readSetup();
-  const userEmail = setup.userEmail || '';
-  const userName = setup.userName || (userEmail.split('@')[0] || 'You');
-  const userPhoto = setup.userPhoto || null;
+  const userEmail = isRealContest ? (user?.email || '') : (setup.userEmail || '');
+  const userName = isRealContest
+    ? (profile?.display_name || user?.email?.split('@')[0] || 'You')
+    : (setup.userName || (userEmail.split('@')[0] || 'You'));
+  const userPhoto = isRealContest ? (profile?.avatar_url || null) : (setup.userPhoto || null);
 
-  // Resolve voted ids back to actual submission objects for card rendering.
-  const votedSubs = (() => {
-    if (!contest?.allSubmissions) return [];
-    const byId = new Map(contest.allSubmissions.map((s) => [s.id, s]));
-    return votedIds.map((id) => byId.get(id)).filter(Boolean);
-  })();
+  // Voted-for submissions for the cards. Real contests read them straight off
+  // the embedded votes; the mock path resolves ids against allSubmissions.
+  const votedSubs = mockContest
+    ? (() => {
+        const votedIds = participation?.votedFor || [];
+        if (!contest?.allSubmissions) return [];
+        const byId = new Map(contest.allSubmissions.map((s) => [s.id, s]));
+        return votedIds.map((id) => byId.get(id)).filter(Boolean);
+      })()
+    : dbVotes
+        .map((v) => v.submissions)
+        .filter(Boolean)
+        .map((s) => ({ id: s.id, text: s.text, whyItFits: s.rationale || '', submitterName: null }));
+  const votedCount = votedSubs.length;
+  const submittedCount = mockContest ? (participation?.submittedNames?.length || 0) : mySubCount;
 
   // Winner-announced = launchedAt + (submissionDays + votingDays).
   const day = 86400000;
@@ -94,8 +146,19 @@ export default function ParticipantVoteThanks() {
   const visibleVotedSubs = expanded ? votedSubs : votedSubs.slice(0, VISIBLE_LIMIT);
   const overflowCount = Math.max(0, votedSubs.length - VISIBLE_LIMIT);
 
-  if (!contest) return <Navigate to="/v4/settings" replace />;
-  if (!participation) return <Navigate to={`/v4/join/${contestId}`} replace />;
+  if (!mockContest) {
+    if (dbLoading) {
+      return (
+        <div className="v4 lp-v3"><div className="v4-screen">
+          <span className="v4-blob v4-join-blob v4-join-blob-1" aria-hidden="true" />
+        </div></div>
+      );
+    }
+    if (!dbContest) return <Navigate to="/v4/settings" replace />;
+  } else {
+    if (!contest) return <Navigate to="/v4/settings" replace />;
+    if (!participation) return <Navigate to={`/v4/join/${contestId}`} replace />;
+  }
 
   // Same drifting voter cast as the join + thanks pages.
   const animAvatars = (() => {
@@ -149,7 +212,8 @@ export default function ParticipantVoteThanks() {
               <AvatarMenu
                 email={userEmail}
                 name={userName}
-                photo={participantProfile}
+                photo={isRealContest ? userPhoto : participantProfile}
+                seed={isRealContest ? user?.id : undefined}
                 tone={tone}
                 activeContest={{
                   id: contest.id,

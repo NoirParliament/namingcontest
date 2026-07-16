@@ -23,6 +23,8 @@ import { readSetup, getQuestionsFor } from '../utils/v4Brief';
 import { getSegmentTone } from '../data/v4/segmentTheme';
 import AvatarMenu from '../components/v4/AvatarMenu';
 import SignInModal from '../components/v4/SignInModal';
+import { useAuth } from '../lib/AuthContext';
+import { supabase } from '../lib/supabaseClient';
 
 /* ========== ICONS ========== */
 const Star = () => <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.2 4.5 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7L8 1z"/></svg>;
@@ -107,20 +109,57 @@ export function Nav() {
     }
   };
 
-  // If the visitor already has a saved v4 setup (returning user with
-  // an active or in-progress contest), swap the "Sign In" link for
-  // the AvatarMenu so they can see what's live and jump back in.
+  // A real Supabase session is the source of truth for "signed in"; the
+  // legacy localStorage setup still counts too during the mock→real
+  // transition (a returning demo user with an in-progress contest).
+  const { user } = useAuth();
   const setup = readSetup();
-  const isAuthed = !!(setup.userEmail || setup.contestId);
+  const isAuthed = !!user || !!(setup.userEmail || setup.contestId);
+  const authEmail = user?.email || setup.userEmail;
+  const authName = user?.user_metadata?.display_name || setup.userName || user?.email?.split('@')[0];
+
+  // A real user's latest contest, loaded from the DB, so the account menu can
+  // show it (and jump into it) from the homepage.
+  const [latestContest, setLatestContest] = useState(null);
+  useEffect(() => {
+    if (!user?.id) { setLatestContest(null); return; }
+    let active = true;
+    supabase
+      .from('contests')
+      .select('*')
+      .eq('creator_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!active) return;
+        setLatestContest(data || null);
+        if (data?.sub_segment_id) {
+          try { localStorage.setItem('v4_last_sub', data.sub_segment_id); } catch { /* ignore */ }
+        }
+      });
+    return () => { active = false; };
+  }, [user?.id]);
   const segmentTone = getSegmentTone(setup.subSegmentId || 'b1');
-  const activeContest = setup.contestId
+  // Real users → their latest DB contest (with its real phase). The demo
+  // (localStorage) path only applies when signed out.
+  const activeContest = latestContest
+    ? {
+        id: latestContest.id,
+        name: latestContest.working_name || 'Your contest',
+        phase: latestContest.status === 'submission' ? 'Submissions'
+          : latestContest.status === 'voting' ? 'Voting'
+          : latestContest.status === 'closed' ? 'Winner' : 'Live',
+        tone: getSegmentTone(latestContest.sub_segment_id || 'b1'),
+        to: `/v4/contest/${latestContest.id}`,
+        contest: latestContest, // passed via nav state → Manage opens instantly
+      }
+    : (!user && setup.contestId)
     ? {
         id: setup.contestId,
         name: setup.workingName || 'Your contest',
-        // Mock voting phase to match the rest of the prototype.
         phase: 'Voting',
         daysLeft: setup.settings?.votingDays || 3,
-        // Contest-specific tone for the dropdown card.
         tone: segmentTone,
       }
     : null;
@@ -140,9 +179,10 @@ export function Nav() {
           <div className="nav-actions">
             {isAuthed ? (
               <AvatarMenu
-                email={setup.userEmail}
-                name={setup.userName}
-                photo={creatorProfile}
+                email={authEmail}
+                name={authName}
+                photo={setup.userPhoto || null}
+                seed={user?.id}
                 tone={segmentTone}
                 activeContest={activeContest}
               />
