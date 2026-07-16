@@ -52,6 +52,7 @@ import CookiePolicy        from '@pages/legal/LegalCrumbs';
 import NotFound            from '@pages/system/NotFound';
 import ErrorState         from '@pages/system/ErrorState';
 import ContactPage        from '@pages/system/ContactPage';
+import BetaGate            from './components/BetaGate';
 
 // ─── FloatingNav ─────────────────────────────────────────────────────────────
 
@@ -463,7 +464,9 @@ function AppInner() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AppInner />
+      <BetaGate>
+        <AppInner />
+      </BetaGate>
     </BrowserRouter>
   );
 }
