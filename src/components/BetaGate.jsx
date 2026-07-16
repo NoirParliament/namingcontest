@@ -9,8 +9,14 @@
 // (Fraunces title, .v4-settings-input, .btn-primary slide-hover).
 import { useState } from 'react';
 import keyImg from '../assets/key.png';
+import { SegmentThemeBackdrop } from '../data/v4/segmentTheme';
 import '../styles/landing-v3.css';
 import '../styles/v4.css';
+
+// The lock screen wears the "band" segment backdrop (t2 — periwinkle glow +
+// music-scene line art), same minimal treatment as the submit/vote chats, so
+// the gate already feels like the product behind it.
+const GATE_SEGMENT = 't2';
 
 const BETA_PASSWORD = import.meta.env.VITE_BETA_PASSWORD;
 const STORAGE_KEY = 'nc_beta_ok';
@@ -38,15 +44,21 @@ export default function BetaGate({ children }) {
 
   return (
     <div
-      className="v4 lp-v3"
+      className="v4 lp-v3 v4-screen v4-screen--chat"
       style={{
         position: 'fixed', inset: 0, zIndex: 9999,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: 24, background: 'var(--v4-bg, #fcf9f7)', overflow: 'auto',
+        padding: 24, overflow: 'auto',
       }}
     >
-      <span className="v4-signin-halo" aria-hidden="true" />
-      <div className="v4-signin-modal" role="dialog" aria-modal="true" aria-labelledby="betagate-title">
+      <SegmentThemeBackdrop subId={GATE_SEGMENT} minimal />
+      <div
+        className="v4-signin-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="betagate-title"
+        style={{ position: 'relative', zIndex: 1 }}
+      >
         <span className="v4-signin-shape v4-signin-shape-1" aria-hidden="true" />
         <span className="v4-signin-shape v4-signin-shape-2" aria-hidden="true" />
         <span className="v4-signin-shape v4-signin-shape-3" aria-hidden="true" />
