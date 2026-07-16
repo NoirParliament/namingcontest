@@ -1,13 +1,16 @@
 // Soft beta gate. When VITE_BETA_PASSWORD is set (e.g. on the private beta
 // domain), the whole app sits behind a shared access code. Leave the env var
 // UNSET (local dev, and public launch) and the gate disappears entirely — so
-// flipping to public is just "remove the env var + redeploy."
+// flipping to public is just "remove the env var + redeploy".
 //
 // This is a courtesy curtain to keep the beta out of public view, not hard
 // security: it's client-side, and the real data is always behind Supabase
-// auth. Good enough to stop randoms wandering in.
+// auth. Styled with the same sign-in-card design system as SignInModal
+// (Fraunces title, .v4-settings-input, .btn-primary slide-hover).
 import { useState } from 'react';
-import namingContestLogo from '../assets/namingcontestlogo-cropped.svg';
+import keyImg from '../assets/key.png';
+import '../styles/landing-v3.css';
+import '../styles/v4.css';
 
 const BETA_PASSWORD = import.meta.env.VITE_BETA_PASSWORD;
 const STORAGE_KEY = 'nc_beta_ok';
@@ -34,60 +37,54 @@ export default function BetaGate({ children }) {
   };
 
   return (
-    <div style={S.screen}>
-      <span style={{ ...S.blob, ...S.blob1 }} aria-hidden="true" />
-      <span style={{ ...S.blob, ...S.blob2 }} aria-hidden="true" />
-      <div style={S.card}>
-        <img src={namingContestLogo} alt="NamingContest" style={S.logo} />
-        <div style={S.eyebrow}>Private beta</div>
-        <h1 style={S.title}>This site isn’t public yet.</h1>
-        <p style={S.sub}>Enter your access code to continue.</p>
-        <form onSubmit={submit} style={S.form}>
-          <input
-            type="password"
-            value={value}
-            onChange={(e) => { setValue(e.target.value); setError(false); }}
-            placeholder="Access code"
-            autoFocus
-            aria-label="Access code"
-            style={{ ...S.input, ...(error ? S.inputError : null) }}
-          />
-          <button type="submit" style={S.button}>Enter →</button>
+    <div
+      className="v4 lp-v3"
+      style={{
+        position: 'fixed', inset: 0, zIndex: 9999,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: 24, background: 'var(--v4-bg, #fcf9f7)', overflow: 'auto',
+      }}
+    >
+      <span className="v4-signin-halo" aria-hidden="true" />
+      <div className="v4-signin-modal" role="dialog" aria-modal="true" aria-labelledby="betagate-title">
+        <span className="v4-signin-shape v4-signin-shape-1" aria-hidden="true" />
+        <span className="v4-signin-shape v4-signin-shape-2" aria-hidden="true" />
+        <span className="v4-signin-shape v4-signin-shape-3" aria-hidden="true" />
+        <span className="v4-signin-shape v4-signin-shape-4" aria-hidden="true" />
+        <span className="v4-signin-shape v4-signin-shape-5" aria-hidden="true" />
+
+        <img className="v4-signin-hero-key" src={keyImg} alt="" aria-hidden="true" />
+        <h2 id="betagate-title" className="v4-signin-title">This site isn’t public yet</h2>
+        <p className="v4-signin-subtitle">Enter your access code to continue.</p>
+
+        <form className="v4-signin-form" onSubmit={submit}>
+          <label className="v4-signin-field">
+            <span className="v4-signin-field-label">Access code</span>
+            <input
+              type="password"
+              className="v4-settings-input"
+              value={value}
+              onChange={(e) => { setValue(e.target.value); setError(false); }}
+              placeholder="Enter code"
+              autoFocus
+              aria-label="Access code"
+            />
+          </label>
+          <button type="submit" className="btn btn-primary btn-lg v4-signin-submit">
+            Enter <span className="arrow">→</span>
+          </button>
         </form>
-        {error && <div style={S.error}>That code isn’t right — try again.</div>}
+
+        {error && (
+          <p
+            className="v4-signin-error"
+            role="alert"
+            style={{ margin: '10px 2px 0', fontSize: 13, lineHeight: 1.4, color: '#a8321f', fontFamily: 'var(--font-text)' }}
+          >
+            That code isn’t right — try again.
+          </p>
+        )}
       </div>
     </div>
   );
 }
-
-const S = {
-  screen: {
-    position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-    padding: 24, background: '#fcf9f7', overflow: 'hidden',
-    fontFamily: 'Inter, system-ui, -apple-system, Segoe UI, sans-serif', color: '#030302',
-  },
-  blob: { position: 'absolute', borderRadius: '50%', filter: 'blur(40px)', opacity: 0.5, pointerEvents: 'none' },
-  blob1: { width: 340, height: 340, background: '#fadecc', top: '-8%', left: '-6%' },
-  blob2: { width: 300, height: 300, background: '#c4dffb', bottom: '-8%', right: '-6%' },
-  card: {
-    position: 'relative', zIndex: 1, width: '100%', maxWidth: 380, background: '#ffffff',
-    border: '1px solid rgba(3,3,2,0.06)', borderRadius: 22, padding: '36px 32px',
-    boxShadow: '0 24px 60px rgba(3,3,2,0.10)', textAlign: 'center',
-  },
-  logo: { height: 26, marginBottom: 22 },
-  eyebrow: { fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9c4818' },
-  title: { fontSize: 22, lineHeight: 1.25, fontWeight: 700, margin: '10px 0 6px' },
-  sub: { fontSize: 14.5, lineHeight: 1.5, color: 'rgba(3,3,2,0.6)', margin: '0 0 22px' },
-  form: { display: 'flex', flexDirection: 'column', gap: 10 },
-  input: {
-    width: '100%', boxSizing: 'border-box', padding: '13px 15px', fontSize: 15,
-    border: '1.5px solid rgba(3,3,2,0.12)', borderRadius: 12, outline: 'none',
-    fontFamily: 'inherit', background: '#fff',
-  },
-  inputError: { borderColor: '#bb433a' },
-  button: {
-    width: '100%', padding: '13px 15px', fontSize: 15, fontWeight: 600, color: '#fff',
-    background: '#030302', border: 'none', borderRadius: 12, cursor: 'pointer',
-  },
-  error: { marginTop: 12, fontSize: 13, color: '#bb433a', fontWeight: 500 },
-};
