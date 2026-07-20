@@ -4574,23 +4574,38 @@ input.v4-results-search-input::placeholder {
    copy, but NOT the chat's fade-in: the export screenshots this node, and an
    animation still running at capture time would bake a half-faded backdrop
    into the PDF. */
+/* No centre-fade here, unlike the chat. On screen the scene sits behind a
+   single narrow column and the fade keeps it out of the way; the report is a
+   fixed 794px page whose content sits in cards, so the scene reads as one
+   continuous illustration and a hole punched through its middle just looks
+   like a printing fault.
+
+   Scaled up and lifted off the bottom edge: at the live page's size it sat
+   as a thin strip along the very bottom of a tall portrait page, reading as
+   a smudge rather than a scene. */
 .v4-pdf-report .v4-dash-image {
-  opacity: 0.42;
-  -webkit-mask-image: linear-gradient(to right, #000 0%, #000 13%, rgba(0,0,0,0.12) 50%, #000 87%, #000 100%);
-  mask-image: linear-gradient(to right, #000 0%, #000 13%, rgba(0,0,0,0.12) 50%, #000 87%, #000 100%);
+  opacity: 0.34;
+  -webkit-mask-image: none;
+  mask-image: none;
+  /* Still flush with the bottom edge — just scaled up so the scene reaches
+     further up a 1123px page instead of sitting as a thin strip along it.
+     Lifting it off the edge instead would leave a band of bare cream under
+     the illustration, which reads as a mistake. */
+  width: 165%;
+  bottom: 0;
 }
 .v4-pdf-report .v4-aurora {
+  /* No fade-in — the export screenshots this node, and an animation still
+     running at capture time would bake a half-faded backdrop into the PDF. */
   animation: none;
   opacity: 1;
 }
-
-
-/* Scattered segment icons — same set the SegmentThemeBackdrop uses
-   on the live page, sized down for the print layout. */
-.v4-pdf-report-icon {
-  position: absolute;
-  color: rgba(3, 3, 2, 0.18);
-  pointer-events: none;
+/* The wash reaches further down the page than on screen: a 1123px document
+   left the colour clinging to the top inch, so the segment barely registered
+   before the page went cream. */
+.v4-pdf-report .v4-aurora-gradient {
+  height: 900px;
+  opacity: 0.62;
 }
 
 /* Content column */
