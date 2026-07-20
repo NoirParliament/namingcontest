@@ -1087,7 +1087,11 @@ export const SHARED_SETTINGS_QUESTIONS = [
   {
     id: 'submissionLimit',
     type: 'numberChips',
-    options: [1, 2, 3, 5, 10, 'Unlimited'],
+    // Capped at 5, and no 'Unlimited'. One person submitting dozens drowns
+    // everyone else and skews the vote — the opposite of what a contest is
+    // for. The database enforces the same ceiling (migration 0016), so this
+    // list is the polite version of a rule that holds either way.
+    options: [1, 2, 3, 5],
     defaultValue: 3,
     label: 'Submissions per person',
     prompt: 'How many names can each person submit?',

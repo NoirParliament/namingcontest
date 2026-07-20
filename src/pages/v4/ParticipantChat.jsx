@@ -227,13 +227,22 @@ export default function ParticipantChat() {
   // localStorage participation for real contests.
   const participation = mockContest ? readParticipation(contestId) : (isRealContest ? { submittedNames: mySubs } : null);
 
-  // Resolve the creator-set cap. Numbers are used as-is; 'Unlimited'
-  // (a valid numberChips option) maps to a high ceiling so the slot
-  // math never goes NaN; anything missing/odd falls back to 3.
+  // Resolve the creator-set cap, clamped to the same ceiling the database
+  // enforces (migration 0016). Older contests were saved with 10 or
+  // 'Unlimited' before those options were removed; without the clamp the UI
+  // would offer slots the insert trigger then refuses, so the participant
+  // meets a raw database error on a name they were invited to type.
+  // Anything missing or malformed falls back to 3.
+  const MAX_SUBMISSIONS = 5;
   const rawLimit = contest?.settings?.submissionLimit;
-  const submissionLimit = Number.isFinite(rawLimit)
-    ? rawLimit
-    : (rawLimit === 'Unlimited' ? 99 : 3);
+  const submissionLimit = Math.min(
+    Number.isFinite(rawLimit) && rawLimit > 0
+      ? rawLimit
+      // 'Unlimited' gets the ceiling rather than the default — matching the
+      // trigger, so the slots offered here equal the ones the DB accepts.
+      : (rawLimit === 'Unlimited' ? MAX_SUBMISSIONS : 3),
+    MAX_SUBMISSIONS,
+  );
   const tone = contest ? getSegmentTone(contest.subSegmentId) : null;
   const creatorName = contest?.creator?.name || 'the organizer';
 
