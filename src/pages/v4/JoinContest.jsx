@@ -191,7 +191,12 @@ export default function JoinContest() {
           : contest.phase.toLowerCase() === 'winner' ? 'winner'
           : 'submission')
         : 'submission',
-      submissionLimit: contest.settings?.submissionLimit || 3,
+      submissionLimit: Math.min(
+        Number.isFinite(contest.settings?.submissionLimit) && contest.settings.submissionLimit > 0
+          ? contest.settings.submissionLimit
+          : 3,
+        5,
+      ),
     };
     const row = getParticipantRow(phaseShape, existing);
     // Routes shipped today. Update this list as we build the rest.
@@ -271,7 +276,14 @@ export default function JoinContest() {
   const creatorRole = creator.role || 'Organizer';
   const creatorPhoto = HERO_PROFILES[(creator.photoIndex || 1) - 1] || heroProfile1;
   const subSegmentLabel = contest.subSegmentTitle || 'naming contest';
-  const submissionLimit = contest.settings?.submissionLimit || 3;
+  // Clamped to the ceiling the database enforces (migration 0016). Contests
+  // saved before 10/'Unlimited' were removed would otherwise advertise a
+  // number of slots nobody can actually use.
+  const rawSubmissionLimit = contest.settings?.submissionLimit;
+  const submissionLimit = Math.min(
+    Number.isFinite(rawSubmissionLimit) && rawSubmissionLimit > 0 ? rawSubmissionLimit : 3,
+    5,
+  );
 
   // Normalized lifecycle stage — for a real contest this is the true DB status;
   // a mock demo maps its phase string. Drives the header deadline + footer flow.

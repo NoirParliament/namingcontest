@@ -9,7 +9,7 @@
 
 import { forwardRef } from 'react';
 import { Trophy, Quotes, Gift } from '@phosphor-icons/react';
-import { SEGMENT_THEME } from '../../data/v4/segmentTheme';
+import { SEGMENT_THEME, SegmentThemeBackdrop } from '../../data/v4/segmentTheme';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 
 // Cap so the report always fits on one A4 page.
@@ -63,10 +63,14 @@ const PdfReport = forwardRef(function PdfReport({
         '--v4-blob-4-color': useCustomBlobs ? blobColor : (theme.blobs?.[0] || t.bg),
       }}
     >
-      {/* Decorative blobs — segment-tinted, soft */}
-      <span className="v4-pdf-report-blob v4-pdf-report-blob-1" aria-hidden="true"></span>
-      <span className="v4-pdf-report-blob v4-pdf-report-blob-2" aria-hidden="true"></span>
-      <span className="v4-pdf-report-blob v4-pdf-report-blob-3" aria-hidden="true"></span>
+      {/* The same backdrop the chat stages wear — cream page, segment glow,
+          the segment's line-art scene — so the exported report reads as the
+          same product the contest ran in. Rendered via the shared component
+          rather than re-created here, so the two can't drift apart.
+
+          customColor recolours the glow along with everything else; without
+          that the page would fight a card the creator had branded. */}
+      <SegmentThemeBackdrop subId={subId} minimal color={customColor || null} />
 
       {/* Scattered segment icons (smaller scale, low opacity).
           Filter out anything that would overlap the brand-bar +

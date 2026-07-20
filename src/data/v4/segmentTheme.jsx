@@ -392,7 +392,12 @@ const DASH_SHIFT = {
  *   art to a flat silhouette before invert(1) lifts it to white, so it works
  *   regardless of the source PNG's own colours while keeping its alpha.
  */
-export function SegmentThemeBackdrop({ subId, minimal = false, invert = false }) {
+/**
+ * @param color  Override the glow's base colour. Only the PDF report uses
+ *   this — a creator can brand the export with a colour of their own, and
+ *   the backdrop has to follow or the page fights the card on top of it.
+ */
+export function SegmentThemeBackdrop({ subId, minimal = false, invert = false, color = null }) {
   const theme = subId ? SEGMENT_THEME[subId] : null;
   const blobStyles = theme?.blobs
     ? {
@@ -407,7 +412,7 @@ export function SegmentThemeBackdrop({ subId, minimal = false, invert = false })
   // + the segment's scattered theme icons. No blobs, no illustration PNGs.
   if (minimal) {
     const base =
-      theme?.blobs?.[0] || (subId ? getSegmentTone(subId)?.bg : null) || '#a6dcb3';
+      color || theme?.blobs?.[0] || (subId ? getSegmentTone(subId)?.bg : null) || '#a6dcb3';
     const dashImg = subId ? DASH_IMAGE[subId] : null;
     const dashShift = subId ? DASH_SHIFT[subId] : null;
     return (

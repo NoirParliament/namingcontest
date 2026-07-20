@@ -14,8 +14,8 @@ import {
   Copy, Check, EnvelopeSimple, ShareNetwork,
   PencilSimple, CalendarBlank, Hash, Clock,
   PaperPlaneTilt, Eye, Trophy, Lightbulb, Confetti,
-  Gift, Download, FilePdf, Quotes,
-  FacebookLogo, LinkedinLogo, InstagramLogo,
+  Gift, FilePdf, Quotes, LinkSimple,
+  LinkedinLogo,
   Palette, CaretDown, UploadSimple,
 } from '@phosphor-icons/react';
 import Avatar from 'boring-avatars';
@@ -44,7 +44,10 @@ import ConfirmModal from '../../components/v4/ConfirmModal';
 import WinnerHero from '../../components/v4/WinnerHero';
 import CatchwordConsultBlock from '../../components/v4/CatchwordConsultBlock';
 import PdfReport from '../../components/v4/PdfReport';
-import { downloadShareCard, downloadFullReport } from '../../utils/v4ContestExport';
+// downloadShareCard still exists in v4ContestExport for future use — nothing
+// calls it now that Instagram's button is gone (it downloaded a card while
+// claiming to share) and the share-card button was replaced by Copy link.
+import { downloadFullReport } from '../../utils/v4ContestExport';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -333,6 +336,9 @@ export default function ContestManage() {
   const votingDays = (voteEndsAt && subEndsAt) ? Math.max(1, Math.round((voteEndsAt - subEndsAt) / MS_DAY)) : (settingsAnswers.votingDays || 3);
 
   const [copied, setCopied] = useState(false);
+  // Separate from `copied`: the invite link and the winner link can both be
+  // on screen, and one confirming shouldn't tick the other.
+  const [winnerCopied, setWinnerCopied] = useState(false);
   // ?pick=1 (from the platform map) auto-opens the pick-winner modal so
   // that flow step lands directly on the modal.
   const [pickWinnerOpen, setPickWinnerOpen] = useState(
@@ -405,7 +411,16 @@ export default function ContestManage() {
     setEditTick((t) => t + 1);
   };
 
+  // Two different links, for two different moments.
+  //   shareUrl  — the invitation. Correct while names are still wanted.
+  //   winnerUrl — the public result. Everything on the winner surface points
+  //               here; it used to point at shareUrl, so celebrating a
+  //               finished contest sent people to a "help name this" page for
+  //               something that already had a name. The reveal reads through
+  //               get_winner_info, which is security definer and granted to
+  //               anon, so a stranger with the link needs no account.
   const shareUrl = `${window.location.origin}/v4/join/${id}`;
+  const winnerUrl = `${window.location.origin}/v4/contest/${id}/reveal`;
 
   const handleCopy = async () => {
     try {
@@ -414,6 +429,29 @@ export default function ContestManage() {
       setTimeout(() => setCopied(false), 2000);
     } catch {
       // Fallback or noop
+    }
+  };
+
+  // Post body for X. Leads with the name because that's the news, and states
+  // how it was chosen — a name picked by a crowd is a better story than a
+  // name announced. The vote count is dropped when it's absent rather than
+  // printing "0 votes" under a winner the creator picked directly.
+  const winnerVotes = winnerName?.voteCount ?? 0;
+  const shareText = [
+    `Meet “${winnerName?.text ?? ''}” — the new name for ${setup.workingName || 'our project'}.`,
+    winnerVotes > 0
+      ? `Chosen by ${winnerVotes} vote${winnerVotes === 1 ? '' : 's'} in a naming contest. 🏆`
+      : 'Picked from a naming contest. 🏆',
+  ].join(' ');
+
+  const handleCopyWinner = async () => {
+    try {
+      await navigator.clipboard.writeText(winnerUrl);
+      setWinnerCopied(true);
+      setTimeout(() => setWinnerCopied(false), 2000);
+    } catch {
+      // Clipboard can be blocked (permissions, insecure context) — staying
+      // silent is fine here; the social buttons alongside still work.
     }
   };
 
@@ -561,24 +599,15 @@ export default function ContestManage() {
                 runners-up). Replaces LiveResults + Share card. */}
             {isWinnerPicked && winnerName && (
               <>
-                {/* Action row — download share card, export full report,
-                    copy contest link. Buttons placeholder for now; PNG +
-                    PDF generation wires in the next pass. */}
+                {/* Action row — export the full report, then the social
+                    share icons. The separate "Download share card" button is
+                    gone: the report is the thing worth keeping, and the card
+                    is still generated on demand by the Instagram share, which
+                    has no web share API to hand it to. */}
                 <div className="v4-winner-actions">
                   <button
                     type="button"
                     className="v4-winner-action v4-winner-action-primary"
-                    onClick={() => downloadShareCard(
-                      winnerHeroRef.current,
-                      setup.workingName
-                    )}
-                  >
-                    <Download weight="bold" size={14} />
-                    Download share card
-                  </button>
-                  <button
-                    type="button"
-                    className="v4-winner-action"
                     onClick={() => downloadFullReport(
                       pdfReportRef.current,
                       setup.workingName
@@ -587,16 +616,33 @@ export default function ContestManage() {
                     <FilePdf weight="bold" size={14} />
                     Download full report
                   </button>
+                  <button
+                    type="button"
+                    className="v4-winner-action"
+                    onClick={handleCopyWinner}
+                  >
+                    {winnerCopied
+                      ? <><Check weight="bold" size={14} /> Link copied</>
+                      : <><LinkSimple weight="bold" size={14} /> Copy link</>}
+                  </button>
 
                   {/* Social share icon buttons — open native share intents
-                      with pre-filled text + the contest URL. Instagram has
-                      no web share API, so it just downloads the card and
-                      tells the user to upload manually. */}
+                      that open a real composer, both pointed at the public
+                      reveal page.
+
+                      Only two: Facebook's sharer ignores prefilled text and
+                      adds nothing over a pasted link, and Instagram has no
+                      share API at all — its button was a download dressed as
+                      a share. The Copy link button covers both cases better
+                      than a button that lies about what it does.
+
+                      LinkedIn takes a URL only; they dropped text prefill in
+                      2021, so the post body is whatever the sharer types. */}
                   <div className="v4-winner-share-icons">
                     <a
                       className="v4-winner-share-icon"
                       title="Share on X"
-                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Meet “${winnerName.text}” — our new ${setup.workingName || 'name'}. Picked via naming contest.`)}&url=${encodeURIComponent(shareUrl)}`}
+                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(winnerUrl)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -604,30 +650,13 @@ export default function ContestManage() {
                     </a>
                     <a
                       className="v4-winner-share-icon"
-                      title="Share on Facebook"
-                      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <FacebookLogo weight="bold" size={16} />
-                    </a>
-                    <a
-                      className="v4-winner-share-icon"
                       title="Share on LinkedIn"
-                      href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
+                      href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(winnerUrl)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       <LinkedinLogo weight="bold" size={16} />
                     </a>
-                    <button
-                      type="button"
-                      className="v4-winner-share-icon"
-                      title="Download for Instagram"
-                      onClick={() => window.alert('Downloads the share card so you can upload it to Instagram (no web share API for IG)')}
-                    >
-                      <InstagramLogo weight="bold" size={16} />
-                    </button>
                   </div>
                 </div>
 
@@ -1142,7 +1171,7 @@ export default function ContestManage() {
                       {phase === 'winner' && !isWinnerPicked
                         ? 'Voting is closed. Time to crown the winner — the top vote, or any name that won your heart.'
                         : isWinnerPicked
-                        ? 'You crowned the winner. Download the share card or export the full report below.'
+                        ? 'You crowned the winner. Export the full report below, or share the result straight out.'
                         : 'When voting wraps, the leaderboard is yours. You make the final call — the top vote, or any name that won your heart.'}
                     </p>
                     {phase === 'winner' && !isWinnerPicked && (
