@@ -22,6 +22,7 @@ import '../styles/v4.css';
 import { readSetup, getQuestionsFor } from '../utils/v4Brief';
 import { getSegmentTone } from '../data/v4/segmentTheme';
 import AvatarMenu from '../components/v4/AvatarMenu';
+import UserAvatar from '../components/v4/UserAvatar';
 import SignInModal from '../components/v4/SignInModal';
 import { useAuth } from '../lib/AuthContext';
 import { supabase } from '../lib/supabaseClient';
@@ -173,12 +174,9 @@ export function Nav() {
             <a href="/#testimonials" onClick={goToSection('testimonials')}>Testimonials</a>
             <a href="/#pricing" onClick={goToSection('pricing')}>Pricing</a>
           </div>
-          {/* has-avatar keeps this visible on phone. The mobile rules hide
-              .nav-actions wholesale, which was fine when it only held Sign In
-              + Start a contest (both repeated in the sheet) — but it also hid
-              the avatar, and the burger used to be signed-out only, so a
-              signed-in phone user got a nav with nothing in it but the logo. */}
-          <div className={`nav-actions${isAuthed ? ' has-avatar' : ''}`}>
+          {/* Desktop only — the mobile rules hide this whole container, and
+              the sheet carries the account on phone instead. */}
+          <div className="nav-actions">
             {isAuthed ? (
               <AvatarMenu
                 email={authEmail}
@@ -256,6 +254,36 @@ export function Nav() {
             <span className="nav-mobile-menu-shape nav-mobile-menu-shape-2" aria-hidden="true" />
             <span className="nav-mobile-menu-shape nav-mobile-menu-shape-3" aria-hidden="true" />
             <span className="nav-mobile-menu-shape nav-mobile-menu-shape-4" aria-hidden="true" />
+
+            {/* Signed in: the account leads, because someone who already has
+                one is far more likely to be heading back to their contests
+                than to the marketing sections. Tapping it goes to the
+                namespace — same destination the avatar's dropdown had on
+                desktop, just given room to breathe. */}
+            {isAuthed && (
+              <>
+                <button
+                  type="button"
+                  className="nav-mobile-menu-account"
+                  onClick={() => { closeMenu(); navigate('/v4/settings'); }}
+                >
+                  <span className="nav-mobile-menu-account-avatar" aria-hidden="true">
+                    {setup.userPhoto ? (
+                      <img src={setup.userPhoto} alt="" />
+                    ) : user?.id ? (
+                      <UserAvatar seed={user.id} size={38} />
+                    ) : (
+                      <img src={heroProfile1} alt="" />
+                    )}
+                  </span>
+                  <span className="nav-mobile-menu-account-text">
+                    <span className="nav-mobile-menu-account-name">{authName}</span>
+                    <span className="nav-mobile-menu-account-email">{authEmail}</span>
+                  </span>
+                  <span className="nav-mobile-menu-account-arrow" aria-hidden="true">→</span>
+                </button>
+              </>
+            )}
 
             <div className="nav-mobile-menu-eyebrow">Explore</div>
             <a

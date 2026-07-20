@@ -115,6 +115,70 @@
 .nav-mobile-menu-eyebrow-actions {
   padding-top: 0;
 }
+
+/* Account row at the top of the sheet — the phone stand-in for the avatar
+   dropdown, which has no room to open at this width. Tapping it goes to the
+   namespace, same as the dropdown's first item did. */
+.nav-mobile-menu-account {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border: 0;
+  background: none;
+  padding: 10px 14px 14px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid rgba(3, 3, 2, 0.07);
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+}
+.nav-mobile-menu-account:active { opacity: 0.7; }
+.nav-mobile-menu-account-avatar {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: block;
+}
+.nav-mobile-menu-account-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* min-width:0 lets a long email truncate instead of forcing the row wider
+   than the sheet — addresses are the one field here with no length limit. */
+.nav-mobile-menu-account-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.nav-mobile-menu-account-name {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #030302;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nav-mobile-menu-account-email {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  color: rgba(3, 3, 2, 0.5);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nav-mobile-menu-account-arrow {
+  flex: 0 0 auto;
+  font-size: 15px;
+  color: rgba(3, 3, 2, 0.35);
+}
 @keyframes nav-mobile-menu-fade-in {
   from { opacity: 0; }
   to   { opacity: 1; }
@@ -219,16 +283,13 @@
   /* Hide the desktop pill contents and rebalance the pill itself
      so it's just logo (left) + burger (right). Double-class trick
      to overcome landing-v3.css's same-specificity rules. */
+  /* Phone nav is logo + burger, nothing else — including when signed in.
+     The AvatarMenu did briefly live here, but its dropdown has nowhere to
+     go at this width: anchored to an icon near the right edge it spills
+     past the viewport. The account moved into the sheet instead, where it
+     has room and sits alongside the other destinations. */
   .lp-v3 .nav-pill .links.links,
-  .lp-v3 .nav-pill .nav-actions.nav-actions:not(.has-avatar) { display: none; }
-  /* Signed in, .nav-actions holds the AvatarMenu — the only route to the
-     account on phone, so it stays. Everything it holds when signed OUT
-     (Sign In, Start a contest) is repeated in the sheet, which is why
-     hiding it there is still right. */
-  .lp-v3 .nav-pill .nav-actions.has-avatar {
-    display: inline-flex;
-    flex: 0 0 auto;
-  }
+  .lp-v3 .nav-pill .nav-actions.nav-actions { display: none; }
   .lp-v3 .nav-pill.nav-pill {
     width: 100%;
     max-width: 100%;
