@@ -35,10 +35,9 @@ const HERO_PROFILES = [
   heroProfile4, heroProfile5, heroProfile6,
 ];
 
-import HeroAvatarsAnimation from '../../components/HeroAvatarsAnimation';
 
 import { getMockContestById } from '../../data/v4/mockContests';
-import { getSegmentTone, getSegmentIcon, SEGMENT_THEME } from '../../data/v4/segmentTheme';
+import { getSegmentTone, getSegmentIcon, SEGMENT_THEME, SegmentThemeBackdrop } from '../../data/v4/segmentTheme';
 import { readSetup, writeSetup } from '../../utils/v4Brief';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../../lib/AuthContext';
@@ -408,43 +407,13 @@ export default function JoinContest() {
         className="v4-screen v4-join-screen"
         style={{ '--join-bg': segmentBg, '--join-fg': tone.fg }}
       >
-        {/* Inverted backdrop — white bubbles on the segment-colored page.
-            Rendered inline (not via SegmentThemeBackdrop) because we want
-            the bubble palette flipped and the illustration PNGs hidden. */}
-        <span className="v4-blob v4-join-blob v4-join-blob-1" aria-hidden="true" />
-        <span className="v4-blob v4-join-blob v4-join-blob-2" aria-hidden="true" />
-        <span className="v4-blob v4-join-blob v4-join-blob-3" aria-hidden="true" />
-        <span className="v4-blob v4-join-blob v4-join-blob-4" aria-hidden="true" />
-        <span className="v4-blob v4-join-blob v4-join-blob-5" aria-hidden="true" />
-
-        {/* Full homepage mock-voting animation — 6 drifting avatars
-            with typing dots, name bubbles, vote-fly chips, crown on
-            the winner. Runs in a loop. Pulls the inviter's photo OUT
-            of the cast so they only appear once (in the hero card). */}
-        <HeroAvatarsAnimation
-          className="hero-anim v4-join-anim"
-          bubbleDirection="outward"
-          avatars={(() => {
-            // Pool = all hero profiles EXCEPT the inviter's. Cycled
-            // across the 6 fixed positions (one photo may appear twice
-            // since the pool is only 5 — acceptable; they're at
-            // different sides of the screen, drifting independently).
-            const inviterIdx = (creator.photoIndex || 1) - 1;
-            const pool = HERO_PROFILES.filter((_, i) => i !== inviterIdx);
-            const positions = [
-              // 6 avatars — 3 per side — like the homepage hero.
-              // Pulled in from the edges enough that the bubbles
-              // always fit on a 1280px+ screen.
-              { id: 0, side: 'left',  top: '16%', x: '7%' },
-              { id: 1, side: 'right', top: '16%', x: '7%' },
-              { id: 2, side: 'left',  top: '46%', x: '3%' },
-              { id: 3, side: 'right', top: '46%', x: '3%' },
-              { id: 4, side: 'left',  top: '76%', x: '8%' },
-              { id: 5, side: 'right', top: '76%', x: '8%' },
-            ];
-            return positions.map((p, i) => ({ ...p, photo: pool[i % pool.length] }));
-          })()}
-        />
+        {/* The segment's own line-art scene, in white — the same backdrop the
+            chat stages wear, so arriving from an invite doesn't look like a
+            different product. Replaces the drifting blobs + looping avatar
+            animation that used to live here: they were homepage furniture,
+            and on a page whose whole job is "read this, then act" they pulled
+            attention away from the one CTA. */}
+        <SegmentThemeBackdrop subId={subId} minimal invert />
 
         <main className="v4-review" role="main">
           {/* Logo left, inviter sentence center (matches the role the

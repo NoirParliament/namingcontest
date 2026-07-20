@@ -376,6 +376,17 @@ body.is-exiting {
    column, so keep the scene at full strength on the left/right edges and let
    it dissolve smoothly toward the center behind the bubbles — background where
    there's space, clear where the text is. */
+/* White line-art, for the participant pages that sit on a saturated segment
+   colour instead of the cream chat background. brightness(0) flattens the art
+   to a silhouette so invert(1) can lift it to pure white whatever the source
+   PNG contains; alpha is untouched, so it stays the same drawing. Opacity runs
+   a touch higher than the ink version — white on colour reads fainter than
+   ink on cream at equal alpha. */
+.v4-dash-image--invert {
+  filter: brightness(0) invert(1);
+  opacity: 0.5;
+}
+
 .v4-screen--chat .v4-dash-image {
   opacity: 0.42;
   -webkit-mask-image: linear-gradient(to right, #000 0%, #000 13%, rgba(0,0,0,0.12) 50%, #000 87%, #000 100%);
