@@ -442,3 +442,18 @@
 }
 .contact-received-again:hover { background-position: bottom; color: #030302; }
 .contact-received-again:active { transform: scale(0.97); transition-duration: 0.08s; }
+
+/* Retry affordance inside a failed-send bubble. Styled as a link rather than
+   a button — it sits mid-sentence in the bot's own message, and a button
+   chrome there would read as a second CTA competing with the chat input. */
+.contact-retry-link {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.contact-retry-link:hover { opacity: 0.72; }

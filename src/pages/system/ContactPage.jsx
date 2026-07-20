@@ -13,6 +13,7 @@ import {
   PaperPlaneTilt, CheckCircle, EnvelopeSimple, ChatCircleDots, Sparkle, Heart, X,
 } from '@phosphor-icons/react';
 import { Nav, Footer } from '../LandingPage';
+import { supabase } from '../../lib/supabaseClient';
 import mailboxImg from '../../assets/mailbox.png';
 import letterImg from '../../assets/letter.png';
 import messageImg from '../../assets/message.png';
@@ -76,6 +77,7 @@ export default function ContactPage() {
   // clicks a finished user-bubble → modal opens with the same Q/A
   // shape so they can fix a typo without re-running the whole chat.
   const [editing, setEditing] = useState(null);   // { stepIndex, currentValue } | null
+  const [sendError, setSendError] = useState(false);
 
   const answersRef = useRef({});
   const timers = useRef([]);
@@ -133,10 +135,29 @@ export default function ContactPage() {
     if (ni < STEPS.length) {
       askStep(ni);
     } else {
-      // Done — fake the send like the magic-link flow.
-      setBotTyping(true);
-      after(1150, () => { setBotTyping(false); setPhase('sent'); });
+      deliver(next);
     }
+  };
+
+  // Actually send. Split out from submit() so a failure can be retried
+  // directly — by this point every step is answered, so re-running submit()
+  // would find no current step and do nothing.
+  //
+  // The typing indicator doubles as the pending state, so the wait reads as
+  // the bot thinking rather than as a spinner bolted onto a chat.
+  const deliver = async (payload) => {
+    setSendError(false);
+    setBotTyping(true);
+    const { error } = await supabase.functions.invoke('contact', { body: payload });
+    setBotTyping(false);
+    if (error) {
+      // Never claim it sent when it didn't — the entire point of this form is
+      // that a message reaches a human.
+      console.error('[contact] send failed:', error);
+      setSendError(true);
+      return;
+    }
+    setPhase('sent');
   };
 
   const handleReset = () => {
@@ -297,6 +318,26 @@ export default function ContactPage() {
                       <div className="contact-chat-row bot">
                         <div className="contact-chat-bubble contact-chat-typing" aria-label="Typing">
                           <span /><span /><span />
+                        </div>
+                      </div>
+                    )}
+                    {/* Delivery failed. Said in the bot's own voice so it reads
+                        as part of the conversation, and it hands over a real
+                        address — a contact form that silently eats a message
+                        is worse than no form. */}
+                    {sendError && !botTyping && (
+                      <div className="contact-chat-row bot" role="alert">
+                        <div className="contact-chat-bubble">
+                          Something went wrong sending that — sorry.{' '}
+                          <button
+                            type="button"
+                            className="contact-retry-link"
+                            onClick={() => deliver(answersRef.current)}
+                          >
+                            Try again
+                          </button>
+                          , or email us directly at{' '}
+                          <a href="mailto:hello@namingcontest.com">hello@namingcontest.com</a>.
                         </div>
                       </div>
                     )}
