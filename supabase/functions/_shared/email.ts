@@ -19,6 +19,9 @@
 //     email has no real buttons and no hover).
 //   • Every message also ships a plain-text alternative, which measurably
 //     improves spam scoring.
+//   • Small print is capped at ONE line under the CTA. Each disclaimer added
+//     here was individually defensible and collectively made the email look
+//     cheap; contact details belong in the footer, not stacked above it.
 //
 // Colours come from the segment (band = periwinkle, sports = mint, …) so each
 // email wears its own contest's identity rather than a random accent.
@@ -167,9 +170,6 @@ export function buildEmail(o: BuildEmailOpts): { html: string; text: string } {
         ${panelBlock}
         <a href="${o.ctaUrl}" style="display:inline-block;font-family:${FONT_TEXT};font-size:15px;font-weight:600;color:#ffffff;background:${INK};text-decoration:none;padding:14px 24px;border-radius:999px;">${o.ctaLabel}</a>
         ${noteBlock}
-        <p style="font-family:${FONT_TEXT};font-size:13px;line-height:1.5;color:${INK_FAINT};margin:24px 0 0;">
-          This message is sent automatically and replies aren't monitored. Questions? Reach us at <a href="mailto:hello@namingcontest.com" style="color:${INK_FAINT};">hello@namingcontest.com</a>.
-        </p>
 ${FOOTER_HTML}
       </div>
     </div>
@@ -187,8 +187,6 @@ ${FOOTER_HTML}
     `${o.ctaLabel}: ${o.ctaUrl}`,
     o.note ? `\n${o.note}` : '',
     '',
-    "This message is sent automatically and replies aren't monitored.",
-    'Questions? Reach us at hello@namingcontest.com',
     '',
     FOOTER_TEXT,
   ].filter(Boolean).join('\n');
