@@ -28,7 +28,7 @@ import confetti from 'canvas-confetti';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
 import { getMockContestById } from '../../data/v4/mockContests';
-import { getSegmentTone, SEGMENT_THEME } from '../../data/v4/segmentTheme';
+import { getSegmentTone, SEGMENT_THEME, SegmentThemeBackdrop } from '../../data/v4/segmentTheme';
 import { buildLiveData } from '../../utils/v4LiveData';
 import { supabase } from '../../lib/supabaseClient';
 import '../../styles/landing-v3.css';
@@ -178,11 +178,8 @@ export default function PublicWinnerReveal() {
         className="v4-screen v4-join-screen v4-pwinner-screen"
         style={{ '--join-bg': segmentBg, '--join-fg': tone?.fg || '#0a3b1f' }}
       >
-        <span className="v4-blob v4-join-blob v4-join-blob-1" aria-hidden="true" />
-        <span className="v4-blob v4-join-blob v4-join-blob-2" aria-hidden="true" />
-        <span className="v4-blob v4-join-blob v4-join-blob-3" aria-hidden="true" />
-        <span className="v4-blob v4-join-blob v4-join-blob-4" aria-hidden="true" />
-        <span className="v4-blob v4-join-blob v4-join-blob-5" aria-hidden="true" />
+        {/* Same backdrop as every chat stage — see JoinContest. */}
+        <SegmentThemeBackdrop subId={subId} minimal />
 
         <canvas ref={canvasRef} className="v4-pwinner-confetti-canvas" aria-hidden="true" />
 

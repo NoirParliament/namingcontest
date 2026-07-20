@@ -306,9 +306,6 @@ export default function JoinContest() {
   const ctaLabel = stage === 'voting' ? 'Continue to vote'
     : stage === 'closed' ? 'See the result'
     : 'Yes, I’m in';
-  const ctaLead = stage === 'voting'
-    ? 'Voting is open. Enter your email and we’ll send you a link to your ballot.'
-    : null;
   const formWhy = stage === 'voting'
     ? <>So we can email you a link straight to your ballot. No password, no marketing.</>
     : <>So {creatorName} can credit your suggestions, and we can email you a magic link to come back and vote. No password, no marketing.</>;
@@ -492,9 +489,6 @@ export default function JoinContest() {
             <section className="v4-join-action">
               {phase === 'cta' && (
                 <div className="v4-join-cta-wrap">
-                  {ctaLead && (
-                    <p className="v4-join-cta-lead">{ctaLead}</p>
-                  )}
                   <button
                     type="button"
                     className="btn btn-primary btn-lg"
