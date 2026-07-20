@@ -173,7 +173,12 @@ export function Nav() {
             <a href="/#testimonials" onClick={goToSection('testimonials')}>Testimonials</a>
             <a href="/#pricing" onClick={goToSection('pricing')}>Pricing</a>
           </div>
-          <div className="nav-actions">
+          {/* has-avatar keeps this visible on phone. The mobile rules hide
+              .nav-actions wholesale, which was fine when it only held Sign In
+              + Start a contest (both repeated in the sheet) — but it also hid
+              the avatar, and the burger used to be signed-out only, so a
+              signed-in phone user got a nav with nothing in it but the logo. */}
+          <div className={`nav-actions${isAuthed ? ' has-avatar' : ''}`}>
             {isAuthed ? (
               <AvatarMenu
                 email={authEmail}
@@ -208,7 +213,10 @@ export function Nav() {
               phone, so the nav-pill on phone is just: logo (left) +
               burger (right). Three lines so it reads as "menu" at a
               glance; click opens the mobile sheet below. */}
-          {!isAuthed && (
+          {/* Rendered for signed-in users too: the marketing links live only
+              here on phone, so gating the burger on !isAuthed left signed-in
+              visitors with no way to reach How it works / Pricing at all. */}
+          {(
             <button
               type="button"
               className="nav-burger"
@@ -229,7 +237,7 @@ export function Nav() {
           halo vocabulary as the sign-in / edit / launch modals so it
           reads as part of the same family rather than a generic
           dropdown. */}
-      {!isAuthed && menuOpen && (
+      {menuOpen && (
         <div
           className="nav-mobile-menu"
           role="dialog"
@@ -271,17 +279,32 @@ export function Nav() {
             >
               Pricing
             </a>
+            {/* Signed in, the avatar next to the burger already covers the
+                account — so this section only needs the way back into the
+                workspace. Offering "Sign In" to someone already signed in was
+                the reason this sheet was hidden from them in the first place;
+                the fix is to word it for them, not to lock them out. */}
             <div className="nav-mobile-menu-actions">
               <div className="nav-mobile-menu-eyebrow nav-mobile-menu-eyebrow-actions">
-                Get started
+                {isAuthed ? 'Your account' : 'Get started'}
               </div>
-              <button
-                type="button"
-                className="nav-mobile-menu-signin"
-                onClick={() => { closeMenu(); setSigninOpen(true); }}
-              >
-                Sign In
-              </button>
+              {isAuthed ? (
+                <button
+                  type="button"
+                  className="nav-mobile-menu-signin"
+                  onClick={() => { closeMenu(); navigate('/v4/settings'); }}
+                >
+                  Go to your namespace
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="nav-mobile-menu-signin"
+                  onClick={() => { closeMenu(); setSigninOpen(true); }}
+                >
+                  Sign In
+                </button>
+              )}
               <button
                 type="button"
                 className="nav-mobile-menu-cta"
