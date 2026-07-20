@@ -3,7 +3,12 @@
 // Design rules (deliberately restrained — this is what keeps us out of the
 // Promotions tab as much as the copy does):
 //   • Cream page, white card, ONE solid accent bar in the CONTEST'S segment
-//     colour — no gradients (Outlook drops them) and no images.
+//     colour — no gradients (Outlook drops them).
+//   • ONE image: the logo. Image-only emails and big hero graphics are what
+//     trip spam filters; a small wordmark is standard transactional practice.
+//     It's a PNG (clients strip SVG) served from our own domain, with alt text
+//     styled to degrade into the brand name when images are blocked — which
+//     Outlook does by default.
 //   • Fraunces-first serif for the headline, Inter-first sans for body. Most
 //     clients strip web fonts, so the fallbacks (Georgia / Arial) are what
 //     people actually see — chosen to still read on-brand.
@@ -17,6 +22,13 @@
 
 const FONT_DISPLAY = "Fraunces, Georgia, 'Times New Roman', serif";
 const FONT_TEXT = "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
+
+// Absolute, and deliberately hardcoded to the production domain: an email is
+// read long after it's sent, from a client that has no notion of our origin,
+// so a preview/localhost URL would render as a broken image forever.
+const LOGO_URL = 'https://namingcontest.com/email-logo.png';
+const LOGO_W = 180;
+const LOGO_H = 41;
 
 const INK = '#030302';
 const INK_SOFT = '#5a5754';
@@ -95,6 +107,7 @@ export function buildEmail(o: BuildEmailOpts): { html: string; text: string } {
     <div style="max-width:520px;margin:0 auto;background:${CARD_BG};border:1px solid ${CARD_BORDER};border-radius:20px;overflow:hidden;">
       <div style="height:5px;background:${c.accent};line-height:5px;font-size:0;">&nbsp;</div>
       <div style="padding:32px;">
+        <img src="${LOGO_URL}" width="${LOGO_W}" height="${LOGO_H}" alt="NamingContest" style="display:block;border:0;outline:none;text-decoration:none;width:${LOGO_W}px;height:${LOGO_H}px;margin:0 0 22px;font-family:${FONT_TEXT};font-size:16px;font-weight:700;color:${INK};" />
         <div style="font-family:${FONT_TEXT};font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${c.ink};">${o.eyebrow}</div>
         <h1 style="font-family:${FONT_DISPLAY};font-size:26px;line-height:1.25;font-weight:700;color:${INK};margin:12px 0 8px;">${o.headline}</h1>
         <p style="font-family:${FONT_TEXT};font-size:15px;line-height:1.55;color:${INK_SOFT};margin:0 0 22px;">${o.bodyHtml}</p>
