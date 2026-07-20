@@ -1,22 +1,14 @@
 // V4 Sign-in modal — magic-link flow.
 //
-// Two entry modes from the same email field:
-//   - Creator ("Send magic link"): default, routes to your contest if you
-//     have one, otherwise to the workspace.
-//   - Participant ("Sign in as a participant"): same magic-link flow,
-//     but seeds a join entry on the demo football contest and lands on
-//     the workspace with that contest in the "Joined" section.
-//
-// In production both buttons would hit the same Supabase signInWithOtp
-// endpoint and the magic-link target URL would carry a `?as=participant`
-// flag the callback page reads. The "Open link" button here is a demo
-// affordance — in production the link in the email replaces it.
+// ONE action: enter your email, get a magic link. "Creator" and "participant"
+// aren't account types — the same account can run contests AND take part in
+// others (the workspace lists both), so the sign-in doesn't ask you to pick a
+// lane. (There used to be a second "Sign in as a participant" button; it hit
+// the identical endpoint and only differed by a `?as=` param nothing read —
+// a leftover from when it seeded the demo contest.)
 
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-  X, PaperPlaneTilt, UsersThree,
-} from '@phosphor-icons/react';
+import { X, PaperPlaneTilt } from '@phosphor-icons/react';
 import { readSetup } from '../../utils/v4Brief';
 import { useAuth } from '../../lib/AuthContext';
 import keyImg from '../../assets/key.png';
@@ -26,30 +18,18 @@ import messageImg from '../../assets/message.png';
 // is mounted outside the v4 page tree (e.g. triggered from the landing).
 import '../../styles/landing-v3.css';
 
-// Per-mode button icon + label. The modal leads with whichever mode it
-// was opened in (creator by default; participant when opened from the
-// map's returning-participant entry), so the obvious action routes the
-// user to the right place.
-const MODE_META = {
-  creator: { Icon: PaperPlaneTilt, label: 'Send magic link' },
-  participant: { Icon: UsersThree, label: 'Sign in as a participant' },
-};
-
-export default function SignInModal({ open, onClose, initialMode = 'creator' }) {
+export default function SignInModal({ open, onClose }) {
   const [email, setEmail] = useState('');
   const [phase, setPhase] = useState('input'); // 'input' | 'sent'
-  const [mode, setMode] = useState(initialMode); // 'creator' | 'participant'
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const inputRef = useRef(null);
-  const navigate = useNavigate();
   const { signInWithEmail } = useAuth();
 
   // Reset on open / close on Escape
   useEffect(() => {
     if (!open) return;
     setPhase('input');
-    setMode(initialMode);
     setSubmitting(false);
     setError('');
     setEmail(readSetup().userEmail || '');
@@ -60,22 +40,20 @@ export default function SignInModal({ open, onClose, initialMode = 'creator' }) 
       clearTimeout(t);
       document.removeEventListener('keydown', onKey);
     };
-  }, [open, onClose, initialMode]);
+  }, [open, onClose]);
 
   if (!open) return null;
 
-  // Validate email + send a REAL Supabase magic link. The chosen mode is
-  // carried on the redirect URL (?as=…) so the landing can route creators
-  // vs. participants later. Same email = same account either way.
-  const sendLink = async (nextMode) => {
+  // Validate email + send a REAL Supabase magic link. Same email = same
+  // account, whether they run contests, take part in them, or both.
+  const sendLink = async () => {
     setError('');
     if (!/^\S+@\S+\.\S+$/.test(email.trim())) {
       setError('Please enter a valid email address.');
       return;
     }
-    setMode(nextMode);
     setSubmitting(true);
-    const redirectTo = `${window.location.origin}/v4/settings?as=${nextMode}`;
+    const redirectTo = `${window.location.origin}/v4/settings`;
     const { error: sendError } = await signInWithEmail(email, redirectTo);
     setSubmitting(false);
     if (sendError) {
@@ -84,16 +62,6 @@ export default function SignInModal({ open, onClose, initialMode = 'creator' }) 
     }
     setPhase('sent');
   };
-
-  // The PRIMARY action follows how the modal was opened: a participant
-  // entry (?signin=participant, e.g. from the platform map) leads with
-  // the participant sign-in so pressing Enter / the big button lands on
-  // the participant workspace — not the creator flow. The other mode is
-  // offered as the secondary button.
-  const primaryMode = initialMode === 'participant' ? 'participant' : 'creator';
-  const secondaryMode = primaryMode === 'creator' ? 'participant' : 'creator';
-  const PrimaryIcon = MODE_META[primaryMode].Icon;
-  const SecondaryIcon = MODE_META[secondaryMode].Icon;
 
   return (
     /* The .v4 wrapper scopes the CSS custom properties (--v4-bg, etc.)
@@ -136,12 +104,13 @@ export default function SignInModal({ open, onClose, initialMode = 'creator' }) 
               alt=""
               aria-hidden="true"
             />
-            <h2 id="v4-signin-title" className="v4-signin-title">Welcome back</h2>
+            <h2 id="v4-signin-title" className="v4-signin-title">Let’s get you in</h2>
             <p className="v4-signin-subtitle">
-              Drop your email — we’ll send a magic link. No password to remember.
+              Whether you run contests or take part in them — drop your email
+              and we’ll send a magic link.
             </p>
 
-            <form className="v4-signin-form" onSubmit={(e) => { e.preventDefault(); sendLink(primaryMode); }}>
+            <form className="v4-signin-form" onSubmit={(e) => { e.preventDefault(); sendLink(); }}>
               <label className="v4-signin-field">
                 <span className="v4-signin-field-label">Email</span>
                 <input
@@ -159,12 +128,12 @@ export default function SignInModal({ open, onClose, initialMode = 'creator' }) 
                 className="btn btn-primary btn-lg v4-signin-submit"
                 disabled={submitting}
               >
-                {submitting && mode === primaryMode ? (
+                {submitting ? (
                   <>Sending&hellip;</>
                 ) : (
                   <>
-                    <PrimaryIcon weight="bold" size={14} />
-                    {MODE_META[primaryMode].label}
+                    <PaperPlaneTilt weight="bold" size={14} />
+                    Send magic link
                   </>
                 )}
               </button>
@@ -179,32 +148,8 @@ export default function SignInModal({ open, onClose, initialMode = 'creator' }) 
               </p>
             )}
 
-            <div className="v4-signin-divider" aria-hidden="true">
-              <span>or</span>
-            </div>
-
-            <button
-              type="button"
-              className="btn btn-secondary btn-lg v4-signin-participant"
-              onClick={() => sendLink(secondaryMode)}
-              disabled={submitting}
-            >
-              {submitting && mode === secondaryMode ? (
-                <>Sending&hellip;</>
-              ) : (
-                <>
-                  <SecondaryIcon weight="bold" size={14} />
-                  {MODE_META[secondaryMode].label}
-                </>
-              )}
-            </button>
-
             <p className="v4-signin-foot">
-              First time here?{' '}
-              <a href="#start" onClick={(e) => { e.preventDefault(); onClose?.(); navigate('/v4/pick'); }}>
-                Start a contest
-              </a>{' '}
-              instead.
+              New here? The same link creates your account.
             </p>
           </>
         )}
@@ -219,8 +164,8 @@ export default function SignInModal({ open, onClose, initialMode = 'creator' }) 
             />
             <h2 className="v4-signin-title">Check your email</h2>
             <p className="v4-signin-subtitle">
-              We sent a sign-in link to <strong>{email}</strong>. Open it to
-              continue — the link works for 60 minutes.
+              We sent a link to <strong>{email}</strong>. Open it to continue —
+              it works for 60 minutes.
             </p>
 
             <button

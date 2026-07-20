@@ -7192,6 +7192,32 @@ input.v4-settings-input:-webkit-autofill:active {
    sits between the joined contests and the account section with
    enough air on both sides that it reads as a friendly aside rather
    than an action the app is pushing. */
+/* Empty workspace — nothing run, nothing joined. Bigger than the quiet nudge
+   because this person needs the two routes in explained, not a hint. */
+.v4-settings-empty {
+  margin: 8px 0 40px;
+  padding: 36px 28px;
+  text-align: center;
+  background: var(--v4-surface, #fff);
+  border: 1px solid rgba(3, 3, 2, 0.07);
+  border-radius: 18px;
+}
+.v4-settings-empty-title {
+  margin: 0 0 8px;
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-size: 22px;
+  line-height: 1.25;
+  font-weight: 700;
+  color: var(--v4-fg, #030302);
+}
+.v4-settings-empty-body {
+  margin: 0 auto 20px;
+  max-width: 420px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--v4-muted);
+}
+
 .v4-settings-start-nudge {
   /* Sits at the very bottom of the page: comfortable top margin
      above (separates from the account section) and breathing room

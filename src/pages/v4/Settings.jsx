@@ -365,6 +365,13 @@ export default function Settings() {
     };
   });
   const hasRunningContests = !!realContest;
+  // Empty-state shape. A brand-new account runs nothing and has joined nothing
+  // — that person needs the two ways IN explained (start one, or get invited),
+  // not a one-line nudge. Someone who's only ever taken part gets the quieter
+  // "run your own" prompt instead, so participants aren't pestered.
+  const runsSomething = isRealUser ? activeContests.length > 0 : !!realContest;
+  const joinedSomething = isRealUser ? activeJoined.length > 0 : joinedRows.length > 0;
+  const isTrulyEmpty = !runsSomething && !joinedSomething;
 
   const billing = useMemo(
     () => buildBillingHistory({ realContest, mockClosed: closedContests }),
@@ -1089,12 +1096,27 @@ export default function Settings() {
               )}
             </section>
 
-            {/* ── QUIET "START A CONTEST" NUDGE ──────────────────
-                Bottom of the page, only for users who haven't
-                launched anything yet. One soft line so participants
-                aren't pestered — they can run their own naming
-                contest whenever they're ready. */}
-            {!realContest && (
+            {/* ── EMPTY STATE ────────────────────────────────────
+                Nothing run, nothing joined → explain BOTH ways in,
+                including that joining needs an invite (otherwise people
+                hunt for a contest list that doesn't exist). Someone who
+                has joined but never run one gets the quieter nudge. */}
+            {isTrulyEmpty ? (
+              <section className="v4-settings-empty">
+                <h2 className="v4-settings-empty-title">Nothing here yet</h2>
+                <p className="v4-settings-empty-body">
+                  Two ways to change that: start a contest of your own, or join
+                  someone else’s — they’ll send you an invitation link.
+                </p>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleStartNewContest}
+                >
+                  Start a contest <ArrowRight weight="bold" size={14} />
+                </button>
+              </section>
+            ) : !runsSomething && (
               <p className="v4-settings-start-nudge">
                 Want to name something of your own?{' '}
                 <button
