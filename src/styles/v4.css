@@ -4497,7 +4497,13 @@ input.v4-results-search-input::placeholder {
 
 @media (max-width: 640px) {
   .v4-review {
-    padding: 0 16px 80px;
+    /* 24px, not 80. The scroller's bottom padding stacks with the inner's
+       own 28px (mobile.css), so 80 here produced 108px of dead space under
+       the last element against 24px above the first — the page looked like
+       it had been cut short and left hanging. 24 + 28 keeps a comfortable
+       end-of-scroll margin at roughly twice the top gap rather than four
+       and a half times it. */
+    padding: 0 16px 24px;
     margin-top: 36px;
   }
   .v4-review-title {
