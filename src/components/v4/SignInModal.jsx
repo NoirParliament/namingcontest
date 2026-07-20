@@ -8,7 +8,6 @@
 // a leftover from when it seeded the demo contest.)
 
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { X, PaperPlaneTilt } from '@phosphor-icons/react';
 import { readSetup } from '../../utils/v4Brief';
 import { useAuth } from '../../lib/AuthContext';
@@ -25,7 +24,6 @@ export default function SignInModal({ open, onClose }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const inputRef = useRef(null);
-  const navigate = useNavigate();
   const { signInWithEmail } = useAuth();
 
   // Reset on open / close on Escape
@@ -106,9 +104,10 @@ export default function SignInModal({ open, onClose }) {
               alt=""
               aria-hidden="true"
             />
-            <h2 id="v4-signin-title" className="v4-signin-title">Welcome back</h2>
+            <h2 id="v4-signin-title" className="v4-signin-title">Let’s get you in</h2>
             <p className="v4-signin-subtitle">
-              Drop your email — we’ll send a magic link. No password to remember.
+              Whether you run contests or take part in them — drop your email
+              and we’ll send a magic link.
             </p>
 
             <form className="v4-signin-form" onSubmit={(e) => { e.preventDefault(); sendLink(); }}>
@@ -150,11 +149,7 @@ export default function SignInModal({ open, onClose }) {
             )}
 
             <p className="v4-signin-foot">
-              First time here?{' '}
-              <a href="#start" onClick={(e) => { e.preventDefault(); onClose?.(); navigate('/v4/pick'); }}>
-                Start a contest
-              </a>{' '}
-              instead.
+              New here? The same link creates your account — no signup form.
             </p>
           </>
         )}
@@ -169,8 +164,8 @@ export default function SignInModal({ open, onClose }) {
             />
             <h2 className="v4-signin-title">Check your email</h2>
             <p className="v4-signin-subtitle">
-              We sent a sign-in link to <strong>{email}</strong>. Open it to
-              continue — the link works for 60 minutes.
+              We sent a link to <strong>{email}</strong>. Open it to continue —
+              it works for 60 minutes.
             </p>
 
             <button
