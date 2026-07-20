@@ -94,15 +94,22 @@ export default function WinnerHero({
         </div>
       </div>
 
-      {/* Growth footer — hidden when the user has chosen to hide
-          NamingContest branding entirely. */}
+      {/* Branding footer — hidden when the user has chosen to hide
+          NamingContest marks entirely.
+
+          "Start another", not "Run your own": this card only ever renders on
+          ContestManage, the creator's own dashboard, so the reader has just
+          finished running one. The old wording was written for the exported
+          share image, where strangers were the audience — that export is gone
+          now, and the line was left telling the organiser to do the thing
+          they'd just done. */}
       {!hideBranding && (
         <div className="v4-winner-hero-foot">
           <span className="v4-winner-hero-foot-text">
             Named together with <strong>namingcontest.com</strong>
           </span>
           <span className="v4-winner-hero-foot-cta">
-            Run your own
+            Start another
             <ArrowRight weight="bold" size={11} />
           </span>
         </div>

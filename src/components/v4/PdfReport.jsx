@@ -1,15 +1,21 @@
 // V4 PDF report — rendered as a hidden, off-screen HTML component using
-// the SAME design language as the live website (Fraunces + Inter via
-// the global @font-face from index.html, segment blobs, scattered
-// icons, gradient washes). The PDF export captures THIS component as
-// a high-resolution image and embeds it in a single-A4 jsPDF document.
+// the SAME design language as the live website: Fraunces + Inter via the
+// global @font-face from index.html, and the segment backdrop every chat
+// stage wears (glow + line-art scene). The PDF export captures THIS
+// component as a high-resolution image and embeds it in a single-A4 jsPDF
+// document.
+//
+// Tuned for print rather than screen: no centre-fade on the scene (the page
+// is one continuous illustration, not a narrow column), the scene sits
+// larger and lifted off the bottom edge, and the wash runs further down a
+// 1123px page than it needs to on a viewport.
 //
 // A4 portrait at 96 DPI ≈ 794 × 1123 px. We render at this size and
 // capture at 4x pixel ratio for crisp print quality.
 
 import { forwardRef } from 'react';
 import { Trophy, Quotes, Gift } from '@phosphor-icons/react';
-import { SEGMENT_THEME, SegmentThemeBackdrop } from '../../data/v4/segmentTheme';
+import { SegmentThemeBackdrop } from '../../data/v4/segmentTheme';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 
 // Cap so the report always fits on one A4 page.
@@ -34,33 +40,21 @@ const PdfReport = forwardRef(function PdfReport({
   customColor, // optional override — when set, paints the ENTIRE doc
 }, ref) {
   if (!winner) return null;
-  const theme = SEGMENT_THEME[subId] || {};
   const t = tone || { bg: '#fadecc', fg: '#9c4818' };
   const sortedNames = [...names].sort((a, b) => b.voteCount - a.voteCount);
   const topNames = sortedNames.slice(0, MAX_NAMES_ON_REPORT);
-
-  // When a customColor is supplied (the user picked one from the
-  // customizer), it should cascade to EVERY tinted element in the
-  // doc — winner card AND the three decorative background blobs.
-  // Otherwise the blobs stay segment-tinted (the original look).
-  const blobColor = customColor || t.bg;
-  const useCustomBlobs = !!customColor;
 
   return (
     <div
       ref={ref}
       className="v4-pdf-report"
       style={{
+        // Card tints only. The --v4-blob-* vars that used to live here are
+        // gone with the blobs; a customColor now reaches the background
+        // through SegmentThemeBackdrop's own colour override instead.
         '--report-tint-bg': t.bg,
         '--report-tint-fg': t.fg,
         '--report-tint-border': t.fg + '33',
-        // Blob colors — fall back to segment palette ONLY when no
-        // custom colour was picked. When the user customises, every
-        // blob inherits the chosen colour so the whole doc shifts.
-        '--v4-blob-1-color': useCustomBlobs ? blobColor : (theme.blobs?.[0] || t.bg),
-        '--v4-blob-2-color': useCustomBlobs ? blobColor : (theme.blobs?.[1] || t.bg),
-        '--v4-blob-3-color': useCustomBlobs ? blobColor : (theme.blobs?.[2] || t.bg),
-        '--v4-blob-4-color': useCustomBlobs ? blobColor : (theme.blobs?.[0] || t.bg),
       }}
     >
       {/* The same backdrop the chat stages wear — cream page, segment glow,
@@ -72,34 +66,10 @@ const PdfReport = forwardRef(function PdfReport({
           that the page would fight a card the creator had branded. */}
       <SegmentThemeBackdrop subId={subId} minimal color={customColor || null} />
 
-      {/* Scattered segment icons (smaller scale, low opacity).
-          Filter out anything that would overlap the brand-bar +
-          title zone in the top-left of the doc (top < 28% AND
-          left < 20%) — those collide with text and read as "icon
-          stuck behind the logo / title." Keep the rest. */}
-      {theme.iconPositions?.filter((pos) => {
-        const topPct = parseFloat(pos.top);
-        const leftPct = parseFloat(pos.left);
-        // Drop only if BOTH top AND left are in the brandbar zone.
-        // Right-aligned, mid, and bottom icons all pass through.
-        if (!Number.isFinite(topPct) || !Number.isFinite(leftPct)) return true;
-        return !(topPct < 28 && leftPct < 20);
-      }).map((pos, i) => {
-        const { Icon, size, rotate, ...positionStyle } = pos;
-        return (
-          <span
-            key={`icon-${i}`}
-            className="v4-pdf-report-icon"
-            style={{
-              ...positionStyle,
-              transform: `rotate(${rotate})`,
-            }}
-            aria-hidden="true"
-          >
-            <Icon weight="duotone" size={Math.round(size * 0.75)} />
-          </span>
-        );
-      })}
+      {/* No scattered segment icons here. The chat stages don't carry them in
+          minimal mode either, and on a dense one-page document they read as
+          specks behind the copy rather than as decoration. The glow and the
+          line-art scene do the segment's work. */}
 
       <div className="v4-pdf-report-content">
         {/* Brand bar top */}
