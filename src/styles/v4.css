@@ -7507,23 +7507,13 @@ input.v4-settings-input:-webkit-autofill:active {
    AFTER the click so they don't read as "yet another email form."
    ───────────────────────────────────────────────────────────────── */
 .v4-join-screen {
-  /* Rich segment-color gradient — uses design-doc panel colors as
-     anchors. Lighter wash at the top fades into a deeper saturated
-     version of the segment color at the bottom, with a soft radial
-     highlight that lifts the hero area. NOT a flat color or a plain
-     blur — has depth and direction. */
-  background:
-    radial-gradient(
-      ellipse 80% 60% at 50% 0%,
-      color-mix(in srgb, var(--join-bg, #a6dcb3) 35%, white) 0%,
-      transparent 70%
-    ),
-    linear-gradient(
-      170deg,
-      color-mix(in srgb, var(--join-bg, #a6dcb3) 75%, white) 0%,
-      var(--join-bg, #a6dcb3) 55%,
-      color-mix(in srgb, var(--join-bg, #a6dcb3) 88%, black) 100%
-    );
+  /* Same base as every chat stage: the cream page, with the segment's
+     identity carried by SegmentThemeBackdrop's aurora + line-art scene on
+     top. This used to paint a rich saturated segment gradient of its own,
+     which made the invite look like a different product from the chat you
+     land in one click later. The segment still reads — through the glow and
+     the scene — just not through the page colour. */
+  background: var(--v4-bg);
   position: relative;
   overflow: hidden;
 }

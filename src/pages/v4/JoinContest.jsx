@@ -407,13 +407,12 @@ export default function JoinContest() {
         className="v4-screen v4-join-screen"
         style={{ '--join-bg': segmentBg, '--join-fg': tone.fg }}
       >
-        {/* The segment's own line-art scene, in white — the same backdrop the
-            chat stages wear, so arriving from an invite doesn't look like a
-            different product. Replaces the drifting blobs + looping avatar
-            animation that used to live here: they were homepage furniture,
-            and on a page whose whole job is "read this, then act" they pulled
-            attention away from the one CTA. */}
-        <SegmentThemeBackdrop subId={subId} minimal invert />
+        {/* Identical to the chat stages — same cream page, same aurora, same
+            line-art scene. Arriving from an invite should look like the same
+            product you land in one click later. Replaces the drifting blobs +
+            looping avatar animation that used to live here: homepage
+            furniture on a page whose whole job is "read this, then act". */}
+        <SegmentThemeBackdrop subId={subId} minimal />
 
         <main className="v4-review" role="main">
           {/* Logo left, inviter sentence center (matches the role the
