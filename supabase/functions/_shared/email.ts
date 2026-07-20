@@ -2,8 +2,11 @@
 //
 // Design rules (deliberately restrained — this is what keeps us out of the
 // Promotions tab as much as the copy does):
-//   • Cream page, white card, ONE solid accent bar in the CONTEST'S segment
-//     colour — no gradients (Outlook drops them).
+//   • Cream page, white card, dark logo band — no gradients (Outlook drops
+//     them). There is deliberately NO accent strip under the band: against
+//     the dark header it read as a seam rather than as design. The contest's
+//     segment colour still comes through in the eyebrow, the tinted panel and
+//     the feature line, so each email keeps its own identity.
 //   • ONE image: the logo. Image-only emails and big hero graphics are what
 //     trip spam filters; a small wordmark is standard transactional practice.
 //     It's a PNG (clients strip SVG) served from our own domain, with alt text
@@ -151,7 +154,6 @@ export function buildEmail(o: BuildEmailOpts): { html: string; text: string } {
       <div style="background:${BAND_BG};padding:22px 32px;line-height:0;">
         <img src="${LOGO_URL}" width="${LOGO_W}" height="${LOGO_H}" alt="NamingContest" style="display:block;border:0;outline:none;text-decoration:none;width:${LOGO_W}px;height:${LOGO_H}px;font-family:${FONT_TEXT};font-size:18px;font-weight:700;color:#ffffff;" />
       </div>
-      <div style="height:5px;background:${c.accent};line-height:5px;font-size:0;">&nbsp;</div>
       <div style="padding:32px;">
         <div style="font-family:${FONT_TEXT};font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${c.ink};">${o.eyebrow}</div>
         <h1 style="font-family:${FONT_DISPLAY};font-size:26px;line-height:1.25;font-weight:700;color:${INK};margin:12px 0 8px;">${o.headline}</h1>
