@@ -70,7 +70,12 @@ export function segmentColors(subId?: string | null) {
   return (subId && SEGMENT_COLORS[subId]) || DEFAULT_COLORS;
 }
 
-export const FROM = 'NamingContest <hello@namingcontest.com>';
+// Everything we send goes out as noreply@ — Supabase Auth already does, and
+// matching it keeps one sender identity across the product. hello@ stays the
+// human channel (contact form, and the address quoted in the footer), it just
+// isn't a FROM. Resend verifies the domain, not the local part, so no extra
+// sender setup is needed.
+export const FROM = 'NamingContest <noreply@namingcontest.com>';
 
 // ⚠️ PLACEHOLDER HANDLES — these accounts don't exist yet. Confirm or register
 // them before launch; an unowned handle sends recipients to a stranger's
@@ -163,7 +168,7 @@ export function buildEmail(o: BuildEmailOpts): { html: string; text: string } {
         <a href="${o.ctaUrl}" style="display:inline-block;font-family:${FONT_TEXT};font-size:15px;font-weight:600;color:#ffffff;background:${INK};text-decoration:none;padding:14px 24px;border-radius:999px;">${o.ctaLabel}</a>
         ${noteBlock}
         <p style="font-family:${FONT_TEXT};font-size:13px;line-height:1.5;color:${INK_FAINT};margin:24px 0 0;">
-          Questions? Just reply, or reach us at <a href="mailto:hello@namingcontest.com" style="color:${INK_FAINT};">hello@namingcontest.com</a>.
+          This message is sent automatically and replies aren't monitored. Questions? Reach us at <a href="mailto:hello@namingcontest.com" style="color:${INK_FAINT};">hello@namingcontest.com</a>.
         </p>
 ${FOOTER_HTML}
       </div>
@@ -182,7 +187,8 @@ ${FOOTER_HTML}
     `${o.ctaLabel}: ${o.ctaUrl}`,
     o.note ? `\n${o.note}` : '',
     '',
-    'Questions? Just reply, or reach us at hello@namingcontest.com',
+    "This message is sent automatically and replies aren't monitored.",
+    'Questions? Reach us at hello@namingcontest.com',
     '',
     FOOTER_TEXT,
   ].filter(Boolean).join('\n');
