@@ -220,7 +220,15 @@
      so it's just logo (left) + burger (right). Double-class trick
      to overcome landing-v3.css's same-specificity rules. */
   .lp-v3 .nav-pill .links.links,
-  .lp-v3 .nav-pill .nav-actions.nav-actions { display: none; }
+  .lp-v3 .nav-pill .nav-actions.nav-actions:not(.has-avatar) { display: none; }
+  /* Signed in, .nav-actions holds the AvatarMenu — the only route to the
+     account on phone, so it stays. Everything it holds when signed OUT
+     (Sign In, Start a contest) is repeated in the sheet, which is why
+     hiding it there is still right. */
+  .lp-v3 .nav-pill .nav-actions.has-avatar {
+    display: inline-flex;
+    flex: 0 0 auto;
+  }
   .lp-v3 .nav-pill.nav-pill {
     width: 100%;
     max-width: 100%;
