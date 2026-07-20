@@ -8003,6 +8003,16 @@ input.v4-settings-input:-webkit-autofill:active {
 .v4-join-cta-wrap {
   text-align: center;
 }
+/* Stage lead-in above the CTA (voting only) — sets expectation before the
+   button, so an already-joined participant isn't asked to join again. */
+.v4-join-cta-lead {
+  margin: 0 auto 14px;
+  max-width: 34ch;
+  font-family: var(--font-text);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--v4-ink-soft, #5a5754);
+}
 /* CTA — exact match for the homepage `.btn.btn-primary.btn-lg`.
    - Fixed size (no width growth on hover; arrow is always visible).
    - 200%-tall gradient slides top → bottom on hover, color flips
