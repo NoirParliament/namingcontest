@@ -298,6 +298,22 @@ export default function JoinContest() {
       : formatDeadline(daysUntil(contest.votingEndsAt));
   }
 
+  // Stage-aware entry copy. A signed-out visitor here is EITHER a participant
+  // arriving from a "cast your vote" email OR someone newly forwarded the link
+  // — and we can't tell which until they authenticate. So the wording has to
+  // be true for both: "continue" claims neither that they're new nor that
+  // they're returning. ("Yes, I'm in" was shown at every stage, which greeted
+  // people who'd already submitted a name with an invitation to join.)
+  const ctaLabel = stage === 'voting' ? 'Continue to vote'
+    : stage === 'closed' ? 'See the result'
+    : 'Yes, I’m in';
+  const ctaLead = stage === 'voting'
+    ? 'Voting is open. Enter your email and we’ll send you a link to your ballot.'
+    : null;
+  const formWhy = stage === 'voting'
+    ? <>So we can email you a link straight to your ballot. No password, no marketing.</>
+    : <>So {creatorName} can credit your suggestions, and we can email you a magic link to come back and vote. No password, no marketing.</>;
+
   // Short "what is this" line under the headline. Sourced from the
   // dedicated `projectSummary` brief field — the first question every
   // segment asks the creator, specifically written so the answer can
@@ -508,12 +524,15 @@ export default function JoinContest() {
             <section className="v4-join-action">
               {phase === 'cta' && (
                 <div className="v4-join-cta-wrap">
+                  {ctaLead && (
+                    <p className="v4-join-cta-lead">{ctaLead}</p>
+                  )}
                   <button
                     type="button"
                     className="btn btn-primary btn-lg"
                     onClick={handleRevealForm}
                   >
-                    Yes, I’m in <span className="arrow">→</span>
+                    {ctaLabel} <span className="arrow">→</span>
                   </button>
                 </div>
               )}
@@ -530,11 +549,7 @@ export default function JoinContest() {
                   <div className="v4-join-form-head">
                     Quick — what’s your email?
                   </div>
-                  <p className="v4-join-form-why">
-                    So {creatorName} can credit your suggestions, and we
-                    can email you a magic link to come back and vote.
-                    No password, no marketing.
-                  </p>
+                  <p className="v4-join-form-why">{formWhy}</p>
                   <div className="v4-join-form-row">
                     <div className="v4-settings-input-with-icon v4-join-form-input">
                       <EnvelopeSimple weight="bold" size={14} className="v4-settings-input-icon" />
