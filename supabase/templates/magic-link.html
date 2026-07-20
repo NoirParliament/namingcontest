@@ -1,0 +1,36 @@
+<!-- Supabase Auth → "Magic Link" email template.
+     Paste into: Dashboard → Authentication → Emails → Magic Link → Source.
+
+     This is the ONE email our own code doesn't send (Supabase Auth sends it),
+     so it has to re-state the design system from functions/_shared/email.ts by
+     hand. Keep the two in sync if the brand changes.
+
+     No contest context exists at sign-in, so it wears the default blush accent
+     rather than a segment colour.
+
+     {{ .ConfirmationURL }} is Supabase's link placeholder — leave it exactly
+     as-is or the link breaks. -->
+<body style="margin:0;padding:0;background:#fcf9f7;">
+  <div style="margin:0;padding:32px 16px;background:#fcf9f7;">
+    <div style="max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #efeae6;border-radius:20px;overflow:hidden;">
+      <div style="height:5px;background:#fadecc;line-height:5px;font-size:0;">&nbsp;</div>
+      <div style="padding:32px;">
+        <div style="font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#9c4818;">NamingContest</div>
+        <h1 style="font-family:Fraunces,Georgia,'Times New Roman',serif;font-size:26px;line-height:1.25;font-weight:700;color:#030302;margin:12px 0 8px;">Your sign-in link</h1>
+        <p style="font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.55;color:#5a5754;margin:0 0 22px;">
+          Click below and you're in — no password to remember. If you're new, this same link sets up your account.
+        </p>
+        <a href="{{ .ConfirmationURL }}" style="display:inline-block;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;font-weight:600;color:#ffffff;background:#030302;text-decoration:none;padding:14px 24px;border-radius:999px;">Sign in to NamingContest</a>
+        <p style="font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.5;color:#8a8783;margin:16px 0 0;">
+          This link works for 60 minutes and can only be used once.
+        </p>
+        <p style="font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.5;color:#8a8783;margin:24px 0 0;">
+          Didn't ask for this? You can ignore it — nobody can get in without the link.
+        </p>
+        <p style="font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.5;color:#8a8783;margin:12px 0 0;">
+          Questions? Just reply, or reach us at <a href="mailto:hello@namingcontest.com" style="color:#8a8783;">hello@namingcontest.com</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
