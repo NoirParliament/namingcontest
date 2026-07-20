@@ -149,7 +149,7 @@ export default function SignInModal({ open, onClose }) {
             )}
 
             <p className="v4-signin-foot">
-              New here? The same link creates your account — no signup form.
+              New here? The same link creates your account.
             </p>
           </>
         )}
