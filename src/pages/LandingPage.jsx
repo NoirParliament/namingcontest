@@ -37,7 +37,6 @@ export function Nav() {
   const [signinOpen, setSigninOpen] = useState(false);
   // ?signin=creator|participant (from the platform map) auto-opens the
   // sign-in modal in that mode so those flow steps land directly on it.
-  const [signinMode, setSigninMode] = useState('creator');
   // Mobile burger menu — opens a sheet with all nav links + actions.
   // The desktop pill stays exactly as-is at ≥ 700px; the burger is
   // only visible (via CSS in mobile.css) on small screens.
@@ -57,11 +56,9 @@ export function Nav() {
   const closeMenu = () => setMenuOpen(false);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const s = params.get('signin');
-    if (s === 'creator' || s === 'participant') {
-      setSigninMode(s);
-      setSigninOpen(true);
-    }
+    // ?signin=… just opens the sign-in modal. There's no creator/participant
+    // distinction any more — one magic link covers both.
+    if (params.get('signin')) setSigninOpen(true);
   }, []);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
@@ -297,7 +294,7 @@ export function Nav() {
         </div>
       )}
 
-      <SignInModal open={signinOpen} initialMode={signinMode} onClose={() => setSigninOpen(false)} />
+      <SignInModal open={signinOpen} onClose={() => setSigninOpen(false)} />
     </>
   );
 }
