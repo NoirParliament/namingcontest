@@ -55,6 +55,17 @@ export function Nav() {
     };
   }, [menuOpen]);
   const closeMenu = () => setMenuOpen(false);
+
+  // Phone-only sign out. The avatar's dropdown normally owns this, but it's
+  // hidden at this width — without this there'd be no way to sign out on a
+  // phone at all. Mirrors AvatarMenu's handler: end the real session, then
+  // clear the local blob so no stale identity lingers behind it.
+  const handleMobileSignOut = () => {
+    closeMenu();
+    supabase.auth.signOut();
+    try { localStorage.removeItem('v4_contest_setup'); } catch { /* ignore */ }
+    navigate('/');
+  };
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     // ?signin=… just opens the sign-in modal. There's no creator/participant
@@ -261,7 +272,7 @@ export function Nav() {
                 namespace — same destination the avatar's dropdown had on
                 desktop, just given room to breathe. */}
             {isAuthed && (
-              <>
+              <div className="nav-mobile-menu-account-block">
                 <button
                   type="button"
                   className="nav-mobile-menu-account"
@@ -282,7 +293,16 @@ export function Nav() {
                   </span>
                   <span className="nav-mobile-menu-account-arrow" aria-hidden="true">→</span>
                 </button>
-              </>
+                {/* Quiet by design — it sits next to the account it acts on,
+                    but signing out is rarely why anyone opened this menu. */}
+                <button
+                  type="button"
+                  className="nav-mobile-menu-signout"
+                  onClick={handleMobileSignOut}
+                >
+                  Sign out
+                </button>
+              </div>
             )}
 
             <div className="nav-mobile-menu-eyebrow">Explore</div>

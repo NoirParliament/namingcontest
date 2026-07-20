@@ -119,6 +119,13 @@
 /* Account row at the top of the sheet — the phone stand-in for the avatar
    dropdown, which has no room to open at this width. Tapping it goes to the
    namespace, same as the dropdown's first item did. */
+/* The divider lives on the block, not the row, so the sign-out link sits
+   inside the same account group rather than below the rule. */
+.nav-mobile-menu-account-block {
+  border-bottom: 1px solid rgba(3, 3, 2, 0.07);
+  margin-bottom: 4px;
+  padding-bottom: 6px;
+}
 .nav-mobile-menu-account {
   display: flex;
   align-items: center;
@@ -126,13 +133,23 @@
   width: 100%;
   border: 0;
   background: none;
-  padding: 10px 14px 14px;
-  margin-bottom: 4px;
-  border-bottom: 1px solid rgba(3, 3, 2, 0.07);
+  padding: 10px 14px 12px;
   cursor: pointer;
   text-align: left;
   font: inherit;
 }
+.nav-mobile-menu-signout {
+  border: 0;
+  background: none;
+  padding: 2px 14px 6px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(3, 3, 2, 0.45);
+  cursor: pointer;
+  text-align: left;
+}
+.nav-mobile-menu-signout:active { opacity: 0.6; }
 .nav-mobile-menu-account:active { opacity: 0.7; }
 .nav-mobile-menu-account-avatar {
   flex: 0 0 auto;
