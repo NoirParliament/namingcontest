@@ -14,7 +14,7 @@ import {
   Copy, Check, EnvelopeSimple, ShareNetwork,
   PencilSimple, CalendarBlank, Hash, Clock,
   PaperPlaneTilt, Eye, Trophy, Lightbulb, Confetti,
-  Gift, Download, FilePdf, Quotes,
+  Gift, FilePdf, Quotes,
   FacebookLogo, LinkedinLogo, InstagramLogo,
   Palette, CaretDown, UploadSimple,
 } from '@phosphor-icons/react';
@@ -561,24 +561,15 @@ export default function ContestManage() {
                 runners-up). Replaces LiveResults + Share card. */}
             {isWinnerPicked && winnerName && (
               <>
-                {/* Action row — download share card, export full report,
-                    copy contest link. Buttons placeholder for now; PNG +
-                    PDF generation wires in the next pass. */}
+                {/* Action row — export the full report, then the social
+                    share icons. The separate "Download share card" button is
+                    gone: the report is the thing worth keeping, and the card
+                    is still generated on demand by the Instagram share, which
+                    has no web share API to hand it to. */}
                 <div className="v4-winner-actions">
                   <button
                     type="button"
                     className="v4-winner-action v4-winner-action-primary"
-                    onClick={() => downloadShareCard(
-                      winnerHeroRef.current,
-                      setup.workingName
-                    )}
-                  >
-                    <Download weight="bold" size={14} />
-                    Download share card
-                  </button>
-                  <button
-                    type="button"
-                    className="v4-winner-action"
                     onClick={() => downloadFullReport(
                       pdfReportRef.current,
                       setup.workingName
@@ -624,7 +615,14 @@ export default function ContestManage() {
                       type="button"
                       className="v4-winner-share-icon"
                       title="Download for Instagram"
-                      onClick={() => window.alert('Downloads the share card so you can upload it to Instagram (no web share API for IG)')}
+                      /* Instagram has no web share API, so the only thing we
+                         can do is hand over the image and let them upload it.
+                         This was an alert() describing that behaviour rather
+                         than performing it. */
+                      onClick={() => downloadShareCard(
+                        winnerHeroRef.current,
+                        setup.workingName
+                      )}
                     >
                       <InstagramLogo weight="bold" size={16} />
                     </button>
@@ -1142,7 +1140,7 @@ export default function ContestManage() {
                       {phase === 'winner' && !isWinnerPicked
                         ? 'Voting is closed. Time to crown the winner — the top vote, or any name that won your heart.'
                         : isWinnerPicked
-                        ? 'You crowned the winner. Download the share card or export the full report below.'
+                        ? 'You crowned the winner. Export the full report below, or share the result straight out.'
                         : 'When voting wraps, the leaderboard is yours. You make the final call — the top vote, or any name that won your heart.'}
                     </p>
                     {phase === 'winner' && !isWinnerPicked && (

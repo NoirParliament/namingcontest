@@ -4555,49 +4555,29 @@ input.v4-results-search-input::placeholder {
   width: 794px;
   height: 1123px;
   overflow: hidden;
-  background: linear-gradient(
-    160deg,
-    var(--report-tint-bg, #fadecc) 0%,
-    #fdfaf6 55%,
-    #ffffff 100%
-  );
+  /* Same cream page as every chat stage — the segment now reads through
+     SegmentThemeBackdrop's glow and line-art scene rather than through a
+     tinted gradient of the report's own. */
+  background: var(--v4-bg, #fcf9f7);
   font-family: 'Inter', system-ui, sans-serif;
   color: var(--v4-fg);
   box-sizing: border-box;
 }
 
-/* Decorative blobs — soft segment-tinted circles in the corners.
-   Lower opacity than the live page since the report doesn't animate. */
-.v4-pdf-report-blob {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-  filter: blur(2px);
+/* The scene gets the chat's centre-fade so it drops back behind the report's
+   copy, but NOT the chat's fade-in: the export screenshots this node, and an
+   animation still running at capture time would bake a half-faded backdrop
+   into the PDF. */
+.v4-pdf-report .v4-dash-image {
+  opacity: 0.42;
+  -webkit-mask-image: linear-gradient(to right, #000 0%, #000 13%, rgba(0,0,0,0.12) 50%, #000 87%, #000 100%);
+  mask-image: linear-gradient(to right, #000 0%, #000 13%, rgba(0,0,0,0.12) 50%, #000 87%, #000 100%);
 }
-.v4-pdf-report-blob-1 {
-  width: 380px;
-  height: 380px;
-  top: -120px;
-  right: -120px;
-  background: var(--v4-blob-1-color, #fadecc);
-  opacity: 0.32;
+.v4-pdf-report .v4-aurora {
+  animation: none;
+  opacity: 1;
 }
-.v4-pdf-report-blob-2 {
-  width: 240px;
-  height: 240px;
-  bottom: -60px;
-  left: -80px;
-  background: var(--v4-blob-2-color, #fceebc);
-  opacity: 0.4;
-}
-.v4-pdf-report-blob-3 {
-  width: 140px;
-  height: 140px;
-  top: 38%;
-  left: 8%;
-  background: var(--v4-blob-3-color, #fadecc);
-  opacity: 0.32;
-}
+
 
 /* Scattered segment icons — same set the SegmentThemeBackdrop uses
    on the live page, sized down for the print layout. */
