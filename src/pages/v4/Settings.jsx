@@ -1096,11 +1096,22 @@ export default function Settings() {
               )}
             </section>
 
-            {/* ── EMPTY STATE ────────────────────────────────────
+            {/* ── START A CONTEST ────────────────────────────────
                 Nothing run, nothing joined → explain BOTH ways in,
                 including that joining needs an invite (otherwise people
-                hunt for a contest list that doesn't exist). Someone who
-                has joined but never run one gets the quieter nudge. */}
+                hunt for a contest list that doesn't exist).
+
+                Otherwise a quiet one-line nudge, worded for where they
+                actually are: joined-but-never-run gets "of your own",
+                an existing organiser gets "another". There is always a
+                way to start one from here — this branch used to end at
+                !runsSomething, which meant the moment you ran a contest
+                the route to starting a second one vanished.
+
+                The organiser nudge is real-user only: the guest/demo
+                path already carries its own "Start another contest"
+                button inside the contests section, so showing both
+                would double up. */}
             {isTrulyEmpty ? (
               <section className="v4-settings-empty">
                 <h2 className="v4-settings-empty-title">Nothing here yet</h2>
@@ -1116,7 +1127,7 @@ export default function Settings() {
                   Start a contest <ArrowRight weight="bold" size={14} />
                 </button>
               </section>
-            ) : !runsSomething && (
+            ) : !runsSomething ? (
               <p className="v4-settings-start-nudge">
                 Want to name something of your own?{' '}
                 <button
@@ -1127,7 +1138,18 @@ export default function Settings() {
                   Start a contest <ArrowRight weight="bold" size={12} />
                 </button>
               </p>
-            )}
+            ) : isRealUser ? (
+              <p className="v4-settings-start-nudge">
+                Got something else to name?{' '}
+                <button
+                  type="button"
+                  className="v4-settings-start-nudge-link"
+                  onClick={handleStartNewContest}
+                >
+                  Start another contest <ArrowRight weight="bold" size={12} />
+                </button>
+              </p>
+            ) : null}
           </div>
         </main>
       </div>
