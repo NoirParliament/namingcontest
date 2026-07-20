@@ -26,9 +26,15 @@ const FONT_TEXT = "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helveti
 // Absolute, and deliberately hardcoded to the production domain: an email is
 // read long after it's sent, from a client that has no notion of our origin,
 // so a preview/localhost URL would render as a broken image forever.
-const LOGO_URL = 'https://namingcontest.com/email-logo.png';
+//
+// The logo sits on a dark band rather than on the white card, which is what
+// makes it dark-mode-proof: clients that force-invert backgrounds can turn a
+// white card dark and swallow a dark wordmark, but a band we've explicitly
+// painted stays put — and the white-on-dark logo reads either way.
+const LOGO_URL = 'https://namingcontest.com/email-logo-white.png';
 const LOGO_W = 180;
 const LOGO_H = 41;
+const BAND_BG = '#231f20';
 
 const INK = '#030302';
 const INK_SOFT = '#5a5754';
@@ -62,6 +68,43 @@ export function segmentColors(subId?: string | null) {
 }
 
 export const FROM = 'NamingContest <hello@namingcontest.com>';
+
+// ⚠️ PLACEHOLDER HANDLES — these accounts don't exist yet. Confirm or register
+// them before launch; an unowned handle sends recipients to a stranger's
+// profile, which is worse than having no icon at all.
+const SOCIAL = [
+  { name: 'X', url: 'https://x.com/namingcontest', icon: 'email-icon-x.png' },
+  { name: 'LinkedIn', url: 'https://www.linkedin.com/company/namingcontest', icon: 'email-icon-linkedin.png' },
+  { name: 'Instagram', url: 'https://www.instagram.com/namingcontest', icon: 'email-icon-instagram.png' },
+];
+
+// The postal address isn't decoration: a real physical address is a
+// legitimacy signal spam filters weigh, and CAN-SPAM requires one on
+// commercial mail. Entity details come from the Privacy Policy.
+const LEGAL_ENTITY = 'The Cypher Group, LLC · 3645 Grand Avenue, Suite 206, Oakland, CA 94610, USA';
+
+const FOOTER_HTML = `
+        <div style="border-top:1px solid ${CARD_BORDER};margin:28px 0 0;padding:22px 0 0;">
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 16px;"><tr>
+            ${SOCIAL.map((s) => `<td style="padding-right:10px;"><a href="${s.url}"><img src="https://namingcontest.com/${s.icon}" width="32" height="32" alt="${s.name}" style="display:block;border:0;outline:none;width:32px;height:32px;" /></a></td>`).join('')}
+          </tr></table>
+          <p style="font-family:${FONT_TEXT};font-size:12px;line-height:1.6;color:${INK_FAINT};margin:0 0 6px;">
+            <a href="https://namingcontest.com/privacy" style="color:${INK_FAINT};">Privacy Policy</a>
+            &nbsp;·&nbsp; <a href="https://namingcontest.com/terms" style="color:${INK_FAINT};">Terms of Service</a>
+            &nbsp;·&nbsp; <a href="https://namingcontest.com/contact" style="color:${INK_FAINT};">Contact</a>
+          </p>
+          <p style="font-family:${FONT_TEXT};font-size:12px;line-height:1.6;color:${INK_FAINT};margin:0 0 4px;">${LEGAL_ENTITY}</p>
+          <p style="font-family:${FONT_TEXT};font-size:12px;line-height:1.6;color:${INK_FAINT};margin:0;">© ${new Date().getFullYear()} NamingContest</p>
+        </div>`;
+
+const FOOTER_TEXT = [
+  'Privacy Policy: https://namingcontest.com/privacy',
+  'Terms of Service: https://namingcontest.com/terms',
+  'Contact: https://namingcontest.com/contact',
+  '',
+  LEGAL_ENTITY,
+  `© ${new Date().getFullYear()} NamingContest`,
+].join('\n');
 
 export type BuildEmailOpts = {
   subId?: string | null;
@@ -105,9 +148,11 @@ export function buildEmail(o: BuildEmailOpts): { html: string; text: string } {
 <body style="margin:0;padding:0;background:${PAGE_BG};">
   <div style="margin:0;padding:32px 16px;background:${PAGE_BG};">
     <div style="max-width:520px;margin:0 auto;background:${CARD_BG};border:1px solid ${CARD_BORDER};border-radius:20px;overflow:hidden;">
+      <div style="background:${BAND_BG};padding:22px 32px;line-height:0;">
+        <img src="${LOGO_URL}" width="${LOGO_W}" height="${LOGO_H}" alt="NamingContest" style="display:block;border:0;outline:none;text-decoration:none;width:${LOGO_W}px;height:${LOGO_H}px;font-family:${FONT_TEXT};font-size:18px;font-weight:700;color:#ffffff;" />
+      </div>
       <div style="height:5px;background:${c.accent};line-height:5px;font-size:0;">&nbsp;</div>
       <div style="padding:32px;">
-        <img src="${LOGO_URL}" width="${LOGO_W}" height="${LOGO_H}" alt="NamingContest" style="display:block;border:0;outline:none;text-decoration:none;width:${LOGO_W}px;height:${LOGO_H}px;margin:0 0 22px;font-family:${FONT_TEXT};font-size:16px;font-weight:700;color:${INK};" />
         <div style="font-family:${FONT_TEXT};font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${c.ink};">${o.eyebrow}</div>
         <h1 style="font-family:${FONT_DISPLAY};font-size:26px;line-height:1.25;font-weight:700;color:${INK};margin:12px 0 8px;">${o.headline}</h1>
         <p style="font-family:${FONT_TEXT};font-size:15px;line-height:1.55;color:${INK_SOFT};margin:0 0 22px;">${o.bodyHtml}</p>
@@ -118,6 +163,7 @@ export function buildEmail(o: BuildEmailOpts): { html: string; text: string } {
         <p style="font-family:${FONT_TEXT};font-size:13px;line-height:1.5;color:${INK_FAINT};margin:24px 0 0;">
           Questions? Just reply, or reach us at <a href="mailto:hello@namingcontest.com" style="color:${INK_FAINT};">hello@namingcontest.com</a>.
         </p>
+${FOOTER_HTML}
       </div>
     </div>
   </div>
@@ -135,6 +181,8 @@ export function buildEmail(o: BuildEmailOpts): { html: string; text: string } {
     o.note ? `\n${o.note}` : '',
     '',
     'Questions? Just reply, or reach us at hello@namingcontest.com',
+    '',
+    FOOTER_TEXT,
   ].filter(Boolean).join('\n');
 
   return { html, text };
