@@ -384,7 +384,15 @@ const DASH_SHIFT = {
   t2: '30.5%', b2: '30.5%', b3: '30.5%', b4: '30.5%', b5: '30.5%',
 };
 
-export function SegmentThemeBackdrop({ subId, minimal = false }) {
+/**
+ * @param invert  Render the line-art scene in white instead of ink. For the
+ *   participant-facing pages, which sit on a saturated segment colour rather
+ *   than the cream chat background — dark strokes muddy there, white ones read
+ *   as the same illustration seen through the colour. brightness(0) forces the
+ *   art to a flat silhouette before invert(1) lifts it to white, so it works
+ *   regardless of the source PNG's own colours while keeping its alpha.
+ */
+export function SegmentThemeBackdrop({ subId, minimal = false, invert = false }) {
   const theme = subId ? SEGMENT_THEME[subId] : null;
   const blobStyles = theme?.blobs
     ? {
@@ -410,7 +418,7 @@ export function SegmentThemeBackdrop({ subId, minimal = false }) {
         {dashImg && (
           <img
             src={dashImg}
-            className="v4-dash-image"
+            className={`v4-dash-image${invert ? ' v4-dash-image--invert' : ''}`}
             style={dashShift ? { '--dash-shift': dashShift } : undefined}
             alt=""
             aria-hidden="true"

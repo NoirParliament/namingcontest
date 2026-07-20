@@ -376,7 +376,24 @@ body.is-exiting {
    column, so keep the scene at full strength on the left/right edges and let
    it dissolve smoothly toward the center behind the bubbles — background where
    there's space, clear where the text is. */
-.v4-screen--chat .v4-dash-image {
+/* White line-art, for the participant pages that sit on a saturated segment
+   colour instead of the cream chat background. brightness(0) flattens the art
+   to a silhouette so invert(1) can lift it to pure white whatever the source
+   PNG contains; alpha is untouched, so it stays the same drawing. Opacity runs
+   a touch higher than the ink version — white on colour reads fainter than
+   ink on cream at equal alpha. */
+.v4-dash-image--invert {
+  filter: brightness(0) invert(1);
+  opacity: 0.5;
+}
+
+/* The centre-fade: the scene stays legible at the edges and drops back
+   behind the middle column so it never fights the text on top of it.
+   .v4-join-screen shares it — the invite runs the same centred column, and
+   without this the illustration reads noticeably heavier there than in the
+   chat it leads into. */
+.v4-screen--chat .v4-dash-image,
+.v4-join-screen .v4-dash-image {
   opacity: 0.42;
   -webkit-mask-image: linear-gradient(to right, #000 0%, #000 13%, rgba(0,0,0,0.12) 50%, #000 87%, #000 100%);
   mask-image: linear-gradient(to right, #000 0%, #000 13%, rgba(0,0,0,0.12) 50%, #000 87%, #000 100%);
@@ -385,7 +402,8 @@ body.is-exiting {
    glow + scene. Ease the whole backdrop in (the .v4-aurora wrapper holds both)
    so it doesn't pop into view — a soft settle instead of a hard jump. */
 @keyframes v4-scene-in { from { opacity: 0; } to { opacity: 1; } }
-.v4-screen--chat .v4-aurora { animation: v4-scene-in 0.85s ease-out both; }
+.v4-screen--chat .v4-aurora,
+.v4-join-screen .v4-aurora { animation: v4-scene-in 0.85s ease-out both; }
 /* The neutral pick-stage blobs live in this layer; when a segment is chosen
    it fades out over the same duration the scene fades in, so the two
    cross-fade instead of one popping in while the other vanishes. */
@@ -7496,23 +7514,13 @@ input.v4-settings-input:-webkit-autofill:active {
    AFTER the click so they don't read as "yet another email form."
    ───────────────────────────────────────────────────────────────── */
 .v4-join-screen {
-  /* Rich segment-color gradient — uses design-doc panel colors as
-     anchors. Lighter wash at the top fades into a deeper saturated
-     version of the segment color at the bottom, with a soft radial
-     highlight that lifts the hero area. NOT a flat color or a plain
-     blur — has depth and direction. */
-  background:
-    radial-gradient(
-      ellipse 80% 60% at 50% 0%,
-      color-mix(in srgb, var(--join-bg, #a6dcb3) 35%, white) 0%,
-      transparent 70%
-    ),
-    linear-gradient(
-      170deg,
-      color-mix(in srgb, var(--join-bg, #a6dcb3) 75%, white) 0%,
-      var(--join-bg, #a6dcb3) 55%,
-      color-mix(in srgb, var(--join-bg, #a6dcb3) 88%, black) 100%
-    );
+  /* Same base as every chat stage: the cream page, with the segment's
+     identity carried by SegmentThemeBackdrop's aurora + line-art scene on
+     top. This used to paint a rich saturated segment gradient of its own,
+     which made the invite look like a different product from the chat you
+     land in one click later. The segment still reads — through the glow and
+     the scene — just not through the page colour. */
+  background: var(--v4-bg);
   position: relative;
   overflow: hidden;
 }
@@ -8002,16 +8010,6 @@ input.v4-settings-input:-webkit-autofill:active {
 }
 .v4-join-cta-wrap {
   text-align: center;
-}
-/* Stage lead-in above the CTA (voting only) — sets expectation before the
-   button, so an already-joined participant isn't asked to join again. */
-.v4-join-cta-lead {
-  margin: 0 auto 14px;
-  max-width: 34ch;
-  font-family: var(--font-text);
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--v4-ink-soft, #5a5754);
 }
 /* CTA — exact match for the homepage `.btn.btn-primary.btn-lg`.
    - Fixed size (no width growth on hover; arrow is always visible).

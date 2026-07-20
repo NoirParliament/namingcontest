@@ -12,17 +12,10 @@ import { useParams, useNavigate, Link, Navigate } from 'react-router-dom';
 import { Trophy, LockSimple } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
-import heroProfile1 from '../../assets/hero-profile-1.png';
-import heroProfile2 from '../../assets/hero-profile-2.png';
-import heroProfile3 from '../../assets/hero-profile-3.png';
 import participantProfile from '../../assets/participant-profile.png';
-import heroProfile4 from '../../assets/hero-profile-4.png';
-import heroProfile5 from '../../assets/hero-profile-5.png';
-import heroProfile6 from '../../assets/hero-profile-6.png';
-import HeroAvatarsAnimation from '../../components/HeroAvatarsAnimation';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import { getMockContestById } from '../../data/v4/mockContests';
-import { getSegmentTone, SEGMENT_THEME } from '../../data/v4/segmentTheme';
+import { getSegmentTone, SEGMENT_THEME, SegmentThemeBackdrop } from '../../data/v4/segmentTheme';
 import { readSetup } from '../../utils/v4Brief';
 import { readParticipation } from '../../utils/v4Participant';
 import { showSubmitter } from '../../utils/v4Anonymity';
@@ -31,11 +24,6 @@ import { supabase } from '../../lib/supabaseClient';
 import useCountdown, { pad2 } from '../../utils/useCountdown';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
-
-const HERO_PROFILES = [
-  heroProfile1, heroProfile2, heroProfile3,
-  heroProfile4, heroProfile5, heroProfile6,
-];
 
 // Compact "in 4d 09h" ETA for the disabled CTA button.
 function ctaEta(c) {
@@ -149,9 +137,7 @@ export default function ParticipantVoteThanks() {
   if (!mockContest) {
     if (dbLoading) {
       return (
-        <div className="v4 lp-v3"><div className="v4-screen">
-          <span className="v4-blob v4-join-blob v4-join-blob-1" aria-hidden="true" />
-        </div></div>
+        <div className="v4 lp-v3"><div className="v4-screen" /></div>
       );
     }
     if (!dbContest) return <Navigate to="/v4/settings" replace />;
@@ -160,41 +146,14 @@ export default function ParticipantVoteThanks() {
     if (!participation) return <Navigate to={`/v4/join/${contestId}`} replace />;
   }
 
-  // Same drifting voter cast as the join + thanks pages.
-  const animAvatars = (() => {
-    const inviterIdx = (contest?.creator?.photoIndex || 1) - 1;
-    const pool = HERO_PROFILES.filter((_, i) => i !== inviterIdx);
-    const positions = [
-      { id: 0, side: 'left',  top: '16%', x: '7%' },
-      { id: 1, side: 'right', top: '16%', x: '7%' },
-      { id: 2, side: 'left',  top: '46%', x: '3%' },
-      { id: 3, side: 'right', top: '46%', x: '3%' },
-      { id: 4, side: 'left',  top: '76%', x: '8%' },
-      { id: 5, side: 'right', top: '76%', x: '8%' },
-    ];
-    return positions.map((p, i) => ({ ...p, photo: pool[i % pool.length] }));
-  })();
-
   return (
     <div className="v4 lp-v3">
       <div
         className="v4-screen v4-join-screen"
         style={{ '--join-bg': segmentBg, '--join-fg': tone?.fg || '#0a3b1f' }}
       >
-        <span className="v4-blob v4-join-blob v4-join-blob-1" aria-hidden="true" />
-        <span className="v4-blob v4-join-blob v4-join-blob-2" aria-hidden="true" />
-        <span className="v4-blob v4-join-blob v4-join-blob-3" aria-hidden="true" />
-        <span className="v4-blob v4-join-blob v4-join-blob-4" aria-hidden="true" />
-        <span className="v4-blob v4-join-blob v4-join-blob-5" aria-hidden="true" />
-
-        {/* Same drifting-avatars animation as /join (full mode —
-            typing → name → voting → crown). Keeps the participant
-            journey visually consistent across all three pages. */}
-        <HeroAvatarsAnimation
-          className="hero-anim v4-join-anim"
-          bubbleDirection="outward"
-          avatars={animAvatars}
-        />
+        {/* Same backdrop as every chat stage — see JoinContest. */}
+        <SegmentThemeBackdrop subId={subId} minimal />
 
         <main className="v4-review" role="main" ref={scrollRef}>
           <header className="v4-nav v4-join-nav">
