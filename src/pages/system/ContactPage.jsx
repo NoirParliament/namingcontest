@@ -154,7 +154,9 @@ export default function ContactPage() {
       // Never claim it sent when it didn't — the entire point of this form is
       // that a message reaches a human.
       console.error('[contact] send failed:', error);
-      setSendError(true);
+      // A 429 needs different words: "try again" is the one thing that won't
+      // work, and repeating it just deepens the hole.
+      setSendError(error?.context?.status === 429 ? 'limit' : true);
       return;
     }
     setPhase('sent');
@@ -328,16 +330,27 @@ export default function ContactPage() {
                     {sendError && !botTyping && (
                       <div className="contact-chat-row bot" role="alert">
                         <div className="contact-chat-bubble">
-                          Something went wrong sending that — sorry.{' '}
-                          <button
-                            type="button"
-                            className="contact-retry-link"
-                            onClick={() => deliver(answersRef.current)}
-                          >
-                            Try again
-                          </button>
-                          , or email us directly at{' '}
-                          <a href="mailto:hello@namingcontest.com">hello@namingcontest.com</a>.
+                          {sendError === 'limit' ? (
+                            <>
+                              That&rsquo;s a few messages in a short while — give it an
+                              hour, or email us straight at{' '}
+                              <a href="mailto:hello@namingcontest.com">hello@namingcontest.com</a>{' '}
+                              and we&rsquo;ll pick it up there.
+                            </>
+                          ) : (
+                            <>
+                              Something went wrong sending that — sorry.{' '}
+                              <button
+                                type="button"
+                                className="contact-retry-link"
+                                onClick={() => deliver(answersRef.current)}
+                              >
+                                Try again
+                              </button>
+                              , or email us directly at{' '}
+                              <a href="mailto:hello@namingcontest.com">hello@namingcontest.com</a>.
+                            </>
+                          )}
                         </div>
                       </div>
                     )}
