@@ -496,7 +496,12 @@ export default function ContestManage() {
             <div className="v4-nav-right">
               <AvatarMenu
                 email={user?.email || setup.userEmail}
-                name={profile?.display_name || setup.userName}
+                /* Falls back to the email's local part, as Settings does. An
+                   account that has never set a display name would otherwise
+                   render a nameless avatar, which reads as "not signed in"
+                   rather than "no name yet". */
+                name={profile?.display_name || setup.userName
+                  || user?.email?.split('@')[0] || 'You'}
                 photo={profile?.avatar_url || (mockContest ? creatorProfile : null)}
                 seed={user?.id}
                 tone={segmentTone}
