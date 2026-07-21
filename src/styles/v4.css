@@ -10816,16 +10816,3 @@ select.v4-pvote-sort-select:hover {
   .v4-map-step { flex-wrap: wrap; }
 }
 
-/* Rejected sign-in link notice on the namespace empty state. Warm rather than
-   alarming — an expired link is routine, not a failure the user caused. */
-.v4-settings-auth-error {
-  margin: 0 auto 18px;
-  max-width: 46ch;
-  padding: 12px 16px;
-  border-radius: 12px;
-  background: rgba(250, 222, 204, 0.5);
-  color: #8a4a1c;
-  font-family: var(--font-text);
-  font-size: 14px;
-  line-height: 1.5;
-}

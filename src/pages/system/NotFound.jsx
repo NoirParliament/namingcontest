@@ -1,13 +1,19 @@
-// 404 — catch-all route. Uses the same site chrome (pill nav + footer)
-// as the rest of the product so a wrong URL still feels on-brand.
+// 404 — catch-all route. Uses the same site chrome (pill nav + footer) as the
+// rest of the product, plus the segment backdrop the chat stages wear, so a
+// wrong URL still looks like the product rather than a browser error page.
 
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Nav, Footer } from '../LandingPage';
+import { SegmentThemeBackdrop } from '../../data/v4/segmentTheme';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 import '../../styles/legal.css';
 import '../../styles/system.css';
+
+// Same fixed segment as the expired-link page — the two are siblings, and a
+// system page should look the same every time you land on it.
+const SYSTEM_SEGMENT = 'p1';
 
 export default function NotFound() {
   const { pathname } = useLocation();
@@ -17,7 +23,8 @@ export default function NotFound() {
   }, [pathname]);
 
   return (
-    <div className="lp-v3 legal-page">
+    <div className="lp-v3 legal-page sys-segment-page">
+      <SegmentThemeBackdrop subId={SYSTEM_SEGMENT} minimal />
       <div className="frame">
         <div className="wrap">
           <Nav />
