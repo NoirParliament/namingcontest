@@ -4,7 +4,7 @@
 // backend (Supabase) and Stripe customer portal later.
 
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import {
   X, EnvelopeSimple, User, CreditCard, Receipt, ArrowSquareOut,
   Heart, UsersThree, Briefcase, Camera, Info, Trash, Plus,
@@ -452,6 +452,21 @@ export default function Settings() {
   const [billingOpen, setBillingOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
 
+  // The namespace is an account page, so it needs an account. Without this a
+  // signed-out visitor got the full workspace shell wrapped around nothing —
+  // "Add your name", "no email saved", and AvatarMenu's stock-photo fallback
+  // in the corner, which reads as somebody else's profile rather than as
+  // being logged out.
+  //
+  // The guest exception is the launch flow: someone who pays before creating
+  // an account lands here with their contest in the setup blob and no session
+  // until they open the magic link. That contest is genuinely theirs.
+  //
+  // Placed after every hook — an early return above one changes the hook
+  // count between renders and blanks the page (learned on LandingPage).
+  if (!authLoading && !user && !setup.contestId) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <div className="v4 lp-v3">

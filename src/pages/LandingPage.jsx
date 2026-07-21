@@ -60,9 +60,11 @@ export function Nav() {
   // hidden at this width — without this there'd be no way to sign out on a
   // phone at all. Mirrors AvatarMenu's handler: end the real session, then
   // clear the local blob so no stale identity lingers behind it.
-  const handleMobileSignOut = () => {
+  const handleMobileSignOut = async () => {
     closeMenu();
-    supabase.auth.signOut();
+    // Awaited for the same reason as AvatarMenu's: navigating while the
+    // session is still live gets you redirected back into the workspace.
+    try { await supabase.auth.signOut(); } catch { /* leave anyway */ }
     try { localStorage.removeItem('v4_contest_setup'); } catch { /* ignore */ }
     navigate('/');
   };
