@@ -70,12 +70,13 @@ Deno.serve(async (req) => {
     // Throttle before sending anything. Public, unauthenticated, and two
     // emails per call — a loop here burns the Resend quota and risks the
     // sending domain's reputation, which costs far more than the messages.
-    // Three an hour is well clear of anyone with a genuine follow-up.
+    // Ten an hour is well clear of anyone with a genuine follow-up, and a
+    // whole office behind one IP still fits.
     const admin = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     );
-    if (!await rateLimitOk(admin, req, 'contact', 3, '1 hour')) {
+    if (!await rateLimitOk(admin, req, 'contact', 10, '1 hour')) {
       return json({ error: 'You have sent several messages already — please give it an hour, or email us directly at hello@namingcontest.com.' }, 429);
     }
 
