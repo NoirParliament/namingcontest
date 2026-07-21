@@ -6,6 +6,13 @@ Written for a senior developer arriving cold. The plain-English companion is
 
 No credentials appear in this document. Access is shared privately.
 
+**Reading order for a new developer:** this handbook first (how the system
+works and why), then `GOING-LIVE.md` (day-one local setup, where every
+configuration value comes from, fresh-environment builds, and the launch
+checklist), with `TESTING-EMAILS.md` whenever you need to exercise the email
+lifecycle without waiting out a real contest. `PLATFORM-GUIDE.md` is the
+client-facing companion.
+
 ---
 
 ## 1. Product in one paragraph
@@ -82,7 +89,9 @@ npm run dev                # Vite on :5173
 npm run build              # production build — run before every promote
 ```
 
-The build must pass before promoting; there is no CI, the discipline is manual.
+The build must pass before promoting; there is no CI, the discipline is
+manual. The full day-one walkthrough — including where every environment
+value comes from — is `GOING-LIVE.md` §1–§3.
 
 ## 6. Database
 
@@ -289,18 +298,23 @@ The app began as a front-end-only prototype. Remnants, deliberately kept:
 
 ## 13. Known gaps / recommended review focus
 
-1. `readSetup()` fallbacks vs. real sessions (see §9) — the historic bug source.
+1. Auth-state races — the single biggest bug source in this codebase's
+   history, in two shapes: `readSetup()` fallbacks standing in for a real
+   session, and effects fetching RLS-protected data before auth has resolved
+   (deps missing `authLoading` / `user?.id`, so the empty signed-out result
+   sticks). Both shapes have been fixed where found; probe for survivors.
 2. Social handles in email footers are **placeholder accounts nobody owns**
    (`x.com/namingcontest` etc., defined in `_shared/email.ts` SOCIAL const).
-4. Landing testimonials are fictional; swap before launch.
-5. Rich link previews: SPA serves one static `index.html`, so shared reveal
+3. Landing testimonials are fictional; swap before launch.
+4. Rich link previews: SPA serves one static `index.html`, so shared reveal
    links get a generic OG card. Fix = edge function serving crawler HTML.
-6. Voting limit is hard-coded at 3 (DB trigger + UI clamp); the brief's
+5. Voting limit is hard-coded at 3 (DB trigger + UI clamp); the brief's
    `votingLimit` setting is vestigial.
-7. `hello@` mailbox missing (client task, eNom forwarding).
-8. Beta gate is client-side only.
-9. No automated tests; the build (`npm run build`) is the only gate.
-10. Bundle is one ~2.8 MB chunk — code-splitting would help mobile.
+6. `hello@` mailbox missing (client task, eNom forwarding).
+7. Beta gate is client-side only.
+8. No automated tests; the build (`npm run build`) is the only gate.
+9. Bundle is one ~1.7 MB chunk (2.8 before the v1 prototype was
+   unrouted) — code-splitting would still help mobile.
 
 ## 14. Operational runbook
 
