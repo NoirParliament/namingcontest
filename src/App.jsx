@@ -51,6 +51,7 @@ import CookiePolicy        from '@pages/legal/LegalCrumbs';
 import NotFound            from '@pages/system/NotFound';
 import LinkExpired         from '@pages/system/LinkExpired';
 import { useAuth } from './lib/AuthContext';
+import { Analytics } from '@vercel/analytics/react';
 import ErrorState         from '@pages/system/ErrorState';
 import ContactPage        from '@pages/system/ContactPage';
 import BetaGate            from './components/BetaGate';
@@ -487,6 +488,12 @@ export default function App() {
       <BetaGate>
         <AppInner />
       </BetaGate>
+      {/* Vercel Web Analytics — page views, referrers, countries, devices.
+          Outside the BetaGate on purpose: visits to the gate itself should
+          count too. Privacy-friendly (no cookies), so no consent banner is
+          needed. Data appears in Vercel -> project -> Analytics once enabled
+          there. */}
+      <Analytics />
     </BrowserRouter>
   );
 }
