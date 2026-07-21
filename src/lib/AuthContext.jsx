@@ -15,6 +15,35 @@ const AuthContext = createContext({
   signOut: async () => {},
 });
 
+// The v4_contest_setup blob is the guest identity — email, display name,
+// photo, and the contest being built before an account exists. It outlives a
+// browsing session, so someone who tried the demo and later signed in for
+// real still carried the demo's identity around: pages that fall back to the
+// blob showed the wrong name, and the landing page's redirect sent them into
+// the demo's contest.
+//
+// When a real session appears under a DIFFERENT email, that blob belongs to
+// someone else — drop its identity. Brief answers are deliberately left
+// alone: a guest part-way through building a contest keeps their work when
+// they sign in, which is the whole point of letting them start without an
+// account.
+function dropForeignSetup(session) {
+  const email = session?.user?.email;
+  if (!email) return;
+  try {
+    const raw = localStorage.getItem('v4_contest_setup');
+    if (!raw) return;
+    const setup = JSON.parse(raw);
+    if (!setup?.userEmail || setup.userEmail.toLowerCase() === email.toLowerCase()) return;
+    delete setup.userEmail;
+    delete setup.userName;
+    delete setup.userPhoto;
+    delete setup.contestId;
+    delete setup.winner;
+    localStorage.setItem('v4_contest_setup', JSON.stringify(setup));
+  } catch { /* unparseable or storage blocked — the session is still the truth */ }
+}
+
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -24,10 +53,12 @@ export function AuthProvider({ children }) {
     supabase.auth.getSession().then(({ data }) => {
       if (!active) return;
       setSession(data.session);
+      dropForeignSetup(data.session);
       setLoading(false);
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
       setSession(s);
+      dropForeignSetup(s);
     });
     return () => {
       active = false;
