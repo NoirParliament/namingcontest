@@ -42,6 +42,7 @@ export default function ParticipantVoteThanks() {
   // submissions embedded for the cards), their submission count, and profile.
   const [dbContest, setDbContest] = useState(null);
   const [dbVotes, setDbVotes] = useState([]);
+  const [ballot, setBallot] = useState([]);
   const [mySubCount, setMySubCount] = useState(0);
   const [profile, setProfile] = useState(null);
   const [dbLoading, setDbLoading] = useState(!mockContest);
@@ -50,15 +51,19 @@ export default function ParticipantVoteThanks() {
     let active = true;
     Promise.all([
       supabase.from('contests').select('*').eq('id', contestId).single(),
+      // Vote ids only. Embedding submissions(...) here read other people's
+      // rows through the join; the ballot RPC resolves them safely instead.
       supabase.from('votes')
-        .select('submission_id, submissions(id, text, rationale, credited)')
+        .select('submission_id')
         .eq('contest_id', contestId).eq('user_id', user.id),
+      supabase.rpc('get_ballot', { cid: contestId }),
       supabase.from('submissions').select('id').eq('contest_id', contestId).eq('user_id', user.id),
       supabase.from('profiles').select('display_name, avatar_url').eq('id', user.id).single(),
-    ]).then(([c, v, s, p]) => {
+    ]).then(([c, v, ballot, s, p]) => {
       if (!active) return;
       setDbContest(c.data || null);
       setDbVotes(v.data || []);
+      setBallot(ballot.data || []);
       setMySubCount((s.data || []).length);
       setProfile(p.data || null);
       setDbLoading(false);
@@ -104,10 +109,17 @@ export default function ParticipantVoteThanks() {
         const byId = new Map(contest.allSubmissions.map((s) => [s.id, s]));
         return votedIds.map((id) => byId.get(id)).filter(Boolean);
       })()
-    : dbVotes
-        .map((v) => v.submissions)
-        .filter(Boolean)
-        .map((s) => ({ id: s.id, text: s.text, whyItFits: s.rationale || '', submitterName: null }));
+    : (() => {
+        const votedIds = new Set(dbVotes.map((v) => v.submission_id));
+        return ballot
+          .filter((s) => votedIds.has(s.id))
+          .map((s) => ({
+            id: s.id,
+            text: s.text,
+            whyItFits: s.rationale || '',
+            submitterName: s.submitter_name,
+          }));
+      })();
   const votedCount = votedSubs.length;
   const submittedCount = mockContest ? (participation?.submittedNames?.length || 0) : mySubCount;
 

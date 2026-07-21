@@ -80,6 +80,24 @@ export function segmentColors(subId?: string | null) {
 // sender setup is needed.
 export const FROM = 'NamingContest <noreply@namingcontest.com>';
 
+/**
+ * Escape a value for HTML. Everything interpolated into an email is
+ * user-controlled somewhere: contest names come from the creator, and the
+ * winning name is typed by a participant. Unescaped, a submission like
+ * `<a href="https://evil.com">Claim your prize</a>` becomes a live link in
+ * every participant's inbox — sent from our own DKIM-signed domain, so it
+ * carries our reputation. Email clients strip scripts but honour anchors.
+ *
+ * Exported because bodyHtml is authored markup (it contains <strong>) and so
+ * cannot be escaped wholesale by buildEmail — its interpolated values have to
+ * be escaped where they're inserted.
+ */
+export function esc(s: unknown): string {
+  return String(s ?? '').replace(/[&<>"']/g, (ch) => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch] as string
+  ));
+}
+
 // ⚠️ PLACEHOLDER HANDLES — these accounts don't exist yet. Confirm or register
 // them before launch; an unowned handle sends recipients to a stranger's
 // profile, which is worse than having no icon at all.
@@ -121,9 +139,14 @@ export type BuildEmailOpts = {
   subId?: string | null;
   eyebrow: string;
   headline: string;
-  /** May contain <strong>. Keep it to a sentence or two. */
+  /**
+   * ⚠️ The ONLY field not escaped by buildEmail — it's authored markup and
+   * may contain <strong>. Any user-controlled value interpolated into it must
+   * be wrapped in esc() at the call site. Every other field here is escaped
+   * for you. Keep it to a sentence or two.
+   */
   bodyHtml: string;
-  /** Plain-text equivalent of bodyHtml. */
+  /** Plain-text equivalent of bodyHtml. Never escaped — this is not HTML. */
   bodyText: string;
   /** Optional large serif feature line (e.g. the winning name). */
   feature?: string;
@@ -139,19 +162,19 @@ export function buildEmail(o: BuildEmailOpts): { html: string; text: string } {
   const c = segmentColors(o.subId);
 
   const featureBlock = o.feature
-    ? `<div style="font-family:${FONT_DISPLAY};font-style:italic;font-size:28px;line-height:1.2;font-weight:700;color:${INK};background:${c.accent};border-radius:14px;padding:18px 20px;margin:0 0 22px;">${o.feature}</div>`
+    ? `<div style="font-family:${FONT_DISPLAY};font-style:italic;font-size:28px;line-height:1.2;font-weight:700;color:${INK};background:${c.accent};border-radius:14px;padding:18px 20px;margin:0 0 22px;">${esc(o.feature)}</div>`
     : '';
 
   const panelBlock = o.panel
     ? `<div style="background:${c.accent};border-radius:14px;padding:16px 18px;margin:0 0 24px;">
-         <div style="font-family:${FONT_TEXT};font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:${c.ink};">${o.panel.label}</div>
-         <div style="font-family:${FONT_TEXT};font-size:18px;font-weight:700;color:${INK};margin-top:4px;">${o.panel.value}</div>
-         ${o.panel.link ? `<div style="margin-top:8px;"><a href="${o.panel.link.url}" style="font-family:${FONT_TEXT};font-size:14px;font-weight:600;color:${c.ink};">${o.panel.link.label} →</a></div>` : ''}
+         <div style="font-family:${FONT_TEXT};font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:${c.ink};">${esc(o.panel.label)}</div>
+         <div style="font-family:${FONT_TEXT};font-size:18px;font-weight:700;color:${INK};margin-top:4px;">${esc(o.panel.value)}</div>
+         ${o.panel.link ? `<div style="margin-top:8px;"><a href="${esc(o.panel.link.url)}" style="font-family:${FONT_TEXT};font-size:14px;font-weight:600;color:${c.ink};">${esc(o.panel.link.label)} →</a></div>` : ''}
        </div>`
     : '';
 
   const noteBlock = o.note
-    ? `<p style="font-family:${FONT_TEXT};font-size:13px;line-height:1.5;color:${INK_FAINT};margin:16px 0 0;">${o.note}</p>`
+    ? `<p style="font-family:${FONT_TEXT};font-size:13px;line-height:1.5;color:${INK_FAINT};margin:16px 0 0;">${esc(o.note)}</p>`
     : '';
 
   const html = `<!doctype html>
@@ -163,12 +186,12 @@ export function buildEmail(o: BuildEmailOpts): { html: string; text: string } {
         <img src="${LOGO_URL}" width="${LOGO_W}" height="${LOGO_H}" alt="NamingContest" style="display:block;border:0;outline:none;text-decoration:none;width:${LOGO_W}px;height:${LOGO_H}px;font-family:${FONT_TEXT};font-size:18px;font-weight:700;color:#ffffff;" />
       </div>
       <div style="padding:32px;">
-        <div style="font-family:${FONT_TEXT};font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${c.ink};">${o.eyebrow}</div>
-        <h1 style="font-family:${FONT_DISPLAY};font-size:26px;line-height:1.25;font-weight:700;color:${INK};margin:12px 0 8px;">${o.headline}</h1>
+        <div style="font-family:${FONT_TEXT};font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${c.ink};">${esc(o.eyebrow)}</div>
+        <h1 style="font-family:${FONT_DISPLAY};font-size:26px;line-height:1.25;font-weight:700;color:${INK};margin:12px 0 8px;">${esc(o.headline)}</h1>
         <p style="font-family:${FONT_TEXT};font-size:15px;line-height:1.55;color:${INK_SOFT};margin:0 0 22px;">${o.bodyHtml}</p>
         ${featureBlock}
         ${panelBlock}
-        <a href="${o.ctaUrl}" style="display:inline-block;font-family:${FONT_TEXT};font-size:15px;font-weight:600;color:#ffffff;background:${INK};text-decoration:none;padding:14px 24px;border-radius:999px;">${o.ctaLabel}</a>
+        <a href="${esc(o.ctaUrl)}" style="display:inline-block;font-family:${FONT_TEXT};font-size:15px;font-weight:600;color:#ffffff;background:${INK};text-decoration:none;padding:14px 24px;border-radius:999px;">${esc(o.ctaLabel)}</a>
         ${noteBlock}
 ${FOOTER_HTML}
       </div>
