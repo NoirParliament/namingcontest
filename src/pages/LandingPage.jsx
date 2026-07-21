@@ -64,7 +64,12 @@ export function Nav() {
     closeMenu();
     // Awaited for the same reason as AvatarMenu's: navigating while the
     // session is still live gets you redirected back into the workspace.
-    try { await supabase.auth.signOut(); } catch { /* leave anyway */ }
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) await supabase.auth.signOut({ scope: 'local' });
+    } catch {
+      try { await supabase.auth.signOut({ scope: 'local' }); } catch { /* nothing left to try */ }
+    }
     try { localStorage.removeItem('v4_contest_setup'); } catch { /* ignore */ }
     navigate('/');
   };
@@ -1476,36 +1481,18 @@ export default function LandingPage() {
     return () => clearTimeout(t);
   }, []);
 
-  // Waiting for auth would flash the marketing hero at someone who is signed
-  // in — the very thing the synchronous redirect exists to avoid. But we can
-  // tell cheaply whether waiting is even necessary: Supabase parks its
-  // session under an sb-<ref>-auth-token key, so if none exists this is
-  // definitely a guest and there's nothing to wait for.
-  const maybeSignedIn = (() => {
-    try {
-      return Object.keys(localStorage).some((k) => /^sb-.*-auth-token$/.test(k));
-    } catch {
-      return false; // storage blocked — treat as guest, the blob check below still runs
-    }
-  })();
-  if (!location.hash && authLoading && maybeSignedIn) return null;
-
-  if (!location.hash && !authLoading) {
-    const setup = readSetup();
-    if (user) {
-      // A real session wins over the localStorage blob. That blob can hold a
-      // demo/guest contestId from an earlier visit, and this used to send a
-      // properly signed-in person straight into it — signing in and landing
-      // in someone else's demo contest. Their own contests are listed in the
-      // namespace, so that's where a real account belongs.
-      return <Navigate to="/v4/settings" replace />;
-    }
-    // Guest mid-flow: the blob is all we have, and its contestId is genuinely
-    // theirs — an unfinished contest they started before creating an account.
-    if (setup.userEmail || setup.contestId) {
-      return <Navigate to={setup.contestId ? `/v4/contest/${setup.contestId}` : '/v4/settings'} replace />;
-    }
-  }
+  // NO auto-redirect away from the homepage.
+  //
+  // This used to bounce a signed-in visitor to /v4/settings. Two problems.
+  // It made sign-out a trap: signOut() is a network call, and if it failed or
+  // lagged, navigating home found a session still in place and threw you
+  // straight back into the account page you were trying to leave — with no
+  // way out, since every route home did the same thing. And it meant a
+  // signed-in person simply couldn't read the pricing or how-it-works pages.
+  //
+  // The homepage is public. Signed-in visitors get their avatar and a route
+  // to the namespace in the nav, which is enough — no page should decide on
+  // your behalf that you didn't mean to be here.
 
   // Tier CTAs route into the unified V4 setup flow.
   // - Card CTAs (Personal/Group/Business) → persist tier + jump straight
