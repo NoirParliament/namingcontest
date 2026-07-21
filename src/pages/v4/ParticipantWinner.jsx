@@ -80,15 +80,16 @@ export default function ParticipantWinner() {
       const cRes = await supabase.from('contests').select('*').eq('id', contestId).single();
       const row = cRes.data;
       if (!row) { if (active) setDbLoading(false); return; }
-      const sRes = await supabase
-        .from('submissions')
-        .select('id, text, rationale, credited, user_id, vote_count')
-        .eq('contest_id', contestId);
+      // get_ballot rather than the table: it resolves the submitter name
+      // against the contest's anonymity rules and never returns user_id.
+      // This page only renders once the contest is closed, so the RPC
+      // releases real vote counts here.
+      const sRes = await supabase.rpc('get_ballot', { cid: contestId });
       const subs = sRes.data || [];
       const win = subs.find((s) => s.id === row.winner_submission_id)
         || [...subs].sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0))[0]
         || null;
-      const ids = [...new Set([row.creator_id, win?.user_id, user.id].filter(Boolean))];
+      const ids = [...new Set([row.creator_id, user.id].filter(Boolean))];
       let profs = {};
       if (ids.length) {
         const pRes = await supabase.from('profiles').select('id, display_name, avatar_url').in('id', ids);
@@ -96,11 +97,11 @@ export default function ParticipantWinner() {
       }
       if (!active) return;
       setDbContest(row);
-      setWinnerSub(win ? { ...win, submitterName: win.credited ? (profs[win.user_id]?.display_name || 'Someone') : null } : null);
+      setWinnerSub(win ? { ...win, submitterName: win.submitter_name } : null);
       setDbCreatorName(profs[row.creator_id]?.display_name || 'the organizer');
       setDbTotalVotes(subs.reduce((sum, s) => sum + (s.vote_count || 0), 0));
-      setDbMySubCount(subs.filter((s) => s.user_id === user.id).length);
-      setDbIWon(!!win && win.user_id === user.id);
+      setDbMySubCount(subs.filter((s) => s.is_mine).length);
+      setDbIWon(!!win && !!win.is_mine);
       setProfile(profs[user.id] || null);
       setDbLoading(false);
       if (row.sub_segment_id) { try { localStorage.setItem('v4_last_sub', row.sub_segment_id); } catch { /* ignore */ } }

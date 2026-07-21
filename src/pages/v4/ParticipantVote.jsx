@@ -129,10 +129,10 @@ export default function ParticipantVote() {
     let active = true;
     Promise.all([
       supabase.from('contests').select('*').eq('id', contestId).single(),
-      supabase.from('submissions')
-        .select('id, text, rationale, credited, user_id, vote_count, created_at')
-        .eq('contest_id', contestId)
-        .order('created_at', { ascending: true }),
+      // get_ballot, not the table: it resolves submitter names against the
+      // contest's anonymity rules and withholds vote counts until the close,
+      // so user_id and running tallies never reach the browser.
+      supabase.rpc('get_ballot', { cid: contestId }),
       supabase.from('votes').select('submission_id').eq('contest_id', contestId).eq('user_id', user.id),
       supabase.from('profiles').select('display_name, avatar_url').eq('id', user.id).single(),
     ]).then(([c, s, v, p]) => {
@@ -182,14 +182,17 @@ export default function ParticipantVote() {
     ? (contest?.allSubmissions || [])
     : dbSubs
         // You can't vote for your own name — drop it from the votable list.
-        .filter((s) => s.user_id !== user?.id)
+        .filter((s) => !s.is_mine)
         .map((s) => ({
           id: s.id,
           text: s.text,
           whyItFits: s.rationale || '',
-          // Submitter identity for real contests is deferred (anonymity +
-          // profile-name join TBD); cards show the name + rationale only.
-          submitterName: null,
+          // Resolved by get_ballot: null unless the contest's anonymity rules
+          // allow a name. Identity used to be deferred here because the raw
+          // rows carried user_id and no safe way to render it; the RPC does
+          // that resolution in the database, so the client never sees who
+          // it isn't allowed to.
+          submitterName: s.submitter_name,
           credited: s.credited,
         }));
   const alreadyVoted = mockContest ? (participation?.votedFor || []).length > 0 : myVoteIds.length > 0;
@@ -198,7 +201,7 @@ export default function ParticipantVote() {
   // profile name later.
   const iSubmitted = mockContest
     ? (participation?.submittedNames?.length || 0) > 0
-    : dbSubs.some((s) => s.user_id === user?.id);
+    : dbSubs.some((s) => s.is_mine);
   const [saving, setSaving] = useState(false);
   const { rows: briefRows, settingsRows } = useMemo(
     () => buildBriefRows(contest),
@@ -229,7 +232,7 @@ export default function ParticipantVote() {
   useEffect(() => {
     if (creditInitRef.current || !isRealContest || dbLoading) return;
     creditInitRef.current = true;
-    const submittedByMe = dbSubs.some((s) => s.user_id === user?.id);
+    const submittedByMe = dbSubs.some((s) => s.is_mine);
     // Only ask when they have no real name yet. A freshly auto-created account
     // defaults its display_name to the email local-part (e.g. "matt" from
     // matt@…); anything else means they've already named themselves (via a
