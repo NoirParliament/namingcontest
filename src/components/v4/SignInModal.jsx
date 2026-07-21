@@ -18,7 +18,7 @@ import messageImg from '../../assets/message.png';
 // is mounted outside the v4 page tree (e.g. triggered from the landing).
 import '../../styles/landing-v3.css';
 
-export default function SignInModal({ open, onClose }) {
+export default function SignInModal({ open, onClose, redirectPath }) {
   const [email, setEmail] = useState('');
   const [phase, setPhase] = useState('input'); // 'input' | 'sent'
   const [submitting, setSubmitting] = useState(false);
@@ -53,7 +53,10 @@ export default function SignInModal({ open, onClose }) {
       return;
     }
     setSubmitting(true);
-    const redirectTo = `${window.location.origin}/v4/settings`;
+    // Callers on a specific page (a contest's manage view, say) pass where
+    // the link should land, so signing in returns you to what you were trying
+    // to open rather than dropping you at the namespace to find it again.
+    const redirectTo = `${window.location.origin}${redirectPath || '/v4/settings'}`;
     const { error: sendError } = await signInWithEmail(email, redirectTo);
     setSubmitting(false);
     if (sendError) {
