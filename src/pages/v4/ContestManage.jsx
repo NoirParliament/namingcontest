@@ -473,7 +473,27 @@ export default function ContestManage() {
         <div className="v4-screen">
           <SegmentThemeBackdrop subId={subId} minimal />
           <main className="v4-review" role="main">
-            <div className="v4-review-inner" style={{ textAlign: 'center', paddingTop: 120 }}>
+            {/* The nav isn't decoration here. This page is most often reached
+                from an email link, so it's the first thing someone sees —
+                without the logo there's nothing saying whose site this is,
+                and without the avatar someone signed into the WRONG account
+                has no way to switch. A dead end that can't be left is worse
+                than the error it's reporting. */}
+            <header className="v4-nav v4-nav-clear">
+              <BrandLink />
+              {user && (
+                <div className="v4-nav-right" style={{ gridColumn: 3, justifySelf: 'end' }}>
+                  <AvatarMenu
+                    email={user.email}
+                    name={profile?.display_name || user.email?.split('@')[0] || 'You'}
+                    photo={profile?.avatar_url || null}
+                    seed={user.id}
+                    tone={segmentTone}
+                  />
+                </div>
+              )}
+            </header>
+            <div className="v4-review-inner" style={{ textAlign: 'center', paddingTop: 72 }}>
               <h1 className="v4-review-title">Sign in to open this contest</h1>
               <p className="v4-review-subtitle" style={{ maxWidth: '42ch', margin: '10px auto 26px' }}>
                 {user

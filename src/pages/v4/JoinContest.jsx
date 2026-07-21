@@ -135,7 +135,16 @@ export default function JoinContest() {
         const { error } = await supabase
           .from('participants')
           .insert({ contest_id: realContest.id, user_id: user.id });
-        if (error && error.code !== '23505') { console.error('[join] participant insert failed:', error); return; }
+        if (error && error.code !== '23505') {
+          console.error('[join] participant insert failed:', error);
+          // 23514 is the tier cap (0022). Everything else is unexpected, but
+          // either way say something — this used to return silently, leaving
+          // the visitor on the invitation wondering what they'd done wrong.
+          setJoinError(error.code === '23514'
+            ? error.message
+            : 'Could not join this contest. Please try again, or ask the organiser to resend your link.');
+          return;
+        }
         try { localStorage.removeItem('v4_pending_join'); } catch { /* ignore */ }
         isParticipant = true;
       }
@@ -158,6 +167,9 @@ export default function JoinContest() {
   // 'sent'    — "check your email" with the demo "Open the link" button.
   // 'success' — brief celebration → route to chat.
   const [phase, setPhase] = useState('cta');
+  // Surfaced on the invitation itself — a failed join used to be a silent
+  // return or a browser alert() dropped into a designed flow.
+  const [joinError, setJoinError] = useState('');
   const [email, setEmail] = useState(readSetup().userEmail || '');
 
   // ── Skip invitation entirely for already-joined visitors ───────────
@@ -346,7 +358,9 @@ export default function JoinContest() {
       .insert({ contest_id: realContest.id, user_id: user.id });
     if (error && error.code !== '23505') {
       console.error('[join] participant insert failed:', error);
-      window.alert('Could not join the contest: ' + (error.message || error));
+      setJoinError(error.code === '23514'
+        ? error.message
+        : 'Could not join this contest. Please try again, or ask the organiser to resend your link.');
       setPhase('cta');
       return;
     }
@@ -501,6 +515,9 @@ export default function JoinContest() {
             <section className="v4-join-action">
               {phase === 'cta' && (
                 <div className="v4-join-cta-wrap">
+                  {joinError && (
+                    <p className="v4-join-error-note" role="alert">{joinError}</p>
+                  )}
                   <button
                     type="button"
                     className="btn btn-primary btn-lg"
