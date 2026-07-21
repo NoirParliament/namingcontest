@@ -49,10 +49,11 @@ export default function TermsOfService() {
 
       <h2>4. Fees, payment, and refunds</h2>
       <p>
-        Contests are offered for a one-time fee based on
-        the selected tier (for example, Personal, Group, or Business).
-        There are no recurring charges or subscriptions. All fees are
-        stated at the point of purchase and are processed by Stripe.
+        Contests are offered for a one-time fee based on the number of
+        voters you invite (currently $9 for up to 10, $19 for up to 30,
+        and $39 for up to 90). There are no recurring charges or
+        subscriptions. All fees are stated at the point of purchase and
+        are processed by Stripe.
       </p>
       <p>
         Except where required by applicable law, all fees are{' '}
