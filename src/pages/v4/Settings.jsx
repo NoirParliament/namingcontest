@@ -110,8 +110,13 @@ export default function Settings() {
   const [dbContests, setDbContests] = useState([]);
   // Cancelled contests are terminal — keep them out of the active list and
   // out of the color/menu signal; they get their own quiet section instead.
+  // Unpaid drafts are excluded as well as cancelled ones. A draft is a
+  // contest that was set up but never paid for — an abandoned checkout, or a
+  // card that was declined. Listing them alongside real contests, complete
+  // with phase pills and countdowns, told creators they had contests running
+  // that nobody could join.
   const activeContests = useMemo(
-    () => dbContests.filter((c) => c.status !== 'cancelled'),
+    () => dbContests.filter((c) => c.status !== 'cancelled' && c.status !== 'draft'),
     [dbContests]
   );
   const cancelledDbContests = useMemo(

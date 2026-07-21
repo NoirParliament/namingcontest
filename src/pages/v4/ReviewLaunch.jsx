@@ -112,6 +112,9 @@ export default function ReviewLaunch() {
   // ?launch=1 (from the platform map) auto-opens the launch/checkout
   // modal so that flow step lands directly on it.
   const [searchParams] = useSearchParams();
+  // The draft created for this launch attempt. A ref, not state, because a
+  // re-render must not lose it — losing it is what produced the duplicate.
+  const draftIdRef = useRef(null);
   const [launchOpen, setLaunchOpen] = useState(
     () => searchParams.get('launch') === '1'
   );
@@ -149,6 +152,25 @@ export default function ReviewLaunch() {
   // PaymentIntent for its price. Returns the client secret to confirm the card.
   const createDraftAndIntent = async (email) => {
     const row = buildContestRow();
+    // Reuse the draft from an earlier attempt in this session. A declined card
+    // used to leave its draft behind and mint a fresh one on retry, so a
+    // creator who mistyped a digit ended up with two contests: the abandoned
+    // draft and the one they actually paid for.
+    if (draftIdRef.current) {
+      const { data: pi, error: piErr } = await supabase.functions.invoke(
+        'create-payment-intent', { body: { contestId: draftIdRef.current } }
+      );
+      if (!piErr && !pi?.error) {
+        return {
+          contestId: draftIdRef.current,
+          clientSecret: pi.clientSecret,
+          paymentIntentId: pi.paymentIntentId,
+        };
+      }
+      // The draft is unusable (already paid, or gone). Fall through and make a
+      // new one rather than trapping the creator on a broken row.
+      draftIdRef.current = null;
+    }
     let contestId;
     if (user?.id) {
       const { data, error } = await supabase
@@ -164,6 +186,7 @@ export default function ReviewLaunch() {
       if (data?.error) throw new Error(data.error);
       contestId = data.contestId;
     }
+    draftIdRef.current = contestId;
     const { data: pi, error: piErr } = await supabase.functions.invoke('create-payment-intent', { body: { contestId } });
     if (piErr) throw new Error(piErr.message || 'Could not set up payment.');
     if (pi?.error) throw new Error(pi.error);
