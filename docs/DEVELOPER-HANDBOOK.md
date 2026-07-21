@@ -140,7 +140,7 @@ Everything below is enforced in Postgres, not in the UI:
    display names per the contest's anonymity mode; counts released when
    closed, or always to the creator).
 7. Votes readable only by their caster. Creator sees aggregates, not ballots.
-8. Rate limits: contact 3/h/IP; launch 5/h/IP + 3/h/email. **Fails open** by
+8. Rate limits: contact 10/h/IP; launch 30/h/IP + 15/h/email. **Fails open** by
    design (nuisance endpoints; availability > strictness). IPs stored only as
    date-salted SHA-256 hashes.
 9. All user-controlled values escaped in email HTML (`esc()` in

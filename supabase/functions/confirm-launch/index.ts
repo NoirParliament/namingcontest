@@ -76,6 +76,7 @@ Deno.serve(async (req) => {
     // Declared out here so the response can tell the client whether the
     // receipt carried a working sign-in link, or whether it needs to send one.
     let signInUrl: string | null = null;
+    let signInLinkError: string | null = null;
     try {
       const { data: u } = await admin.auth.admin.getUserById(contest.creator_id);
       const email = u.user?.email;
@@ -96,14 +97,20 @@ Deno.serve(async (req) => {
         // the session in the URL and no verifier exists.)
         if (isGuest) {
           try {
-            const { data: link } = await admin.auth.admin.generateLink({
+            const { data: link, error: linkErr } = await admin.auth.admin.generateLink({
               type: 'magiclink',
               email,
               options: { redirectTo: `${site}/v4/contest/${contestId}` },
             });
+            // Surfaced rather than swallowed: the usual cause is redirectTo
+            // not matching Supabase's Redirect URLs allow-list, which fails
+            // silently and looks identical to the feature not working.
+            if (linkErr) console.error('[confirm-launch] generateLink error:', linkErr.message);
             signInUrl = link?.properties?.action_link ?? null;
+            signInLinkError = linkErr?.message ?? null;
           } catch (e) {
-            console.error('[confirm-launch] generateLink failed:', e);
+            signInLinkError = (e as Error)?.message ?? String(e);
+            console.error('[confirm-launch] generateLink threw:', e);
           }
         }
 
@@ -134,7 +141,7 @@ Deno.serve(async (req) => {
       console.error('[confirm-launch] receipt email failed:', (mailErr as Error)?.message);
     }
 
-    return json({ ok: true, signInLinkSent: !!signInUrl });
+    return json({ ok: true, signInLinkSent: !!signInUrl, signInLinkError });
   } catch (e) {
     return json({ error: (e as Error)?.message ?? String(e) }, 500);
   }

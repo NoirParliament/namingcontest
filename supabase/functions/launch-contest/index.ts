@@ -7,9 +7,12 @@
 //
 // The contest only goes live after payment: the app creates a PaymentIntent
 // (create-payment-intent), confirms the card, and confirm-launch flips the
-// draft to live. The APP sends the login magic link (signInWithOtp) so it
-// carries the browser's PKCE verifier. SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY
-// are injected automatically.
+// draft to live. confirm-launch now puts a sign-in link in the receipt itself
+// for guests, so the app only sends a separate magic link if that failed.
+// (An earlier comment here claimed server-generated links can't work without
+// the browser's PKCE verifier. That assumed the PKCE flow; supabase-js
+// defaults to implicit, where no verifier exists. It was wrong.)
+// SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY are injected automatically.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { rateLimitOk } from '../_shared/rateLimit.ts';
 
@@ -45,11 +48,18 @@ Deno.serve(async (req) => {
     // as well would hand a fresh allowance to anyone who simply varies the
     // address, which is the whole attack. The per-email one is narrower — it
     // stops one address being hammered with sign-up mail from several
-    // sources. Five an hour is generous for a person launching a contest.
-    if (!await rateLimitOk(admin, req, 'launch-ip', 5, '1 hour')) {
+    // sources.
+    //
+    // Limits are deliberately loose. They exist to stop a script making
+    // thousands of accounts, and anything in that league blows past these
+    // instantly. Set tight they punish the honest instead: a whole office
+    // shares one IP, a retried card counts as another attempt, and testing a
+    // contest end to end burns several. The first version used 5 and 3, which
+    // locked our own client out mid-test.
+    if (!await rateLimitOk(admin, req, 'launch-ip', 30, '1 hour')) {
       return json({ error: 'Too many launch attempts from here. Please try again in an hour.' }, 429);
     }
-    if (!await rateLimitOk(admin, req, 'launch-email', 3, '1 hour', email)) {
+    if (!await rateLimitOk(admin, req, 'launch-email', 15, '1 hour', email)) {
       return json({ error: 'Too many launch attempts for this email. Please try again in an hour.' }, 429);
     }
 
