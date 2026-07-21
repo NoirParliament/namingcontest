@@ -44,9 +44,32 @@ function dropForeignSetup(session) {
   } catch { /* unparseable or storage blocked — the session is still the truth */ }
 }
 
+// Supabase reports a rejected magic link by redirecting to the app with the
+// reason in the URL — `#error=access_denied&error_code=otp_expired` and
+// friends — rather than by throwing. Nothing read it, so a dead link landed
+// you on an empty namespace that looked like a working but blank account.
+// The commonest cause is a link that was already opened: they're one-time,
+// and mail scanners often follow them before the recipient does.
+function readAuthError() {
+  try {
+    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const query = new URLSearchParams(window.location.search);
+    const code = hash.get('error_code') || query.get('error_code');
+    const desc = hash.get('error_description') || query.get('error_description');
+    if (!code && !desc) return null;
+    return {
+      code: code || 'unknown',
+      message: (desc || '').replace(/\+/g, ' ') || 'That sign-in link did not work.',
+    };
+  } catch {
+    return null;
+  }
+}
+
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState(() => readAuthError());
 
   useEffect(() => {
     let active = true;
@@ -59,6 +82,8 @@ export function AuthProvider({ children }) {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
       setSession(s);
       dropForeignSetup(s);
+      // A session arriving means whatever went wrong before is history.
+      if (s) setAuthError(null);
     });
     return () => {
       active = false;
@@ -70,6 +95,8 @@ export function AuthProvider({ children }) {
     session,
     user: session?.user ?? null,
     loading,
+    authError,
+    clearAuthError: () => setAuthError(null),
     // Sends a real magic link. `redirectTo` is where the emailed link lands
     // (defaults to the app root on the current origin — localhost in dev,
     // the deployed URL in prod).

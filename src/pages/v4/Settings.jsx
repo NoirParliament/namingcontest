@@ -103,7 +103,7 @@ export default function Settings() {
   // rows) so a real user never sees or clicks a fake contest. Real contests
   // arrive from the database in Phase 2. The non-authenticated demo path
   // (/v4/map) still shows the mocks.
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, authError } = useAuth();
   const isRealUser = !!user;
   // Real contests this user created (most-recent first). `latest` drives the
   // page's segment color/background and the account-menu contest chip.
@@ -1129,6 +1129,15 @@ export default function Settings() {
                 would double up. */}
             {isTrulyEmpty ? (
               <section className="v4-settings-empty">
+                {/* A rejected sign-in link lands here. Without this the page
+                    just showed an empty account, which reads as "your data is
+                    gone" rather than "that link didn't work". */}
+                {authError && !user && (
+                  <p className="v4-settings-auth-error" role="alert">
+                    That sign-in link didn’t work — they expire, and can only be
+                    opened once. Request a new one and it’ll take you straight in.
+                  </p>
+                )}
                 <h2 className="v4-settings-empty-title">Nothing here yet</h2>
                 <p className="v4-settings-empty-body">
                   Two ways to change that: start a contest of your own, or join
