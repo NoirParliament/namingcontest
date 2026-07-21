@@ -17,7 +17,7 @@
 //
 // Auth: public — visitors aren't signed in. Deploy WITH --no-verify-jwt.
 // Secrets: RESEND_API_KEY, CONTACT_TO (defaults to hello@namingcontest.com).
-import { buildEmail, FROM } from '../_shared/email.ts';
+import { buildEmail, esc, FROM } from '../_shared/email.ts';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -36,13 +36,6 @@ const LIMITS: Record<string, number> = {
   name: 120, company: 160, topic: 60, email: 254, message: 5000,
 };
 
-// The form is the only writer, but it's a public endpoint: escape everything
-// before it goes into HTML.
-function esc(s: string) {
-  return s.replace(/[&<>"']/g, (ch) => (
-    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch] as string
-  ));
-}
 
 async function send(apiKey: string, payload: Record<string, unknown>) {
   const res = await fetch('https://api.resend.com/emails', {
@@ -88,11 +81,11 @@ Deno.serve(async (req) => {
       bodyHtml: messageHtml,
       bodyText: message,
       panel: {
-        label: company ? `${esc(company)}` : 'Sender',
-        value: esc(name),
+        label: company || 'Sender',
+        value: name,
         link: { label: email, url: mailto },
       },
-      ctaLabel: `Reply to ${esc(firstName)}`,
+      ctaLabel: `Reply to ${firstName}`,
       ctaUrl: mailto,
     });
     await send(apiKey, {

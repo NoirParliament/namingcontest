@@ -19,7 +19,7 @@
 // Deploy WITH --no-verify-jwt (the DB calls it, not a logged-in user).
 // Secrets: NOTIFY_SECRET, RESEND_API_KEY, SITE_URL (link base for the app).
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { buildEmail, FROM } from '../_shared/email.ts';
+import { buildEmail, esc, FROM } from '../_shared/email.ts';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -106,7 +106,7 @@ Deno.serve(async (req) => {
         subId,
         eyebrow,
         headline: 'Your vote is needed',
-        bodyHtml: `The names are in for <strong>${name}</strong>, and yours is one of the votes that picks the winner. It only takes a minute.`,
+        bodyHtml: `The names are in for <strong>${esc(name)}</strong>, and yours is one of the votes that picks the winner. It only takes a minute.`,
         bodyText: `The names are in for ${name}, and yours is one of the votes that picks the winner. It only takes a minute.`,
         panel: count ? { label: 'Ready to review', value: `${count} ${count === 1 ? 'name' : 'names'} to choose from` } : undefined,
         ctaLabel: 'Cast your vote',
@@ -134,7 +134,7 @@ Deno.serve(async (req) => {
         subId,
         eyebrow,
         headline: 'We have a winner',
-        bodyHtml: `<strong>${name}</strong> has crowned its winning name:`,
+        bodyHtml: `<strong>${esc(name)}</strong> has crowned its winning name:`,
         bodyText: `${name} has crowned its winning name:`,
         feature: winnerText,
         ctaLabel: 'See the result',
@@ -149,7 +149,7 @@ Deno.serve(async (req) => {
           subId,
           eyebrow,
           headline: 'Your name won',
-          bodyHtml: `Your suggestion took the crown in <strong>${name}</strong>:`,
+          bodyHtml: `Your suggestion took the crown in <strong>${esc(name)}</strong>:`,
           bodyText: `Your suggestion took the crown in ${name}:`,
           feature: winnerText,
           ctaLabel: 'See your win',
