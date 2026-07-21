@@ -52,6 +52,10 @@ export default function ReviewLaunch() {
   // Set after a GUEST launch — shows the "check your email" screen while the
   // Edge Function has created their account + contest and emailed the link.
   const [pendingEmail, setPendingEmail] = useState(null);
+  // Why the receipt couldn't carry a sign-in link, when it couldn't. Shown on
+  // the confirmation screen so a failure is visible rather than silently
+  // costing the guest a second email.
+  const [signInLinkError, setSignInLinkError] = useState(null);
   // Per-row edit modal state — same pattern as ContestManage's
   // brief recap, so editing happens in-place instead of bouncing
   // the user back to the full chat.
@@ -214,6 +218,7 @@ export default function ReviewLaunch() {
       // This only runs if confirm-launch couldn't attach a link, which would
       // otherwise leave someone who has just paid with no way into the
       // account that was created for them.
+      if (data?.signInLinkError) setSignInLinkError(data.signInLinkError);
       if (!data?.signInLinkSent) {
         const redirectTo = `${window.location.origin}/v4/settings`;
         const { error: otpError } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo } });
@@ -241,10 +246,27 @@ export default function ReviewLaunch() {
             <div className="v4-review-inner" style={{ textAlign: 'center', paddingTop: 72 }}>
               <h1 className="v4-review-title">Your contest is live 🎉</h1>
               <p className="v4-review-subtitle" style={{ maxWidth: 440, margin: '14px auto 0' }}>
-                We sent your receipt to <strong>{pendingEmail}</strong>. Its
-                &ldquo;Go to your contest&rdquo; button signs you in and takes you
-                straight there.
+                {signInLinkError ? (
+                  <>
+                    We sent your receipt and a separate sign-in link to{' '}
+                    <strong>{pendingEmail}</strong>. Open the sign-in link first.
+                  </>
+                ) : (
+                  <>
+                    We sent your receipt to <strong>{pendingEmail}</strong>. Its
+                    &ldquo;Go to your contest&rdquo; button signs you in and takes
+                    you straight there.
+                  </>
+                )}
               </p>
+              {signInLinkError && (
+                <p style={{
+                  margin: '18px auto 0', maxWidth: 460, fontSize: 12,
+                  lineHeight: 1.5, opacity: 0.55, fontFamily: 'var(--font-text)',
+                }}>
+                  Diagnostic: {signInLinkError}
+                </p>
+              )}
             </div>
           </main>
         </div>
