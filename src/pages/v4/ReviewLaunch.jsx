@@ -196,7 +196,7 @@ export default function ReviewLaunch() {
   // STEP 2 (called by the modal after the card is confirmed): verify the
   // payment server-side and flip the contest live, then route.
   const handlePaid = async ({ contestId, paymentIntentId, email }) => {
-    const { data, error } = await supabase.functions.invoke('confirm-launch', { body: { contestId, paymentIntentId, origin: window.location.origin } });
+    const { data, error } = await supabase.functions.invoke('confirm-launch', { body: { contestId, paymentIntentId, origin: window.location.origin, isGuest: !user } });
     if (error || data?.error) {
       window.alert(
         'Your payment went through, but we hit a snag activating the contest:\n\n' +
@@ -209,24 +209,29 @@ export default function ReviewLaunch() {
       writeSetup({ contestId, launchedAt: Date.now() });
       setTimeout(() => navigate(`/v4/contest/${contestId}`), 400);
     } else {
-      // Guest → send the login magic link (carries the browser PKCE verifier,
-      // so it logs them in when clicked from this same browser), landing on
-      // their Namespace where the now-live contest appears.
-      const redirectTo = `${window.location.origin}/v4/settings`;
-      const { error: otpError } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo } });
-      if (otpError) {
-        console.error('[launch] login link failed:', otpError.message);
-        window.alert(
-          'Your contest is paid and live, but we could not send the login email:\n\n' +
-          otpError.message +
-          '\n\nYou can sign in from the homepage with the same email to reach it.'
-        );
+      // The receipt's own button now signs a guest in and lands them on their
+      // contest, so there's no second email to send: one message, one click.
+      // This only runs if confirm-launch couldn't attach a link, which would
+      // otherwise leave someone who has just paid with no way into the
+      // account that was created for them.
+      if (!data?.signInLinkSent) {
+        const redirectTo = `${window.location.origin}/v4/settings`;
+        const { error: otpError } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo } });
+        if (otpError) {
+          console.error('[launch] login link failed:', otpError.message);
+          window.alert(
+            'Your contest is paid and live, but we could not send the login email:\n\n' +
+            otpError.message +
+            '\n\nYou can sign in from the homepage with the same email to reach it.'
+          );
+        }
       }
       setPendingEmail(email);
     }
   };
 
-  // Guest launch → "your contest is live, check your email for the login link."
+  // Guest launch → paid, live, and the receipt in their inbox is also the way
+  // in. One email doing both jobs, so the copy points at that one thing.
   if (pendingEmail) {
     return (
       <div className="v4 lp-v3">
@@ -236,8 +241,9 @@ export default function ReviewLaunch() {
             <div className="v4-review-inner" style={{ textAlign: 'center', paddingTop: 72 }}>
               <h1 className="v4-review-title">Your contest is live 🎉</h1>
               <p className="v4-review-subtitle" style={{ maxWidth: 440, margin: '14px auto 0' }}>
-                We emailed a magic link to <strong>{pendingEmail}</strong>. Open it to log
-                in and manage your contest.
+                We sent your receipt to <strong>{pendingEmail}</strong>. Its
+                &ldquo;Go to your contest&rdquo; button signs you in and takes you
+                straight there.
               </p>
             </div>
           </main>
