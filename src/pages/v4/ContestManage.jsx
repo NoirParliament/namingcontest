@@ -135,7 +135,7 @@ export default function ContestManage() {
   // crew"), render the page with that contest's data instead of the
   // user's real setup blob — otherwise the dashboard shows their
   // unrelated brief and segment, which is confusing.
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   // Real signed-in identity for the account menu (avatar + email), so the
   // manage page shows YOU, not the mock creator photo.
   const [profile, setProfile] = useState(null);
@@ -160,6 +160,12 @@ export default function ContestManage() {
   const [dbLoading, setDbLoading] = useState(!mockContest && !preloaded);
   useEffect(() => {
     if (mockContest) { setDbLoading(false); return; }
+    // Wait for auth to resolve before asking. RLS returns a contest only to
+    // its creator or a participant, so querying while the session is still
+    // being established comes back empty — and arriving from a magic link is
+    // exactly that moment: supabase-js is still turning the URL hash into a
+    // session when this first runs.
+    if (authLoading) return;
     let active = true;
     supabase.from('contests').select('*').eq('id', id).single().then(({ data }) => {
       if (!active) return;
@@ -167,7 +173,10 @@ export default function ContestManage() {
       setDbLoading(false);
     });
     return () => { active = false; };
-  }, [id, mockContest]);
+    // user?.id is a dependency so signing in refetches. Without it the empty
+    // result from the signed-out moment stuck, and someone who had just
+    // followed a sign-in link sat on a page telling them to sign in.
+  }, [id, mockContest, authLoading, user?.id]);
 
   const setup = mockContest
     ? { ...realSetup, ...mockContest, contestId: mockContest.id }
@@ -467,7 +476,7 @@ export default function ContestManage() {
   // a participant, or anyone once it's closed — so this is almost always
   // "you're not signed in", which is the normal case for a link opened from
   // email in another browser.
-  if (!mockContest && !dbLoading && !dbContest) {
+  if (!mockContest && !authLoading && !dbLoading && !dbContest) {
     return (
       <div className="v4 lp-v3">
         <div className="v4-screen">
