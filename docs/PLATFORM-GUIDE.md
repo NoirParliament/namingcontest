@@ -107,7 +107,8 @@ devices. It's privacy-friendly (no cookies), so no consent banner is needed.
    icons in the email footers currently point at placeholder handles.
 3. **Replace the landing page testimonials** with real ones.
 4. **Senior developer review** — one error-and-safety pass before launch.
-5. **Switch Stripe to live keys** (developer task, last thing before launch).
+5. **Switch Stripe to live keys** — a developer task with a step-by-step
+   checklist in the Going Live guide, done last, just before launch.
 
 ### Setting up the mailbox in eNom
 
@@ -137,5 +138,5 @@ always be undone.
 ## Getting help
 
 Bugs and questions during the beta go to Matt. After handoff, the Developer
-Handbook (separate document) gives a maintainer everything needed to run,
-fix, and extend the platform.
+Handbook and the Going Live guide (separate documents) give a maintainer
+everything needed to run, fix, extend, and launch the platform.
