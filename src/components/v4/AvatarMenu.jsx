@@ -61,7 +61,18 @@ export default function AvatarMenu({ email, name, photo, defaultPhoto, seed, ton
     // where the landing page, seeing a signed-in user, bounced you straight
     // back to the namespace. You'd land on an account page a moment after
     // asking to leave one.
-    try { await supabase.auth.signOut(); } catch { /* leave anyway */ }
+    // Global sign-out revokes the refresh token server-side, which is the
+    // right thing — but it's a network call, and if it fails the session is
+    // still in local storage and you are still signed in. Fall back to a
+    // LOCAL sign-out, which just drops the stored session and cannot fail for
+    // network reasons. Being unable to leave is worse than a token that stays
+    // valid until it expires.
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) await supabase.auth.signOut({ scope: 'local' });
+    } catch {
+      try { await supabase.auth.signOut({ scope: 'local' }); } catch { /* nothing left to try */ }
+    }
     // Then the guest blob, so no stale identity lingers behind.
     try { localStorage.removeItem('v4_contest_setup'); } catch {}
     // Same body-fade exit treatment as ExitLink/BrandLink, so signing
