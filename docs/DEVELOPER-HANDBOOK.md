@@ -194,6 +194,15 @@ keep in sync by re-pasting), Redirect URLs allow-list.
   are one-time; mail scanners commonly consume them first).
 - Sign-out awaits `auth.signOut()` and falls back to `{scope:'local'}` on
   failure — being unable to leave is worse than an unrevoked refresh token.
+- **Guest launch sends ONE email.** confirm-launch calls
+  `admin.generateLink({ type: 'magiclink' })` for guests and uses the result as
+  the receipt's CTA, so the receipt both confirms payment and signs them in,
+  landing on their contest. The client only sends a separate `signInWithOtp`
+  message if that failed. Note `redirectTo` must match Supabase's Redirect
+  URLs allow-list — `https://namingcontest.com/**` — or generateLink fails and
+  the fallback quietly takes over. A comment in launch-contest used to claim
+  server-generated links can't work without the browser's PKCE verifier; that
+  assumed the PKCE flow, and supabase-js defaults to implicit.
 - **The guest blob** `localStorage.v4_contest_setup` (via `utils/v4Brief.js`)
   carries a guest's identity and in-progress contest before an account
   exists. Historic bug source: it must NEVER stand in for a real session.

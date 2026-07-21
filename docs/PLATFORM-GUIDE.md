@@ -64,6 +64,10 @@ All custom-designed to match the site, each in the contest's own colour theme.
 | "Your name won" | The winner personally | Same moment |
 | Contact form receipt | Whoever wrote in | Right after sending |
 
+A creator who pays without being signed in gets **one** email, not two: the
+receipt's "Go to your contest" button signs them in and takes them straight
+there, so there is no separate sign-in message to hunt for.
+
 Gmail sometimes places one in the Promotions tab. This improves on its own as
 the domain builds sending reputation over the first weeks of real use.
 

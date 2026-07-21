@@ -259,14 +259,6 @@ export default function ReviewLaunch() {
                   </>
                 )}
               </p>
-              {signInLinkError && (
-                <p style={{
-                  margin: '18px auto 0', maxWidth: 460, fontSize: 12,
-                  lineHeight: 1.5, opacity: 0.55, fontFamily: 'var(--font-text)',
-                }}>
-                  Diagnostic: {signInLinkError}
-                </p>
-              )}
             </div>
           </main>
         </div>
