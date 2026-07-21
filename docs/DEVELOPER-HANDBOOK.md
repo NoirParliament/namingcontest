@@ -157,6 +157,7 @@ Deploy: `npx supabase functions deploy <name> [--no-verify-jwt] --project-ref kg
 | `create-payment-intent` | yes | PI for `contests.price` (server-authoritative), rejects < $0.50 |
 | `confirm-launch` | yes | Retrieves PI from Stripe, checks status/metadata/amount, flips contest live, sends branded receipt |
 | `notify` | **no** (secret header) | Lifecycle emails, called by DB trigger via pg_net with `x-notify-secret` (Vault). Dedupe stamps written BEFORE sending. Resend batch endpoint (100/call) |
+| `stripe-webhook` | **no** (signature) | Backstop for `payment_intent.succeeded`. Verifies the Stripe signature with `constructEventAsync` (the sync variant needs Node crypto), then delegates to confirm-launch. Fails closed: with no `STRIPE_WEBHOOK_SECRET` it rejects everything |
 | `contact` | **no** | Contact form → team inbox (reply_to = visitor) + visitor receipt. Rate-limited, escaped, field caps |
 
 Shared modules: `_shared/email.ts` (design system + `esc` + `sendEmail` +
@@ -171,7 +172,7 @@ redeploy, and none of these are secret-safe):**
 not access control).
 
 **Supabase function secrets** (`npx supabase secrets set K=V --project-ref …`):
-`STRIPE_SECRET_KEY`, `RESEND_API_KEY`, `NOTIFY_SECRET`, `SITE_URL`,
+`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `RESEND_API_KEY`, `NOTIFY_SECRET`, `SITE_URL`,
 `CONTACT_TO` (defaults to hello@namingcontest.com).
 
 **Vault:** the notify secret also lives in Supabase Vault (0015) for the DB
@@ -217,10 +218,16 @@ keep in sync by re-pasting), Redirect URLs allow-list.
    columns trigger 0021 blocks from every non-service-role path. Sends the
    receipt email with Stripe's `receipt_url`.
 
-No webhooks: verification is pull-based in confirm-launch. Equivalent
-guarantee for this flow since nothing goes live without step 4; a reviewer
-may still prefer adding a `payment_intent.succeeded` webhook as belt-and-braces
-for abandoned-tab cases.
+5. `stripe-webhook` backstops the browser. There is roughly a second between
+   the card succeeding and step 4 running; if the tab closes in that window
+   the money is taken and the contest never goes live. Stripe retries for up
+   to three days independently of any browser, so the webhook completes those
+   payments. It does not reimplement anything — it verifies the signature,
+   then calls `confirm-launch` with the same payload the browser sends, using
+   the service role key. confirm-launch's `if (contest.paid) return` guard
+   makes the pair idempotent, so whichever arrives second is a no-op and no
+   duplicate receipt is sent. Deliberately additive: the existing path is
+   unmodified, so a broken webhook can only leave things as they were.
 
 **Test → live switch:** replace `STRIPE_SECRET_KEY` (Supabase secret) and
 `VITE_STRIPE_PUBLISHABLE_KEY` (Vercel env + redeploy) with live keys from the
@@ -263,16 +270,18 @@ The app began as a front-end-only prototype. Remnants, deliberately kept:
   before handoff on purpose. Tag `demo-complete-2026-07-20` restores the
   routed demo if ever wanted.
 - `src/pages/*.jsx` outside `v4/`, `legal/`, `system/` are the legacy v1
-  prototype (BriefBuilder etc.), still routed at legacy paths but not linked
-  from the product. Candidates for deletion in a cleanup pass.
+  prototype (BriefBuilder etc.). **Unrouted** — they were live in production
+  serving mock data as though real, and `/docs` additionally advertised
+  $9/$29/$89 tiers that never shipped. Removing their imports cut the bundle
+  from 2,800 kB to 1,726 kB. The files remain; deleting them is a safe
+  cleanup-pass candidate.
 - Some files are oddly named (`PartnerSimulator`, `LegalCrumbs`) to dodge
   ad-blockers — do not rename back.
 
 ## 13. Known gaps / recommended review focus
 
 1. `readSetup()` fallbacks vs. real sessions (see §9) — the historic bug source.
-2. No Stripe webhook (see §10) — consider adding.
-3. Social handles in email footers are **placeholder accounts nobody owns**
+2. Social handles in email footers are **placeholder accounts nobody owns**
    (`x.com/namingcontest` etc., defined in `_shared/email.ts` SOCIAL const).
 4. Landing testimonials are fictional; swap before launch.
 5. Rich link previews: SPA serves one static `index.html`, so shared reveal
