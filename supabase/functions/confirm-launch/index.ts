@@ -28,7 +28,7 @@ const DAY = 86400000;
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   try {
-    const { contestId, paymentIntentId, origin } = await req.json();
+    const { contestId, paymentIntentId, origin, isGuest } = await req.json();
     if (!contestId || !paymentIntentId) return json({ error: 'Missing contestId or paymentIntentId.' }, 400);
 
     const admin = createClient(
@@ -73,6 +73,9 @@ Deno.serve(async (req) => {
 
     // Send the branded launch receipt (best-effort — never fail the launch if
     // the email hiccups). Links to Stripe's official hosted receipt.
+    // Declared out here so the response can tell the client whether the
+    // receipt carried a working sign-in link, or whether it needs to send one.
+    let signInUrl: string | null = null;
     try {
       const { data: u } = await admin.auth.admin.getUserById(contest.creator_id);
       const email = u.user?.email;
@@ -81,6 +84,29 @@ Deno.serve(async (req) => {
       if (email && apiKey) {
         const site = typeof origin === 'string' ? origin : 'https://namingcontest.com';
         const workingName = contest.working_name || 'your contest';
+        // A guest has no session yet — they paid before having an account.
+        // Rather than emailing a separate sign-in link, make THIS email's
+        // button sign them in and land on their contest: one email, one
+        // click. The token goes only to the address that just paid, which is
+        // the same trust model as any magic-link email.
+        //
+        // (An old comment claimed server-generated links can't work because
+        // they lack the browser's PKCE verifier. That assumed the PKCE flow;
+        // supabase-js defaults to implicit, where the verify endpoint returns
+        // the session in the URL and no verifier exists.)
+        if (isGuest) {
+          try {
+            const { data: link } = await admin.auth.admin.generateLink({
+              type: 'magiclink',
+              email,
+              options: { redirectTo: `${site}/v4/contest/${contestId}` },
+            });
+            signInUrl = link?.properties?.action_link ?? null;
+          } catch (e) {
+            console.error('[confirm-launch] generateLink failed:', e);
+          }
+        }
+
         const dollars = (pi.amount / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
         const voterLine = contest.voter_tier ? ` · up to ${contest.voter_tier} voters` : '';
         const body = buildEmail({
@@ -95,7 +121,12 @@ Deno.serve(async (req) => {
             link: receiptUrl ? { label: 'View your receipt', url: receiptUrl } : undefined,
           },
           ctaLabel: 'Go to your contest',
-          ctaUrl: `${site}/v4/contest/${contestId}`,
+          // Signs a guest in on the way. Falls back to the plain URL, which
+          // lands on the sign-in prompt rather than a dead end.
+          ctaUrl: signInUrl || `${site}/v4/contest/${contestId}`,
+          note: signInUrl
+            ? 'This button signs you in as well, so keep the email if you need to get back to your contest.'
+            : undefined,
         });
         await sendEmail(apiKey, email, `Your contest is live — ${workingName}`, body);
       }
@@ -103,7 +134,7 @@ Deno.serve(async (req) => {
       console.error('[confirm-launch] receipt email failed:', (mailErr as Error)?.message);
     }
 
-    return json({ ok: true });
+    return json({ ok: true, signInLinkSent: !!signInUrl });
   } catch (e) {
     return json({ error: (e as Error)?.message ?? String(e) }, 500);
   }
