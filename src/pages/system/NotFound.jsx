@@ -36,13 +36,9 @@ export default function NotFound() {
               >
                 Back to home <span className="arrow">→</span>
               </button>
-              <button
-                type="button"
-                className="btn btn-secondary btn-lg"
-                onClick={() => navigate('/v4/map')}
-              >
-                Platform map
-              </button>
+              {/* The "Platform map" button that sat here pointed at the demo
+                  gallery, which is unrouted for launch — it would have been a
+                  404 offered from a 404. */}
             </div>
           </main>
           <Footer />
