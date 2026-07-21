@@ -13,6 +13,7 @@ import PaywallSimulator from './components/PaywallSimulator';
 // File named PartnerSimulator (not "Affiliate…") so ad-blockers/Brave
 // Shields don't block the module by name (ERR_BLOCKED_BY_CLIENT).
 import AffiliateSimulator from './components/PartnerSimulator';
+import { Analytics } from '@vercel/analytics/react';
 
 // Pages
 import LandingPage          from '@pages/LandingPage';
@@ -487,6 +488,7 @@ export default function App() {
       <BetaGate>
         <AppInner />
       </BetaGate>
+      <Analytics />
     </BrowserRouter>
   );
 }

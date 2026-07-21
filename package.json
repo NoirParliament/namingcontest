@@ -17,6 +17,7 @@
     "@stripe/react-stripe-js": "^6.3.0",
     "@stripe/stripe-js": "^9.5.0",
     "@supabase/supabase-js": "^2.110.3",
+    "@vercel/analytics": "^2.0.1",
     "boring-avatars": "^2.0.4",
     "canvas-confetti": "^1.9.3",
     "docx": "^9.6.1",
