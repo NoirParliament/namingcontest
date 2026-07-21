@@ -55,10 +55,14 @@ export default function AvatarMenu({ email, name, photo, defaultPhoto, seed, ton
     };
   }, [open]);
 
-  const handleSignOut = () => {
-    // End the real Supabase session, then clear the prototype's local blob
-    // so no stale mock identity lingers after sign-out.
-    supabase.auth.signOut();
+  const handleSignOut = async () => {
+    // AWAIT the sign-out. It's a network round trip, and leaving without it
+    // meant navigating home while the session was still live in context —
+    // where the landing page, seeing a signed-in user, bounced you straight
+    // back to the namespace. You'd land on an account page a moment after
+    // asking to leave one.
+    try { await supabase.auth.signOut(); } catch { /* leave anyway */ }
+    // Then the guest blob, so no stale identity lingers behind.
     try { localStorage.removeItem('v4_contest_setup'); } catch {}
     // Same body-fade exit treatment as ExitLink/BrandLink, so signing
     // out has the gentle "leaving" feel instead of a jump-cut to the
