@@ -10816,3 +10816,19 @@ select.v4-pvote-sort-select:hover {
   .v4-map-step { flex-wrap: wrap; }
 }
 
+
+/* Join failure shown on the invitation itself — most often the contest being
+   full (migration 0022). Warm rather than alarming: nothing has gone wrong
+   with the visitor's account, the contest simply has no seat left, and there
+   is nothing for them to fix. */
+.v4-join-error-note {
+  margin: 0 auto 16px;
+  max-width: 38ch;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(250, 222, 204, 0.55);
+  color: #8a4a1c;
+  font-family: var(--font-text);
+  font-size: 14px;
+  line-height: 1.5;
+}
