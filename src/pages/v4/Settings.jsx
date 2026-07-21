@@ -166,9 +166,19 @@ export default function Settings() {
   // read-only (it IS the sign-in identity). Display name loads from the
   // profiles row and saves back to it, so it survives re-login.
   const email = user?.email || setup.userEmail || '';
-  const [photo, setPhoto] = useState(setup.userPhoto || null);
+  // Seeded from the guest blob ONLY when this browser has no Supabase session
+  // parked in storage. useState's initialiser runs once, before auth resolves,
+  // so seeding unconditionally showed a signed-in visitor the demo's name and
+  // photo until the profile fetch landed — and kept them if that fetch found
+  // no display name. Checking the session token is synchronous, so we can get
+  // this right on the first render rather than correcting it afterwards.
+  const hasStoredSession = (() => {
+    try { return Object.keys(localStorage).some((k) => /^sb-.*-auth-token$/.test(k)); }
+    catch { return false; }
+  })();
+  const [photo, setPhoto] = useState(hasStoredSession ? null : (setup.userPhoto || null));
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
-  const [name, setName] = useState(setup.userName || '');
+  const [name, setName] = useState(hasStoredSession ? '' : (setup.userName || ''));
   const [savedFlash, setSavedFlash] = useState(false);
   // Until the profile fetch settles we don't know the real name/email, so we
   // hold off the "Add your name" / "no email saved" empty-state text to avoid
@@ -190,12 +200,14 @@ export default function Settings() {
       .single()
       .then(({ data, error }) => {
         if (!active) return;
-        if (!error) {
-          if (!nameEditedRef.current && data?.display_name) setName(data.display_name);
-          // DB is the source of truth for a real user's photo — clear any
-          // stale localStorage photo when the profile has none.
-          setPhoto(data?.avatar_url || null);
-        }
+        // The profile row is the ONLY source of identity for a signed-in
+        // user. Both fields are set unconditionally, including to empty —
+        // this used to read `&& data?.display_name`, so someone who hadn't
+        // picked a display name yet kept whatever name the localStorage blob
+        // still held, which is how a demo identity survived a real sign-in.
+        // An empty name is correct there: it shows the "Add your name" prompt.
+        if (!nameEditedRef.current) setName(data?.display_name || '');
+        setPhoto(data?.avatar_url || null);
         setProfileReady(true);
       });
     return () => { active = false; };
@@ -299,7 +311,10 @@ export default function Settings() {
   // Real contest from setup — DEMO PATH ONLY. Real accounts read their
   // contests from the DB (dbContests), never from localStorage, so stale
   // localStorage can't surface a mock contest to a logged-in user.
-  const realContest = (!isRealUser && setup.contestId) ? {
+  // hasStoredSession as well as isRealUser: `user` is null for the first
+  // render or two while auth resolves, which flashed a demo contest at a
+  // signed-in visitor before it vanished.
+  const realContest = (!isRealUser && !hasStoredSession && setup.contestId) ? {
     id: setup.contestId,
     name: setup.workingName || 'Your contest',
     tierKey,
