@@ -1460,16 +1460,7 @@ export default function LandingPage() {
   // marketing hero briefly. Returning <Navigate> from the function
   // bails out of render before any of that DOM exists.
   const location = useLocation();
-  if (!location.hash) {
-    const setup = readSetup();
-    const isAuthed = !!(setup.userEmail || setup.contestId);
-    if (isAuthed) {
-      const dest = setup.contestId
-        ? `/v4/contest/${setup.contestId}`
-        : '/v4/settings';
-      return <Navigate to={dest} replace />;
-    }
-  }
+  const { user, loading: authLoading } = useAuth();
 
   // Honor a #hash on load (e.g. arriving at /#faq from another page's
   // footer) — the browser's native hash-scroll fires before the long
@@ -1482,6 +1473,37 @@ export default function LandingPage() {
     }, 320);
     return () => clearTimeout(t);
   }, []);
+
+  // Waiting for auth would flash the marketing hero at someone who is signed
+  // in — the very thing the synchronous redirect exists to avoid. But we can
+  // tell cheaply whether waiting is even necessary: Supabase parks its
+  // session under an sb-<ref>-auth-token key, so if none exists this is
+  // definitely a guest and there's nothing to wait for.
+  const maybeSignedIn = (() => {
+    try {
+      return Object.keys(localStorage).some((k) => /^sb-.*-auth-token$/.test(k));
+    } catch {
+      return false; // storage blocked — treat as guest, the blob check below still runs
+    }
+  })();
+  if (!location.hash && authLoading && maybeSignedIn) return null;
+
+  if (!location.hash && !authLoading) {
+    const setup = readSetup();
+    if (user) {
+      // A real session wins over the localStorage blob. That blob can hold a
+      // demo/guest contestId from an earlier visit, and this used to send a
+      // properly signed-in person straight into it — signing in and landing
+      // in someone else's demo contest. Their own contests are listed in the
+      // namespace, so that's where a real account belongs.
+      return <Navigate to="/v4/settings" replace />;
+    }
+    // Guest mid-flow: the blob is all we have, and its contestId is genuinely
+    // theirs — an unfinished contest they started before creating an account.
+    if (setup.userEmail || setup.contestId) {
+      return <Navigate to={setup.contestId ? `/v4/contest/${setup.contestId}` : '/v4/settings'} replace />;
+    }
+  }
 
   // Tier CTAs route into the unified V4 setup flow.
   // - Card CTAs (Personal/Group/Business) → persist tier + jump straight
