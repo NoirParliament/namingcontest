@@ -41,6 +41,7 @@ import LiveResults from '../../components/v4/LiveResults';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import PickWinnerModal from '../../components/v4/PickWinnerModal';
 import ConfirmModal from '../../components/v4/ConfirmModal';
+import SignInModal from '../../components/v4/SignInModal';
 import WinnerHero from '../../components/v4/WinnerHero';
 import CatchwordConsultBlock from '../../components/v4/CatchwordConsultBlock';
 import PdfReport from '../../components/v4/PdfReport';
@@ -138,6 +139,7 @@ export default function ContestManage() {
   // Real signed-in identity for the account menu (avatar + email), so the
   // manage page shows YOU, not the mock creator photo.
   const [profile, setProfile] = useState(null);
+  const [signinOpen, setSigninOpen] = useState(false);
   useEffect(() => {
     if (!user?.id) return;
     let active = true;
@@ -181,7 +183,13 @@ export default function ContestManage() {
           voterTier: dbContest.voter_tier,
           launchedAt: dbContest.launched_at ? new Date(dbContest.launched_at).getTime() : Date.now(),
         }
-      : realSetup;
+      // A real contest id that didn't load falls back to NOTHING, not to the
+      // localStorage blob. It used to use realSetup, so opening a manage link
+      // while signed out — which is what happens when the receipt email is
+      // read in a different browser — rendered your old guest contest's name,
+      // segment and brief at a real contest's URL. It looked like the demo
+      // because it WAS the demo, dressed in a real URL.
+      : (mockContest ? realSetup : {});
   const subId = setup.subSegmentId || 'b1';
 
   // Phase: a mock/demo contest uses the URL ?phase= param (defaults to
@@ -454,6 +462,45 @@ export default function ContestManage() {
       // silent is fine here; the social buttons alongside still work.
     }
   };
+
+  // Loaded, but nothing came back. RLS only returns a contest to its creator,
+  // a participant, or anyone once it's closed — so this is almost always
+  // "you're not signed in", which is the normal case for a link opened from
+  // email in another browser.
+  if (!mockContest && !dbLoading && !dbContest) {
+    return (
+      <div className="v4 lp-v3">
+        <div className="v4-screen">
+          <SegmentThemeBackdrop subId={subId} minimal />
+          <main className="v4-review" role="main">
+            <div className="v4-review-inner" style={{ textAlign: 'center', paddingTop: 120 }}>
+              <h1 className="v4-review-title">Sign in to open this contest</h1>
+              <p className="v4-review-subtitle" style={{ maxWidth: '42ch', margin: '10px auto 26px' }}>
+                {user
+                  ? 'This contest isn’t on your account. If someone else set it up, ask them to send you their invitation link.'
+                  : 'You’re signed out in this browser. Sign in with the email you used and we’ll bring you straight here.'}
+              </p>
+              {!user && (
+                <button
+                  type="button"
+                  className="btn btn-primary btn-lg"
+                  onClick={() => setSigninOpen(true)}
+                >
+                  <PaperPlaneTilt weight="bold" size={14} />
+                  Send me a sign-in link
+                </button>
+              )}
+            </div>
+          </main>
+          <SignInModal
+            open={signinOpen}
+            onClose={() => setSigninOpen(false)}
+            redirectPath={`/v4/contest/${id}`}
+          />
+        </div>
+      </div>
+    );
+  }
 
   // While a real contest is still loading, show a calm loading state rather
   // than flashing the stale default ("Your Contest", blue) first.
