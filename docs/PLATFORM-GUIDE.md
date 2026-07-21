@@ -78,6 +78,16 @@ When we go live, a developer switches the test keys for live keys (about ten
 minutes of work). Everything is already connected; real charging is simply
 disabled until then.
 
+**A note on reliability.** Payments are confirmed twice over. The browser
+confirms the card and the platform then verifies that payment directly with
+Stripe before the contest goes live, so nothing can go live without a real
+payment. Separately, Stripe notifies the platform of every successful payment
+on its own channel, which covers the rare case where someone's browser closes
+or loses connection in the second after paying. Without that, the money would
+be taken and the contest would never start. Whichever arrives first completes
+the launch and the other does nothing, so nobody is charged twice or emailed
+twice.
+
 ## Visitor statistics
 
 Vercel Analytics is installed on the site. In **Vercel → the project →
