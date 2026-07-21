@@ -16,20 +16,6 @@ import AffiliateSimulator from './components/PartnerSimulator';
 
 // Pages
 import LandingPage          from '@pages/LandingPage';
-import WireframeDashboard   from '@pages/WireframeDashboard';
-import SelectSegment        from '@pages/SelectSegment';
-import SelectSubSegment     from '@pages/SelectSubSegment';
-import AuthPage             from '@pages/AuthPage';
-import BriefBuilder         from '@pages/BriefBuilder';
-import ContestTypeSelection from '@pages/ContestTypeSelection';
-import UploadNames          from '@pages/UploadNames';
-import InvitationGuidance   from '@pages/InvitationGuidance';
-import ContestLive          from '@pages/ContestLive';
-import VotingInterface      from '@pages/VotingInterface';
-import ResultsPage          from '@pages/ResultsPage';
-import Dashboard            from '@pages/dashboard/Dashboard';
-import ContestDetail        from '@pages/ContestDetail';
-import DocumentationPage    from '@pages/DocumentationPage';
 import V4PickTier          from '@pages/v4/PickTier';
 import V4BriefChat         from '@pages/v4/BriefChat';
 import V4ReviewLaunch      from '@pages/v4/ReviewLaunch';
@@ -432,20 +418,22 @@ function AppInner() {
       <Routes>
         <Route path="/"                                element={<LandingPage />} />
         <Route path="/link-expired"                    element={<LinkExpired />} />
-        <Route path="/wireframe"                       element={<WireframeDashboard />} />
-        <Route path="/select"                          element={<SelectSegment />} />
-        <Route path="/select/:group"                   element={<SelectSubSegment />} />
-        <Route path="/contest-type/:group/:subSegment" element={<ContestTypeSelection />} />
-        <Route path="/auth"                            element={<AuthPage />} />
-        <Route path="/brief/:group/:subSegment"        element={<BriefBuilder />} />
-        <Route path="/upload-names"                    element={<UploadNames />} />
-        <Route path="/invite/:contestId"               element={<InvitationGuidance />} />
-        <Route path="/contest/:contestId"              element={<ContestLive />} />
-        <Route path="/vote/:contestId"                 element={<VotingInterface />} />
-        <Route path="/results/:contestId"              element={<ResultsPage />} />
-        <Route path="/dashboard"                       element={<Dashboard />} />
-        <Route path="/contest-detail/:contestId"       element={<ContestDetail />} />
-        <Route path="/docs"                            element={<DocumentationPage />} />
+        {/* The v1 prototype routes are unrouted for launch: /wireframe,
+            /select, /contest-type, /auth, /brief, /upload-names, /invite,
+            /contest/:id, /vote/:id, /results/:id, /dashboard,
+            /contest-detail/:id and /docs. They rendered the original
+            front-end-only prototype against mock data, so a visitor landing
+            on one saw invented contests that looked real — /contest/:id was
+            found live in production doing exactly that. Nothing in the v4
+            product linked to any of them; the only inbound links were these
+            pages pointing at each other.
+
+            /docs additionally described a product that no longer exists:
+            $9/$29/$89 tiers and webhook-based feature unlocking, neither of
+            which shipped.
+
+            The page components remain in src/pages/ — see the Developer
+            Handbook's demo/mock section. Restoring a route is one line. */}
         <Route path="/v4/pick"                         element={<V4PickTier />} />
         <Route path="/v4/setup/brief"                  element={<V4BriefChat />} />
         <Route path="/v4/setup/review"                 element={<V4ReviewLaunch />} />
