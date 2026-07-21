@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import '@styles/tokens.css';
 import '@styles/globals.css';
 // Mobile/tablet layer — every rule inside @media queries, so the
@@ -487,6 +488,7 @@ export default function App() {
       <BetaGate>
         <AppInner />
       </BetaGate>
+      <Analytics />
     </BrowserRouter>
   );
 }
