@@ -10,6 +10,7 @@ email, Vercel hosting.
 2. [`GOING-LIVE.md`](docs/GOING-LIVE.md) — day-one setup, every config value's origin, fresh environments, launch checklist
 3. [`TESTING-EMAILS.md`](docs/TESTING-EMAILS.md) — exercising the email lifecycle in minutes
 4. [`PLATFORM-GUIDE.md`](docs/PLATFORM-GUIDE.md) — the plain-English client guide
+5. [`REVIEW-BRIEF.md`](docs/REVIEW-BRIEF.md) — scope for the pre-launch security reviewer
 
 Quick start:
 
