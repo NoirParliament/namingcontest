@@ -11,6 +11,7 @@
 // carries the browser's PKCE verifier. SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY
 // are injected automatically.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { rateLimitOk } from '../_shared/rateLimit.ts';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -35,6 +36,22 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     );
+
+    // Unauthenticated and it creates an auth user, so a loop here fills
+    // auth.users with addresses nobody asked to sign up — and each one can
+    // trigger a magic-link email from our domain.
+    //
+    // Two checks. The IP one is what actually stops a loop: keying on email
+    // as well would hand a fresh allowance to anyone who simply varies the
+    // address, which is the whole attack. The per-email one is narrower — it
+    // stops one address being hammered with sign-up mail from several
+    // sources. Five an hour is generous for a person launching a contest.
+    if (!await rateLimitOk(admin, req, 'launch-ip', 5, '1 hour')) {
+      return json({ error: 'Too many launch attempts from here. Please try again in an hour.' }, 429);
+    }
+    if (!await rateLimitOk(admin, req, 'launch-email', 3, '1 hour', email)) {
+      return json({ error: 'Too many launch attempts for this email. Please try again in an hour.' }, 429);
+    }
 
     // Find-or-create the user WITHOUT minting a magic link. (Generating a link
     // here stamps a "link sent" time on the user, which made the app's real
