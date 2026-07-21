@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import '@styles/tokens.css';
 import '@styles/globals.css';
 // Mobile/tablet layer — every rule inside @media queries, so the
@@ -49,6 +49,8 @@ import TermsOfService      from '@pages/legal/TermsOfService';
 // Shields don't block the module by name (ERR_BLOCKED_BY_CLIENT).
 import CookiePolicy        from '@pages/legal/LegalCrumbs';
 import NotFound            from '@pages/system/NotFound';
+import LinkExpired         from '@pages/system/LinkExpired';
+import { useAuth } from './lib/AuthContext';
 import ErrorState         from '@pages/system/ErrorState';
 import ContactPage        from '@pages/system/ContactPage';
 import BetaGate            from './components/BetaGate';
@@ -414,10 +416,21 @@ function FloatingNav() {
 // ─── App ─────────────────────────────────────────────────────────────────────
 
 function AppInner() {
+  // A refused sign-in link arrives as #error=... on whatever redirect_to the
+  // email carried — usually /v4/settings, where a signed-out visitor sees the
+  // empty-account state and reasonably concludes their data is gone. Send
+  // them somewhere that explains itself instead.
+  const { authError, user } = useAuth();
+  const { pathname } = useLocation();
+  if (authError && !user && pathname !== '/link-expired') {
+    return <Navigate to="/link-expired" replace />;
+  }
+
   return (
     <>
       <Routes>
         <Route path="/"                                element={<LandingPage />} />
+        <Route path="/link-expired"                    element={<LinkExpired />} />
         <Route path="/wireframe"                       element={<WireframeDashboard />} />
         <Route path="/select"                          element={<SelectSegment />} />
         <Route path="/select/:group"                   element={<SelectSubSegment />} />

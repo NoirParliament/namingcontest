@@ -6,13 +6,18 @@
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Nav, Footer } from '../LandingPage';
+import { SegmentThemeBackdrop } from '../../data/v4/segmentTheme';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 import '../../styles/legal.css';
 import '../../styles/system.css';
 
+// Same fixed segment as the 404 and expired-link pages — the three are
+// siblings and should feel like one set.
+const SYSTEM_SEGMENT = 'p1';
+
 export default function ErrorState({
-  code = 'Something went wrong',
+  code = 'Error',
   title = 'We hit a snag.',
   message = 'An unexpected error occurred. Try again in a moment — if it keeps happening, get in touch and we’ll sort it out.',
 }) {
@@ -23,12 +28,13 @@ export default function ErrorState({
   }, [pathname]);
 
   return (
-    <div className="lp-v3 legal-page">
+    <div className="lp-v3 legal-page sys-segment-page">
+      <SegmentThemeBackdrop subId={SYSTEM_SEGMENT} minimal />
       <div className="frame">
         <div className="wrap">
           <Nav />
           <main className="sys-main" role="main">
-            <div className="sys-code sys-code-error">{code}</div>
+            <div className="sys-eyebrow">{code}</div>
             <h1 className="sys-title">{title}</h1>
             <p className="sys-sub">{message}</p>
             <div className="sys-actions">

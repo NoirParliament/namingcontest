@@ -22,11 +22,6 @@
   opacity: 0.12;
   margin-bottom: 8px;
 }
-.legal-page .sys-code-error {
-  font-size: 40px;
-  opacity: 0.18;
-  text-transform: none;
-}
 .legal-page .sys-title {
   font-family: var(--font-display, 'Fraunces', Georgia, serif);
   font-size: 40px;
@@ -67,4 +62,54 @@
 @media (max-width: 560px) {
   .legal-page .sys-code { font-size: 72px; }
   .legal-page .sys-title { font-size: 30px; }
+}
+
+/* ── Segment backdrop on the system pages (404, expired link) ──────────────
+   These sit outside the v4 screen shell, so the backdrop needs anchoring
+   here: the page becomes the positioning context, and the chrome is lifted
+   above the artwork. Same treatment the chat stages get — cream page, segment
+   glow at the top, line-art scene along the bottom. */
+.sys-segment-page {
+  position: relative;
+  overflow: hidden;
+  background: var(--v4-bg, #fcf9f7);
+}
+.sys-segment-page > .frame {
+  position: relative;
+  z-index: 1;
+}
+/* Confine the backdrop to the first screenful. Anchored to the page it sat
+   below the dark footer, which meant the line-art scene was rendered and then
+   completely hidden — the aurora was doing all the work alone. Bounding it to
+   the viewport puts the scene at the fold, where it's actually seen. */
+.sys-segment-page .v4-aurora {
+  height: 100vh;
+  bottom: auto;
+}
+/* Larger than on a chat stage: a system page carries only a heading and two
+   buttons, so at chat scale the scene reads as a smudge along an empty page. */
+.sys-segment-page .v4-dash-image {
+  width: max(120%, 900px);
+  opacity: 0.4;
+}
+.sys-segment-page .v4-aurora-gradient {
+  height: 520px;
+  opacity: 0.6;
+}
+
+/* Eyebrow for system pages whose identifier is words, not a number.
+   .sys-code is 96px italic Fraunces — built for "404", where a numeral reads
+   as decoration because it means nothing as prose. Put a sentence in it and
+   you get two headings saying the same thing. This is the label treatment
+   used on the join and chat pages instead: it names the situation, and the
+   h1 below states it. */
+.legal-page .sys-eyebrow {
+  font-family: var(--font-text, 'Inter', system-ui, sans-serif);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg, #030302);
+  opacity: 0.42;
+  margin-bottom: 14px;
 }
