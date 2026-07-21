@@ -59,6 +59,7 @@ All custom-designed to match the site, each in the contest's own colour theme.
 | Sign-in link | Anyone logging in | Every sign-in (no passwords) |
 | "Your contest is live" + Stripe receipt | The creator | Right after payment |
 | "Your vote is needed" | All participants | The moment voting opens |
+| "Time to crown the winner" | The creator only | The moment voting closes |
 | "The winning name" | All participants | When a winner is crowned |
 | "Your name won" | The winner personally | Same moment |
 | Contact form receipt | Whoever wrote in | Right after sending |

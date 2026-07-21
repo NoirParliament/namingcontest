@@ -122,6 +122,7 @@ on a fresh environment.
 | 0020 | Rate-limit table + `rate_limit_take` + hourly prune cron |
 | 0021 | Payment-column guard trigger (client can't set paid/status/deadlines/creator/tier) |
 | 0022 | Voter-tier capacity enforced on participant insert |
+| 0023 | `voting_closed` notification to the creator + `contest_creator_email` + `notified_closed_at` |
 
 ### Server-enforced invariants (the security model)
 
@@ -229,8 +230,11 @@ same Stripe account. Never paste the live secret key into chats or docs.
 
 States: `draft → submission → voting → closed` (+ terminal `cancelled`).
 Cron `advance-contest-phases` (every minute) moves on `submission_ends_at` /
-`voting_ends_at`. Trigger 0013 fires `notify` on entering `voting` and on
-`winner_submission_id` being set; dedupe stamps prevent re-sends.
+`voting_ends_at`. The notify trigger (0013, extended in 0023) fires on three transitions:
+entering `voting`, entering `closed` with no winner yet (creator only — the
+cue to pick), and `winner_submission_id` being set. Each has its own dedupe
+stamp (`notified_voting_at` / `notified_closed_at` / `notified_winner_at`)
+written before sending, so a status flip-flop can't re-email anyone.
 
 Senders: all outbound = `noreply@namingcontest.com` (Resend domain-verified;
 DKIM on `resend._domainkey`, SPF/MX on `send.` subdomain). `hello@` is the
@@ -241,7 +245,8 @@ record: none (nothing sends from the root domain). Deliverability
 (Promotions-tab placement) is reputation-driven and improves with real volume.
 
 Subjects: `Your contest is live — {name}`, `Your vote is needed — {name}`,
-`The winning name — {name}`, `Your name won — {name}`,
+`Time to crown the winner — {name}`, `The winning name — {name}`,
+`Your name won — {name}`,
 `Contact form — {topic} — {name}`, `We got your message — NamingContest`.
 
 Fast-forwarding a contest for testing: `docs/TESTING-EMAILS.md`.
