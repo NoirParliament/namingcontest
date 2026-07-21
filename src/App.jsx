@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import '@styles/tokens.css';
 import '@styles/globals.css';
 // Mobile/tablet layer — every rule inside @media queries, so the
@@ -39,7 +39,6 @@ import V4JoinContest      from '@pages/v4/JoinContest';
 import V4ParticipantChat  from '@pages/v4/ParticipantChat';
 import V4ParticipantThanks from '@pages/v4/ParticipantThanks';
 import V4ParticipantStatus from '@pages/v4/ParticipantStatus';
-import V4PlatformMap       from '@pages/v4/PlatformMap';
 import V4ParticipantVote   from '@pages/v4/ParticipantVote';
 import V4ParticipantVoteThanks from '@pages/v4/ParticipantVoteThanks';
 import V4ParticipantWinner from '@pages/v4/ParticipantWinner';
@@ -442,9 +441,17 @@ function AppInner() {
         <Route path="/v4/contest/:id/submit"           element={<V4ParticipantChat />} />
         <Route path="/v4/contest/:id/thanks"           element={<V4ParticipantThanks />} />
         <Route path="/v4/contest/:id/status"           element={<V4ParticipantStatus />} />
-        <Route path="/v4/map"                          element={<V4PlatformMap />} />
-        {/* Old demo index → new platform map. */}
-        <Route path="/v4/demo"                         element={<Navigate to="/v4/map" replace />} />
+        {/* The demo surface (/v4/map, /v4/demo) is unrouted for launch — the
+            live site shouldn't hand visitors a gallery of contests that look
+            real but aren't. PlatformMap.jsx and the mock data in
+            src/data/v4/ are still in the tree: the real pages branch on
+            `mockContest` in ~150 places, so unpicking them is a refactor of
+            its own rather than a deletion. Restoring the route is a one-line
+            change if the demo is wanted again (e.g. for a client walkthrough
+            behind the beta gate).
+
+            Tag demo-complete-2026-07-20 is the snapshot with everything
+            wired up. */}
         <Route path="/v4/contest/:id/vote"             element={<V4ParticipantVote />} />
         <Route path="/v4/contest/:id/vote-thanks"      element={<V4ParticipantVoteThanks />} />
         <Route path="/v4/contest/:id/winner"           element={<V4ParticipantWinner />} />
