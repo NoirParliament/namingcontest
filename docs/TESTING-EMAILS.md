@@ -16,6 +16,7 @@ Run the SQL in **Supabase → SQL Editor**.
 | Sign-in link | Supabase Auth | someone requests a magic link |
 | Payment receipt | `confirm-launch` | Stripe confirms a payment |
 | Your vote is needed | `notify` | contest status becomes `voting` |
+| Time to crown the winner | `notify` | status becomes `closed` with no winner yet (creator only) |
 | The winning name | `notify` | a winner is crowned (to everyone else) |
 | Your name won | `notify` | a winner is crowned (to the winner) |
 
@@ -68,6 +69,24 @@ Three things happen here, and all three matter:
 - **`notified_voting_at = null`** clears the once-only stamp. Without it the
   function returns `{ok: true, skipped: 'already notified'}` and sends
   nothing — deliberately, so a status flip-flop cannot spam a real contest.
+
+---
+
+## 2b. Trigger "Time to crown the winner"
+
+This one goes to the **creator**, not participants, and only fires if no
+winner has been picked yet.
+
+```sql
+update contests
+set status             = 'closed',
+    notified_closed_at = null
+where id = 'PASTE_ID';
+```
+
+Leave `winner_submission_id` alone — setting it in the same statement means
+the contest closes with a winner already chosen, and the email correctly
+doesn't fire (you wouldn't tell someone to do what they've just done).
 
 ---
 
@@ -148,9 +167,9 @@ Work down this list — it is ordered by how often each one is the answer.
    where p.contest_id = 'PASTE_ID';
    ```
 
-2. **Was it suppressed as a duplicate?** `notified_voting_at` or
-   `notified_winner_at` already set means the send was skipped. Null it and
-   repeat the transition.
+2. **Was it suppressed as a duplicate?** `notified_voting_at`,
+   `notified_closed_at` or `notified_winner_at` already set means the send was
+   skipped. Null the relevant one and repeat the transition.
 
 3. **Did the database actually call the function?**
 
@@ -178,6 +197,7 @@ set status               = 'submission',
     submission_ends_at   = now() + interval '3 days',
     winner_submission_id = null,
     notified_voting_at   = null,
+    notified_closed_at   = null,
     notified_winner_at   = null
 where id = 'PASTE_ID';
 ```
