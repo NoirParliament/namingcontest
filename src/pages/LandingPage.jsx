@@ -1303,11 +1303,11 @@ function FAQ() {
     },
     {
       q: 'How does the voting work?',
-      a: <p className="faq-a"><strong>One simple vote—no clunky ballots.</strong> Everyone opens your link, sees all the suggested names, and taps the ones they like best (up to a limit you set). Votes tally as they come in, and you crown the winner from the leaderboard.</p>
+      a: <p className="faq-a"><strong>One simple vote—no clunky ballots.</strong> Everyone opens your link, sees all the suggested names, and taps up to three favourites. Votes tally as they come in, and you crown the winner from the leaderboard.</p>
     },
     {
       q: 'What does it cost?',
-      a: <p className="faq-a">The price depends only on how many people you invite to vote: $9 for up to 10 voters, $19 for 30, or $39 for 90. You pay once per contest, with no subscription. Every contest includes the full naming method and guides.</p>
+      a: <p className="faq-a">The price depends only on how many people you invite to vote: <strong>$9</strong> for up to 10 voters, <strong>$19</strong> for up to 30, or <strong>$39</strong> for up to 90. You pay once per contest — no subscription, and no per-name or per-participant charges on top. The tier is the only thing that changes: a $9 contest works exactly like a $39 one. Fees aren’t refundable once a contest has launched.</p>
     },
   ];
   return (
