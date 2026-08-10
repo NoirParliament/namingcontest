@@ -281,6 +281,9 @@ export default function ContestManage() {
       : buildLiveDataFromReal(realSubs || [], profilesById, realParticipantCount, phase),
     [mockContest, phase, realSubs, profilesById, realParticipantCount]
   );
+  // Is there anything to crown? A closed contest with no submissions has an
+  // empty leaderboard — the pick-winner flow must not be offered for it.
+  const hasNamesToCrown = (liveData.names?.length || 0) > 0;
 
   // The brief can only be edited BEFORE the first real submission arrives —
   // once participants have answered the brief, changing it under them would be
@@ -1250,12 +1253,18 @@ export default function ContestManage() {
                     <h3>Winner</h3>
                     <p>
                       {phase === 'winner' && !isWinnerPicked
-                        ? 'Voting is closed. Time to crown the winner — the top vote, or any name that won your heart.'
+                        ? (hasNamesToCrown
+                            ? 'Voting is closed. Time to crown the winner — the top vote, or any name that won your heart.'
+                            : 'Voting is closed, but no names were submitted, so there’s nothing to crown.')
                         : isWinnerPicked
                         ? 'You crowned the winner. Export the full report below, or share the result straight out.'
                         : 'When voting wraps, the leaderboard is yours. You make the final call — the top vote, or any name that won your heart.'}
                     </p>
-                    {phase === 'winner' && !isWinnerPicked && (
+                    {/* Only offer the pick when there's actually something to
+                        pick from. A contest can close empty (nobody entered a
+                        name), and offering "Pick the winner" there led into a
+                        modal with an empty leaderboard. */}
+                    {phase === 'winner' && !isWinnerPicked && hasNamesToCrown && (
                       <button
                         type="button"
                         className="btn btn-primary"
