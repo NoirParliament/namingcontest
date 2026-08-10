@@ -18,7 +18,18 @@ import '../styles/v4.css';
 // the gate already feels like the product behind it.
 const GATE_SEGMENT = 't2';
 
-const BETA_PASSWORD = import.meta.env.VITE_BETA_PASSWORD;
+// Valid access codes. VITE_BETA_PASSWORD is the internal/admin curtain code.
+// VITE_BETA_TESTER_PASSWORD is a SEPARATE code to hand to external beta
+// testers, so the internal one stays private and the tester one can be
+// revoked on its own (just unset that env var + redeploy). Either code
+// unlocks the same site — the gate is a curtain, not role-based access.
+//
+// Both are BETA-ONLY. At public launch, unset every VITE_BETA_* var and the
+// gate disappears entirely. See GOING-LIVE.md's launch checklist.
+const CODES = [
+  import.meta.env.VITE_BETA_PASSWORD,
+  import.meta.env.VITE_BETA_TESTER_PASSWORD,
+].filter(Boolean).map((c) => String(c).trim());
 const STORAGE_KEY = 'nc_beta_ok';
 
 export default function BetaGate({ children }) {
@@ -28,13 +39,13 @@ export default function BetaGate({ children }) {
   const [value, setValue] = useState('');
   const [error, setError] = useState(false);
 
-  // No code configured → gate is off (local dev + public launch).
-  if (!BETA_PASSWORD) return children;
+  // No codes configured → gate is off (local dev + public launch).
+  if (CODES.length === 0) return children;
   if (unlocked) return children;
 
   const submit = (e) => {
     e.preventDefault();
-    if (value.trim() === BETA_PASSWORD) {
+    if (CODES.includes(value.trim())) {
       try { localStorage.setItem(STORAGE_KEY, '1'); } catch { /* ignore */ }
       setUnlocked(true);
     } else {
