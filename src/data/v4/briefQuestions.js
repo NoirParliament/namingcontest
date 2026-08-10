@@ -1123,7 +1123,9 @@ export const SHARED_SETTINGS_QUESTIONS = [
   {
     id: 'submissionDays',
     type: 'numberChips',
-    options: [3, 5, 7, 10, 14],
+    // BETA-ONLY: leading `1` lets testers run a full contest in 2 days total.
+    // REMOVE before public launch (drop the 1). See GOING-LIVE.md checklist.
+    options: [1, 3, 5, 7, 10, 14],
     defaultValue: 7,
     label: 'Submission window',
     prompt: 'How long should submissions stay open?',
@@ -1132,7 +1134,8 @@ export const SHARED_SETTINGS_QUESTIONS = [
   {
     id: 'votingDays',
     type: 'numberChips',
-    options: [2, 3, 5, 7],
+    // BETA-ONLY: leading `1` — remove before launch (see GOING-LIVE.md).
+    options: [1, 2, 3, 5, 7],
     defaultValue: 3,
     label: 'Voting window',
     prompt: 'And after submissions close, how long should voting stay open?',

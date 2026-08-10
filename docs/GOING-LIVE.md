@@ -131,8 +131,13 @@ Launch a $9 contest with a real card. Confirm: contest goes live, exactly
 one receipt email, live-mode Payments shows the charge, live-mode Webhooks
 shows a 200 delivery. Then refund yourself: Payments → the charge → Refund.
 
-**6. Open the doors**
-- Delete `VITE_BETA_PASSWORD` from Vercel env → redeploy. Unset = gate off.
+**6. Open the doors, and remove the beta-only scaffolding**
+- Delete `VITE_BETA_PASSWORD` and `VITE_BETA_TESTER_PASSWORD` from Vercel env
+  → redeploy. With no beta codes set, the gate is off.
+- Remove the beta-only 1-day contest windows: drop the leading `1` from both
+  `options` arrays in `src/data/v4/briefQuestions.js` (submissionDays and
+  votingDays), or `git revert` the "beta-only: 1-day window option" commit.
+  Then promote.
 
 **7. Same-day aftercare**
 - Watch Stripe Payments and the webhook log for the first real customers

@@ -70,9 +70,33 @@ export default function PickWinnerModal({
 
   if (!open) return null;
 
+  // A contest can close with zero submissions (nobody entered a name), in
+  // which case there is nothing to crown. ContestManage avoids opening the
+  // picker in that case, but guard here too: this used to blank the whole
+  // page, because `topName` was undefined and `topName.id` below threw.
+  if (sortedNames.length === 0) {
+    return (
+      <div className="v4 lp-v3 v4-pickwinner-overlay" onClick={onClose}>
+        <div className="v4-pickwinner-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+          <button type="button" className="v4-pickwinner-close" onClick={onClose} aria-label="Close">
+            <X weight="regular" size={16} />
+          </button>
+          <h2 className="v4-pickwinner-title">No names to crown</h2>
+          <p className="v4-pickwinner-sub">
+            This contest closed without any submissions, so there&rsquo;s no
+            winner to pick. Nothing more to do here.
+          </p>
+          <button type="button" className="btn btn-primary btn-lg" onClick={onClose}>
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const selectedName = sortedNames.find((n) => n.id === selectedId) || topName;
   const submitter = selectedName ? getParticipantById(selectedName.submittedBy) : null;
-  const isTopVote = selectedName?.id === topName.id;
+  const isTopVote = !!selectedName && selectedName.id === topName?.id;
   const fallbackTone = { bg: '#fadecc', fg: '#9c4818' };
   const t = tone || fallbackTone;
 
