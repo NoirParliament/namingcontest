@@ -1023,7 +1023,7 @@ export const BRIEF_QUESTIONS = {
         type: 'textarea',
         rows: 3,
         required: true,
-        placeholder: `e.g. Our weekly Saturday brunch tradition with 6 close friends — currently in year 4 and still unnamed. We’ve talked about printing T-shirts, which is the moment we realized it needs a name.`,
+        placeholder: `e.g. Our weekly Saturday brunch crew — 6 friends, 4 years, still unnamed.`,
         guideId: 'p4-generic',
       },
       {
@@ -1050,7 +1050,7 @@ export const BRIEF_QUESTIONS = {
         prompt: 'Any shared story or moment worth naming around?',
         type: 'text',
         required: false,
-        placeholder: 'Any context, inside reference, or origin story that could inspire a name...',
+        placeholder: 'e.g. An inside joke or origin story',
         guideId: 'p4-collective',
       },
     ],
@@ -1915,16 +1915,16 @@ export const ARTICLES = {
       sections: [
         {
           heading: 'Names create meaning',
-          body: `Named things just get treated differently than unnamed ones. Named projects get more attention. Named spaces get more care. Named initiatives get more funding. Whatever you’re naming, choosing a name is the act of giving it a place in the world.`,
+          body: `Giving something a name gives it an identity. A named project feels more tangible. A named place becomes somewhere you can talk about. A named initiative becomes something people can rally around. Whatever you’re naming, choosing a name is a way of giving it a place in the world.`,
         },
         {
-          heading: 'What makes it worth doing with a group',
-          body: 'When people help name something, they feel invested in it. The process of finding the right name together is itself the first shared experience. Collective naming creates shared ownership from the very first moment.',
+          heading: 'Why naming together matters',
+          body: `When people have a hand in naming something, they have a reason to care about the outcome. They contribute ideas, see what others come up with, and have a voice in choosing the name. The process itself becomes a shared experience—and when the winning name emerges, people are more likely to feel they had a part in it.`,
         },
       ],
       callout: {
         type: 'insight',
-        text: `The right name doesn’t just describe what something is — it tells people how to feel about it. A name is the shortest story you can tell.`,
+        text: `The right name doesn’t just describe what something is—it shapes how people think and talk about it. A great name can turn something ordinary into something that feels like it has an identity of its own.`,
       },
     },
     {
@@ -1935,16 +1935,16 @@ export const ARTICLES = {
       sections: [
         {
           heading: 'Why the process matters as much as the outcome',
-          body: `When a group names something together — a friendship circle, a club, a tradition, a shared space — the naming process is itself the first shared act of ownership. Groups that create their own shared symbols (names, rituals, inside references) tend to feel more belonging and commitment than groups handed those symbols from outside.`,
+          body: `When a group names something together—a friendship circle, club, tradition, shared space, or inside joke—the process becomes part of the story. Everyone gets to contribute, react, and have a say in what the group will call its thing. That shared experience can make the final name feel more meaningful than one chosen by someone else.`,
         },
         {
-          heading: 'How to brief for collective resonance',
-          body: `Tell participants who the group is and what it means to them. The best submissions will come from understanding the relationship, not just the object being named. A brief that says “we are five friends who met studying abroad and this is our annual reunion” will generate completely different — and better — names than “we need a name for our group.”`,
+          heading: 'Give participants the backstory',
+          body: `The more context participants have, the more meaningful their ideas can be. Share what the group has in common, what you’re naming, and what makes it special. “We’re five friends who met studying abroad and reunite every year” gives people much more to work with than “We need a name for our group.” The goal is to give participants something real to build on.`,
         },
       ],
       callout: {
         type: 'insight',
-        text: 'The name you choose together becomes a shared artifact — a piece of language that belongs to everyone who helped create it. That ownership transfers into how the name gets used and protected for years.',
+        text: `The name you choose together becomes part of your shared history—a little piece of language that everyone helped create. Years later, the name can carry the memories, jokes, and stories that inspired it.`,
       },
     },
   ],
