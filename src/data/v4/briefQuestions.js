@@ -434,17 +434,17 @@ export const BRIEF_QUESTIONS = {
           'Open to anything',
         ],
         allowCustom: true,
-        hint: `Point participants toward a territory, or a few. Animal / Mascot (Lions, Hawks, Wolves). Force of Nature (Thunder, Blaze, Surge). Place / Geographic (Lakeview, Riverside, Northern). Elite / Best (Apex, Vanguard, Prime). Tough / Fierce (Renegades, Predators, Ironsides). Oklahoma City’s Thunder was chosen through a fan vote from an ownership-selected shortlist that included Barons, Bison, Energy, and Wind. The name connects to the region while evoking a powerful force of nature. Seattle’s Kraken took a very different route, embracing a mythical creature with no obvious connection to the city. When briefing participants, you can point them toward a particular naming territory — or leave the door open for an unexpected idea.`,
+        hint: `Oklahoma City’s Thunder was chosen through a fan vote from an ownership-selected shortlist that included Barons, Bison, Energy, and Wind. The name connects to the region while evoking a powerful force of nature. Seattle’s Kraken took a very different route, embracing a mythical creature with no obvious connection to the city. When briefing participants, you can point them toward a particular naming territory—or leave the door open for an unexpected idea.`,
       },
       {
         id: 'geography',
-        label: 'Local connection / geography',
-        prompt: 'Any city, region, or local landmark that should inspire the name?',
+        label: 'Local connection & colors',
+        prompt: 'Any city, region, landmark, or team colors that should inspire the name?',
         type: 'textarea',
         rows: 2,
         required: false,
-        placeholder: 'Share city name, regional landmarks, notable weather patterns, interesting local history, etc.',
-        hint: `A strong connection to place can give a team name instant identity and local meaning. If your team represents a city, neighborhood, or region, share that context with participants. Local landmarks, landscapes, weather, history, and cultural references can all inspire names that feel connected to where the team plays.`,
+        placeholder: 'Share city name, regional landmarks, notable weather patterns, interesting local history, team colors, etc.',
+        hint: `A strong connection to place — or a signature color — can give a team name instant identity and local meaning. If your team represents a city, neighborhood, or region, share that context with participants. Local landmarks, landscapes, weather, history, cultural references, and team colors can all inspire names that feel connected to where the team plays.`,
       },
       {
         id: 'chantable',
@@ -2163,7 +2163,7 @@ export const CUT_QUESTIONS = {
   b3: [],
   b4: [],
   b5: [],
-  t1: ['teamColors', 'chantable'],
+  t1: ['teamColors', 'chantable'], // 2026-08-17: chantable stays cut (its guide covers it via the personality Q); teamColors folded into the geography question's prompt/hint
   t2: [], // 2026-08-17: nameType + searchability removed from the band set (client: no legal / searchability)
   t3: ['platform', 'tone'], // 2026-08-17 client: fold "where it lives" into the concept Q; drop tone/format + its duplicate guide
   t4: ['acronymPref', 'mission', 'community', 'longevity'], // 2026-08-17 rescope to club/civic — no mission / served / 50-year longevity
