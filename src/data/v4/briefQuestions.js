@@ -515,7 +515,7 @@ export const BRIEF_QUESTIONS = {
       },
       {
         id: 'projectSummary',
-        label: 'About this',
+        label: 'Anything else',
         prompt: 'Tell us anything else about the band that will help with naming.',
         type: 'textarea',
         rows: 3,
