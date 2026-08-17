@@ -466,14 +466,24 @@ export const BRIEF_QUESTIONS = {
   },
 
   // ── t2 · Band / music ──
-  // 2026-08-17 client revision: lead with genre; the old "Tell us about the
-  // band" opener moves to the end as an optional "anything else" field.
+  // 2026-08-17: keep "Tell us about the band" as the required description
+  // opener, then genre. (The client suggested leading with genre, but the
+  // brief needs a real description anchor first — genre alone is too thin.)
   // Legal-name and searchability questions dropped entirely —
   // "I'd like us not to address any legal stuff."
   t2: {
     label: 'Band / music project',
     suggestedDeadlineDays: 10,
     questions: [
+      {
+        id: 'projectSummary',
+        label: 'About this',
+        prompt: 'Tell us about the band.',
+        type: 'textarea',
+        rows: 3,
+        required: true,
+        placeholder: 'e.g. A 4-piece dream-pop band from Bristol with one EP out. Booked for a small US tour in the fall and need a name we can grow into.',
+      },
       {
         id: 'genre',
         label: 'Genre / Sound',
@@ -512,15 +522,6 @@ export const BRIEF_QUESTIONS = {
         allowCustom: true,
         hint: `Great band names can come from almost anywhere. These eight overlapping territories provide different ways into the creative process, from personal connections and pop-culture references to places, names, interesting words, and unexpected combinations. Explore several rather than locking into one. The goal is to give participants enough structure to spark ideas while leaving plenty of room for surprise.`,
         guideId: 't2-archetypes',
-      },
-      {
-        id: 'projectSummary',
-        label: 'Anything else',
-        prompt: 'Tell us anything else about the band that will help with naming.',
-        type: 'textarea',
-        rows: 3,
-        required: false,
-        placeholder: 'e.g. A 4-piece dream-pop band from Bristol with one EP out. Booked for a small US tour in the fall and need a name we can grow into.',
       },
     ],
   },
