@@ -534,11 +534,11 @@ export const BRIEF_QUESTIONS = {
       {
         id: 'projectSummary',
         label: 'About this',
-        prompt: `What’s this show or project about? Describe the concept.`,
+        prompt: `Tell us about the show or concept. Who is it for, and where will they find it?`,
         type: 'textarea',
         rows: 3,
         required: true,
-        placeholder: 'e.g. First-time founders talking about the year before product launch. Authentic conversations, without hype.',
+        placeholder: 'e.g. A weekly podcast for first-time founders, on Spotify and YouTube with clips on TikTok. Honest conversations, no hype.',
         guideId: 't3-discovery',
       },
       {
@@ -571,10 +571,10 @@ export const BRIEF_QUESTIONS = {
       {
         id: 'compShows',
         label: 'Existing shows you admire (name style reference)',
-        prompt: 'Which existing shows do you admire — for naming inspiration?',
+        prompt: 'Any show or project names you admire?',
         type: 'text',
         required: false,
-        placeholder: 'e.g. How I Built This, Lex Fridman, Hidden Brain...',
+        placeholder: 'e.g. How I Built This, Radiolab, Hidden Brain',
         hint: `Comparable show names give participants a useful sense of the territory you’re drawn to and what’s already out there. Share a few examples you like, and explain what you respond to about them. For example: “I like how How I Built This makes the subject clear, but I’d love something with more personality and intrigue, like Radiolab.”`,
       },
     ],
