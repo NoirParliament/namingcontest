@@ -342,9 +342,10 @@ export default function JoinContest() {
   const prize = contest.settings?.submitterPrize?.enabled
     ? contest.settings?.submitterPrize
     : null;
-  const customReqs = contest.settings?.customRequirements?.enabled
-    ? contest.settings?.customRequirements?.text
-    : null;
+  // customRequirements moved from settings to the brief (2026-08-17); older
+  // contests still store it under settings, so read brief first, then fall back.
+  const customReqsField = contest.brief?.customRequirements ?? contest.settings?.customRequirements;
+  const customReqs = customReqsField?.enabled ? customReqsField.text : null;
 
   // Per-segment palette: page tint comes from the first blob color of
   // the segment's theme; bubbles flip to white-on-tint so they read.

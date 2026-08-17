@@ -1142,7 +1142,19 @@ export const SHARED_SETTINGS_QUESTIONS = [
     prompt: 'And after submissions close, how long should voting stay open?',
     hint: `Two or three days is plenty — enough time to vote, not so long that people forget to.`,
   },
-  // Kept LAST so it reads as the closing "anything else?" question.
+];
+
+// ────────────────────────────────────────────────────────────────
+// 2b. BRIEF_CLOSING_QUESTIONS — appended to the END of every brief's
+// effective question list (see getQuestionsFor). customRequirements moved
+// here from SHARED_SETTINGS_QUESTIONS on 2026-08-17: it's creative fodder
+// that also reaches participants, so it belongs with the brief, not the
+// logistics settings (client note: "should appear higher up... more about
+// the creative fodder than the logistics/settings"). Stored under
+// setup.brief.customRequirements; older contests keep it under settings and
+// the readers fall back for display.
+// ────────────────────────────────────────────────────────────────
+export const BRIEF_CLOSING_QUESTIONS = [
   {
     id: 'customRequirements',
     type: 'toggleTextarea',

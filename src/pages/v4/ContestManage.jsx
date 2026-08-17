@@ -24,7 +24,7 @@ import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
 import creatorProfile from '../../assets/creator-profile.png';
 import {
-  readSetup, writeSetup, getSegmentLabel, getContestDescriptor,
+  readSetup, writeSetup, getSegmentLabel, getContestDescriptor, getQuestionsFor,
 } from '../../utils/v4Brief';
 import { buildLiveData, buildLiveDataFromReal } from '../../utils/v4LiveData';
 import { getMockContestById } from '../../data/v4/mockContests';
@@ -337,10 +337,17 @@ export default function ContestManage() {
     return () => clearTimeout(t);
   }, [isWinnerPicked, winnerName, segmentTone.fg]);
 
-  // Brief + settings answers (for the recap collapser)
-  const briefQuestions = BRIEF_QUESTIONS[subId]?.questions || [];
-  const briefAnswers = setup.brief || {};
+  // Brief + settings answers (for the recap collapser). Use getQuestionsFor
+  // so the recap matches the effective brief (cuts/merges applied) and picks
+  // up customRequirements, which now closes the brief.
+  const briefQuestions = getQuestionsFor(subId, null);
   const settingsAnswers = setup.settings || {};
+  const briefAnswers = { ...(setup.brief || {}) };
+  // customRequirements moved from settings to the brief (2026-08-17); older
+  // contests still store it under settings, so fall back for display.
+  if (briefAnswers.customRequirements == null && settingsAnswers.customRequirements != null) {
+    briefAnswers.customRequirements = settingsAnswers.customRequirements;
+  }
   const filledBrief = briefQuestions.filter((q) => briefAnswers[q.id] !== undefined);
   const filledSettings = SHARED_SETTINGS_QUESTIONS.filter((q) => settingsAnswers[q.id] !== undefined);
 
@@ -409,8 +416,14 @@ export default function ContestManage() {
     }
     return real;
   }, [editTick, mockContest, dbContest]);
-  const liveBriefAnswers = liveSetup.brief || {};
+  const liveBriefAnswers = { ...(liveSetup.brief || {}) };
   const liveSettingsAnswers = liveSetup.settings || {};
+  // customRequirements moved from settings to the brief (2026-08-17); older
+  // contests (and the mock/demo data) still store it under settings, so fall
+  // back so the recap renders its value in the Brief group, not "undefined".
+  if (liveBriefAnswers.customRequirements == null && liveSettingsAnswers.customRequirements != null) {
+    liveBriefAnswers.customRequirements = liveSettingsAnswers.customRequirements;
+  }
 
   const handleEditSave = async (newValue) => {
     if (!editingQuestion) return;

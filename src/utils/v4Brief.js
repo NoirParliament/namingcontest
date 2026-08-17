@@ -9,6 +9,7 @@ import {
   ARTICLES,
   FALLBACK_QUESTIONS,
   SHARED_SETTINGS_QUESTIONS,
+  BRIEF_CLOSING_QUESTIONS,
 } from '../data/v4/briefQuestions';
 
 const SETUP_KEY = 'v4_contest_setup';
@@ -63,7 +64,7 @@ export function getQuestionsFor(subId, legacySubSegmentSlug) {
     (m.merged || []).forEach((id) => mergedIntoOthers.add(id));
   });
 
-  return segment.questions
+  const resolved = segment.questions
     .filter((q) => !cuts.has(q.id))
     .filter((q) => !mergedIntoOthers.has(q.id))
     .filter((q) => {
@@ -76,6 +77,11 @@ export function getQuestionsFor(subId, legacySubSegmentSlug) {
     .map((q) =>
       mergedPrompts[q.id] ? { ...q, prompt: mergedPrompts[q.id] } : q
     );
+
+  // customRequirements ("Anything else…") closes every brief — appended here
+  // so it's the last brief question for all segments (moved out of settings
+  // 2026-08-17; see BRIEF_CLOSING_QUESTIONS).
+  return [...resolved, ...BRIEF_CLOSING_QUESTIONS];
 }
 
 // Total number of setup steps the creator moves through, so the progress
