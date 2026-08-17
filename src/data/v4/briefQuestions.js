@@ -888,11 +888,11 @@ export const BRIEF_QUESTIONS = {
       {
         id: 'breed',
         label: 'Breed or description',
-        prompt: 'What breed or what do they look like?',
+        prompt: 'Describe their breed and appearance',
         type: 'text',
         required: false,
-        placeholder: 'e.g. Golden Retriever, orange tabby, blue-eyed Husky, tiny black guinea pig...',
-        hint: `Breed shapes the name archetype. A Chihuahua named “Bruno” is funny. A Great Dane named “Peanut” is funnier. A Siamese cat named “Miso” fits perfectly. Participants who know the breed or look can suggest names that match the vibe.`,
+        placeholder: 'e.g. Golden Retriever, orange tabby',
+        hint: `Breed and appearance can spark great naming ideas. A Chihuahua named “Bruno” is funny; a Great Dane named “Peanut” is funnier. Participants who know the breed or look can suggest names that match the vibe.`,
         guideId: 'p2-personality',
       },
       {
@@ -919,6 +919,7 @@ export const BRIEF_QUESTIONS = {
         prompt: 'What naming tone fits them? Pick any that apply.',
         type: 'multiChips',
         options: ['Dignified / Regal', 'Playful / Funny', 'Cute / Sweet', 'Tough / Strong', 'No preference'],
+        allowCustom: true,
         guideId: 'p2-callname',
       },
       {
@@ -927,7 +928,7 @@ export const BRIEF_QUESTIONS = {
         prompt: 'Any names already taken or off-limits?',
         type: 'text',
         required: false,
-        placeholder: `Names already taken by other pets, names that sound like “no”, etc.`,
+        placeholder: `e.g. Names already taken`,
       },
     ],
   },
@@ -1104,15 +1105,6 @@ export const SHARED_SETTINGS_QUESTIONS = [
     prompt: 'How many names can each person submit?',
     hint: `Three to five is the room most people need — enough for their best ideas, not so many the list drowns. Fewer for small teams, more for big crowds.`,
   },
-  {
-    id: 'customRequirements',
-    type: 'toggleTextarea',
-    defaultValue: false,
-    label: 'Custom requirements',
-    prompt: 'Anything else participants should know?',
-    placeholder: `e.g. A word to avoid, or a language it should work in`,
-    hint: `Add anything else that would be helpful. Skip if there’s nothing.`,
-  },
   // Custom branding moved out of the brief — handled at the winner
   // stage instead, where it directly customizes the share card.
   {
@@ -1147,6 +1139,16 @@ export const SHARED_SETTINGS_QUESTIONS = [
     label: 'Voting window',
     prompt: 'And after submissions close, how long should voting stay open?',
     hint: `Two or three days is plenty — enough time to vote, not so long that people forget to.`,
+  },
+  // Kept LAST so it reads as the closing "anything else?" question.
+  {
+    id: 'customRequirements',
+    type: 'toggleTextarea',
+    defaultValue: false,
+    label: 'Custom requirements',
+    prompt: 'Anything else you’d like to add?',
+    placeholder: `e.g. A word to avoid, or a language it should work in`,
+    hint: `Add anything else that would be helpful. Skip if there’s nothing.`,
   },
 ];
 
@@ -1817,22 +1819,22 @@ export const ARTICLES = {
   p2: [
     {
       id: 'p2-personality',
-      title: 'Personality-Forward Naming Works Best for Pets',
+      title: 'Personality-Forward Naming',
       readTime: '1 min',
       icon: 'Heart',
       sections: [
         {
           heading: 'Names that fit the animal',
-          body: `The best pet names capture personality rather than appearance. “Chaos” or “Gremlin” beats “Spot” or “Fluffy.” Personality names age better — a puppy grows into an adult but their personality tends to stay consistent.`,
+          body: `A pet’s personality can be one of the richest sources of naming inspiration. Is your dog a little Chaos? A total Gremlin? Is your cat a Diva, a Professor, or a Couch Potato? Names that capture a pet’s quirks can feel especially personal—and give participants something specific to riff on. Rover’s 2025 research found that nearly half of pet parents choose names based on personality or appearance. Give participants a glimpse of what makes the animal unique, and let that personality spark the ideas.`,
         },
         {
           heading: 'The practical tests',
-          body: `Say the name out loud 20 times: can you yell it in a dog park without embarrassment? Does it have a one-syllable call name? (Maximilian → Max). Can you say it with authority when they’re misbehaving? The call name and the full name are both part of the choice.`,
+          body: `Say the name out loud. Can you imagine calling it across a dog park without feeling awkward? Is there a natural short form for everyday use? (Maximilian → Max.) Can you say it warmly when they’re being good—and with authority when they’re not? For pets, the name you write down and the name you actually call can be two different things. Both are worth considering.`,
         },
       ],
       callout: {
-        type: 'example',
-        text: 'Top pet names of 2024 (Rover): Luna, Bella, Charlie, Max, Milo. If distinctiveness matters, these are the exact names to avoid — look one tier down for uniqueness with established phonetics.',
+        type: 'insight',
+        text: `Rover’s 2025 U.S. data puts Luna and Charlie at the top of the dog-name charts, with Luna and Milo leading for cats. Popular names have staying power, but if you want something more distinctive, look beyond the usual choices. The goal isn’t simply an uncommon name—it’s one that feels unmistakably like your pet.`,
       },
     },
     {
@@ -1842,17 +1844,17 @@ export const ARTICLES = {
       icon: 'Hand',
       sections: [
         {
-          heading: 'The name you actually use is the one that matters',
-          body: `The formal name and the call name are two different things. “Bartholomew” becomes “Bart” at the dog park. “Persephone” becomes “Percy.” When naming a pet, work backward from the call name you will actually use 50 times a day. The full name can be ceremonial — but the one-syllable version is the functional name and it needs to work.`,
+          heading: 'Make sure both names work',
+          body: `A pet’s full name and everyday call name can serve different purposes. “Bartholomew” can be wonderfully over-the-top, while “Bart” is what you’ll actually call him at the dog park. “Persephone” has a certain grandeur; “Percy” is easy to toss across the room. There’s no need to choose between the two—just make sure you like both the full name and the version that will become part of everyday life.`,
         },
         {
-          heading: 'Response training and phonetics',
-          body: `Animal trainers consistently recommend names ending in a vowel sound (Bella, Luna, Coco, Milo) because they carry further in open spaces and are easier for animals to distinguish from ambient noise. Hard consonants at the start also help: “Kira” cuts through a crowd better than “Nana.” Brief participants with both the aesthetic and the practical.`,
+          heading: 'Make the call name easy to hear',
+          body: `For dogs especially, short names are practical: one or two syllables are easy to say and give you room to vary your tone. Hard consonants at the beginning can help a name stand out in a noisy environment, while vowel endings can make it easier to stretch or emphasize the sound. Also consider whether the name sounds too much like an everyday command—“Kit” and “Sit,” for example, could get confusing.`,
         },
       ],
       callout: {
         type: 'insight',
-        text: 'Trainers often point out that pets with clear two-syllable names (MAX-i, BEL-la, CO-co) tend to pick up recall faster than ones whose names blend into a sentence. The call name is a functional tool, not just a label.',
+        text: `Your pet will hear their call name hundreds of times. Choose something that’s easy to say clearly, sounds good in your voice, and feels natural whether you’re calling them in from the yard or introducing them to someone new.`,
       },
     },
   ],
@@ -2179,7 +2181,7 @@ export const CUT_QUESTIONS = {
   t5: ['platform'],
   t6: [],
   p1: ['traditions', 'avoidInitials', 'projectSummary'],
-  p2: ['callNamePref'],
+  p2: ['callNamePref', 'projectSummary', 'petPersonality'],
   p3: [],
   p4: [],
 };

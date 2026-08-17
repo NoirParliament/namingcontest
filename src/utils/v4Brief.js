@@ -8,6 +8,7 @@ import {
   MERGE_QUESTIONS,
   ARTICLES,
   FALLBACK_QUESTIONS,
+  SHARED_SETTINGS_QUESTIONS,
 } from '../data/v4/briefQuestions';
 
 const SETUP_KEY = 'v4_contest_setup';
@@ -75,6 +76,17 @@ export function getQuestionsFor(subId, legacySubSegmentSlug) {
     .map((q) =>
       mergedPrompts[q.id] ? { ...q, prompt: mergedPrompts[q.id] } : q
     );
+}
+
+// Total number of setup steps the creator moves through, so the progress
+// counter runs 1…N and the review screen is the final step N. Mirrors the
+// BriefChat step list: segment pick + working name + voter tier + brief
+// questions + settings questions, plus the tier pick (prior screen) and the
+// review screen itself.
+export function getSetupStepTotal(subId) {
+  const brief = getQuestionsFor(subId, null).length;
+  const settings = SHARED_SETTINGS_QUESTIONS.length;
+  return 3 + brief + settings + 1 /* tier pick */ + 1 /* review */;
 }
 
 // Resolve the article (if any) referenced by a question's guideId.

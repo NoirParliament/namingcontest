@@ -47,6 +47,7 @@ import {
   getQuestionsFor,
   getArticleFor,
   getSegmentLabel,
+  getSetupStepTotal,
 } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
 import { VOTER_TIER_QUESTION } from '../../data/v4/voterTiers';
@@ -98,21 +99,20 @@ const WORKING_NAME_EXAMPLES = {
   t5: 'The Valorant squad',
   t6: 'The book club',
   p1: 'Baby girl 2026',
-  p2: 'Olly the puppy',
+  p2: 'Our new puppy',
   p3: 'The lake cabin',
   p4: 'Saturday brunch crew',
 };
 
 // Build the synthetic working-name question
 function makeWorkingNameQuestion(subSegmentTitle, subId) {
-  const subtle = subSegmentTitle ? ` for ${subSegmentTitle.toLowerCase()}` : '';
-  const example = WORKING_NAME_EXAMPLES[subId] || 'Olly the puppy';
+  const example = WORKING_NAME_EXAMPLES[subId] || 'Our new project';
   return {
     id: 'workingName',
     section: 'working',
     type: 'text',
     label: 'Working name',
-    prompt: `Got it. What should we call this contest${subtle}?`,
+    prompt: `Just answer a few questions so we can prepare the creative brief for your participants. To start, what should we call this contest?`,
     placeholder: `A short working title (e.g. “${example}”)`,
     required: true,
     maxLength: 60,
@@ -280,9 +280,7 @@ export default function BriefChat() {
   const TIER_PICK_OFFSET = 1;
   const APPROX_TOTAL = 16;
   const realQuestions = questions.filter((q) => q.type !== 'narrator');
-  const realTotal = subId
-    ? realQuestions.length + TIER_PICK_OFFSET
-    : APPROX_TOTAL;
+  const realTotal = subId ? getSetupStepTotal(subId) : APPROX_TOTAL;
   let realCurrent;
   if (isDone) {
     realCurrent = realTotal;
@@ -491,11 +489,14 @@ export default function BriefChat() {
           <header className={`v4-nav v4-nav-clear ${isScrolled ? 'is-scrolled' : ''}`}>
           <BrandLink />
           {(() => {
-            // Active dot based on current section
+            // Phase (Setup vs Settings) is decided by position relative to
+            // the SECTION_BREAK divider — NOT by the narrator's '_meta'
+            // section. Otherwise the BRIEF_INTRO narrator (also '_meta'),
+            // which sits at the start of the brief, briefly flips the label
+            // to "Settings" right after the voter-count pick, then back.
+            const settingsStart = questions.indexOf(SECTION_BREAK);
             const inSettings =
-              isDone ||
-              currentQ?.section === 'settings' ||
-              currentQ?.section === '_meta';
+              isDone || (settingsStart !== -1 && idx >= settingsStart);
             return (
               <div className="v4-progress">
                 <span className={`v4-step-dot ${!inSettings ? 'is-active' : 'is-done'}`}></span>

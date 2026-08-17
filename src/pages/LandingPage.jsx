@@ -696,7 +696,7 @@ const SIM_ANSWERS = {
 const SIM_STEPS = [
   { prompt: 'Let’s set up your business contest. First, what are we naming?', answer: 'A company' },
   { prompt: 'Got it. What should we call this contest for a company?', answer: 'Fintech startup' },
-  { prompt: 'How many people will vote?', answer: 'Up to 30 voters · $19' },
+  { prompt: 'How many people will take part in the contest?', answer: 'Up to 30 participants · $19' },
   ...SIM_BRIEF.map((q) => ({ prompt: q.prompt, answer: SIM_ANSWERS[q.id] || '' })),
 ];
 
@@ -1317,7 +1317,7 @@ function FAQ() {
     },
     {
       q: 'What does it cost?',
-      a: <p className="faq-a">The price depends only on how many people you invite to vote: <strong>$9</strong> for up to 10 voters, <strong>$19</strong> for up to 30, or <strong>$39</strong> for up to 90. You pay once per contest — no subscription, and no per-name or per-participant charges on top. The tier is the only thing that changes: a $9 contest works exactly like a $39 one. Fees aren’t refundable once a contest has launched.</p>
+      a: <p className="faq-a">The price depends only on how many people you invite: <strong>$9</strong> for up to 10 participants, <strong>$19</strong> for up to 30, or <strong>$39</strong> for up to 90. You pay once per contest — no subscription, and no per-name or per-participant charges on top. The tier is the only thing that changes: a $9 contest works exactly like a $39 one. Fees aren’t refundable once a contest has launched.</p>
     },
   ];
   return (

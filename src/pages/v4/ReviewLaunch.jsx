@@ -10,7 +10,7 @@ import {
 } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
-import { readSetup, writeSetup, getSegmentLabel, getQuestionsFor } from '../../utils/v4Brief';
+import { readSetup, writeSetup, getSegmentLabel, getQuestionsFor, getSetupStepTotal } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
 import { SegmentThemeBackdrop, getSegmentTone, getSegmentIcon, getSegmentPalette } from '../../data/v4/segmentTheme';
 import LaunchModal from '../../components/v4/LaunchModal';
@@ -44,6 +44,9 @@ function formatAnswer(value) {
   if (value === true) return 'Yes';
   if (value === false) return 'No';
   if (value === '[configure-later]') return 'Configure after launch';
+  // Multi-select (chips) — join with " / " to match the options' own style,
+  // not the default array-to-string comma.
+  if (Array.isArray(value)) return value.join(' / ');
   if (value && typeof value === 'object') {
     if ('enabled' in value) {
       if (!value.enabled) return 'No';
@@ -89,6 +92,9 @@ export default function ReviewLaunch() {
   }, []);
   const subId = setup.subSegmentId || 'b1';
   const segmentLabel = getSegmentLabel(subId);
+  // Review is the final step of the setup flow — show it as N/N so the
+  // progress counter that ran through the chat lands here.
+  const reviewTotal = getSetupStepTotal(subId);
   // Hero badge now uses the SEGMENT icon + tone (Trophy for any
   // sports team, PawPrint for any pet, etc.) — matches the Manage
   // page so a contest looks like itself everywhere. Tier-icon
@@ -299,7 +305,7 @@ export default function ReviewLaunch() {
               <span className="v4-step-dot is-done"></span>
               <span className="v4-step-dot is-done"></span>
               <span className="v4-step-dot is-active"></span>
-              <span className="v4-step-label">Review</span>
+              <span className="v4-step-label">Review<span className="v4-step-counter"> · {reviewTotal}/{reviewTotal}</span></span>
             </div>
             <ExitLink to="/" aria-label="Exit" />
           </header>
@@ -331,7 +337,7 @@ export default function ReviewLaunch() {
               </button>
             </h1>
             <p className="v4-review-subtitle">
-              {segmentLabel} · {setup.subSegmentTitle}
+              {segmentLabel}
             </p>
             {setup.voterTier && (
               <button
@@ -339,7 +345,7 @@ export default function ReviewLaunch() {
                 className="v4-review-package"
                 onClick={() => setEditingQuestion({ question: VOTER_TIER_QUESTION, section: 'voter' })}
               >
-                <span>Up to <strong>{setup.voterTier}</strong> voters · <strong>${priceForVoters(setup.voterTier)}</strong></span>
+                <span>Up to <strong>{setup.voterTier}</strong> participants · <strong>${priceForVoters(setup.voterTier)}</strong></span>
                 <PencilSimple size={12} weight="bold" className="v4-review-package-icon" />
               </button>
             )}
@@ -452,7 +458,7 @@ export default function ReviewLaunch() {
               : editingQuestion?.section === 'brief'
               ? briefAnswers[editingQuestion?.question?.id]
               : editingQuestion?.section === 'voter'
-              ? (setup.voterTier ? `Up to ${setup.voterTier} voters` : undefined)
+              ? (setup.voterTier ? `Up to ${setup.voterTier} participants` : undefined)
               : settingsAnswers[editingQuestion?.question?.id]
           }
           onClose={() => setEditingQuestion(null)}

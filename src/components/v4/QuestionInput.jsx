@@ -202,12 +202,25 @@ function ChipsInput({ question, onSubmit }) {
 // ── multiChips (multi-select pill list — needs Continue button) ─────
 function MultiChipsInput({ question, onSubmit }) {
   const opts = question.options || [];
+  const norm = (opt) => (typeof opt === 'string' ? opt : (opt.label || opt.id));
   const [selected, setSelected] = useState([]);
+  // Custom-added options (question.allowCustom) — let people add their own
+  // (e.g. "Shy / Timid") alongside the preset chips.
+  const [extra, setExtra] = useState([]);
+  const [customText, setCustomText] = useState('');
 
   const toggle = (val) => {
     setSelected((prev) =>
       prev.includes(val) ? prev.filter((v) => v !== val) : [...prev, val]
     );
+  };
+
+  const addCustom = () => {
+    const v = customText.trim();
+    if (!v) return;
+    if (![...opts.map(norm), ...extra].includes(v)) setExtra((e) => [...e, v]);
+    setSelected((s) => (s.includes(v) ? s : [...s, v]));
+    setCustomText('');
   };
 
   const handleSubmit = (e) => {
@@ -216,12 +229,12 @@ function MultiChipsInput({ question, onSubmit }) {
     onSubmit(selected);
   };
 
+  const chips = [...opts.map(norm), ...extra];
+
   return (
     <form className="v4-multichips-block" onSubmit={handleSubmit}>
       <div className="v4-chips-row" role="group" aria-label={question.label}>
-        {opts.map((opt) => {
-          const value = typeof opt === 'string' ? opt : (opt.label || opt.id);
-          const label = typeof opt === 'string' ? opt : (opt.label || opt.id);
+        {chips.map((value) => {
           const isOn = selected.includes(value);
           return (
             <button
@@ -232,11 +245,28 @@ function MultiChipsInput({ question, onSubmit }) {
               className={`v4-chip ${isOn ? 'is-checked' : ''}`}
               onClick={() => toggle(value)}
             >
-              {label}
+              {value}
             </button>
           );
         })}
       </div>
+      {question.allowCustom && (
+        <div className="v4-chips-custom-row" style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+          <input
+            type="text"
+            className="v4-input"
+            value={customText}
+            onChange={(e) => setCustomText(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addCustom(); } }}
+            placeholder="Add your own…"
+            aria-label="Add your own option"
+            style={{ flex: 1 }}
+          />
+          <button type="button" className="v4-chip" onClick={addCustom} disabled={!customText.trim()}>
+            Add
+          </button>
+        </div>
+      )}
       <div className="v4-multichips-footer">
         <span className="v4-multichips-count">
           {selected.length === 0
@@ -331,7 +361,7 @@ function VoterTierInput({ question, onSubmit }) {
           className="v4-chip"
           onClick={() => onSubmit(t.voters)}
         >
-          Up to {t.voters} voters · ${t.price}
+          Up to {t.voters} participants · ${t.price}
         </button>
       ))}
     </div>

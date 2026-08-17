@@ -122,10 +122,11 @@
   transition: background 0.3s ease;
 }
 .v4-step-dot.is-active {
+  width: 20px;
   background: var(--v4-fg);
 }
 .v4-step-dot.is-done {
-  background: rgba(3, 3, 2, 0.55);
+  background: rgba(3, 3, 2, 0.35);
 }
 .v4-step-label {
   font-size: 13px;
