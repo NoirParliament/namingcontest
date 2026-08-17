@@ -40,33 +40,44 @@ export function ToggleTextareaInput({ question, onSubmit }) {
   if (step === 'detail') {
     const trimmed = text.trim();
     return (
-      <form
-        className="v4-input-row v4-input-row-textarea"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!trimmed) return;
-          onSubmit({ enabled: true, text: trimmed });
-        }}
-      >
-        <textarea
-          ref={taRef}
-          className="v4-input v4-textarea"
-          placeholder="e.g. Avoid 3-letter acronyms, keep it under 12 chars, no animal names..."
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          rows={3}
-          maxLength={500}
-          aria-label="Custom requirements"
-        />
-        <button
-          type="submit"
-          className="v4-input-submit"
-          disabled={!trimmed}
-          aria-label="Continue"
+      <>
+        <form
+          className="v4-input-row v4-input-row-textarea"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!trimmed) return;
+            onSubmit({ enabled: true, text: trimmed });
+          }}
         >
-          <ArrowRight weight="bold" size={18} />
+          <textarea
+            ref={taRef}
+            className="v4-input v4-textarea"
+            placeholder="e.g. Avoid 3-letter acronyms, keep it under 12 chars, no animal names..."
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            rows={3}
+            maxLength={500}
+            aria-label="Custom requirements"
+          />
+          <button
+            type="submit"
+            className="v4-input-submit"
+            disabled={!trimmed}
+            aria-label="Continue"
+          >
+            <ArrowRight weight="bold" size={18} />
+          </button>
+        </form>
+        {/* Escape hatch — the creator opened this field, then changed their
+            mind. Without it they're stuck (empty can't submit, no way back). */}
+        <button
+          type="button"
+          className="v4-input-skip-link"
+          onClick={() => onSubmit({ enabled: false, text: '' })}
+        >
+          Skip this question
         </button>
-      </form>
+      </>
     );
   }
 
@@ -107,33 +118,43 @@ export function ToggleNameDescInput({ question, onSubmit }) {
 
   const trimmed = name.trim();
   return (
-    <form
-      className="v4-input-row"
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (!trimmed) return;
-        onSubmit({ enabled: true, name: trimmed });
-      }}
-    >
-      <input
-        ref={inputRef}
-        type="text"
-        className="v4-input"
-        placeholder="What’s the prize? e.g. $50 gift card, lifetime bragging rights..."
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        maxLength={120}
-        aria-label="Prize name"
-      />
-      <button
-        type="submit"
-        className="v4-input-submit"
-        disabled={!trimmed}
-        aria-label="Continue"
+    <>
+      <form
+        className="v4-input-row"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!trimmed) return;
+          onSubmit({ enabled: true, name: trimmed });
+        }}
       >
-        <ArrowRight weight="bold" size={18} />
+        <input
+          ref={inputRef}
+          type="text"
+          className="v4-input"
+          placeholder="What’s the prize? e.g. $50 gift card, lifetime bragging rights..."
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          maxLength={120}
+          aria-label="Prize name"
+        />
+        <button
+          type="submit"
+          className="v4-input-submit"
+          disabled={!trimmed}
+          aria-label="Continue"
+        >
+          <ArrowRight weight="bold" size={18} />
+        </button>
+      </form>
+      {/* Escape hatch — opened "add a prize", then changed their mind. */}
+      <button
+        type="button"
+        className="v4-input-skip-link"
+        onClick={() => onSubmit({ enabled: false, name: '' })}
+      >
+        Skip — no prize
       </button>
-    </form>
+    </>
   );
 }
 
@@ -291,6 +312,14 @@ export function BrandingFullInput({ question, onSubmit }) {
         onClick={handleSubmit}
       >
         Save branding <ArrowRight weight="bold" size={14} />
+      </button>
+      {/* Escape hatch — opened branding setup, then changed their mind. */}
+      <button
+        type="button"
+        className="v4-input-skip-link"
+        onClick={() => onSubmit({ enabled: false })}
+      >
+        Skip — use defaults
       </button>
     </div>
   );
