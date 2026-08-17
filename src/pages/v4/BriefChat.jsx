@@ -75,7 +75,7 @@ function makeSubSegmentQuestion(group) {
     section: 'segment',
     type: 'segmentCards',
     label: 'Which kind of naming',
-    prompt: `Let’s set up your ${segment.label} contest. First — which kind of naming is this?`,
+    prompt: `Let’s set up your ${segment.label} contest. First, what are we naming?`,
     options: segment.options,
   };
 }

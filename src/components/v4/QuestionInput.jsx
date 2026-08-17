@@ -369,7 +369,6 @@ function ToggleInput({ question, onSubmit }) {
 
 // ── date (date picker + quick-pick chips) ───────────────────────────
 function DateInput({ question, onSubmit }) {
-  const defaultDays = question.suggestedDeadlineDays || 10;
   const [value, setValue] = useState('');
   const inputRef = useRef(null);
 
@@ -380,18 +379,6 @@ function DateInput({ question, onSubmit }) {
     return d.toISOString().slice(0, 10);
   };
 
-  const quickPicks = [
-    { label: '+5 days', days: 5 },
-    { label: '+10 days', days: defaultDays },
-    { label: '+14 days', days: 14 },
-  ];
-
-  const handleQuickPick = (days) => {
-    const iso = dateFromOffset(days);
-    setValue(iso);
-    onSubmit(iso);
-  };
-
   const handleSubmit = (e) => {
     e?.preventDefault?.();
     if (!value) return;
@@ -400,18 +387,6 @@ function DateInput({ question, onSubmit }) {
 
   return (
     <div className="v4-date-block">
-      <div className="v4-chips-row" role="group" aria-label="Quick pick">
-        {quickPicks.map((q) => (
-          <button
-            key={q.days}
-            type="button"
-            className="v4-chip"
-            onClick={() => handleQuickPick(q.days)}
-          >
-            {q.label}
-          </button>
-        ))}
-      </div>
       <form className="v4-input-row v4-date-row" onSubmit={handleSubmit}>
         <span className="v4-input-icon" aria-hidden="true">
           <CalendarBlank weight="duotone" size={20} />

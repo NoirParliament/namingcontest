@@ -159,7 +159,7 @@ export default function PickSubSegment() {
           )}
           {phase >= 4 && (
             <div className="v4-bubble">
-              First — which kind of naming is this?
+              First, what are we naming?
             </div>
           )}
 

@@ -694,7 +694,7 @@ const SIM_ANSWERS = {
 // name, voter package) then the real brief questions. Every answer is just a
 // typed reply — the prompts are the real thing.
 const SIM_STEPS = [
-  { prompt: 'Let’s set up your business contest. First — which kind of naming is this?', answer: 'A company' },
+  { prompt: 'Let’s set up your business contest. First, what are we naming?', answer: 'A company' },
   { prompt: 'Got it. What should we call this contest for a company?', answer: 'Fintech startup' },
   { prompt: 'How many people will vote?', answer: 'Up to 30 voters · $19' },
   ...SIM_BRIEF.map((q) => ({ prompt: q.prompt, answer: SIM_ANSWERS[q.id] || '' })),
