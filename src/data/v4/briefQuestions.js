@@ -605,6 +605,8 @@ export const BRIEF_QUESTIONS = {
         prompt: 'What kind of group is this?',
         type: 'chips',
         options: ['Club or society', 'Civic or community group', 'Neighborhood association', 'Special-interest group', 'Other'],
+        describeOption: 'Other',
+        describePlaceholder: 'What kind of group is it?',
       },
       {
         id: 'mission',
