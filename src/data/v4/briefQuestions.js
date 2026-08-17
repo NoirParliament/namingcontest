@@ -397,11 +397,11 @@ export const BRIEF_QUESTIONS = {
       {
         id: 'sportLeague',
         label: 'Sport and league / competition',
-        prompt: 'What sport, and what league or level do you play in?',
+        prompt: 'What sport, league, or level is this team part of?',
         type: 'text',
         required: false,
-        placeholder: 'e.g. Competitive soccer, U14 travel league, AYSO Region 12...',
-        hint: `The sport shapes the naming territory. Soccer teams trend geographic or fierce animal. Hockey teams trend weather/nature. Esports teams trend aggressive or meme-worthy. Share your sport so participants know the naming conventions to break or follow.`,
+        placeholder: 'e.g. Competitive soccer, U14 travel league, AYSO Region 12',
+        hint: `Different sports and leagues have their own naming traditions. Soccer teams might draw on places, animals, colors, or local references. Hockey names often lean into toughness, nature, or weather, while recreational teams can be much more playful. Tell participants what kind of team they’re naming, and they can draw on the conventions that fit — or take the name in a completely different direction.`,
         guideId: 't1-anatomy',
       },
       {
@@ -409,7 +409,7 @@ export const BRIEF_QUESTIONS = {
         label: 'Age group / competitive level',
         prompt: 'Who plays on the team?',
         type: 'chips',
-        options: ['Youth (under 14)', 'High School (14-18)', 'College / University', 'Adult Amateur', 'Semi-Pro / Pro'],
+        options: ['Youth (under 14)', 'High School (14-18)', 'College / University', 'Intramural', 'Adult Amateur', 'Semi-Pro / Pro'],
       },
       {
         id: 'personality',
@@ -417,22 +417,24 @@ export const BRIEF_QUESTIONS = {
         prompt: `What’s the team’s personality? Pick any that apply.`,
         type: 'multiChips',
         options: ['Intimidating', 'Pride-Based', 'Fun / Playful', 'Underdog / Gritty', 'Not sure'],
-        hint: `Personality drives tone. An intimidating name (Predators, Raptors) sets a different expectation than a pride-based name (Golden State, Pride FC). A fun name works for youth teams but may feel weak at adult competitive level. Be honest about your team’s culture.`,
+        hint: `Personality sets the tone. A team name signals what kind of team you are. An intimidating name like Predators or Raptors projects power and aggression; a name rooted in place, community, or identity can create a different kind of pride and belonging. Playful names can be perfect for youth or rec teams, while a highly competitive team may want more edge. Let your names reflect your team’s personality, audience, and ambitions.`,
         guideId: 't1-chant',
       },
       {
         id: 'namingDirection',
-        label: 'Naming direction',
-        prompt: 'Which naming direction should participants explore?',
-        type: 'radioCards',
+        label: 'Naming territories',
+        prompt: 'Which naming territories should participants explore? Pick any that apply.',
+        type: 'multiChips',
         options: [
-          { id: 'animal-mascot', label: 'Animal / Mascot', sublabel: '“Lions”, “Hawks”, “Wolves”' },
-          { id: 'force-of-nature', label: 'Force of Nature', sublabel: '“Thunder”, “Blaze”, “Surge”' },
-          { id: 'place-geographic', label: 'Place / Geographic', sublabel: '“Lakeview”, “Riverside”, “Northern”' },
-          { id: 'abstract-fierce', label: 'Abstract / Fierce', sublabel: '“Renegades”, “Vanguard”, “Apex”' },
-          { id: 'any', label: 'No preference — show me everything', sublabel: '' },
+          'Animal / Mascot',
+          'Force of Nature',
+          'Place / Geographic',
+          'Elite / Best',
+          'Tough / Fierce',
+          'Open to anything',
         ],
-        hint: `The Oklahoma City Thunder was picked by a fan vote off an ownership shortlist — beating finalists like Barons, Bison, Energy, and Wind — because it’s both geographic and a force of nature. The Seattle Kraken broke convention with a creature name. Tell participants which direction to explore — or let them surprise you.`,
+        allowCustom: true,
+        hint: `Point participants toward a territory, or a few. Animal / Mascot (Lions, Hawks, Wolves). Force of Nature (Thunder, Blaze, Surge). Place / Geographic (Lakeview, Riverside, Northern). Elite / Best (Apex, Vanguard, Prime). Tough / Fierce (Renegades, Predators, Ironsides). Oklahoma City’s Thunder was chosen through a fan vote from an ownership-selected shortlist that included Barons, Bison, Energy, and Wind. The name connects to the region while evoking a powerful force of nature. Seattle’s Kraken took a very different route, embracing a mythical creature with no obvious connection to the city. When briefing participants, you can point them toward a particular naming territory — or leave the door open for an unexpected idea.`,
       },
       {
         id: 'geography',
@@ -441,8 +443,8 @@ export const BRIEF_QUESTIONS = {
         type: 'textarea',
         rows: 2,
         required: false,
-        placeholder: 'City, region, or local landmarks that could inspire the name...',
-        hint: `Place names ground a team in community. If your team is from a specific city, neighborhood, or region — share it. Local landmarks, rivers, weather patterns, and regional history can all inspire names that feel native to where you play.`,
+        placeholder: 'Share city name, regional landmarks, notable weather patterns, interesting local history, etc.',
+        hint: `A strong connection to place can give a team name instant identity and local meaning. If your team represents a city, neighborhood, or region, share that context with participants. Local landmarks, landscapes, weather, history, and cultural references can all inspire names that feel connected to where the team plays.`,
       },
       {
         id: 'chantable',
@@ -464,27 +466,22 @@ export const BRIEF_QUESTIONS = {
   },
 
   // ── t2 · Band / music ──
+  // 2026-08-17 client revision: lead with genre; the old "Tell us about the
+  // band" opener moves to the end as an optional "anything else" field.
+  // Legal-name and searchability questions dropped entirely —
+  // "I'd like us not to address any legal stuff."
   t2: {
     label: 'Band / music project',
     suggestedDeadlineDays: 10,
     questions: [
-      {
-        id: 'projectSummary',
-        label: 'About this',
-        prompt: 'Tell us about the band.',
-        type: 'textarea',
-        rows: 3,
-        required: true,
-        placeholder: 'e.g. A 4-piece dream-pop band from Bristol with one EP out. Booked for a small US tour in the fall and need a name we can grow into.',
-      },
       {
         id: 'genre',
         label: 'Genre / Sound',
         prompt: `What’s your genre and sound?`,
         type: 'text',
         required: false,
-        placeholder: 'e.g. Indie rock, hip-hop, classical, electronic...',
-        hint: `Genre shapes the name archetype. Metal names trend aggressive (Slayer, Pantera, Megadeth). Indie names trend literary/abstract (Fleet Foxes, Beach House, Bon Iver). Pop names trend catchy and pronounceable. Share the genre so participants know the naming territory.`,
+        placeholder: 'e.g. Indie rock, hip-hop, classical, electronic',
+        hint: `Genres often have their own naming conventions. Metal favors names that feel powerful or intense: Slayer, Pantera, Megadeth. Indie bands often go literary, evocative, or unexpected: Fleet Foxes, Beach House, Bon Iver. Pop names tend to be broadly accessible and easy to say: The Weeknd, Maroon 5, Lady Gaga, 5 Seconds of Summer. Share the genre so participants know where to start, or what conventions they might break.`,
       },
       {
         id: 'originStory',
@@ -493,39 +490,37 @@ export const BRIEF_QUESTIONS = {
         type: 'textarea',
         rows: 3,
         required: false,
-        placeholder: 'How did the band form? Any meaningful context, inside references, or stories that could inspire a name?',
-        hint: `Fans always ask “How did you get your name?” A name with a great story is a permanent conversation starter. Lynyrd Skynyrd = named after a gym teacher. Radiohead = from a Talking Heads song. Foo Fighters = Dave Grohl’s WWII UFO reference. Share the origin context so participants can suggest something with meaning.`,
+        placeholder: 'e.g. All the band members have kids at the same school. We all love bad science fiction movies.',
+        hint: `Fans inevitably ask, “How did you get your name?” A name with a good story gives people something to remember and talk about. Lynyrd Skynyrd took its name from a gym teacher, Radiohead from a Talking Heads song, and Foo Fighters from a World War II term for mysterious aerial sightings. Give participants some of the band's story or shared context, and they may find a name with meaning built in.`,
         guideId: 't2-firstsong',
       },
       {
         id: 'nameStyle',
-        label: 'Name archetype preference',
-        prompt: 'Which archetype fits your project?',
-        type: 'radioCards',
+        label: 'Naming territory',
+        prompt: 'What naming territory fits your band? Pick any that apply.',
+        type: 'multiChips',
         options: [
-          { id: 'absurdist', label: 'Absurdist / Provocative', sublabel: 'Arctic Monkeys, Vampire Weekend' },
-          { id: 'evocative', label: 'Evocative / Poetic', sublabel: 'The National, Fleet Foxes' },
-          { id: 'personal', label: 'Personal / Story-based', sublabel: 'Dave Matthews Band, Lynyrd Skynyrd' },
-          { id: 'any', label: 'Any', sublabel: '' },
+          'Pop culture',
+          'Inside jokes',
+          'Places',
+          'Food',
+          'Names',
+          'Interesting words',
+          'Meaningful phrases',
+          'Random combinations',
         ],
-        hint: `Three archetypes dominate great band names. Absurdist/Provocative (Arctic Monkeys, Vampire Weekend, Panic! at the Disco) — memorable for their strangeness. Evocative/Poetic (The National, Fleet Foxes, Portishead) — mood-first, feels like the music. Personal/Story-based (Dave Matthews Band, Lynyrd Skynyrd) — built around identity or lore. Pick one to guide submissions.`,
+        allowCustom: true,
+        hint: `Great band names can come from almost anywhere. These eight overlapping territories provide different ways into the creative process, from personal connections and pop-culture references to places, names, interesting words, and unexpected combinations. Explore several rather than locking into one. The goal is to give participants enough structure to spark ideas while leaving plenty of room for surprise.`,
         guideId: 't2-archetypes',
       },
       {
-        id: 'nameType',
-        label: 'Stage name or legal name?',
-        prompt: 'Is this a stage name or the legal band name for contracts and licensing?',
-        type: 'chips',
-        options: ['Stage name (creative freedom)', 'Legal name (needs trademark-ability)', 'Both same name'],
-        hint: `If this is the legal band name for contracts, merch, and licensing — it needs to be distinctive enough to trademark and simple enough for legal docs. If it’s a stage name only, you have more creative freedom. Some bands use a simplified version legally (The Artist Formerly Known As Prince → Prince legally).`,
-      },
-      {
-        id: 'searchability',
-        label: 'Google / searchability test',
-        prompt: 'How searchable does the name need to be?',
-        type: 'chips',
-        options: ['Highly distinctive / searchable', 'Okay with some ambiguity', `Don’t mind`],
-        hint: `In the streaming era, a band name that’s searchable without 10,000 false positives is a real competitive advantage. “The The”, “Girls”, and “!!!” are famously unsearchable. “Foo Fighters” returns exactly what you want. Tell participants: do you want a highly distinctive, searchable name, or are you okay with something more common?`,
+        id: 'projectSummary',
+        label: 'About this',
+        prompt: 'Tell us anything else about the band that will help with naming.',
+        type: 'textarea',
+        rows: 3,
+        required: false,
+        placeholder: 'e.g. A 4-piece dream-pop band from Bristol with one EP out. Booked for a small US tour in the fall and need a name we can grow into.',
       },
     ],
   },
@@ -538,11 +533,11 @@ export const BRIEF_QUESTIONS = {
       {
         id: 'projectSummary',
         label: 'About this',
-        prompt: `What’s the show about — and who’s it for?`,
+        prompt: `What’s this show or project about? Describe the concept.`,
         type: 'textarea',
         rows: 3,
         required: true,
-        placeholder: 'e.g. A weekly interview show with first-time founders about the year before product-market fit. Honest, slow conversations — not a hype podcast.',
+        placeholder: 'e.g. First-time founders talking about the year before product launch. Authentic conversations, without hype.',
         guideId: 't3-discovery',
       },
       {
@@ -579,31 +574,36 @@ export const BRIEF_QUESTIONS = {
         type: 'text',
         required: false,
         placeholder: 'e.g. How I Built This, Lex Fridman, Hidden Brain...',
-        hint: `Like competitor names for brands, comparable show names tell participants what naming territory is taken and what style resonates with you. e.g. “I love how How I Built This is clear, but want something with more personality like Radiolab.”`,
+        hint: `Comparable show names give participants a useful sense of the territory you’re drawn to and what’s already out there. Share a few examples you like, and explain what you respond to about them. For example: “I like how How I Built This makes the subject clear, but I’d love something with more personality and intrigue, like Radiolab.”`,
       },
     ],
   },
 
-  // ── t4 · Civic / School / Nonprofit ──
+  // ── t4 · Club or civic group ──
+  // 2026-08-17 client rescope (Maria/Mark): "Change this category to club or
+  // civic group. If folks are naming a non-profit, they can use Business."
+  // Mission / community-served / 50-year-longevity questions dropped (see
+  // CUT_QUESTIONS) — these lighter groups don't need that framing.
   t4: {
-    label: 'Civic / school / nonprofit',
+    label: 'Club or civic group',
     suggestedDeadlineDays: 10,
     questions: [
       {
         id: 'projectSummary',
         label: 'About this',
-        prompt: 'What does this organization do?',
+        prompt: 'What is this club or group, and what do you do together?',
         type: 'textarea',
         rows: 3,
         required: true,
-        placeholder: 'e.g. We run free coding workshops for teenagers in three South Side neighborhoods. Working name is placeholder; donors keep asking what to put on the check.',
+        placeholder: 'e.g. A neighborhood chess club that meets Thursday nights at the library. About 20 regulars, all ages, half of us hooked since the pandemic.',
+        guideId: 't4-community',
       },
       {
         id: 'orgType',
-        label: 'Organization type',
-        prompt: 'What kind of organization is this?',
+        label: 'Kind of group',
+        prompt: 'What kind of group is this?',
         type: 'chips',
-        options: ['School or PTA', 'Neighborhood Association', 'Nonprofit / Charity', 'Civic Group', 'Club or Society', 'Other'],
+        options: ['Club or society', 'Civic or community group', 'Neighborhood association', 'Special-interest group', 'Other'],
       },
       {
         id: 'mission',
@@ -728,7 +728,6 @@ export const BRIEF_QUESTIONS = {
         rows: 3,
         required: true,
         placeholder: `e.g. A monthly potluck club of 8 friends who’ve been meeting since college. Almost a decade in and someone finally said “we should name this.”`,
-        guideId: 't6-identity',
       },
       {
         id: 'groupDesc',
@@ -747,6 +746,7 @@ export const BRIEF_QUESTIONS = {
         prompt: `What’s the group’s vibe? Pick any that apply.`,
         type: 'multiChips',
         options: ['Serious / Professional', 'Fun / Casual', 'Aspirational', 'Irreverent / Playful'],
+        allowCustom: true,
       },
       {
         id: 'history',
@@ -756,7 +756,6 @@ export const BRIEF_QUESTIONS = {
         required: false,
         placeholder: 'e.g. We all met at a conference in Berlin, our group chat is named after an inside joke...',
         hint: `Group names with personal meaning create stronger belonging. If there’s a shared joke, a founding story, or a place that matters — share it. Participants who know the group well might suggest something that hits differently.`,
-        guideId: 't6-future',
       },
     ],
   },
@@ -1486,41 +1485,41 @@ export const ARTICLES = {
       icon: 'Trophy',
       sections: [
         {
-          heading: 'Four qualities that separate great from forgettable',
-          body: 'Chantable (can 10,000 people yell it?), Visualizable (does it create an instant image?), Emotionally loaded (intimidating OR identity-building — pick one), Ownable (feels specific to this team, not interchangeable with anyone else).',
+          heading: 'Four qualities that make a name memorable',
+          body: `Chantable: can fans yell it together? Visual: does it conjure an image, symbol, or idea? Emotional: does it create energy, pride, toughness, fun, or a sense of belonging? Distinctive: does it feel like it belongs to this team rather than any team? The strongest names often hit several of these at once — but they don’t all have to.`,
         },
         {
           heading: 'The geography question',
-          body: 'Location-based names anchor the team in community. But they limit the team if it moves. Names that reference local culture without naming the city directly (Golden State Warriors) travel better. Think about whether this team will always be in one location.',
+          body: `A location-based name can instantly connect a team to its community. But think about how much you want the name tied to a particular place. Names that reference local culture, history, or landscape without simply using the city name can create a strong sense of place while giving the team more room to grow.`,
         },
         {
-          heading: 'Mascot vs abstract',
-          body: 'Miami Heat has no animal mascot. Oklahoma City Thunder has no mascot. Abstract team names (Heat, Magic, Jazz, Thunder) create more visual identity flexibility. But animal names are instantly visualizable. Both strategies have deep histories of success — choose based on your identity goals.',
+          heading: 'Mascot or something more abstract?',
+          body: `Not every great team name needs an animal. Miami Heat, Oklahoma City Thunder, and Utah Jazz all create strong identities without one. Abstract names can open up more possibilities for visual identity and storytelling, while animal names offer an immediate character and image. Neither approach is inherently better — the right choice depends on the personality you want the team to project.`,
         },
       ],
       callout: {
         type: 'example',
-        text: `Oklahoma City’s NBA team ran a public “name the team” process and put a shortlist to a fan vote — Thunder beat finalists like Barons, Bison, Energy, and Wind. It won because it was local, powerful, abstract, and chantable — without boxing in the visual identity.`,
+        text: `When Oklahoma City named its NBA team, fans were invited to weigh in on finalists including Thunder, Barons, Bison, Energy, and Wind. “Thunder” ultimately offered a strong connection to the region while feeling powerful, memorable, and flexible enough to build an identity around.`,
       },
     },
     {
       id: 't1-chant',
-      title: 'Chantability: The Test Every Team Name Must Pass',
+      title: 'Chantability: The Test Every Team Name Should Pass',
       readTime: '1 min',
       icon: 'SoccerBall',
       sections: [
         {
           heading: 'The stadium test',
-          body: `Imagine 10,000 people chanting your team name after a goal. Not reading it. Not typing it. Screaming it. Does it work? Names with natural stress patterns and sharp endings pass this test: “HEAT! HEAT! HEAT!” “THUNDER! THUNDER!” Names with three syllables or soft endings fail it: try chanting “Navigators” for 90 seconds. You will not enjoy it.`,
+          body: `Imagine thousands of fans chanting your team name after a big play. Not reading it or typing it — shouting it together. Does it have a natural rhythm? Can the crowd easily land on the key word? “HEAT! HEAT! HEAT!” and “THUNDER! THUNDER!” practically chant themselves. Longer names can work, too, if they have a natural way to shorten or emphasize them.`,
         },
         {
           heading: 'What makes a name chant-ready',
-          body: `One or two syllables. A hard consonant or sharp vowel at the end. Or a name that compresses naturally (Sacramento Kings → “KINGS!”). Test every submission by yelling it three times fast. If your voice trips on it, cut it from the shortlist.`,
+          body: `Short, punchy names tend to be easiest, especially those with strong sounds or a natural cadence. But there’s no single formula. “KINGS!” works beautifully for Sacramento, while “WARRIORS!” has a different rhythm that still carries. Try saying each finalist loudly three times in a row. Better yet, imagine thousands of people saying it together. If it feels awkward in your mouth, it probably won’t feel great in a stadium.`,
         },
       ],
       callout: {
         type: 'insight',
-        text: 'Chantability correlates with merchandise sales. Names that are easy to chant are easy to print, easy to hashtag, and easy to remember mid-game. It is not a soft criterion — it is infrastructure.',
+        text: `A great team name should work with the voice as well as on the page. If fans can say it together without thinking about it, the name becomes part of the team’s energy — not just its identity.`,
       },
     },
   ],
@@ -1529,50 +1528,42 @@ export const ARTICLES = {
   t2: [
     {
       id: 't2-firstsong',
-      title: 'The Band Name Is Your First Song',
+      title: 'The Band Name Is the First Note',
       readTime: '2 min',
       icon: 'MusicNote',
       sections: [
         {
-          heading: 'The name sets tone before a note plays',
-          body: `Before anyone hears your music, they see your name. It’s on the flyer, the playlist, the algorithm recommendation. The name creates expectation. “Death Cab for Cutie” creates completely different expectations than “The 1975.” Both great — but they signal different worlds.`,
+          heading: 'The name sets the stage',
+          body: `Before anyone hears your music, they encounter your name. It appears on a festival poster, streaming service, social feed, or T-shirt. A great name can suggest a mood, image, or entire world before the first note plays. Metallica, The Cure, and Talking Heads each create a different expectation without explaining what the music sounds like.`,
         },
         {
-          heading: 'The story test',
-          body: `Fans always ask: “How did you get your name?” A great answer is a great story. Radiohead = from a Talking Heads B-side. Lynyrd Skynyrd = named after a gym teacher who told them to cut their hair. Foo Fighters = Dave Grohl’s WWII UFO reference. A name with a story becomes band mythology before the first album.`,
+          heading: 'Make it memorable, distinctive, and evocative',
+          body: `The best band names stick after one listen and feel like they belong to no other band. They might create a vivid image, combine unexpected ideas, or simply have a satisfying rhythm or sound. Fleet Foxes, Arctic Monkeys, Pearl Jam, and The Strokes all give listeners something to picture and remember. Give participants a sense of your music, story, influences, and audience so they have something real to build from.`,
         },
         {
-          heading: 'The searchability problem',
-          body: `In the streaming era, a searchable band name is a competitive advantage. “The The”, “Girls”, and “!!!” are all legitimate band names — and all impossible to find on any platform. “Foo Fighters” returns exactly what you want. Distinctiveness and searchability are not the same thing — you need both.`,
+          heading: 'Leave room to grow',
+          body: `A name that perfectly describes your sound today can become a creative cage tomorrow. If you might evolve, experiment, or cross genres, look for a name that can grow with you. Radiohead has worked across radically different musical territory precisely because the name never locked the band into one sound.`,
         },
       ],
       callout: {
         type: 'insight',
-        text: `Before you fall for a name, search it. If page one is crowded with unrelated results, your fans will land everywhere but on you — distinctiveness and searchability aren’t the same thing, and a band name needs both.`,
+        text: `Before you fall in love with a name, stress-test it. Say it aloud. Imagine it on a festival poster and a T-shirt. Search for it on Google, Spotify, social platforms, and trademark databases. A great band name should sound right, look right, stick in people’s minds, and give listeners a clear path back to you.`,
       },
     },
     {
       id: 't2-archetypes',
-      title: 'Three Archetypes That Dominate Music Naming History',
+      title: 'Where Great Band Names Come From',
       readTime: '2 min',
       icon: 'Quotes',
       sections: [
         {
-          heading: 'Absurdist / Provocative',
-          body: `Arctic Monkeys, Vampire Weekend, Panic! at the Disco, Chumbawamba. Memorable for strangeness. Make you stop and think. Best for genres where personality is part of the brand. Risk: can feel gimmicky if the music doesn’t match the name’s attitude.`,
-        },
-        {
-          heading: 'Evocative / Poetic',
-          body: `The National, Fleet Foxes, Beach House, Portishead, Mazzy Star. Mood-first. Feels like the music before you hear it. Names that suggest a feeling, a place, an aesthetic. Ages beautifully — doesn’t feel tied to any era or trend.`,
-        },
-        {
-          heading: 'Personal / Story-based',
-          body: `Dave Matthews Band, Lynyrd Skynyrd, Radiohead. The name carries identity — either the artist’s or a moment in the band’s history. Best for artist-driven projects where personality is the product.`,
+          heading: 'Eight naming territories to explore',
+          body: `Band names often come from surprisingly different places. Use these territories to get the ideas flowing. Pop culture: songs, movies, books, characters, or other cultural references (Radiohead, The All-American Rejects). Inside jokes: a shared experience, phrase, interest, or story that means something to the band (Green Day, Garbage). Places: a neighborhood, city, landmark, or other meaningful location (Cypress Hill, Linkin Park, Soundgarden). Food: everyday foods can make unexpectedly memorable names (The Cranberries, The Black Eyed Peas, Red Hot Chili Peppers). Names: first names, surnames, combinations, or names with a twist (Fleetwood Mac, Kings of Leon, Phish). Interesting words: a single word can be powerful, especially with an unexpected meaning or sound (Outkast, Ride, The Pixies). Meaningful phrases: multiple words that create a clear idea or reference (AC/DC, New Found Glory, Stockholm Syndrome). Random combinations: two or more words that simply create an intriguing, memorable image together (Arctic Monkeys, My Morning Jacket, Blink-182).`,
         },
       ],
       callout: {
         type: 'insight',
-        text: `Each archetype tends to cluster by genre: absurdist names dominate indie and alt, evocative names dominate folk and ambient, personal names dominate hip-hop and country. Know your genre’s archetype before you brief.`,
+        text: `Don’t wait for one perfect naming idea to appear. Explore different territories first. A great name might come from your music, your story, a shared joke, a place, a favorite food — or two completely unrelated words that simply sound right together.`,
       },
     },
   ],
@@ -1581,26 +1572,26 @@ export const ARTICLES = {
   t3: [
     {
       id: 't3-discovery',
-      title: 'Discovery vs Memory: The Two Jobs of a Podcast Name',
+      title: 'Discovery vs. Memory: The Two Jobs of a Podcast Name',
       readTime: '2 min',
       icon: 'BookOpen',
       sections: [
         {
           heading: 'Job 1: Discovery',
-          body: `When someone searches “business podcast” or “true crime,” does your name surface? Discovery-optimized names lean clear: “The Daily,” “Crime Junkie,” “How I Built This.” These work when you have no existing audience and search is your primary acquisition channel.`,
+          body: `When someone is looking for a podcast about business, true crime, or psychology, does the name give them a clue that they’ve found the right show? Discovery-friendly names tend to signal the subject clearly: Crime Junkie, How I Built This, or Stuff You Should Know. This approach can be especially helpful when you’re building an audience from scratch.`,
         },
         {
           heading: 'Job 2: Memory',
-          body: `When a listener recommends your show in conversation, can they remember the name? Memory-optimized names lean intriguing: “Serial,” “S-Town,” ”99% Invisible,’ “Radiolab.” These work when word-of-mouth is your growth engine.`,
+          body: `When a listener recommends your show to a friend, will they remember the name? Memory-friendly names can be more intriguing or unexpected: Serial, S-Town, 99% Invisible, or Radiolab. They may reveal less about the subject, but they give listeners something distinctive to remember and talk about.`,
         },
         {
-          heading: 'The balanced approach wins long-term',
-          body: `“Hidden Brain” (NPR psychology): “Hidden” = intriguing. “Brain” = instantly signals the subject. You know it’s about psychology before you read the description. Balanced names outperform pure-clarity or pure-mystery in long-term growth.`,
+          heading: 'The sweet spot: a clue + a hook',
+          body: `The strongest names can do both. Hidden Brain gives you an immediate clue about the subject while adding an intriguing idea you want to explore. SmartLess signals intelligence and humor without spelling out the format. A useful question for participants is: can the name tell me something, while still giving me something to remember?`,
         },
       ],
       callout: {
         type: 'example',
-        text: `“Stuff You Should Know” is the kind of clear, SEO-rich name that helped it become the first podcast past a billion downloads — later three billion. “Radiolab” is abstract and memorable, and built an audience in the tens of millions a different way. Clear names front-load audience. Memorable names compound over time. Choose your growth strategy first.`,
+        text: `You don’t necessarily have to choose between clarity and creativity. A descriptive name can help people understand what a show is about; a more distinctive name can give it personality and make it easier to remember. The right balance depends on how you expect listeners to discover and share the show.`,
       },
     },
     {
@@ -1657,26 +1648,22 @@ export const ARTICLES = {
     },
     {
       id: 't4-community',
-      title: 'Clarity vs Aspiration — When Each Approach Wins',
+      title: 'Naming a Club or Civic Group',
       readTime: '2 min',
       icon: 'Heart',
       sections: [
         {
-          heading: 'The clarity approach',
-          body: 'Crystal-clear civic names tell you exactly what they do: Habitat for Humanity, Feeding America, Girls Who Code. Best for service organizations where the mission IS the brand and you need to communicate in seconds without context.',
+          heading: 'Make it easy to say and share',
+          body: `For most clubs and civic groups, the first test is simple: is it a name people will actually say out loud, and does it fit on a flyer, a banner, or a group chat? A name that’s easy to say gets used, and a name that gets used is the one that sticks.`,
         },
         {
-          heading: 'The aspiration approach',
-          body: `Aspirational names evoke the world being worked toward. For most local groups — a PTA, a neighborhood association — the first test is simpler: is it a name people will actually say, and does it fit on a banner or a T-shirt? Start there. If you also fundraise widely, an aspirational name can carry a vision the way a service description can’t — but it only earns that when the everyday version still works.`,
-        },
-        {
-          heading: 'Community ownership',
-          body: `The best civic names feel like they belong to everyone. “Big Brothers Big Sisters” could be anyone. “The Johnson Initiative” belongs to Johnson. Unless your founder carries enormous equity (Gates, Obama), naming after a person limits community participation.`,
+          heading: 'Say what brings people together',
+          body: `The strongest group names hint at what you share — an activity, a place, a purpose, or a spirit. “Thursday Night Chess” tells you exactly what it is; “The Riverside Readers” pairs a place with a pastime. You don’t need to explain everything, just give participants a clear sense of who you are and what you do.`,
         },
       ],
       callout: {
         type: 'insight',
-        text: 'Mission clarity tends to be one of the first things a supporter weighs. A name that says what you do lowers the barrier to that first yes — whether it’s a neighbor signing up or a donor writing a check.',
+        text: `A club name doesn’t have to last forever. If the group changes, the name can change with it. Aim for something that feels right for the people in the room today.`,
       },
     },
   ],
@@ -2177,9 +2164,9 @@ export const CUT_QUESTIONS = {
   b4: [],
   b5: [],
   t1: ['teamColors', 'chantable'],
-  t2: ['searchability'], // merged into nameType
-  t3: [],
-  t4: ['acronymPref'],
+  t2: [], // 2026-08-17: nameType + searchability removed from the band set (client: no legal / searchability)
+  t3: ['platform', 'tone'], // 2026-08-17 client: fold "where it lives" into the concept Q; drop tone/format + its duplicate guide
+  t4: ['acronymPref', 'mission', 'community', 'longevity'], // 2026-08-17 rescope to club/civic — no mission / served / 50-year longevity
   t5: ['platform'],
   t6: [],
   p1: ['traditions', 'avoidInitials', 'projectSummary'],
@@ -2211,13 +2198,8 @@ export const MERGE_QUESTIONS = {
 
   // b2 mirrors b1 since 2026-07-13 — its old prodDesc/differentiator merge
   // no longer applies (those ids don't exist in the mirrored set).
-  t2: [
-    {
-      keepId: 'nameType',
-      merged: ['searchability'],
-      newPrompt: 'How will the name live in the world — legal name? stage only? searchable on Google?',
-    },
-  ],
+  // t2's old nameType/searchability merge removed 2026-08-17 — both questions
+  // were dropped from the band set (client: no legal / searchability questions).
   p1: [
     {
       keepId: 'lengthPref',

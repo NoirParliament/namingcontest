@@ -22,7 +22,7 @@ const TIERS = [
     Icon: UsersThree,
     tone: TONES.periwinkle,
     title: 'Group',
-    body: 'Bands, podcasts, sports teams, gaming clans, civic groups.',
+    body: 'Sports teams, bands, podcasts, clubs, and more.',
   },
   {
     id: 'business',

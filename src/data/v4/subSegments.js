@@ -31,9 +31,13 @@ export const SUB_SEGMENTS = {
       { id: 't1', icon: 'SoccerBall',    tone: TONES.mint,       title: 'A sports team',                            body: 'Local league, school squad, recreational team.' },
       { id: 't2', icon: 'MusicNote',     tone: TONES.lavender,   title: 'A band or music group',                    body: 'Whatever the genre.' },
       { id: 't3', icon: 'Microphone',    tone: TONES.sky,        title: 'A podcast, channel, or creative project',  body: 'Audio, video, or anything in between.' },
-      { id: 't4', icon: 'GraduationCap', tone: TONES.blush,      title: 'A school, club, or nonprofit',             body: 'Civic, community, or institutional.' },
-      { id: 't5', icon: 'GameController',tone: TONES.butter,     title: 'A gaming group',                           body: 'Team, guild, or clan.' },
-      { id: 't6', icon: 'PencilSimple',  tone: TONES.periwinkle, title: 'Something else',                           body: 'Tell us about it in the brief.' },
+      { id: 't4', icon: 'GraduationCap', tone: TONES.blush,      title: 'A club or civic group',                    body: 'A chess club, a neighborhood group, a civic cause.' },
+      // 2026-08-17 client decision (Maria/Mark): drop the Gaming Group
+      // category — "too many Groups; roll it into Sports Team or Club.
+      // We can always add this later." Card commented out (reversible);
+      // t5's question set + guides stay in the data files.
+      // { id: 't5', icon: 'GameController',tone: TONES.butter,     title: 'A gaming group',                           body: 'Team, guild, or clan.' },
+      { id: 't6', icon: 'PencilSimple',  tone: TONES.periwinkle, title: 'Something else',                           body: 'A group chat, a friend group, a shared tradition — anything that needs a name.' },
     ],
   },
   business: {
