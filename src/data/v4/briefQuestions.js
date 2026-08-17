@@ -969,11 +969,11 @@ export const BRIEF_QUESTIONS = {
       {
         id: 'location',
         label: 'Location / environment',
-        prompt: 'Where is it, or what surrounds it?',
+        prompt: 'Where is it, or what surrounds it? If this isn’t a place or property, skip to the next question.',
         type: 'text',
         required: false,
         placeholder: 'e.g. A lakefront cabin',
-        hint: `If this isn’t a place or property, skip to the next question. Otherwise, local geography, nature, or architectural style can inspire names that feel native to the place — a cabin in the Adirondacks has different naming territory than a beach house in the Florida Keys.`,
+        hint: `Local geography, nature, or architectural style can inspire names that feel native to the place — a cabin in the Adirondacks has different naming territory than a beach house in the Florida Keys.`,
       },
       {
         id: 'vibe',
