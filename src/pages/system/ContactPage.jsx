@@ -295,7 +295,7 @@ export default function ContactPage() {
                     <span className="contact-chat-head-dot" aria-hidden="true" />
                     <div className="contact-chat-head-text">
                       <span className="contact-chat-head-title">NamingContest</span>
-                      <span className="contact-chat-head-sub">Typically replies within a day</span>
+                      <span className="contact-chat-head-sub">We typically reply within a day</span>
                     </div>
                   </div>
                   <div className="contact-chat-thread" role="log" aria-live="polite">

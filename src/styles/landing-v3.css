@@ -573,6 +573,14 @@
 .lp-v3 .section-head{text-align:center;max-width:720px;margin:0 auto var(--s-12)}
 .lp-v3 .section-head .eyebrow{margin-bottom:var(--s-3)}
 .lp-v3 .section-head .lede{margin:var(--s-4) auto 0;max-width:56ch}
+/* Explicit pricing band — states the model outside the FAQ so people
+   understand it before they engage. Lives in the offerings section. */
+.lp-v3 .price-band{margin:var(--s-12) 0 0;text-align:center}
+.lp-v3 .price-tiers{display:inline-flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 14px;padding:12px 22px;background:transparent;border:1px solid var(--border);border-radius:999px;font-family:var(--font-text);font-size:16px;line-height:1.2;color:var(--fg-muted);transition:background .4s ease,box-shadow .4s ease,border-color .4s ease}
+.lp-v3 .price-tiers:hover{background:#fff;box-shadow:var(--shadow-card);border-color:rgba(3,3,2,.12)}
+.lp-v3 .price-tier strong{color:var(--fg);font-weight:700}
+.lp-v3 .price-sep{color:var(--fg-muted);opacity:.4}
+.lp-v3 .price-note{font-family:var(--font-text);font-size:13.5px;color:var(--fg-muted);margin:10px 0 0}
 
 /* === Offerings === */
 .lp-v3 .offerings{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
