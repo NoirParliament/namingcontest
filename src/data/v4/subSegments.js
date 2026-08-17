@@ -21,7 +21,7 @@ export const SUB_SEGMENTS = {
     options: [
       { id: 'p1', icon: 'Baby',          tone: TONES.pink,       title: 'A new baby',                       body: "The most exciting naming you’ll ever do." },
       { id: 'p2', icon: 'PawPrint',      tone: TONES.butter,     title: 'A pet',                            body: 'Dogs, cats, horses, the lot.' },
-      { id: 'p3', icon: 'House',         tone: TONES.mint,       title: 'Home, property, or something fun', body: 'Holiday cottage, boat, or anything in between.' },
+      { id: 'p3', icon: 'House',         tone: TONES.mint,       title: 'Home, WiFi network, boat, and more', body: 'Holiday cottage, boat, or anything in between.' },
       { id: 'p4', icon: 'PencilSimple',  tone: TONES.periwinkle, title: 'Something else',                   body: 'Tell us about it in the brief.' },
     ],
   },

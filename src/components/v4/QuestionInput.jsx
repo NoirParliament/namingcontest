@@ -171,30 +171,66 @@ function TextareaInput({ question, onSubmit, autoFocus }) {
 // ── chips (single-select pill list) ──────────────────────────────────
 function ChipsInput({ question, onSubmit }) {
   const opts = question.options || [];
+  // An option can reveal a follow-up text field (e.g. "Specific language"
+  // → type which one) via question.describeOption. Picking it shows the
+  // input instead of submitting; the typed text becomes the answer.
+  const describeOption = question.describeOption;
+  const [describing, setDescribing] = useState(false);
+  const [describeValue, setDescribeValue] = useState('');
 
   const handlePick = (val) => {
+    if (describeOption && val === describeOption) {
+      setDescribing(true);
+      return;
+    }
     // For chips, the answer is the option value itself (a string)
     onSubmit(typeof val === 'string' ? val : val.label || val.id);
   };
 
+  const submitDescribe = (e) => {
+    e?.preventDefault?.();
+    const t = describeValue.trim();
+    if (t) onSubmit(t);
+  };
+
   return (
-    <div className="v4-chips-row" role="radiogroup" aria-label={question.label}>
-      {opts.map((opt) => {
-        const value = typeof opt === 'string' ? opt : (opt.label || opt.id);
-        const label = typeof opt === 'string' ? opt : (opt.label || opt.id);
-        return (
-          <button
-            key={value}
-            type="button"
-            role="radio"
-            aria-checked={false}
-            className="v4-chip"
-            onClick={() => handlePick(value)}
-          >
-            {label}
+    <div className="v4-chips-block">
+      <div className="v4-chips-row" role="radiogroup" aria-label={question.label}>
+        {opts.map((opt) => {
+          const value = typeof opt === 'string' ? opt : (opt.label || opt.id);
+          const label = typeof opt === 'string' ? opt : (opt.label || opt.id);
+          const active = describing && value === describeOption;
+          return (
+            <button
+              key={value}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              className={`v4-chip ${active ? 'is-checked' : ''}`}
+              onClick={() => handlePick(value)}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
+      {describing && (
+        <form className="v4-chips-custom-row" style={{ display: 'flex', gap: 8, marginTop: 10 }} onSubmit={submitDescribe}>
+          <input
+            type="text"
+            className="v4-input"
+            value={describeValue}
+            onChange={(e) => setDescribeValue(e.target.value)}
+            placeholder={question.describePlaceholder || 'Type your answer…'}
+            aria-label={question.label}
+            autoFocus
+            style={{ flex: 1 }}
+          />
+          <button type="submit" className="v4-input-submit" disabled={!describeValue.trim()} aria-label="Continue">
+            <ArrowRight weight="bold" size={18} />
           </button>
-        );
-      })}
+        </form>
+      )}
     </div>
   );
 }

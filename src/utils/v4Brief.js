@@ -99,3 +99,16 @@ export function getArticleFor(subId, guideId) {
 export function getSegmentLabel(subId) {
   return BRIEF_QUESTIONS[subId]?.label || '';
 }
+
+// Short descriptor of what a contest is actually naming — for the review /
+// manage subtitle. Most categories are specific enough on their own. p3 is
+// a grab-bag ("Home, WiFi network, boat, and more"), so there we surface the
+// creator's "What are you naming?" answer (e.g. "WiFi network") instead of
+// the whole category, falling back to the label if it's not answered yet.
+export function getContestDescriptor(setup) {
+  const subId = setup?.subSegmentId;
+  if (subId === 'p3' && setup?.brief?.namingTarget) {
+    return setup.brief.namingTarget;
+  }
+  return getSegmentLabel(subId);
+}

@@ -24,7 +24,7 @@ import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
 import creatorProfile from '../../assets/creator-profile.png';
 import {
-  readSetup, writeSetup, getSegmentLabel,
+  readSetup, writeSetup, getSegmentLabel, getContestDescriptor,
 } from '../../utils/v4Brief';
 import { buildLiveData, buildLiveDataFromReal } from '../../utils/v4LiveData';
 import { getMockContestById } from '../../data/v4/mockContests';
@@ -310,7 +310,7 @@ export default function ContestManage() {
   // Strip the disambiguation suffix some labels carry, e.g.
   // "Something else (personal)" → "Something else". We only need the
   // segment name here; tier is already conveyed by the badge color/icon.
-  const segmentLabel = getSegmentLabel(subId).replace(/\s*\([^)]*\)\s*$/, '');
+  const segmentLabel = getContestDescriptor(setup).replace(/\s*\([^)]*\)\s*$/, '');
   const tierMeta = TIER_ICON[setup.group] || TIER_ICON.business;
   // Per-sub-segment accent — used for the hero badge, journey active step,
   // and participant pills so the segment's identity color carries through.
@@ -638,9 +638,6 @@ export default function ContestManage() {
               <h1 className="v4-review-title">
                 {setup.workingName || 'Your contest'}
               </h1>
-              <p className="v4-review-subtitle">
-                {segmentLabel}
-              </p>
               <div className={`v4-manage-status v4-manage-status-${phase}`}>
                 <span className="v4-manage-live-dot" aria-hidden="true"></span>
                 {phase === 'submission' && (

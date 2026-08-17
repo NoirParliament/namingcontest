@@ -10,7 +10,7 @@ import {
 } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
-import { readSetup, writeSetup, getSegmentLabel, getQuestionsFor, getSetupStepTotal } from '../../utils/v4Brief';
+import { readSetup, writeSetup, getQuestionsFor, getSetupStepTotal } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
 import { SegmentThemeBackdrop, getSegmentTone, getSegmentIcon, getSegmentPalette } from '../../data/v4/segmentTheme';
 import LaunchModal from '../../components/v4/LaunchModal';
@@ -91,7 +91,6 @@ export default function ReviewLaunch() {
     return () => el.removeEventListener('scroll', handler);
   }, []);
   const subId = setup.subSegmentId || 'b1';
-  const segmentLabel = getSegmentLabel(subId);
   // Review is the final step of the setup flow — show it as N/N so the
   // progress counter that ran through the chat lands here.
   const reviewTotal = getSetupStepTotal(subId);
@@ -336,9 +335,6 @@ export default function ReviewLaunch() {
                 <PencilSimple size={16} weight="bold" />
               </button>
             </h1>
-            <p className="v4-review-subtitle">
-              {segmentLabel}
-            </p>
             {setup.voterTier && (
               <button
                 type="button"

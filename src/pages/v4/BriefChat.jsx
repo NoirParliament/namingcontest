@@ -385,7 +385,7 @@ export default function BriefChat() {
     }
 
     const display = currentQ.section === 'voter'
-      ? `Up to ${value} voters`
+      ? `Up to ${value} participants`
       : answerToDisplay(value);
     setUserReply(display);
     setTimeout(() => {

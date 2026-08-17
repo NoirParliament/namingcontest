@@ -935,7 +935,7 @@ export const BRIEF_QUESTIONS = {
 
   // ── p3 · Home / Property / Fun ──
   p3: {
-    label: 'Home / property / fun',
+    label: 'Home, WiFi network, boat, and more',
     suggestedDeadlineDays: 7,
     questions: [
       {
@@ -952,7 +952,7 @@ export const BRIEF_QUESTIONS = {
         label: 'What are you naming?',
         prompt: 'What are you naming?',
         type: 'chips',
-        options: ['House / Home', 'Vacation Home / Cabin', 'Boat / Watercraft', 'Car / Vehicle', 'Camper / RV', 'Room / Space', 'Other'],
+        options: ['House / Home', 'Vacation Home / Cabin', 'Boat / Watercraft', 'Car / Vehicle', 'WiFi network', 'Other'],
         required: true,
       },
       {
@@ -962,7 +962,7 @@ export const BRIEF_QUESTIONS = {
         type: 'textarea',
         rows: 3,
         required: false,
-        placeholder: 'e.g. A 1920s craftsman bungalow with a big porch, always full of people on summer evenings...',
+        placeholder: 'e.g. A 1920s craftsman bungalow with a big porch, always full of people on summer evenings',
         hint: `A little context sparks better names. Is there something unique about this place or thing? A quirk, a story, a feeling? Research shows named spaces are used more, cared for more, and remembered more fondly — the name you pick will become part of the story you tell about this place.`,
         guideId: 'p3-places',
       },
@@ -972,23 +972,23 @@ export const BRIEF_QUESTIONS = {
         prompt: 'Where is it, or what surrounds it?',
         type: 'text',
         required: false,
-        placeholder: 'e.g. Pacific Northwest lakefront, New England colonial, urban brownstone in Brooklyn...',
-        hint: `Local geography, nature, or architectural style can inspire names that feel native to the place. A cabin in the Adirondacks has different naming territory than a beach house in the Florida Keys. Share where it is — or what’s around it.`,
+        placeholder: 'e.g. A lakefront cabin',
+        hint: `If this isn’t a place or property, skip to the next question. Otherwise, local geography, nature, or architectural style can inspire names that feel native to the place — a cabin in the Adirondacks has different naming territory than a beach house in the Florida Keys.`,
       },
       {
         id: 'vibe',
         label: 'Vibe / personality',
-        prompt: `What’s the place’s vibe? Pick any that apply.`,
+        prompt: `What is the general tone of the name you’re looking for? Pick any that apply.`,
         type: 'multiChips',
-        options: ['Cozy / Warm', 'Adventurous / Outdoorsy', 'Elegant / Sophisticated', 'Funny / Playful', 'Nautical / Sea-themed', 'Not sure'],
+        options: ['Cozy / Warm', 'Adventurous / Outdoorsy', 'Elegant / Sophisticated', 'Funny / Playful', 'Intellectual / Scientific', 'Not sure'],
       },
       {
         id: 'signDisplay',
         label: 'Will the name appear on a sign or plaque?',
-        prompt: 'Will the name end up on a sign, plaque, or hull?',
+        prompt: 'Will the name appear on a sign, plaque, hull, or other physical display?',
         type: 'chips',
         options: ['Yes — will be on a sign/plaque', 'Just for us, informal use', 'Not decided yet'],
-        hint: `Names that will be engraved or displayed need to look good in print — not just sound good spoken. Short, elegant names work best on plaques. Boats in particular display their name on the hull, which means it needs to look right at a distance and read well in a serif or display font.`,
+        hint: `If so, consider how the name will look as well as how it sounds. Think about length, readability, and how it will appear in the typeface or lettering style you have in mind. A name that sounds perfect but becomes hard to read when engraved, painted, or viewed from a distance may not be the best fit.`,
         guideId: 'p3-stick',
       },
       {
@@ -996,15 +996,17 @@ export const BRIEF_QUESTIONS = {
         label: 'Language preference',
         prompt: 'English only, or open to other languages?',
         type: 'chips',
-        options: ['English only', 'Open to other languages', 'Specific language (describe below)'],
+        options: ['English only', 'Open to other languages', 'Specific language'],
+        describeOption: 'Specific language',
+        describePlaceholder: 'e.g. French, Japanese',
       },
       {
         id: 'avoidNames',
         label: 'Names or words to avoid',
-        prompt: 'Any words or names that should be off the table?',
+        prompt: 'Any words or concepts that should be off the table?',
         type: 'text',
         required: false,
-        placeholder: `e.g. Nothing too generic, avoid “haven” or “hideaway” — too overused`,
+        placeholder: `e.g. Avoid “haven”`,
       },
     ],
   },
@@ -1863,22 +1865,22 @@ export const ARTICLES = {
   p3: [
     {
       id: 'p3-places',
-      title: 'Why Named Places Feel Different Than Unnamed Ones',
+      title: 'The Power of Giving a Place a Name',
       readTime: '1 min',
       icon: 'Tree',
       sections: [
         {
           heading: 'The psychology of place names',
-          body: `Named spaces just get treated differently. A named vacation home tends to get booked more, maintained better, remembered more fondly. A name creates emotional ownership that transfers — “We’re going to Willowbend” carries different anticipation than “We’re going to the lake house.”`,
+          body: `Giving a place a name can make it feel more distinctive, memorable, and personal. “We’re going to Willowbend” creates a different feeling than “We’re going to the lake house.” A name gives a place an identity—and over time, that identity can become part of the stories and memories associated with it.`,
         },
         {
-          heading: 'What makes a great property name',
-          body: `Great property names have: a story (where the name comes from matters), a sound that fits the place, and work as both formal name and casual reference. “The Bungalow” works. “Casa Serenidad” works. “Our Place” doesn’t — that’s a pronoun, not a name.`,
+          heading: 'What makes a great place name',
+          body: `Great place names often have three things going for them: a story or connection, a sound that suits the place, and enough flexibility to work both formally and casually. A name might capture the setting, history, personality, or simply a feeling. “Willowbend” suggests a landscape; “Casa Serenidad” evokes a mood; “Our Place” can work beautifully if it means something to the people who use it.`,
         },
       ],
       callout: {
         type: 'example',
-        text: `Short-term-rental hosts are widely advised to name their properties for a reason — a named listing is easier to remember, easier for a happy guest to recommend, and easier to find again. “We loved Willowbend” travels; “we loved that lake house” doesn’t.`,
+        text: `A good name gives people something to remember and share. “We loved Willowbend” is more distinctive than “we loved the lake house”—and a memorable name can become part of the experience of visiting, staying, or returning to a place.`,
       },
     },
     {
@@ -1888,17 +1890,17 @@ export const ARTICLES = {
       icon: 'Sparkle',
       sections: [
         {
-          heading: 'The four sources that work',
-          body: `The most memorable property names come from: (1) geography — a local feature, view, or landmark (“Ridgecrest,” “Harborside”); (2) history — a previous use or long-ago owner (“The Old Mill,” “Shepherd’s Rest”); (3) nature — flora, fauna, or natural elements specific to the land (“Heronwood,” “Cliffside”); (4) feeling — the emotional experience the place creates (“Stillwater,” “Driftwood”). Abstract invented names rarely stick — grounding in something real gives people a story to tell.`,
+          heading: 'Four sources that inspire great names',
+          body: `Memorable property names often draw from four places: geography (a local feature, view, or landmark—“Ridgecrest,” “Harborside”), history (a former use, previous owner, or story connected to the property—“The Old Mill,” “Shepherd’s Rest”), nature (something distinctive about the landscape—“Heronwood,” “Cliffside”), and feeling (the experience or mood the place creates—“Stillwater,” “Driftwood”). The more a name has a story behind it, the more there is to remember and share.`,
         },
         {
           heading: 'The conversational test',
-          body: `Will people use the name in natural conversation, or will it always need explanation? “We’re going to Willowbend” works. “We’re going to Casa Bella Serenissima Di Toscana” does not — it becomes “the Italian place.” Shorter always wins. One or two words, phonetically easy, immediately evocative.`,
+          body: `Will people naturally use the name, or will they keep reverting to “the lake house” or “the beach place”? “We’re going to Willowbend” rolls off the tongue. A long, elaborate name may look beautiful on a plaque but become unwieldy in conversation. Aim for something easy to say, easy to remember, and evocative enough to conjure the place.`,
         },
       ],
       callout: {
         type: 'insight',
-        text: 'Property names that reference something visible from the property — a view, a tree, a body of water — are repeated more often by guests and neighbors. Anchoring the name to something people can point at makes it real, not decorative.',
+        text: `The strongest names often give people something concrete to point to or a story to tell. A distinctive tree, sweeping view, piece of history, or even an inside joke can turn a name from a label into part of the place’s identity.`,
       },
     },
   ],
@@ -2182,7 +2184,7 @@ export const CUT_QUESTIONS = {
   t6: [],
   p1: ['traditions', 'avoidInitials', 'projectSummary'],
   p2: ['callNamePref', 'projectSummary', 'petPersonality'],
-  p3: [],
+  p3: ['projectSummary'],
   p4: [],
 };
 
