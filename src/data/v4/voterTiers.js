@@ -38,4 +38,5 @@ export const VOTER_TIER_QUESTION = {
   label: 'Participants',
   prompt: 'How many people will take part in the contest?',
   required: true,
+  hint: `This is the only thing that sets the price: one payment per contest, no subscription, and nothing extra per name or vote. Every tier works exactly the same. Invitations are unlimited — share your link with as many people as you like; a spot is only used when someone actually joins in.`,
 };
