@@ -10834,54 +10834,35 @@ select.v4-pvote-sort-select:hover {
   line-height: 1.5;
 }
 
-/* ── Review · hero intro ──────────────────────────────────────────
-   The creator's note sits in the hero under the name — the same
-   composition participants meet on the join page (title, then the
-   intro, no box). Click the text to edit; empty state is a quiet
-   add link. */
-.v4-review-hero-intro {
-  margin: 16px auto 0;
-  max-width: 560px;
-}
-.v4-review-hero-intro-text {
+/* ── Review · intro preview ──────────────────────────────────────────
+   The "A note from you" card shows the greeting as plain typography —
+   no inner box. Click anywhere flips to the textarea. */
+.v4-review-intro-preview {
   display: block;
   width: 100%;
+  text-align: left;
   border: 0;
   background: transparent;
+  border-radius: 10px;
+  padding: 2px 34px 2px 0;
   cursor: pointer;
+  position: relative;
   font-family: var(--font-text);
-  font-size: 15px;
-  line-height: 1.55;
-  color: var(--v4-fg);
-  opacity: 0.7;
-  text-align: center;
-  padding: 0;
-  transition: opacity 0.15s ease;
 }
-.v4-review-hero-intro-text:hover { opacity: 1; }
-.v4-review-hero-intro-pencil {
-  display: inline-block;
-  margin-left: 6px;
-  vertical-align: -1px;
-  opacity: 0.5;
-}
-.v4-review-hero-intro-add {
-  display: inline-block;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-  font-family: var(--font-text);
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--v4-muted);
-  padding: 4px 8px;
-}
-.v4-review-hero-intro-add:hover { color: var(--v4-fg); text-decoration: underline; }
-.v4-review-hero-intro-nudge {
+.v4-review-intro-text {
   display: block;
-  margin-top: 8px;
-  font-family: var(--font-text);
-  font-size: 13px;
-  line-height: 1.5;
-  color: #a8321f;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--v4-fg);
+  opacity: 0.8;
+  white-space: pre-wrap;
 }
+.v4-review-intro-preview:hover .v4-review-intro-text { opacity: 1; }
+.v4-review-intro-edit {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  opacity: 0.35;
+  color: var(--v4-fg);
+}
+.v4-review-intro-preview:hover .v4-review-intro-edit { opacity: 0.8; }

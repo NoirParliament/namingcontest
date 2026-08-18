@@ -376,54 +376,49 @@ export default function ReviewLaunch() {
                 <PencilSimple size={12} weight="bold" className="v4-review-package-icon" />
               </button>
             )}
-
-            {/* The intro lives in the hero, under the name — the same
-                composition the join page shows participants (title, then the
-                creator's note, no box), so reviewing IS previewing. */}
-            <div className="v4-review-hero-intro" ref={introRef}>
-              {introEditing ? (
-                <textarea
-                  className="v4-input v4-textarea"
-                  style={{ width: '100%', boxSizing: 'border-box', textAlign: 'left' }}
-                  rows={INTRO_QUESTION.rows}
-                  maxLength={600}
-                  value={intro}
-                  autoFocus
-                  placeholder={getIntroQuestionFor(subId).placeholder}
-                  onChange={(e) => { setIntro(e.target.value); if (e.target.value.trim()) setIntroNudge(false); }}
-                  onBlur={(e) => { saveIntro(e.target.value); setIntroEditing(false); }}
-                  aria-label={INTRO_QUESTION.label}
-                />
-              ) : intro.trim() ? (
-                <button
-                  type="button"
-                  className="v4-review-hero-intro-text"
-                  onClick={() => setIntroEditing(true)}
-                  aria-label="Edit your intro"
-                >
-                  {intro}
-                  <PencilSimple size={12} weight="bold" className="v4-review-hero-intro-pencil" aria-hidden="true" />
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className="v4-review-hero-intro-add"
-                  onClick={() => { setIntroEditing(true); setIntroNudge(false); }}
-                >
-                  + Add a note to your participants
-                </button>
-              )}
-              {introNudge && (
-                <span className="v4-review-hero-intro-nudge" role="alert">
-                  Write a quick hello before launching — it’s the first thing your participants read.
-                </span>
-              )}
-            </div>
           </div>
 
           {/* Intro to participants — the creator's own words, shown first
               on the invitation and both participant pages. Inline textarea
               (not a modal row): writing a paragraph wants a real field. */}
+          <section className="v4-review-section" ref={introRef}>
+            <header className="v4-review-section-head">
+              <h2>A note from you</h2>
+              <span className="v4-review-section-hint">Opens your invitation</span>
+            </header>
+            {intro.trim() && !introEditing ? (
+              /* Preview: just the words, as typography — no inner box.
+                 Click anywhere to edit (same affordance as the brief rows). */
+              <button
+                type="button"
+                className="v4-review-intro-preview"
+                onClick={() => setIntroEditing(true)}
+                aria-label="Edit your intro"
+              >
+                <span className="v4-review-intro-text">{intro}</span>
+                <PencilSimple size={13} weight="bold" className="v4-review-intro-edit" aria-hidden="true" />
+              </button>
+            ) : (
+              <textarea
+                className="v4-input v4-textarea"
+                style={{ width: '100%', boxSizing: 'border-box' }}
+                rows={INTRO_QUESTION.rows}
+                maxLength={600}
+                value={intro}
+                autoFocus={introEditing}
+                placeholder={getIntroQuestionFor(subId).placeholder}
+                onChange={(e) => { setIntro(e.target.value); if (e.target.value.trim()) setIntroNudge(false); }}
+                onBlur={(e) => { saveIntro(e.target.value); if (e.target.value.trim()) setIntroEditing(false); }}
+                aria-label={INTRO_QUESTION.label}
+              />
+            )}
+            {introNudge && (
+              <span className="v4-settings-field-hint" style={{ color: '#a8321f' }} role="alert">
+                Write a quick hello before launching — it’s the first thing your participants read.
+              </span>
+            )}
+          </section>
+
           {/* The brief — each row is now a button that opens the
               EditQuestionModal in place. The old "Edit" section link
               that bounced back to the full chat is gone. */}
