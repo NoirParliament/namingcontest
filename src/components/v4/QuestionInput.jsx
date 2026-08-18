@@ -411,60 +411,57 @@ function ContestScheduleInput({ question, onSubmit }) {
       ? new Date(t).toLocaleString(undefined, { weekday: 'short', hour: 'numeric', minute: '2-digit' })
       : new Date(t).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
 
-  // ── Picker view — one decision at a time, then back to the roadmap ──
+  // ── Picker view — one slider over one standardized scale ───────────
+  // Stops run from a 3-hour sprint to 10 days (hours as day fractions);
+  // the SAME scale serves both stages, only the recommendation differs.
+  const stops = [
+    ...(question.hourOptions || []).map((h) => h / 24),
+    ...(question.dayOptions || []),
+  ];
   if (editing) {
     const isSub = editing === 'submission';
     const value = isSub ? sub : vote;
-    const options = isSub ? (question.subOptions || []) : (question.voteOptions || []);
+    const setValue = isSub ? setSub : setVote;
     const def = isSub ? question.subDefault : question.voteDefault;
-    const pick = (v) => {
-      (isSub ? setSub : setVote)(v);
-      setEditing(null);
-    };
+    const idx = Math.max(0, stops.findIndex((x) => x === value));
     return (
       <div className="v4-sched-block">
-        <button type="button" className="v4-sched-back" onClick={() => setEditing(null)}>
-          <ArrowLeft weight="bold" size={13} />
-          Back to schedule
-        </button>
         <div className="v4-sched-picker-title">
           {isSub ? 'How long should submissions stay open?' : 'How long should voting stay open?'}
         </div>
-        <div className="v4-chips-row v4-number-chips" role="radiogroup" aria-label={question.label}>
-          {options.map((d) => (
-            <button
-              key={d}
-              type="button"
-              role="radio"
-              aria-checked={value === d}
-              className={`v4-chip v4-chip-number ${value === d ? 'is-checked' : ''} ${d === def ? 'is-default' : ''}`}
-              onClick={() => pick(d)}
-            >
-              {formatWindowDuration(d)}
-              {d === def && <span className="v4-chip-tag">Recommended</span>}
-            </button>
-          ))}
+        <div className="v4-sched-picker-value">
+          {formatWindowDuration(value)}
+          {value === def && <span className="v4-sched-picker-rec">Recommended</span>}
         </div>
-        {(question.hourOptions || []).length > 0 && (
-          <div className="v4-sched-hours">
-            <span className="v4-sched-hours-label">Same-day contest?</span>
-            {question.hourOptions.map((h) => {
-              const v = h / 24;
-              return (
-                <button
-                  key={h}
-                  type="button"
-                  role="radio"
-                  aria-checked={value === v}
-                  className={`v4-chip ${value === v ? 'is-checked' : ''}`}
-                  onClick={() => pick(v)}
-                >
-                  {h} hours
-                </button>
-              );
-            })}
-          </div>
+        <input
+          type="range"
+          className="v4-sched-slider"
+          min={0}
+          max={stops.length - 1}
+          step={1}
+          value={idx}
+          onChange={(e) => setValue(stops[Number(e.target.value)])}
+          aria-label={isSub ? 'Submission window' : 'Voting window'}
+          aria-valuetext={formatWindowDuration(value)}
+        />
+        <div className="v4-sched-slider-scale">
+          <span>{formatWindowDuration(stops[0])}</span>
+          <span>{formatWindowDuration(stops[stops.length - 1])}</span>
+        </div>
+        {value !== def && (
+          <button type="button" className="v4-sched-rec-link" onClick={() => setValue(def)}>
+            Use recommended · {formatWindowDuration(def)}
+          </button>
         )}
+        <div className="v4-multichips-footer">
+          <button type="button" className="v4-sched-back" onClick={() => setEditing(null)}>
+            <ArrowLeft weight="bold" size={13} />
+            Back to schedule
+          </button>
+          <button type="button" className="v4-multichips-submit" onClick={() => setEditing(null)}>
+            Done
+          </button>
+        </div>
       </div>
     );
   }
@@ -498,7 +495,7 @@ function ContestScheduleInput({ question, onSubmit }) {
         <Leg label="Submissions open" value={sub} onClick={() => setEditing('submission')} />
         <Event label="Names are in" when={fmtWhen(subEnd, sub < 1)} />
         <Leg label="Voting opens" value={vote} onClick={() => setEditing('voting')} />
-        <Event label="Winner revealed" when={fmtWhen(voteEnd, sub + vote < 1)} />
+        <Event label="Pick the winner" when={fmtWhen(voteEnd, sub + vote < 1)} />
       </div>
       <div className="v4-multichips-footer">
         <span className="v4-multichips-count">Tap a stage to change it</span>

@@ -11011,7 +11011,7 @@ select.v4-pvote-sort-select:hover {
   margin: 6px 0;
   padding: 11px 14px;
   background: #ffffff;
-  border: 1px solid var(--v4-faint);
+  border: 1.5px solid rgba(3, 3, 2, 0.14);
   border-radius: 12px;
   cursor: pointer;
   font-family: var(--font-text);
@@ -11042,7 +11042,7 @@ select.v4-pvote-sort-select:hover {
   border: 0;
   background: transparent;
   cursor: pointer;
-  padding: 0 0 10px;
+  padding: 0;
   font-family: var(--font-text);
   font-size: 12.5px;
   font-weight: 600;
@@ -11069,4 +11069,172 @@ select.v4-pvote-sort-select:hover {
   font-weight: 600;
   color: var(--v4-muted);
   margin-right: 2px;
+}
+
+/* ── Schedule picker · slider ────────────────────────────────────────
+   One discrete scale (3h → 10d) for both stages. Big value readout,
+   ink thumb on a faint track, min/max scale labels. */
+.v4-sched-picker-value {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-family: var(--font-display, Fraunces, Georgia, serif);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--v4-fg);
+  margin: 2px 0 10px;
+}
+.v4-sched-picker-rec {
+  font-family: var(--font-text);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+}
+/* v4 slider — ink thumb on a faint track. Selectors carry the .v4 scope
+   so they outrank the legacy globals.css supernova slider, which belongs
+   to the old design system, not these surfaces. */
+.v4 input.v4-sched-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 22px;
+  margin: 6px 0 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.v4 input.v4-sched-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(3, 3, 2, 0.12);
+}
+.v4 input.v4-sched-slider::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(3, 3, 2, 0.12);
+}
+.v4 input.v4-sched-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--v4-fg);
+  border: 3px solid #ffffff;
+  box-shadow: 0 1px 5px rgba(3, 3, 2, 0.35);
+  margin-top: -7px;
+}
+.v4 input.v4-sched-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--v4-fg);
+  border: 3px solid #ffffff;
+  box-shadow: 0 1px 5px rgba(3, 3, 2, 0.35);
+}
+.v4-sched-slider-scale {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-text);
+  font-size: 11.5px;
+  color: var(--v4-muted);
+  margin-top: 2px;
+}
+.v4-sched-rec-link {
+  display: inline-block;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 6px 0 0;
+  font-family: var(--font-text);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--v4-muted);
+  text-decoration: underline;
+}
+.v4-sched-rec-link:hover { color: var(--v4-fg); }
+
+/* ── Review · horizontal schedule roadmap ────────────────────────────
+   The settings card shows the whole contest as one horizontal stepper:
+   milestones (title over date) joined by duration-labelled segments.
+   The entire strip is one click-to-edit control. */
+.v4-sched-h {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 34px 12px 4px;
+  background: transparent;
+  border: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  position: relative;
+  font-family: var(--font-text);
+  text-align: center;
+}
+.v4-sched-h:hover { background: rgba(3, 3, 2, 0.03); }
+.v4-sched-h-node {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: none;
+}
+.v4-sched-h-node b {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--v4-fg);
+  white-space: nowrap;
+}
+.v4-sched-h-node span {
+  font-size: 11.5px;
+  color: var(--v4-muted);
+  white-space: nowrap;
+}
+.v4-sched-h-seg {
+  flex: 1;
+  min-width: 40px;
+  position: relative;
+  height: 18px;
+}
+.v4-sched-h-seg::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  margin-top: -1px;
+  background: rgba(3, 3, 2, 0.15);
+  border-radius: 2px;
+}
+.v4-sched-h-seg em {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--v4-fg);
+  background: var(--v4-bg);
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--v4-faint);
+  white-space: nowrap;
+}
+.v4-sched-h-edit {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.4;
+  color: var(--v4-fg);
+}
+.v4-sched-h:hover .v4-sched-h-edit { opacity: 0.85; }
+@media (max-width: 560px) {
+  .v4-sched-h { flex-wrap: wrap; justify-content: center; row-gap: 6px; }
+  .v4-sched-h-seg { min-width: 34px; }
 }

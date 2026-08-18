@@ -10,7 +10,7 @@ import {
 } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
-import { readSetup, writeSetup, getQuestionsFor, getSetupStepTotal, formatScheduleSummary } from '../../utils/v4Brief';
+import { readSetup, writeSetup, getQuestionsFor, getSetupStepTotal, formatScheduleSummary, formatWindowDuration } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS, INTRO_QUESTION, getIntroQuestionFor } from '../../data/v4/briefQuestions';
 import { SegmentThemeBackdrop, getSegmentTone, getSegmentIcon, getSegmentPalette } from '../../data/v4/segmentTheme';
 import LaunchModal from '../../components/v4/LaunchModal';
@@ -482,23 +482,61 @@ export default function ReviewLaunch() {
                 <span className="v4-review-section-hint">Only you see this · click any answer to edit</span>
               </header>
               <ul className="v4-review-list v4-review-list-editable">
-                {filledSettings.map((q) => (
-                  <li key={q.id}>
-                    <button
-                      type="button"
-                      className="v4-review-row v4-review-row-edit"
-                      onClick={() => setEditingQuestion({ question: q, section: 'settings' })}
-                    >
-                      <span className="v4-review-row-label">{q.label}</span>
-                      <span className="v4-review-row-value">
-                        {q.type === 'contestSchedule'
-                          ? formatScheduleSummary(settingsAnswers)
-                          : formatAnswer(settingsAnswers[q.id])}
-                      </span>
-                      <PencilSimple size={12} weight="bold" className="v4-review-row-edit-icon" />
-                    </button>
-                  </li>
-                ))}
+                {filledSettings.map((q) => {
+                  // The schedule renders as the full horizontal roadmap, not
+                  // a terse text row — launch is imminent here, so the
+                  // as-if-today dates are honest. Still one click to edit.
+                  if (q.type === 'contestSchedule') {
+                    const sub = Number(settingsAnswers.submissionDays) || 5;
+                    const vote = Number(settingsAnswers.votingDays) || 3;
+                    const DAY = 86400000;
+                    const subEnd = Date.now() + sub * DAY;
+                    const voteEnd = Date.now() + (sub + vote) * DAY;
+                    const when = (t, hourLevel) =>
+                      hourLevel
+                        ? new Date(t).toLocaleString(undefined, { weekday: 'short', hour: 'numeric', minute: '2-digit' })
+                        : new Date(t).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+                    return (
+                      <li key={q.id}>
+                        <button
+                          type="button"
+                          className="v4-review-row-edit v4-sched-h"
+                          onClick={() => setEditingQuestion({ question: q, section: 'settings' })}
+                          aria-label="Edit contest schedule"
+                        >
+                          <span className="v4-sched-h-node">
+                            <b>Launch</b>
+                            <span>Today</span>
+                          </span>
+                          <span className="v4-sched-h-seg"><em>{formatWindowDuration(sub)}</em></span>
+                          <span className="v4-sched-h-node">
+                            <b>Names in</b>
+                            <span>{when(subEnd, sub < 1)}</span>
+                          </span>
+                          <span className="v4-sched-h-seg"><em>{formatWindowDuration(vote)}</em></span>
+                          <span className="v4-sched-h-node">
+                            <b>Pick the winner</b>
+                            <span>{when(voteEnd, sub + vote < 1)}</span>
+                          </span>
+                          <PencilSimple size={12} weight="bold" className="v4-sched-h-edit" />
+                        </button>
+                      </li>
+                    );
+                  }
+                  return (
+                    <li key={q.id}>
+                      <button
+                        type="button"
+                        className="v4-review-row v4-review-row-edit"
+                        onClick={() => setEditingQuestion({ question: q, section: 'settings' })}
+                      >
+                        <span className="v4-review-row-label">{q.label}</span>
+                        <span className="v4-review-row-value">{formatAnswer(settingsAnswers[q.id])}</span>
+                        <PencilSimple size={12} weight="bold" className="v4-review-row-edit-icon" />
+                      </button>
+                    </li>
+                  );
+                })}
               </ul>
             </section>
           )}

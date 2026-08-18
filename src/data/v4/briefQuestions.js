@@ -1273,11 +1273,12 @@ export const SHARED_SETTINGS_QUESTIONS = [
     type: 'contestSchedule',
     label: 'Schedule',
     prompt: 'How long should your contest run?',
-    subOptions: [1, 2, 5, 7, 10],
-    subDefault: 5,
-    voteOptions: [1, 2, 3, 5],
-    voteDefault: 3,
+    // One standardized scale for BOTH stages, from a 3-hour sprint to 10
+    // days (hours store as day fractions). Only the recommendation differs.
+    dayOptions: [1, 2, 3, 5, 7, 10],
     hourOptions: [3, 6, 12],
+    subDefault: 5,
+    voteDefault: 3,
     hint: `Here’s your contest from launch to winner. Tap a stage to change how long it runs; most contests do well with 5 days of submissions and 3 of voting.`,
   },
 ];
