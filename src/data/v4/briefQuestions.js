@@ -48,7 +48,7 @@ export const BRIEF_QUESTIONS = {
         type: 'textarea',
         rows: 4,
         required: true,
-        placeholder: 'e.g. We roast small-batch coffee for cafés across the Midwest. Direct trade, and we out-freshness the big wholesalers.',
+        placeholder: 'e.g. We roast small-batch coffee for cafés across the Midwest. Direct trade, and fresher than the big wholesalers.',
         hint: `Share whatever context will help participants understand the business, such as who your customers are, what you offer, how you differ from competitors, or anything distinctive about your industry. The more participants understand about the company, the more relevant and meaningful their name ideas can be.`,
       },
       {
