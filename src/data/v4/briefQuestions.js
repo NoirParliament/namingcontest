@@ -1447,21 +1447,21 @@ export const ARTICLES = {
       icon: 'Compass',
       sections: [
         {
-          heading: 'A company name has to carry everything',
-          body: `A company name has to stretch across your whole organization, its culture, and everything you might do for years. That pushes company names toward the broad and flexible — Amazon and Google can hold almost anything. A product name has a narrower job, which actually gives you more room to be specific.`,
+          heading: 'A company name has to hold everything',
+          body: `A company name represents the whole organization: every product it sells today, everything it might do in ten years, and the culture of the people behind it. That tends to push company names toward the broad and flexible. Amazon started with books, and the name had room for everything that came after. A name that locks a company into one offering can become a constraint as the business grows.`,
         },
         {
-          heading: 'A product name can be sharper',
-          body: `Because a product name only has to sell one thing, it can lean into a specific feature, benefit, or feeling. “Superhuman” promises speed; “Calm” names the exact result. You can be more literal, more playful, or more pointed than you would ever want a company name to be.`,
+          heading: 'A product name can be more focused',
+          body: `A product name has one job: to represent this particular offering to the people who will buy and use it. That freedom lets it tie more closely to a specific feature, benefit, or feeling. Calm names the exact result of using the app. Post-it describes what the product does in two syllables. Sharpie captures the pen’s defining quality. A product name can be more literal, more playful, or more pointed than a company name could afford to be.`,
         },
         {
-          heading: 'How it sits next to your brand',
-          body: `The big early decision is how the product name relates to the company. It can extend the parent (Google Maps, Google Docs), stand on its own (Tide and Pampers under P&G), or sit somewhere in between. Tell participants which, so the names fit the way the product will actually show up.`,
+          heading: 'The name doesn’t stand alone',
+          body: `Unlike a company name, a product name usually appears next to other names: the company’s, and often its sibling products’. Google Maps and Google Docs lean on the parent and stay simple. Tide and Pampers stand fully on their own, and many people never think about P&G behind them. Courtyard by Marriott sits in between, borrowing credibility while keeping its own identity. Knowing how your product name will sit alongside your brand tells participants what kind of name to aim for.`,
         },
       ],
       callout: {
         type: 'insight',
-        text: `A company name is a promise about who you are. A product name is a promise about what this one thing does. Brief participants for the narrower promise and the names get sharper.`,
+        text: `A company name is a promise about who you are. A product name is a promise about what this one thing does. The more clearly you define that narrower promise in your brief, the sharper the name ideas will be.`,
       },
     },
     {
