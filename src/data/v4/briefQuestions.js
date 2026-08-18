@@ -135,80 +135,125 @@ export const BRIEF_QUESTIONS = {
     ],
   },
 
-  // ── b2 · Product / Service Name ──
+  // ── b2 · Product / service ──
+  // 2026-08-18: rebuilt on the Company (b1) brief per client — Product shares
+  // Company's questions and wording, plus product-specific context and a
+  // product-vs-company guide. (Old bespoke set — prodDesc/architecture/
+  // primaryUser/differentiator/competitors — folded into these.)
   b2: {
     label: 'Product / service',
     suggestedDeadlineDays: 10,
     questions: [
       {
-        id: 'projectSummary',
-        label: 'About this',
-        prompt: 'What is this product?',
+        id: 'namingTarget',
+        label: 'What are you naming?',
+        prompt: 'What exactly is the product?',
         type: 'textarea',
-        rows: 3,
-        required: true,
-        placeholder: 'e.g. An iOS app that helps freelancers track billable hours by project. It auto-tags time blocks based on which app you had open.',
+        rows: 2,
+        required: false,
+        placeholder: 'e.g. A screen-time app that blocks distracting apps on a schedule',
+        hint: `A physical product, an app, a service, or a feature — tell us what it is.`,
+        guideId: 'b2-vs-company',
       },
       {
-        id: 'prodDesc',
-        label: 'What does this product / service do?',
-        prompt: 'What does it do, who is it for, and what is the core benefit in one sentence?',
+        id: 'projectSummary',
+        label: 'About the product',
+        prompt: 'What does the product do, who is it for, and what sets it apart?',
         type: 'textarea',
         rows: 4,
+        required: true,
+        placeholder: 'e.g. An app that blocks distracting apps on a schedule you set. For people who want focus without deleting everything. Gentler than the hardcore blockers.',
+        hint: `Share whatever context will help participants understand the product, such as who uses it, what it does, and how it differs from the alternatives. Include any feature or benefit the name should convey.`,
+      },
+      {
+        id: 'productContext',
+        label: 'Part of a larger brand?',
+        prompt: 'Is this part of a larger brand or product family?',
+        type: 'textarea',
+        rows: 2,
         required: false,
-        placeholder: `What does it do? Who is it for? What’s the core benefit in one sentence?`,
-        hint: `Be specific about the problem it solves and who it’s for. Example: “A B2B SaaS tool that automates payroll for remote teams under 50 employees.” Participants need this to name it intelligently.`,
-        guideId: 'b2-diff',
+        placeholder: 'e.g. It sits under Acme, alongside Acme Focus and Acme Timer',
+        hint: `Tell us the parent company or brand, any existing product names it should sit alongside, and whether the new name will be paired with the company name (like Google Maps) or stand on its own (like Tide).`,
       },
       {
-        id: 'parentBrand',
-        label: 'Company / Brand name (the parent)',
-        prompt: 'What is the parent brand or company this product sits under?',
-        type: 'text',
-        placeholder: 'e.g. Acme Corp, or leave blank if not yet named',
-        hint: `The product name needs to work with your company name. Participants will design a name that fits — whether that’s extending your brand (like Salesforce → Sales Cloud) or standing alone (like Apple → iPhone).`,
-      },
-      {
-        id: 'architecture',
-        label: 'Brand architecture preference',
-        prompt: 'How should this product relate to the parent brand?',
-        type: 'radioCards',
-        options: [
-          { id: 'branded-house', label: 'Branded House', sublabel: 'Google Maps, Google Docs, Google Meet' },
-          { id: 'house-of-brands', label: 'House of Brands', sublabel: 'P&G, Unilever — each product standalone' },
-          { id: 'endorsed', label: 'Endorsed Brand', sublabel: 'Marriott Courtyard — parent lends credibility' },
-          { id: 'standalone', label: 'Standalone (not sure)', sublabel: 'Figure it out later' },
-        ],
-        hint: `Branded house (Google) = all products feel like extensions of the parent. House of brands (P&G) = each product is its own world. Endorsed brand = parent name lends credibility but product has its own identity. This affects whether the product name should reference your company at all.`,
-        guideId: 'b2-arch',
-      },
-      {
-        id: 'primaryUser',
-        label: 'Who is the primary user?',
-        prompt: 'Who actually uses this product day-to-day?',
-        type: 'textarea',
-        rows: 2,
-        placeholder: 'e.g. HR managers at mid-market companies, developers building APIs, first-time homebuyers...',
-        hint: `Product names land differently with different users. A product name for developers can be technical or playful (Zapier, Twilio). A product name for executives needs to sound credible and substantial (Salesforce Revenue Cloud). A consumer product name needs to feel simple and emotional. Tell participants who will actually use this.`,
-        guideId: 'b2-sound',
-      },
-      {
-        id: 'differentiator',
-        label: 'Key differentiator — what makes it different?',
-        prompt: 'What does your product do that others do not — and what feeling does that create?',
-        type: 'textarea',
-        rows: 2,
-        placeholder: 'e.g. 10x faster than alternatives, the only tool that does X without Y, designed specifically for Z',
-        hint: `The best product names reflect a core differentiator without describing it literally. “Superhuman” (email client) communicates speed without saying “fast email”. “Calm” (meditation app) is the exact emotion the product creates. What’s the one thing your product does that others don’t — and what feeling does that create?`,
-      },
-      {
-        id: 'competitors',
-        label: 'Competitor product names (list 3-5)',
-        prompt: 'Which competing products are out there?',
+        id: 'nameCommunicate',
+        label: 'What should the name communicate?',
+        prompt: 'What should the name communicate? Are there ideas or themes you’d like participants to explore?',
         type: 'textarea',
         rows: 3,
-        placeholder: 'e.g. Stripe Billing, Chargebee, Paddle...',
-        hint: `Product naming needs market differentiation just as much as company naming. If all your competitors have technical/descriptive names, an evocative name will stand out — and vice versa.`,
+        required: false,
+        placeholder: 'e.g. Explore calm, focus, and control. Maybe look at ideas around quiet, boundaries, or deep work.',
+        hint: `For example: speed, growth, simplicity, precision, trust, discovery, craftsmanship, or connection. You can also suggest creative territories such as nature, navigation, transformation, mythology, history, movement, or distinctive animals. Metaphors can open up even more possibilities: a product that simplifies complexity might explore ideas like bridges, shortcuts, or light.`,
+      },
+      {
+        id: 'brandPersonality',
+        label: 'Personality',
+        prompt: 'What personality should the product name have?',
+        type: 'textarea',
+        rows: 2,
+        required: false,
+        placeholder: 'e.g. Calm and confident, more friend than drill sergeant',
+        hint: `Should it feel bold or understated? Playful or serious? Modern or timeless? Warm or authoritative? Describe the qualities you want people to sense when they encounter the name.`,
+      },
+      {
+        id: 'nameStyles',
+        label: 'Name styles',
+        prompt: 'What kinds of name styles do you like? Pick any that apply.',
+        type: 'multiChips',
+        options: ['Real words', 'Coined / made-up words', 'Combined words'],
+        hint: `Real words (like Nest or Amazon), coined words (like Pixar or Verizon), or combined words (like YouTube or MasterCard). Pick any that appeal.`,
+      },
+      {
+        id: 'descriptiveEvocative',
+        label: 'Explain or suggest?',
+        prompt: 'Should the name explain or suggest?',
+        type: 'radioCards',
+        options: [
+          { id: 'descriptive', label: 'Descriptive', sublabel: 'Gives people a sense of what it does, like PayPal or QuickBooks' },
+          { id: 'suggestive', label: 'Suggestive', sublabel: 'Hints at an idea, feeling, or benefit without spelling it out, like Amazon or Versant' },
+          { id: 'either', label: 'Either works', sublabel: '' },
+        ],
+        hint: `Do you want the name to clearly signal what the product does, or create a feeling, idea, or association around it? A name like PayPal tells you something about the service, while names like Apple or Amazon don’t describe it directly but can build meaning over time.`,
+      },
+      {
+        id: 'otherLanguages',
+        label: 'Names from other languages?',
+        prompt: 'Are you open to names drawn from other languages?',
+        type: 'chips',
+        options: ['Yes — open to it', 'Prefer English', 'Not sure'],
+        describeOption: 'Yes — open to it',
+        describePlaceholder: 'Which languages? e.g. Latin, Italian, Japanese',
+        hint: `For example, would you consider names that use or adapt words from Latin, Greek, Italian, or other languages?`,
+      },
+      {
+        id: 'includeAvoid',
+        label: 'Words or ideas to explore or avoid',
+        prompt: 'Are there any words or ideas you’d like to explore or avoid?',
+        type: 'textarea',
+        rows: 3,
+        required: false,
+        placeholder: 'e.g. Please avoid the words Block, Focus, Zen. Explore the idea of a calm harbor.',
+        hint: `Share any specific words, concepts, themes, or naming directions you’d like participants to consider or steer clear of. This could include words you love, words that feel overused in your category, or anything that’s off-limits for the name.`,
+      },
+      {
+        id: 'admiredNames',
+        label: 'Names you’re drawn to',
+        prompt: 'What existing names are you drawn to?',
+        type: 'textarea',
+        rows: 3,
+        required: false,
+        placeholder: 'e.g. I like Superhuman and Calm for how the name is the promise.',
+        hint: `Share a few product, company, or brand names that represent the kind of name you’d like. They can come from any industry. Tell us what you like about them — whether it’s their sound, style, meaning, originality, or something else.`,
+      },
+      {
+        id: 'practicalReqs',
+        label: 'Practical requirements',
+        prompt: 'Are there any practical requirements or restrictions?',
+        type: 'textarea',
+        rows: 3,
+        required: false,
+        placeholder: 'e.g. Short, easy to spell, app-store friendly, .com available',
+        hint: `For example: a maximum number of letters or syllables, easy to pronounce or spell, a preference for the exact dot-com domain, app-store or trademark friendly, works well internationally — plus where the name will appear and how it will be used. Anything the name must, or ideally should, do.`,
       },
     ],
   },
@@ -1086,12 +1131,10 @@ export const BRIEF_QUESTIONS = {
   },
 };
 
-// 2026-07-13 client decision (Maria/Mark): the Product path (b2) runs the
-// exact same questionnaire as Company (b1) — question ids are shared, so
-// stored briefs stay compatible either way. The legacy product set above
-// is kept intact for easy restore / when Maria sends product-specific
-// questions. Only the label differs.
-BRIEF_QUESTIONS.b2 = { ...BRIEF_QUESTIONS.b1, label: 'Product / service' };
+// 2026-08-18: Product (b2) is its own brief again — Maria sent product-specific
+// questions, so b2 uses the distinct set defined above (built on Company's
+// shared questions plus product context + a product-vs-company guide). The
+// 2026-07-13 "mirror b1" override was removed.
 
 // ────────────────────────────────────────────────────────────────
 // 2. SHARED_SETTINGS_QUESTIONS — appended to every brief
@@ -1349,6 +1392,30 @@ export const ARTICLES = {
 
   // ── b2 · Product / service ──
   b2: [
+    {
+      id: 'b2-vs-company',
+      title: 'Naming a Product Is Not Naming a Company',
+      readTime: '2 min',
+      icon: 'Compass',
+      sections: [
+        {
+          heading: 'A company name has to carry everything',
+          body: `A company name has to stretch across your whole organization, its culture, and everything you might do for years. That pushes company names toward the broad and flexible — Amazon and Google can hold almost anything. A product name has a narrower job, which actually gives you more room to be specific.`,
+        },
+        {
+          heading: 'A product name can be sharper',
+          body: `Because a product name only has to sell one thing, it can lean into a specific feature, benefit, or feeling. “Superhuman” promises speed; “Calm” names the exact result. You can be more literal, more playful, or more pointed than you would ever want a company name to be.`,
+        },
+        {
+          heading: 'How it sits next to your brand',
+          body: `The big early decision is how the product name relates to the company. It can extend the parent (Google Maps, Google Docs), stand on its own (Tide and Pampers under P&G), or sit somewhere in between. Tell participants which, so the names fit the way the product will actually show up.`,
+        },
+      ],
+      callout: {
+        type: 'insight',
+        text: `A company name is a promise about who you are. A product name is a promise about what this one thing does. Brief participants for the narrower promise and the names get sharper.`,
+      },
+    },
     {
       id: 'b2-arch',
       title: 'Brand Architecture: Decide This Before Naming Anything',
@@ -1995,9 +2062,8 @@ export const ARTICLES = {
   ],
 };
 
-// b2 mirrors b1's questionnaire (2026-07-13 client decision), so it needs
-// b1's guides too — the mirrored questions reference their guideIds.
-ARTICLES.b2 = ARTICLES.b1;
+// 2026-08-18: b2 uses its own guides (defined above): b2-vs-company plus the
+// legacy product guides. The 2026-07-13 "mirror b1's guides" override was removed.
 
 // ────────────────────────────────────────────────────────────────
 // 4. PRIMERS — per sub-segment "~90 second read" intros
