@@ -108,6 +108,12 @@ export default function EditQuestionModal({
           {question.prompt || question.label}
         </h2>
 
+        {/* Same guidance the chat shows under the question — editing from
+            the review/manage recap shouldn't lose the context. */}
+        {question.hint && (
+          <p className="v4-edit-modal-hint">{question.hint}</p>
+        )}
+
         {currentAnswer !== undefined && currentAnswer !== '' && (
           <div className="v4-edit-modal-current">
             <span className="v4-edit-modal-current-label">Current:</span>

@@ -10932,3 +10932,14 @@ select.v4-pvote-sort-select:hover {
   font-weight: 600;
   line-height: 1.4;
 }
+
+/* ── Edit modal · question hint ──────────────────────────────────────
+   Mirrors the chat's under-question guidance so editing from the
+   review/manage recap keeps the same context. */
+.v4-edit-modal-hint {
+  margin: -6px 0 14px;
+  font-family: var(--font-text);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--v4-muted);
+}
