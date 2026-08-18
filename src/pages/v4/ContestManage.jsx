@@ -385,11 +385,14 @@ export default function ContestManage() {
   // Ref to the hidden PdfReport DOM node — used by the PDF export.
   const pdfReportRef = useRef(null);
   // Stats derived from the live dataset so they match the names shown
-  // (and the segment). lastActivity is cosmetic flavour.
-  const stats = useMemo(
-    () => ({ ...liveData.stats, lastActivity: '32 sec ago' }),
-    [liveData]
-  );
+  // (and the segment). Every field here is real: the status strip used to
+  // carry a hardcoded "last vote 32 sec ago", which claimed activity on
+  // contests where nobody had voted. There's no timestamp available to
+  // replace it — votes_read RLS deliberately limits each voter to their own
+  // rows, so a creator can't read vote times without breaking ballot
+  // secrecy — so the strip shows the vote COUNT, which is aggregated onto
+  // submissions.vote_count and already legitimately visible.
+  const stats = liveData.stats;
 
   // Edit modal state
   const [editingQuestion, setEditingQuestion] = useState(null);  // {question, section}
@@ -668,7 +671,11 @@ export default function ContestManage() {
                     <span className="v4-manage-status-sep">·</span>
                     <span>Closes {formatDaysFrom(launchedAt, submissionDays + votingDays)}</span>
                     <span className="v4-manage-status-sep">·</span>
-                    <span>Last vote {stats.lastActivity}</span>
+                    <span>
+                      {stats.votes > 0
+                        ? `${stats.votes} ${stats.votes === 1 ? 'vote' : 'votes'} so far`
+                        : 'No votes yet'}
+                    </span>
                   </>
                 )}
                 {phase === 'winner' && !isWinnerPicked && (
