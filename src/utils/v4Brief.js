@@ -92,7 +92,10 @@ export function getQuestionsFor(subId, legacySubSegmentSlug) {
 export function getSetupStepTotal(subId) {
   const brief = getQuestionsFor(subId, null).length;
   const settings = SHARED_SETTINGS_QUESTIONS.length;
-  return 3 + brief + settings + 1 /* tier pick */ + 1 /* review */;
+  // +1 for INTRO_QUESTION: the chat's closing "short hello to your
+  // participants", appended after settings in BriefChat (it isn't part of
+  // getQuestionsFor — the review page renders it as its own card, not a row).
+  return 3 + brief + settings + 1 /* intro */ + 1 /* tier pick */ + 1 /* review */;
 }
 
 // Resolve the article (if any) referenced by a question's guideId.
