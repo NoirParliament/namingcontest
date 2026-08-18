@@ -29,6 +29,19 @@ export function voterCapLabel(voters) {
   return `Up to ${voters} participants`;
 }
 
+// The canonical pricing explanation — ONE text used verbatim everywhere the
+// model is explained (tier question hint in chat + edit modal, landing FAQ,
+// legacy mockData). Derived from VOTER_TIERS so the numbers can't drift.
+const [T1, T2, T3] = VOTER_TIERS;
+export const PRICING_EXPLANATION =
+  `The price depends only on how many people take part: ` +
+  `$${T1.price} for up to ${T1.voters} participants, $${T2.price} for up to ${T2.voters}, or $${T3.price} for up to ${T3.voters}. ` +
+  `You pay once per contest — no subscription, and no per-name or per-participant charges on top. ` +
+  `The tier is the only thing that changes: a $${T1.price} contest works exactly like a $${T3.price} one. ` +
+  `Invitations are unlimited — share your link with as many people as you like. ` +
+  `A spot is only used when someone signs in with their email to take part, whether to submit names or to vote; just opening the link doesn’t count. ` +
+  `Fees aren’t refundable once a contest has launched.`;
+
 // The voter-package question shape — shared so BriefChat (asks it) and
 // ReviewLaunch (lets you change it before launch) render the same step.
 export const VOTER_TIER_QUESTION = {
@@ -38,5 +51,5 @@ export const VOTER_TIER_QUESTION = {
   label: 'Participants',
   prompt: 'How many people will take part in the contest?',
   required: true,
-  hint: `This is the only thing that sets the price: one payment per contest, no subscription, and nothing extra per name or vote. Every tier works exactly the same. Invitations are unlimited — share your link with as many people as you like. A spot is only used when someone signs in to take part, whether to submit names or to vote; just opening the link doesn’t count.`,
+  hint: PRICING_EXPLANATION,
 };

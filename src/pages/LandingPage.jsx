@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, Link, Navigate } from 'react-router-dom';
 import { MusicNote, PawPrint, Buildings } from '@phosphor-icons/react';
+import { PRICING_EXPLANATION } from '../data/v4/voterTiers';
 import personalDog from '../assets/personal-dog.png';
 import heroOfficeScene from '../assets/planning.png';
 import teamPlayers from '../assets/team-players.png';
@@ -1317,7 +1318,7 @@ function FAQ() {
     },
     {
       q: 'What does it cost?',
-      a: <p className="faq-a">The price depends only on how many people take part: <strong>$9</strong> for up to 10 participants, <strong>$19</strong> for up to 30, or <strong>$39</strong> for up to 90. You pay once per contest — no subscription, and no per-name or per-participant charges on top. The tier is the only thing that changes: a $9 contest works exactly like a $39 one. Invitations are unlimited — share your link with as many people as you like. A spot is only used when someone signs in to take part, whether to submit names or to vote; just opening the link doesn’t count. Fees aren’t refundable once a contest has launched.</p>
+      a: <p className="faq-a">{PRICING_EXPLANATION}</p>
     },
   ];
   return (
