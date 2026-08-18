@@ -1114,7 +1114,9 @@ export default function Settings() {
                         />
                       </div>
                       <span className="v4-settings-field-hint">
-                        Tied to your sign-in — can’t be changed here.
+                        Your sign-in links land here, so this address can’t be
+                        changed. Need to switch it? Reach out via the contact
+                        page and we’ll move your account over.
                       </span>
                     </label>
 
