@@ -401,7 +401,7 @@ export const faqData = [
     // 2026-08-18: legacy data (this FAQ array is unused — the live FAQ is
     // inline in LandingPage.jsx) but kept truthful so stale pricing can't
     // resurface if anything re-imports it.
-    answer: 'The price depends only on how many people take part: $9 for up to 10 participants, $19 for up to 30, or $39 for up to 90. You pay once per contest — no subscription, and no per-name or per-participant charges. Every tier works exactly the same. Invitations are unlimited; a spot is only used when someone joins in. Fees aren’t refundable once a contest has launched.',
+    answer: 'The price depends only on how many people take part: $9 for up to 10 participants, $19 for up to 30, or $39 for up to 90. You pay once per contest — no subscription, and no per-name or per-participant charges. Every tier works exactly the same. Invitations are unlimited; a spot is only used when someone takes part by submitting names or voting. Fees aren’t refundable once a contest has launched.',
   },
   {
     id: 'faq-8',
