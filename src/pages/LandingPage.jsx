@@ -1317,7 +1317,7 @@ function FAQ() {
     },
     {
       q: 'What does it cost?',
-      a: <p className="faq-a">The price depends only on how many people take part: <strong>$9</strong> for up to 10 participants, <strong>$19</strong> for up to 30, or <strong>$39</strong> for up to 90. You pay once per contest — no subscription, and no per-name or per-participant charges on top. The tier is the only thing that changes: a $9 contest works exactly like a $39 one. Invitations are unlimited — share your link with as many people as you like; a spot is only used when someone takes part by submitting names or voting. Fees aren’t refundable once a contest has launched.</p>
+      a: <p className="faq-a">The price depends only on how many people take part: <strong>$9</strong> for up to 10 participants, <strong>$19</strong> for up to 30, or <strong>$39</strong> for up to 90. You pay once per contest — no subscription, and no per-name or per-participant charges on top. The tier is the only thing that changes: a $9 contest works exactly like a $39 one. Invitations are unlimited — share your link with as many people as you like. A spot is only used when someone signs in to take part, whether to submit names or to vote; just opening the link doesn’t count. Fees aren’t refundable once a contest has launched.</p>
     },
   ];
   return (
