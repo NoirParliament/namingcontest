@@ -1184,7 +1184,8 @@ export default function Settings() {
                               the link there to finish the switch. For security you may
                               also get one at your current address, which needs
                               confirming too. Until then, keep using this address to
-                              sign in.{' '}
+                              sign in. If nothing arrives, check the spam folder, or try
+                              another address; that one may already have an account.{' '}
                               <button
                                 type="button"
                                 className="btn btn-link"
