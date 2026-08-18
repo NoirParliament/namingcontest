@@ -10886,3 +10886,14 @@ select.v4-pvote-sort-select:hover {
   font-weight: 600;
   color: var(--v4-fg);
 }
+
+/* ── Review · private (creator-only) section ─────────────────────────
+   Settings aren't part of the participant-facing brief: the card drops
+   to a quiet paper tone (vs the white participant-facing cards) and
+   wears a small lock in its heading. */
+.v4-review-section--private {
+  /* Translucent ink wash, not a fixed hue: darkens whatever segment tint
+     sits behind it, so the "recessed" read works on every category. */
+  background: rgba(3, 3, 2, 0.04);
+  border-color: rgba(3, 3, 2, 0.06);
+}

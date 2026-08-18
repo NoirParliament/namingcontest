@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import {
   X, PencilSimple, CheckCircle, Rocket,
-  Heart, UsersThree, Briefcase,
+  Heart, UsersThree, Briefcase, LockSimple,
 } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
@@ -461,9 +461,12 @@ export default function ReviewLaunch() {
 
           {/* Settings — same inline-edit pattern as the brief. */}
           {filledSettings.length > 0 && (
-            <section className="v4-review-section">
+            <section className="v4-review-section v4-review-section--private">
               <header className="v4-review-section-head">
-                <h2>Settings</h2>
+                <h2>
+                  <LockSimple size={12} weight="bold" style={{ marginRight: 6, verticalAlign: -1 }} aria-hidden="true" />
+                  Settings
+                </h2>
                 <span className="v4-review-section-hint">Not part of the brief · click to edit</span>
               </header>
               <ul className="v4-review-list v4-review-list-editable">
