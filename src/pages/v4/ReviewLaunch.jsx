@@ -87,6 +87,10 @@ export default function ReviewLaunch() {
   // scrolls here instead of a mute disabled button).
   const [intro, setIntro] = useState(() => readSetup().brief?.intro || '');
   const [introNudge, setIntroNudge] = useState(false);
+  // With text present the card renders as a preview of the invitation
+  // greeting (message, not form field); clicking it flips back to the
+  // textarea. Empty always shows the textarea.
+  const [introEditing, setIntroEditing] = useState(false);
   const introRef = useRef(null);
   const saveIntro = (value) => {
     const cur = readSetup();
@@ -379,20 +383,47 @@ export default function ReviewLaunch() {
               (not a modal row): writing a paragraph wants a real field. */}
           <section className="v4-review-section" ref={introRef}>
             <header className="v4-review-section-head">
-              <h2>Introduction</h2>
-              <span className="v4-review-section-hint">Participants see this first</span>
+              <h2>A note from you</h2>
+              <span className="v4-review-section-hint">Opens your invitation</span>
             </header>
-            <textarea
-              className="v4-input v4-textarea"
-              style={{ width: '100%', boxSizing: 'border-box' }}
-              rows={INTRO_QUESTION.rows}
-              maxLength={600}
-              value={intro}
-              placeholder={getIntroQuestionFor(subId).placeholder}
-              onChange={(e) => { setIntro(e.target.value); if (e.target.value.trim()) setIntroNudge(false); }}
-              onBlur={(e) => saveIntro(e.target.value)}
-              aria-label={INTRO_QUESTION.label}
-            />
+            {intro.trim() && !introEditing ? (
+              /* Preview: the invitation greeting exactly as participants meet
+                 it — avatar, "From …", the words — instead of a form field.
+                 Click anywhere to edit. */
+              <button
+                type="button"
+                className="v4-review-intro-preview"
+                style={{ background: heroTone.bg }}
+                onClick={() => setIntroEditing(true)}
+                aria-label="Edit your intro"
+              >
+                <span className="v4-review-intro-from" style={{ color: heroTone.fg }}>
+                  {setup.userPhoto ? (
+                    <img src={setup.userPhoto} alt="" className="v4-review-intro-avatar" />
+                  ) : (
+                    <span className="v4-review-intro-avatar v4-review-intro-avatar-fallback" style={{ background: heroTone.fg, color: heroTone.bg }}>
+                      {(setup.userName || 'Y')[0].toUpperCase()}
+                    </span>
+                  )}
+                  From {setup.userName || 'you'}
+                </span>
+                <span className="v4-review-intro-text">{intro}</span>
+                <PencilSimple size={13} weight="bold" className="v4-review-intro-edit" aria-hidden="true" />
+              </button>
+            ) : (
+              <textarea
+                className="v4-input v4-textarea"
+                style={{ width: '100%', boxSizing: 'border-box' }}
+                rows={INTRO_QUESTION.rows}
+                maxLength={600}
+                value={intro}
+                autoFocus={introEditing}
+                placeholder={getIntroQuestionFor(subId).placeholder}
+                onChange={(e) => { setIntro(e.target.value); if (e.target.value.trim()) setIntroNudge(false); }}
+                onBlur={(e) => { saveIntro(e.target.value); if (e.target.value.trim()) setIntroEditing(false); }}
+                aria-label={INTRO_QUESTION.label}
+              />
+            )}
             {introNudge && (
               <span className="v4-settings-field-hint" style={{ color: '#a8321f' }} role="alert">
                 Write a quick hello before launching — it’s the first thing your participants read.

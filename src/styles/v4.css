@@ -10833,3 +10833,61 @@ select.v4-pvote-sort-select:hover {
   font-size: 14px;
   line-height: 1.5;
 }
+
+/* ── Review · intro preview ──────────────────────────────────────────
+   The "A note from you" card renders as the invitation greeting
+   (segment-tinted message with a From row) once text exists — a
+   preview, not a form field. Click anywhere flips back to the
+   textarea. Tint comes inline from the segment tone. */
+.v4-review-intro-preview {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-radius: 14px;
+  padding: 14px 42px 15px 16px;
+  cursor: pointer;
+  position: relative;
+  font-family: var(--font-text);
+  transition: filter 0.15s ease;
+}
+.v4-review-intro-preview:hover { filter: brightness(0.98); }
+.v4-review-intro-from {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.v4-review-intro-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.v4-review-intro-avatar-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+.v4-review-intro-text {
+  display: block;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--v4-fg);
+  opacity: 0.85;
+  white-space: pre-wrap;
+}
+.v4-review-intro-edit {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  opacity: 0.45;
+  color: var(--v4-fg);
+}
+.v4-review-intro-preview:hover .v4-review-intro-edit { opacity: 0.85; }
