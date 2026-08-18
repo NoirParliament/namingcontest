@@ -10895,6 +10895,6 @@ select.v4-pvote-sort-select:hover {
   /* Same ghost language as skipped answers (.v4-bubble-skipped): keep the
      background, dash the outline. Reads as "aside from the brief" in the
      app's own vocabulary instead of a new tint. */
-  background: transparent;
+  background: var(--v4-bg);
   border: 1.5px dashed rgba(3, 3, 2, 0.24);
 }
