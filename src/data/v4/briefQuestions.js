@@ -919,6 +919,13 @@ export const BRIEF_QUESTIONS = {
       },
 
       {
+        id: 'dueDate',
+        label: 'Due date',
+        prompt: 'What is your baby’s due date?',
+        type: 'date',
+        required: false,
+      },
+      {
         id: 'gender',
         label: 'Do you know the gender?',
         prompt: 'Do you know the gender — or is it a surprise?',
@@ -926,13 +933,7 @@ export const BRIEF_QUESTIONS = {
         options: ['Boy', 'Girl', 'Surprise', 'Prefer not to say'],
         hint: `If surprise, people can suggest both boy and girl names. You pick after baby arrives. We’ll keep all submissions organized.`,
       },
-      {
-        id: 'dueDate',
-        label: 'Due date',
-        prompt: 'What is your baby’s due date?',
-        type: 'date',
-        required: false,
-      },
+
       {
         id: 'lastName',
         label: 'Last name (optional — helps test name flow)',

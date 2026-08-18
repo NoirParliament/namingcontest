@@ -495,7 +495,7 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
 
   return (
     <div className="v4-sched-block">
-      <span className="v4-sched-note">If you launch today</span>
+      {mode === 'submit' && <span className="v4-sched-note">If you launch today</span>}
       <div className="v4-sched-steps">
         <Event label="Launch" when="Today" />
         <Leg label="Submissions open" value={sub} onClick={() => setEditing('submission')} />
