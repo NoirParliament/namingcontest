@@ -8,6 +8,8 @@ import {
   MERGE_QUESTIONS,
   ARTICLES,
   FALLBACK_QUESTIONS,
+  SHARED_SETTINGS_QUESTIONS,
+  BRIEF_CLOSING_QUESTIONS,
 } from '../data/v4/briefQuestions';
 
 const SETUP_KEY = 'v4_contest_setup';
@@ -62,7 +64,7 @@ export function getQuestionsFor(subId, legacySubSegmentSlug) {
     (m.merged || []).forEach((id) => mergedIntoOthers.add(id));
   });
 
-  return segment.questions
+  const resolved = segment.questions
     .filter((q) => !cuts.has(q.id))
     .filter((q) => !mergedIntoOthers.has(q.id))
     .filter((q) => {
@@ -75,6 +77,22 @@ export function getQuestionsFor(subId, legacySubSegmentSlug) {
     .map((q) =>
       mergedPrompts[q.id] ? { ...q, prompt: mergedPrompts[q.id] } : q
     );
+
+  // customRequirements ("Anything else…") closes every brief — appended here
+  // so it's the last brief question for all segments (moved out of settings
+  // 2026-08-17; see BRIEF_CLOSING_QUESTIONS).
+  return [...resolved, ...BRIEF_CLOSING_QUESTIONS];
+}
+
+// Total number of setup steps the creator moves through, so the progress
+// counter runs 1…N and the review screen is the final step N. Mirrors the
+// BriefChat step list: segment pick + working name + voter tier + brief
+// questions + settings questions, plus the tier pick (prior screen) and the
+// review screen itself.
+export function getSetupStepTotal(subId) {
+  const brief = getQuestionsFor(subId, null).length;
+  const settings = SHARED_SETTINGS_QUESTIONS.length;
+  return 3 + brief + settings + 1 /* tier pick */ + 1 /* review */;
 }
 
 // Resolve the article (if any) referenced by a question's guideId.
@@ -86,4 +104,17 @@ export function getArticleFor(subId, guideId) {
 
 export function getSegmentLabel(subId) {
   return BRIEF_QUESTIONS[subId]?.label || '';
+}
+
+// Short descriptor of what a contest is actually naming — for the review /
+// manage subtitle. Most categories are specific enough on their own. p3 is
+// a grab-bag ("Home, WiFi network, boat, and more"), so there we surface the
+// creator's "What are you naming?" answer (e.g. "WiFi network") instead of
+// the whole category, falling back to the label if it's not answered yet.
+export function getContestDescriptor(setup) {
+  const subId = setup?.subSegmentId;
+  if (subId === 'p3' && setup?.brief?.namingTarget) {
+    return setup.brief.namingTarget;
+  }
+  return getSegmentLabel(subId);
 }

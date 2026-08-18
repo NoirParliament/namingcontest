@@ -10,8 +10,8 @@ import {
 } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
-import { readSetup, writeSetup, getSegmentLabel } from '../../utils/v4Brief';
-import { BRIEF_QUESTIONS, SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
+import { readSetup, writeSetup, getQuestionsFor, getSetupStepTotal } from '../../utils/v4Brief';
+import { SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
 import { SegmentThemeBackdrop, getSegmentTone, getSegmentIcon, getSegmentPalette } from '../../data/v4/segmentTheme';
 import LaunchModal from '../../components/v4/LaunchModal';
 import { priceForVoters, VOTER_TIER_QUESTION } from '../../data/v4/voterTiers';
@@ -28,11 +28,25 @@ const TIER_ICON = {
   business: { Icon: Briefcase,  tone: { bg: '#bce5c8', fg: '#1f5430' } },
 };
 
+// Synthetic question so the contest name is editable inline in the review,
+// through the same EditQuestionModal flow as the brief/settings rows.
+const NAME_QUESTION = {
+  id: 'workingName',
+  label: 'Contest name',
+  prompt: 'What should we call this contest?',
+  type: 'text',
+  required: true, // a contest must have a name — no "Skip this question"
+  placeholder: 'Give your contest a name',
+};
+
 // Display helper — same logic as SettingsChat so the review matches.
 function formatAnswer(value) {
   if (value === true) return 'Yes';
   if (value === false) return 'No';
   if (value === '[configure-later]') return 'Configure after launch';
+  // Multi-select (chips) — join with " / " to match the options' own style,
+  // not the default array-to-string comma.
+  if (Array.isArray(value)) return value.join(' / ');
   if (value && typeof value === 'object') {
     if ('enabled' in value) {
       if (!value.enabled) return 'No';
@@ -77,7 +91,9 @@ export default function ReviewLaunch() {
     return () => el.removeEventListener('scroll', handler);
   }, []);
   const subId = setup.subSegmentId || 'b1';
-  const segmentLabel = getSegmentLabel(subId);
+  // Review is the final step of the setup flow — show it as N/N so the
+  // progress counter that ran through the chat lands here.
+  const reviewTotal = getSetupStepTotal(subId);
   // Hero badge now uses the SEGMENT icon + tone (Trophy for any
   // sports team, PawPrint for any pet, etc.) — matches the Manage
   // page so a contest looks like itself everywhere. Tier-icon
@@ -89,7 +105,11 @@ export default function ReviewLaunch() {
   const HeroIcon = SegmentIcon || tierMeta.Icon;
   const heroTone = SegmentIcon ? segmentTone : tierMeta.tone;
 
-  const briefQuestions = BRIEF_QUESTIONS[subId]?.questions || [];
+  // Use the effective list (cuts + merges applied) — the exact same call the
+  // chat flow makes — so the review shows only questions that were actually
+  // asked, in the same order. Genuinely-asked-but-blank ones still show
+  // "Skipped"; cut/merged ones no longer appear as phantom skips.
+  const briefQuestions = getQuestionsFor(subId, null);
   const briefAnswers = setup.brief || {};
   const settingsAnswers = setup.settings || {};
 
@@ -97,7 +117,9 @@ export default function ReviewLaunch() {
     if (!editingQuestion) return;
     const { question, section } = editingQuestion;
     const cur = readSetup();
-    if (section === 'brief') {
+    if (section === 'name') {
+      writeSetup({ workingName: newValue });
+    } else if (section === 'brief') {
       writeSetup({ brief: { ...(cur.brief || {}), [question.id]: newValue } });
     } else if (section === 'settings') {
       writeSetup({ settings: { ...(cur.settings || {}), [question.id]: newValue } });
@@ -282,7 +304,7 @@ export default function ReviewLaunch() {
               <span className="v4-step-dot is-done"></span>
               <span className="v4-step-dot is-done"></span>
               <span className="v4-step-dot is-active"></span>
-              <span className="v4-step-label">Review</span>
+              <span className="v4-step-label">Review<span className="v4-step-counter"> · {reviewTotal}/{reviewTotal}</span></span>
             </div>
             <ExitLink to="/" aria-label="Exit" />
           </header>
@@ -303,17 +325,23 @@ export default function ReviewLaunch() {
             </span>
             <h1 className="v4-review-title">
               {setup.workingName || 'Your contest'}
+              <button
+                type="button"
+                className="v4-review-title-edit"
+                onClick={() => setEditingQuestion({ question: NAME_QUESTION, section: 'name' })}
+                aria-label="Edit contest name"
+                style={{ marginLeft: 8, verticalAlign: 'middle', background: 'transparent', border: 0, padding: 4, cursor: 'pointer', color: 'inherit', opacity: 0.5, display: 'inline-flex' }}
+              >
+                <PencilSimple size={16} weight="bold" />
+              </button>
             </h1>
-            <p className="v4-review-subtitle">
-              {segmentLabel} · {setup.subSegmentTitle}
-            </p>
             {setup.voterTier && (
               <button
                 type="button"
                 className="v4-review-package"
                 onClick={() => setEditingQuestion({ question: VOTER_TIER_QUESTION, section: 'voter' })}
               >
-                <span>Up to <strong>{setup.voterTier}</strong> voters · <strong>${priceForVoters(setup.voterTier)}</strong></span>
+                <span>Up to <strong>{setup.voterTier}</strong> participants · <strong>${priceForVoters(setup.voterTier)}</strong></span>
                 <PencilSimple size={12} weight="bold" className="v4-review-package-icon" />
               </button>
             )}
@@ -421,10 +449,12 @@ export default function ReviewLaunch() {
           open={!!editingQuestion}
           question={editingQuestion?.question}
           currentAnswer={
-            editingQuestion?.section === 'brief'
+            editingQuestion?.section === 'name'
+              ? setup.workingName
+              : editingQuestion?.section === 'brief'
               ? briefAnswers[editingQuestion?.question?.id]
               : editingQuestion?.section === 'voter'
-              ? (setup.voterTier ? `Up to ${setup.voterTier} voters` : undefined)
+              ? (setup.voterTier ? `Up to ${setup.voterTier} participants` : undefined)
               : settingsAnswers[editingQuestion?.question?.id]
           }
           onClose={() => setEditingQuestion(null)}

@@ -233,7 +233,7 @@ function LaunchModalInner({ onClose, onCreateIntent, onPaid, contextLabel, tier,
               Launch {contextLabel ? `“${contextLabel}”` : 'your contest'}
             </h2>
             <p className="v4-auth-blurb">
-              One charge of <strong>${price}</strong> for up to <strong>{voterTier}</strong> voters.
+              One charge of <strong>${price}</strong> for up to <strong>{voterTier}</strong> participants.
               We’ll email you a magic link to manage results.
             </p>
 

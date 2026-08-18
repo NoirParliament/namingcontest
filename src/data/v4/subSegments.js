@@ -21,8 +21,8 @@ export const SUB_SEGMENTS = {
     options: [
       { id: 'p1', icon: 'Baby',          tone: TONES.pink,       title: 'A new baby',                       body: "The most exciting naming you’ll ever do." },
       { id: 'p2', icon: 'PawPrint',      tone: TONES.butter,     title: 'A pet',                            body: 'Dogs, cats, horses, the lot.' },
-      { id: 'p3', icon: 'House',         tone: TONES.mint,       title: 'Home, property, or something fun', body: 'Holiday cottage, boat, or anything in between.' },
-      { id: 'p4', icon: 'PencilSimple',  tone: TONES.periwinkle, title: 'Something else',                   body: 'Tell us about it in the brief.' },
+      { id: 'p3', icon: 'House',         tone: TONES.mint,       title: 'Home, WiFi network, boat, and more', body: 'Holiday cottage, boat, or anything in between.' },
+      { id: 'p4', icon: 'PencilSimple',  tone: TONES.periwinkle, title: 'Something else',                   body: 'A group chat, a girls’ weekend, a friend group — anything that needs a name.' },
     ],
   },
   group: {
@@ -31,9 +31,13 @@ export const SUB_SEGMENTS = {
       { id: 't1', icon: 'SoccerBall',    tone: TONES.mint,       title: 'A sports team',                            body: 'Local league, school squad, recreational team.' },
       { id: 't2', icon: 'MusicNote',     tone: TONES.lavender,   title: 'A band or music group',                    body: 'Whatever the genre.' },
       { id: 't3', icon: 'Microphone',    tone: TONES.sky,        title: 'A podcast, channel, or creative project',  body: 'Audio, video, or anything in between.' },
-      { id: 't4', icon: 'GraduationCap', tone: TONES.blush,      title: 'A school, club, or nonprofit',             body: 'Civic, community, or institutional.' },
-      { id: 't5', icon: 'GameController',tone: TONES.butter,     title: 'A gaming group',                           body: 'Team, guild, or clan.' },
-      { id: 't6', icon: 'PencilSimple',  tone: TONES.periwinkle, title: 'Something else',                           body: 'Tell us about it in the brief.' },
+      { id: 't4', icon: 'GraduationCap', tone: TONES.blush,      title: 'A club or civic group',                    body: 'A chess club, a neighborhood group, a civic cause.' },
+      // 2026-08-17 client decision (Maria/Mark): drop the Gaming Group
+      // category — "too many Groups; roll it into Sports Team or Club.
+      // We can always add this later." Card commented out (reversible);
+      // t5's question set + guides stay in the data files.
+      // { id: 't5', icon: 'GameController',tone: TONES.butter,     title: 'A gaming group',                           body: 'Team, guild, or clan.' },
+      { id: 't6', icon: 'PencilSimple',  tone: TONES.periwinkle, title: 'Something else',                           body: 'A group chat, a friend group, a shared tradition — anything that needs a name.' },
     ],
   },
   business: {
@@ -44,8 +48,8 @@ export const SUB_SEGMENTS = {
     // kept below (commented) so they're restorable; their question
     // sets/themes stay in the data files.
     options: [
-      { id: 'b1', icon: 'Buildings',        tone: TONES.periwinkle, title: 'A company',       body: 'Brand-new venture or established entity.' },
-      { id: 'b2', icon: 'Package',          tone: TONES.butter,     title: 'A product',       body: 'Software, physical good, or service offering.' },
+      { id: 'b1', icon: 'Buildings',        tone: TONES.periwinkle, title: 'Company',       body: 'Start-up, new venture, or company renaming.' },
+      { id: 'b2', icon: 'Package',          tone: TONES.butter,     title: 'Product',       body: 'Anything your business offers, from food & beverage to software to an experience or service.' },
       // { id: 'b3', icon: 'Target',           tone: TONES.blush,      title: 'A project or initiative',  body: 'Internal initiative, campaign, or program.' },
       // { id: 'b4', icon: 'ArrowsClockwise',  tone: TONES.mint,       title: 'A rebrand',                body: 'Refresh of an existing name.' },
       { id: 'b5', icon: 'PencilSimple',     tone: TONES.sky,        title: 'Something else',  body: 'Initiatives, off-sites, meeting rooms — anything that needs a name.' },

@@ -171,30 +171,66 @@ function TextareaInput({ question, onSubmit, autoFocus }) {
 // ── chips (single-select pill list) ──────────────────────────────────
 function ChipsInput({ question, onSubmit }) {
   const opts = question.options || [];
+  // An option can reveal a follow-up text field (e.g. "Specific language"
+  // → type which one) via question.describeOption. Picking it shows the
+  // input instead of submitting; the typed text becomes the answer.
+  const describeOption = question.describeOption;
+  const [describing, setDescribing] = useState(false);
+  const [describeValue, setDescribeValue] = useState('');
 
   const handlePick = (val) => {
+    if (describeOption && val === describeOption) {
+      setDescribing(true);
+      return;
+    }
     // For chips, the answer is the option value itself (a string)
     onSubmit(typeof val === 'string' ? val : val.label || val.id);
   };
 
+  const submitDescribe = (e) => {
+    e?.preventDefault?.();
+    const t = describeValue.trim();
+    if (t) onSubmit(t);
+  };
+
   return (
-    <div className="v4-chips-row" role="radiogroup" aria-label={question.label}>
-      {opts.map((opt) => {
-        const value = typeof opt === 'string' ? opt : (opt.label || opt.id);
-        const label = typeof opt === 'string' ? opt : (opt.label || opt.id);
-        return (
-          <button
-            key={value}
-            type="button"
-            role="radio"
-            aria-checked={false}
-            className="v4-chip"
-            onClick={() => handlePick(value)}
-          >
-            {label}
+    <div className="v4-chips-block">
+      <div className="v4-chips-row" role="radiogroup" aria-label={question.label}>
+        {opts.map((opt) => {
+          const value = typeof opt === 'string' ? opt : (opt.label || opt.id);
+          const label = typeof opt === 'string' ? opt : (opt.label || opt.id);
+          const active = describing && value === describeOption;
+          return (
+            <button
+              key={value}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              className={`v4-chip ${active ? 'is-checked' : ''}`}
+              onClick={() => handlePick(value)}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
+      {describing && (
+        <form className="v4-chips-custom-row" style={{ display: 'flex', gap: 8, marginTop: 10 }} onSubmit={submitDescribe}>
+          <input
+            type="text"
+            className="v4-input"
+            value={describeValue}
+            onChange={(e) => setDescribeValue(e.target.value)}
+            placeholder={question.describePlaceholder || 'Type your answer…'}
+            aria-label={question.label}
+            autoFocus
+            style={{ flex: 1 }}
+          />
+          <button type="submit" className="v4-input-submit" disabled={!describeValue.trim()} aria-label="Continue">
+            <ArrowRight weight="bold" size={18} />
           </button>
-        );
-      })}
+        </form>
+      )}
     </div>
   );
 }
@@ -202,12 +238,25 @@ function ChipsInput({ question, onSubmit }) {
 // ── multiChips (multi-select pill list — needs Continue button) ─────
 function MultiChipsInput({ question, onSubmit }) {
   const opts = question.options || [];
+  const norm = (opt) => (typeof opt === 'string' ? opt : (opt.label || opt.id));
   const [selected, setSelected] = useState([]);
+  // Custom-added options (question.allowCustom) — let people add their own
+  // (e.g. "Shy / Timid") alongside the preset chips.
+  const [extra, setExtra] = useState([]);
+  const [customText, setCustomText] = useState('');
 
   const toggle = (val) => {
     setSelected((prev) =>
       prev.includes(val) ? prev.filter((v) => v !== val) : [...prev, val]
     );
+  };
+
+  const addCustom = () => {
+    const v = customText.trim();
+    if (!v) return;
+    if (![...opts.map(norm), ...extra].includes(v)) setExtra((e) => [...e, v]);
+    setSelected((s) => (s.includes(v) ? s : [...s, v]));
+    setCustomText('');
   };
 
   const handleSubmit = (e) => {
@@ -216,12 +265,12 @@ function MultiChipsInput({ question, onSubmit }) {
     onSubmit(selected);
   };
 
+  const chips = [...opts.map(norm), ...extra];
+
   return (
     <form className="v4-multichips-block" onSubmit={handleSubmit}>
       <div className="v4-chips-row" role="group" aria-label={question.label}>
-        {opts.map((opt) => {
-          const value = typeof opt === 'string' ? opt : (opt.label || opt.id);
-          const label = typeof opt === 'string' ? opt : (opt.label || opt.id);
+        {chips.map((value) => {
           const isOn = selected.includes(value);
           return (
             <button
@@ -232,11 +281,28 @@ function MultiChipsInput({ question, onSubmit }) {
               className={`v4-chip ${isOn ? 'is-checked' : ''}`}
               onClick={() => toggle(value)}
             >
-              {label}
+              {value}
             </button>
           );
         })}
       </div>
+      {question.allowCustom && (
+        <div className="v4-chips-custom-row" style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+          <input
+            type="text"
+            className="v4-input"
+            value={customText}
+            onChange={(e) => setCustomText(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addCustom(); } }}
+            placeholder="Add your own…"
+            aria-label="Add your own option"
+            style={{ flex: 1 }}
+          />
+          <button type="button" className="v4-chip" onClick={addCustom} disabled={!customText.trim()}>
+            Add
+          </button>
+        </div>
+      )}
       <div className="v4-multichips-footer">
         <span className="v4-multichips-count">
           {selected.length === 0
@@ -331,7 +397,7 @@ function VoterTierInput({ question, onSubmit }) {
           className="v4-chip"
           onClick={() => onSubmit(t.voters)}
         >
-          Up to {t.voters} voters · ${t.price}
+          Up to {t.voters} participants · ${t.price}
         </button>
       ))}
     </div>
@@ -369,7 +435,6 @@ function ToggleInput({ question, onSubmit }) {
 
 // ── date (date picker + quick-pick chips) ───────────────────────────
 function DateInput({ question, onSubmit }) {
-  const defaultDays = question.suggestedDeadlineDays || 10;
   const [value, setValue] = useState('');
   const inputRef = useRef(null);
 
@@ -380,18 +445,6 @@ function DateInput({ question, onSubmit }) {
     return d.toISOString().slice(0, 10);
   };
 
-  const quickPicks = [
-    { label: '+5 days', days: 5 },
-    { label: '+10 days', days: defaultDays },
-    { label: '+14 days', days: 14 },
-  ];
-
-  const handleQuickPick = (days) => {
-    const iso = dateFromOffset(days);
-    setValue(iso);
-    onSubmit(iso);
-  };
-
   const handleSubmit = (e) => {
     e?.preventDefault?.();
     if (!value) return;
@@ -400,18 +453,6 @@ function DateInput({ question, onSubmit }) {
 
   return (
     <div className="v4-date-block">
-      <div className="v4-chips-row" role="group" aria-label="Quick pick">
-        {quickPicks.map((q) => (
-          <button
-            key={q.days}
-            type="button"
-            className="v4-chip"
-            onClick={() => handleQuickPick(q.days)}
-          >
-            {q.label}
-          </button>
-        ))}
-      </div>
       <form className="v4-input-row v4-date-row" onSubmit={handleSubmit}>
         <span className="v4-input-icon" aria-hidden="true">
           <CalendarBlank weight="duotone" size={20} />

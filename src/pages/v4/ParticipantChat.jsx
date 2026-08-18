@@ -66,8 +66,13 @@ function formatAnswer(value) {
 function buildBriefRows(contest) {
   if (!contest) return { rows: [], settingsRows: [] };
   const briefQs = getQuestionsFor(contest.subSegmentId);
-  const briefAnswers = contest.brief || {};
   const settingsAnswers = contest.settings || {};
+  const briefAnswers = { ...(contest.brief || {}) };
+  // customRequirements moved from settings to the brief (2026-08-17); older
+  // contests still store it under settings, so fall back for display.
+  if (briefAnswers.customRequirements == null && settingsAnswers.customRequirements != null) {
+    briefAnswers.customRequirements = settingsAnswers.customRequirements;
+  }
 
   const rows = briefQs
     .filter((q) => q.id !== 'projectSummary')
@@ -75,6 +80,8 @@ function buildBriefRows(contest) {
       const v = briefAnswers[q.id];
       if (v === undefined || v === null || v === '') return false;
       if (Array.isArray(v) && v.length === 0) return false;
+      // Toggle-type answers (e.g. customRequirements) that were skipped.
+      if (v && typeof v === 'object' && 'enabled' in v && !v.enabled) return false;
       return true;
     })
     .map((q) => ({ id: q.id, label: q.label, value: briefAnswers[q.id] }));

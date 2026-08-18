@@ -102,7 +102,7 @@ export default function LiveResults({
           <div className="v4-results-eyebrow">Live results</div>
           <div className="v4-results-stats">
             {showVotes
-              ? `${names.length} names · ${participants.length} voters · ${totalVotes} votes`
+              ? `${names.length} names · ${participants.length} participants · ${totalVotes} votes`
               : `${names.length} names submitted · ${participants.length} people`}
           </div>
         </div>

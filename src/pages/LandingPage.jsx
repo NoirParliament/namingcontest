@@ -694,9 +694,9 @@ const SIM_ANSWERS = {
 // name, voter package) then the real brief questions. Every answer is just a
 // typed reply — the prompts are the real thing.
 const SIM_STEPS = [
-  { prompt: 'Let’s set up your business contest. First — which kind of naming is this?', answer: 'A company' },
+  { prompt: 'Let’s set up your business contest. First, what are we naming?', answer: 'A company' },
   { prompt: 'Got it. What should we call this contest for a company?', answer: 'Fintech startup' },
-  { prompt: 'How many people will vote?', answer: 'Up to 30 voters · $19' },
+  { prompt: 'How many people will take part in the contest?', answer: 'Up to 30 participants · $19' },
   ...SIM_BRIEF.map((q) => ({ prompt: q.prompt, answer: SIM_ANSWERS[q.id] || '' })),
 ];
 
@@ -991,7 +991,7 @@ function Offerings({ onStart }) {
     {
       tier: 'personal',
       title: 'Personal',
-      tagline: 'Babies, pets, holiday homes, the family Wi-Fi.',
+      tagline: 'Babies, pets, homes, Wi-Fi networks, and more.',
       cta: 'Start a personal contest',
       img: personalDog,
       pillA: { text: 'Olly', meta: '8 votes', color: '#b25620', icon: <path d="M8 14s-5-3.2-5-7a3 3 0 0 1 5-2 3 3 0 0 1 5 2c0 3.8-5 7-5 7z" /> },
@@ -1000,20 +1000,20 @@ function Offerings({ onStart }) {
     {
       tier: 'team',
       title: 'Group',
-      tagline: 'Bands, podcasts, sports teams, gaming clans, civic groups.',
+      tagline: 'Sports teams, bands, podcasts, clubs, and more.',
       cta: 'Start a group contest',
       img: teamPlayers,
-      pillA: { text: '23', meta: 'names in', color: '#4b68c3', icon: <><path d="M3 4h10M3 8h10M3 12h6" /></> },
-      pillB: { text: 'Riverside FC', meta: '49 voted', color: '#4b68c3', icon: <><path d="M3 12V5l5-2 5 2v7" /><path d="M3 12h10" /></> },
+      pillA: { text: 'Riverside FC', meta: '24 votes', color: '#4b68c3', icon: <path d="M8 14s-5-3.2-5-7a3 3 0 0 1 5-2 3 3 0 0 1 5 2c0 3.8-5 7-5 7z" /> },
+      pillB: { text: 'Closes', meta: 'Friday', color: '#4b68c3', icon: <><circle cx="8" cy="8" r="6" /><path d="M8 4v4l2.5 1.5" /></> },
     },
     {
       tier: 'business',
       title: 'Business',
-      tagline: 'Company names, product launches, rebrands, internal projects.',
+      tagline: 'Company names, product names, internal projects, and more.',
       cta: 'Start a business contest',
       img: businessWoman,
-      pillA: { text: 'Name by', meta: 'Maya', color: '#3f8850', icon: <><circle cx="8" cy="6" r="2.5" /><path d="M3.5 13.5a4.5 4.5 0 0 1 9 0" /></> },
-      pillB: { text: 'Winner', meta: 'EvoPay', color: '#3f8850', icon: <><path d="M5 3h6v3a3 3 0 0 1-6 0V3z" /><path d="M3 4v1a2 2 0 0 0 2 2M13 4v1a2 2 0 0 1-2 2" /><path d="M8 9v3M5 12h6" /></> },
+      pillA: { text: 'EvoPay', meta: '31 votes', color: '#3f8850', icon: <path d="M8 14s-5-3.2-5-7a3 3 0 0 1 5-2 3 3 0 0 1 5 2c0 3.8-5 7-5 7z" /> },
+      pillB: { text: 'Closes', meta: 'Tuesday', color: '#3f8850', icon: <><circle cx="8" cy="8" r="6" /><path d="M8 4v4l2.5 1.5" /></> },
     },
   ];
 
@@ -1055,6 +1055,16 @@ function Offerings({ onStart }) {
           </article>
         ))}
       </div>
+      <div className="price-band">
+        <div className="price-tiers">
+          <span className="price-tier"><strong>$9</strong> up to 10 participants</span>
+          <span className="price-sep" aria-hidden="true">·</span>
+          <span className="price-tier"><strong>$19</strong> up to 30</span>
+          <span className="price-sep" aria-hidden="true">·</span>
+          <span className="price-tier"><strong>$39</strong> up to 90</span>
+        </div>
+        <p className="price-note">One-time, per contest. No subscription, no per-name fees.</p>
+      </div>
     </section>
   );
 }
@@ -1064,9 +1074,9 @@ function HowItWorks() {
   return (
     <section className="section" id="how">
       <div className="section-head">
-        <p className="eyebrow">The four steps</p>
-        <h2 className="h-display h2">From launch to winning name</h2>
-        <p className="lede">Swap Google Forms, Excel, and endless email threads for a platform actually meant for naming.</p>
+        <p className="eyebrow">How it works</p>
+        <h2 className="h-display h2">Four easy steps to a winning name</h2>
+        <p className="lede">Ditch Google Forms, Excel sheets, and endless emails for a platform built to run a naming contest and give your people a real voice in the process.</p>
       </div>
 
       <div className="why">
@@ -1074,8 +1084,8 @@ function HowItWorks() {
         <div className="why-item" data-tone="butter">
           <div className="why-text">
             <div className="step-mark"><span className="step-num">01</span><span className="step-label">Setup</span></div>
-            <h3>Answer questions</h3>
-            <p>Pick what you’re naming, answer a few quick questions, and you’re set.</p>
+            <h3>Contest launch</h3>
+            <p>Select your contest type, answer a few quick questions, and you’re set.</p>
           </div>
           <div className="why-art">
             <div className="artifact art-brief">
@@ -1092,8 +1102,8 @@ function HowItWorks() {
         <div className="why-item" data-tone="periwinkle">
           <div className="why-text">
             <div className="step-mark"><span className="step-num">02</span><span className="step-label">Invite</span></div>
-            <h3>Invite your people</h3>
-            <p>Share a link, and they’re in. No signup, no download.</p>
+            <h3>Invitations</h3>
+            <p>Share a link and everyone’s ready to participate. No signups, no downloads.</p>
           </div>
           <div className="why-art">
             <div className="artifact art-invite">
@@ -1115,8 +1125,8 @@ function HowItWorks() {
         {/* 03 SUBMIT & VOTE */}
         <div className="why-item" data-tone="mint">
           <div className="why-text">
-            <div className="step-mark"><span className="step-num">03</span><span className="step-label">Vote</span></div>
-            <h3>Submit and vote</h3>
+            <div className="step-mark"><span className="step-num">03</span><span className="step-label">Participate</span></div>
+            <h3>Name submissions and votes</h3>
             <p>Names roll in, votes get counted, a winner rises to the top.</p>
           </div>
           <div className="why-art">
@@ -1142,8 +1152,8 @@ function HowItWorks() {
         <div className="why-item" data-tone="blush">
           <div className="why-text">
             <div className="step-mark"><span className="step-num">04</span><span className="step-label">Reveal</span></div>
-            <h3>See the winner</h3>
-            <p>A clear result with the vote breakdown and a naming certificate to keep.</p>
+            <h3>The winner is…</h3>
+            <p>Explore how the votes landed, select a winner, and award a prize if you choose.</p>
           </div>
           <div className="why-art">
             <div className="artifact art-winner">
@@ -1290,24 +1300,24 @@ function FAQ() {
   const [openIdx, setOpenIdx] = useState(0);
   const items = [
     {
-      q: "Who’s behind this?",
-      a: <p className="faq-a"><strong>We’re Catchword Branding</strong>—a naming agency that’s been at it for 25+ years and worked with brands like The North Face, Volkswagen, and Asana. This platform turns what we’ve learned into a naming contest anyone can run.</p>
+      q: "Who’s behind NamingContest?",
+      a: <p className="faq-a"><strong>We’re Catchword Branding</strong>—a leading naming agency with 25+ years of experience creating names for companies and products around the world. We’ve worked with brands like Starbucks, Volkswagen, Asana, TikTok, and Corning. We created this platform to make running your own naming contest simple, social, and fun.</p>
     },
     {
       q: 'How long does a contest take?',
       a: <p className="faq-a"><strong>You set the deadline,</strong> but most contests wrap up in under a week.</p>
     },
     {
-      q: 'How do my voters join?',
+      q: 'How do participants contribute and vote?',
       a: <p className="faq-a"><strong>They open your link and drop in their email</strong>—that’s the whole setup. A magic link signs them in and takes them straight to the contest. You’re the only one who builds and runs it.</p>
     },
     {
       q: 'How does the voting work?',
-      a: <p className="faq-a"><strong>One simple vote—no clunky ballots.</strong> Everyone opens your link, sees all the suggested names, and taps up to three favourites. Votes tally as they come in, and you crown the winner from the leaderboard.</p>
+      a: <p className="faq-a"><strong>One simple vote—no clunky ballots.</strong> Everyone opens your link, sees all the suggested names, and taps up to three favorites. Votes tally as they come in, and you crown the winner.</p>
     },
     {
       q: 'What does it cost?',
-      a: <p className="faq-a">The price depends only on how many people you invite to vote: <strong>$9</strong> for up to 10 voters, <strong>$19</strong> for up to 30, or <strong>$39</strong> for up to 90. You pay once per contest — no subscription, and no per-name or per-participant charges on top. The tier is the only thing that changes: a $9 contest works exactly like a $39 one. Fees aren’t refundable once a contest has launched.</p>
+      a: <p className="faq-a">The price depends only on how many people you invite: <strong>$9</strong> for up to 10 participants, <strong>$19</strong> for up to 30, or <strong>$39</strong> for up to 90. You pay once per contest — no subscription, and no per-name or per-participant charges on top. The tier is the only thing that changes: a $9 contest works exactly like a $39 one. Fees aren’t refundable once a contest has launched.</p>
     },
   ];
   return (

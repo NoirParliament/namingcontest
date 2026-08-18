@@ -24,9 +24,9 @@ export function priceForVoters(voters) {
   return t ? t.price : VOTER_TIERS[0].price;
 }
 
-// "Up to 30 voters" — the canonical capacity label.
+// "Up to 30 participants" — the canonical capacity label.
 export function voterCapLabel(voters) {
-  return `Up to ${voters} voters`;
+  return `Up to ${voters} participants`;
 }
 
 // The voter-package question shape — shared so BriefChat (asks it) and
@@ -35,7 +35,7 @@ export const VOTER_TIER_QUESTION = {
   id: 'voterTier',
   section: 'voter',
   type: 'voterTier',
-  label: 'Voters',
-  prompt: 'How many people will vote?',
+  label: 'Participants',
+  prompt: 'How many people will take part in the contest?',
   required: true,
 };

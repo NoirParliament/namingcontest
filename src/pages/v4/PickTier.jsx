@@ -24,7 +24,7 @@ const TIERS = [
   {
     tier: 'team',
     title: 'Group',
-    tagline: 'Bands, podcasts, sports teams, gaming clans, civic groups.',
+    tagline: 'Sports teams, bands, podcasts, clubs, and more.',
     cta: 'Start a group contest',
     img: teamPlayers,
     pillA: { text: '23 names in', color: '#4b68c3', icon: <><path d="M3 4h10M3 8h10M3 12h6" /></> },
