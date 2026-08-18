@@ -387,26 +387,14 @@ export default function ReviewLaunch() {
               <span className="v4-review-section-hint">Opens your invitation</span>
             </header>
             {intro.trim() && !introEditing ? (
-              /* Preview: the invitation greeting exactly as participants meet
-                 it — avatar, "From …", the words — instead of a form field.
-                 Click anywhere to edit. */
+              /* Preview: just the words, as typography — no inner box.
+                 Click anywhere to edit (same affordance as the brief rows). */
               <button
                 type="button"
                 className="v4-review-intro-preview"
-                style={{ background: heroTone.bg }}
                 onClick={() => setIntroEditing(true)}
                 aria-label="Edit your intro"
               >
-                <span className="v4-review-intro-from" style={{ color: heroTone.fg }}>
-                  {setup.userPhoto ? (
-                    <img src={setup.userPhoto} alt="" className="v4-review-intro-avatar" />
-                  ) : (
-                    <span className="v4-review-intro-avatar v4-review-intro-avatar-fallback" style={{ background: heroTone.fg, color: heroTone.bg }}>
-                      {(setup.userName || 'Y')[0].toUpperCase()}
-                    </span>
-                  )}
-                  From {setup.userName || 'you'}
-                </span>
                 <span className="v4-review-intro-text">{intro}</span>
                 <PencilSimple size={13} weight="bold" className="v4-review-intro-edit" aria-hidden="true" />
               </button>
