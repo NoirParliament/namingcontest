@@ -10,7 +10,7 @@ import {
 } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
-import { readSetup, writeSetup, getQuestionsFor, getSetupStepTotal, formatWindowDuration } from '../../utils/v4Brief';
+import { readSetup, writeSetup, getQuestionsFor, getSetupStepTotal, formatScheduleSummary } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS, INTRO_QUESTION, getIntroQuestionFor } from '../../data/v4/briefQuestions';
 import { SegmentThemeBackdrop, getSegmentTone, getSegmentIcon, getSegmentPalette } from '../../data/v4/segmentTheme';
 import LaunchModal from '../../components/v4/LaunchModal';
@@ -143,7 +143,18 @@ export default function ReviewLaunch() {
     } else if (section === 'brief') {
       writeSetup({ brief: { ...(cur.brief || {}), [question.id]: newValue } });
     } else if (section === 'settings') {
-      writeSetup({ settings: { ...(cur.settings || {}), [question.id]: newValue } });
+      // The schedule answers both windows at once — spread into real keys.
+      if (question.type === 'contestSchedule') {
+        writeSetup({
+          settings: {
+            ...(cur.settings || {}),
+            submissionDays: newValue.submissionDays,
+            votingDays: newValue.votingDays,
+          },
+        });
+      } else {
+        writeSetup({ settings: { ...(cur.settings || {}), [question.id]: newValue } });
+      }
     } else if (section === 'voter') {
       writeSetup({ voterTier: newValue });
     }
@@ -154,7 +165,11 @@ export default function ReviewLaunch() {
   // ones flagged (grey "Skipped") and still editable, so nothing silently
   // vanishes and the creator can fill any gap right here before launch.
   const isAnswered = (v) => v !== undefined && v !== null && v !== '';
-  const filledSettings = SHARED_SETTINGS_QUESTIONS.filter((q) => settingsAnswers[q.id] !== undefined);
+  const filledSettings = SHARED_SETTINGS_QUESTIONS.filter((q) =>
+    q.type === 'contestSchedule'
+      ? settingsAnswers.submissionDays !== undefined || settingsAnswers.votingDays !== undefined
+      : settingsAnswers[q.id] !== undefined
+  );
 
   // ?launch=1 (from the platform map) auto-opens the launch/checkout
   // modal so that flow step lands directly on it.
@@ -476,8 +491,8 @@ export default function ReviewLaunch() {
                     >
                       <span className="v4-review-row-label">{q.label}</span>
                       <span className="v4-review-row-value">
-                        {q.type === 'windowDays'
-                          ? formatWindowDuration(settingsAnswers[q.id])
+                        {q.type === 'contestSchedule'
+                          ? formatScheduleSummary(settingsAnswers)
                           : formatAnswer(settingsAnswers[q.id])}
                       </span>
                       <PencilSimple size={12} weight="bold" className="v4-review-row-edit-icon" />
@@ -539,6 +554,8 @@ export default function ReviewLaunch() {
               ? briefAnswers[editingQuestion?.question?.id]
               : editingQuestion?.section === 'voter'
               ? (setup.voterTier ? `Up to ${setup.voterTier} participants` : undefined)
+              : editingQuestion?.question?.type === 'contestSchedule'
+              ? formatScheduleSummary(settingsAnswers)
               : settingsAnswers[editingQuestion?.question?.id]
           }
           onClose={() => setEditingQuestion(null)}

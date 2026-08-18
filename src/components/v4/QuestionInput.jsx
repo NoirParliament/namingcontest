@@ -7,7 +7,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import {
-  ArrowRight, CalendarBlank,
+  ArrowRight, ArrowLeft, CaretRight, CalendarBlank,
   // Sub-segment card icons (resolved by name from question.options[].icon)
   Baby, PawPrint, House, PencilSimple,
   SoccerBall, MusicNote, Microphone, GraduationCap, GameController,
@@ -55,7 +55,7 @@ export default function QuestionInput({ question, onSubmit, autoFocus = true }) 
   if (type === 'multiChips')     return <MultiChipsInput question={question} onSubmit={onSubmit} />;
   if (type === 'radioCards')     return <RadioCardsInput question={question} onSubmit={onSubmit} />;
   if (type === 'numberChips')    return <NumberChipsInput question={question} onSubmit={onSubmit} />;
-  if (type === 'windowDays')     return <WindowDaysInput question={question} onSubmit={onSubmit} />;
+  if (type === 'contestSchedule') return <ContestScheduleInput question={question} onSubmit={onSubmit} />;
   if (type === 'voterTier')      return <VoterTierInput question={question} onSubmit={onSubmit} />;
   if (type === 'toggle')         return <ToggleInput question={question} onSubmit={onSubmit} />;
   if (type === 'date')           return <DateInput question={question} onSubmit={onSubmit} />;
@@ -384,106 +384,128 @@ function NumberChipsInput({ question, onSubmit }) {
   );
 }
 
-// ── windowDays (submission / voting window + live schedule) ─────────
-// Day chips plus hour presets (stored as day fractions — 0.25 = 6h — so
-// launch math and the phase cron are untouched), and a roadmap of the
-// WHOLE contest: while picking one window, the other is shown in the same
-// timeline (locked when already chosen, ghosted "next" when not yet), so
-// the two decisions always read as one schedule. Dates are computed
-// as-if-launched-today, and say so.
-function WindowDaysInput({ question, onSubmit }) {
-  const isSubmission = question.window === 'submission';
-  const [selected, setSelected] = useState(question.defaultValue ?? null);
-
-  // Counterpart window, read from the setup blob: when picking VOTING the
-  // creator has just answered submissions; when picking SUBMISSIONS the
-  // voting leg previews its default until it's actually asked.
-  const setup = readSetup();
-  const otherRaw = Number(isSubmission ? setup?.settings?.votingDays : setup?.settings?.submissionDays);
-  const otherChosen = Number.isFinite(otherRaw) && otherRaw > 0;
-  const other = otherChosen ? otherRaw : (isSubmission ? 3 : 5);
-
-  const sub = isSubmission ? selected : other;
-  const vote = isSubmission ? other : selected;
+// ── contestSchedule (one roadmap for both windows) ──────────────────
+// A vertical stepper of the whole contest — Launch → Submissions →
+// Names in → Voting → Winner — with as-if-launched-today dates. Tapping
+// a leg swaps to a focused picker (day chips per the client's options,
+// plus 3/6/12h same-day presets stored as day fractions); picking
+// returns to the roadmap. Continue submits BOTH values at once as
+// { submissionDays, votingDays }.
+function ContestScheduleInput({ question, onSubmit }) {
+  // Prefill from anything already stored (editing from review/manage).
+  const stored = readSetup()?.settings || {};
+  const [sub, setSub] = useState(
+    Number(stored.submissionDays) > 0 ? Number(stored.submissionDays) : (question.subDefault ?? 5)
+  );
+  const [vote, setVote] = useState(
+    Number(stored.votingDays) > 0 ? Number(stored.votingDays) : (question.voteDefault ?? 3)
+  );
+  const [editing, setEditing] = useState(null); // null | 'submission' | 'voting'
 
   const DAY = 86400000;
   const now = Date.now();
-  const subEnd = sub ? now + sub * DAY : null;
-  const voteEnd = sub && vote ? now + (sub + vote) * DAY : null;
+  const subEnd = now + sub * DAY;
+  const voteEnd = now + (sub + vote) * DAY;
   const fmtWhen = (t, hourLevel) =>
     hourLevel
       ? new Date(t).toLocaleString(undefined, { weekday: 'short', hour: 'numeric', minute: '2-digit' })
       : new Date(t).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
 
-  const dayChip = (d) => (
-    <button
-      key={d}
-      type="button"
-      role="radio"
-      aria-checked={selected === d}
-      className={`v4-chip v4-chip-number ${selected === d ? 'is-checked' : ''} ${d === question.defaultValue ? 'is-default' : ''}`}
-      onClick={() => setSelected(d)}
-    >
-      {formatWindowDuration(d)}
-      {d === question.defaultValue && <span className="v4-chip-tag">Recommended</span>}
-    </button>
+  // ── Picker view — one decision at a time, then back to the roadmap ──
+  if (editing) {
+    const isSub = editing === 'submission';
+    const value = isSub ? sub : vote;
+    const options = isSub ? (question.subOptions || []) : (question.voteOptions || []);
+    const def = isSub ? question.subDefault : question.voteDefault;
+    const pick = (v) => {
+      (isSub ? setSub : setVote)(v);
+      setEditing(null);
+    };
+    return (
+      <div className="v4-sched-block">
+        <button type="button" className="v4-sched-back" onClick={() => setEditing(null)}>
+          <ArrowLeft weight="bold" size={13} />
+          Back to schedule
+        </button>
+        <div className="v4-sched-picker-title">
+          {isSub ? 'How long should submissions stay open?' : 'How long should voting stay open?'}
+        </div>
+        <div className="v4-chips-row v4-number-chips" role="radiogroup" aria-label={question.label}>
+          {options.map((d) => (
+            <button
+              key={d}
+              type="button"
+              role="radio"
+              aria-checked={value === d}
+              className={`v4-chip v4-chip-number ${value === d ? 'is-checked' : ''} ${d === def ? 'is-default' : ''}`}
+              onClick={() => pick(d)}
+            >
+              {formatWindowDuration(d)}
+              {d === def && <span className="v4-chip-tag">Recommended</span>}
+            </button>
+          ))}
+        </div>
+        {(question.hourOptions || []).length > 0 && (
+          <div className="v4-sched-hours">
+            <span className="v4-sched-hours-label">Same-day contest?</span>
+            {question.hourOptions.map((h) => {
+              const v = h / 24;
+              return (
+                <button
+                  key={h}
+                  type="button"
+                  role="radio"
+                  aria-checked={value === v}
+                  className={`v4-chip ${value === v ? 'is-checked' : ''}`}
+                  onClick={() => pick(v)}
+                >
+                  {h} hours
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ── Roadmap view ────────────────────────────────────────────────────
+  const Event = ({ label, when }) => (
+    <div className="v4-sched-row">
+      <span className="v4-sched-rail"><span className="v4-sched-dot" /></span>
+      <span className="v4-sched-event">{label}</span>
+      <span className="v4-sched-when">{when}</span>
+    </div>
+  );
+  const Leg = ({ label, value, onClick }) => (
+    <div className="v4-sched-row">
+      <span className="v4-sched-rail"><span className="v4-sched-line" /></span>
+      <button type="button" className="v4-sched-leg" onClick={onClick}>
+        <span className="v4-sched-leg-label">{label}</span>
+        <span className="v4-sched-leg-value">
+          {formatWindowDuration(value)}
+          <CaretRight weight="bold" size={12} />
+        </span>
+      </button>
+    </div>
   );
 
   return (
-    <div className="v4-window-block">
-      <div className="v4-chips-row v4-number-chips" role="radiogroup" aria-label={question.label}>
-        {(question.options || []).map(dayChip)}
+    <div className="v4-sched-block">
+      <span className="v4-sched-note">If you launch today</span>
+      <div className="v4-sched-steps">
+        <Event label="Launch" when="Today" />
+        <Leg label="Submissions open" value={sub} onClick={() => setEditing('submission')} />
+        <Event label="Names are in" when={fmtWhen(subEnd, sub < 1)} />
+        <Leg label="Voting opens" value={vote} onClick={() => setEditing('voting')} />
+        <Event label="Winner revealed" when={fmtWhen(voteEnd, sub + vote < 1)} />
       </div>
-
-      {(question.hourOptions || []).length > 0 && (
-        <div className="v4-window-hours">
-          <span className="v4-window-hours-label">Same-day contest?</span>
-          {question.hourOptions.map((h) => {
-            const v = h / 24;
-            return (
-              <button
-                key={h}
-                type="button"
-                role="radio"
-                aria-checked={selected === v}
-                className={`v4-chip ${selected === v ? 'is-checked' : ''}`}
-                onClick={() => setSelected(v)}
-              >
-                {h} hours
-              </button>
-            );
-          })}
-        </div>
-      )}
-
-      <div className="v4-window-timeline">
-        <span className="v4-window-note">If you launch today:</span>
-        <div className="v4-window-track">
-          <span className="v4-window-node">Launch</span>
-          <span className={`v4-window-seg ${isSubmission ? 'is-active' : 'is-locked'}`}>
-            Submissions · {sub ? formatWindowDuration(sub) : '…'}
-          </span>
-          <span className="v4-window-node">
-            Names in{subEnd ? ` · ${fmtWhen(subEnd, sub < 1)}` : ''}
-          </span>
-          <span className={`v4-window-seg ${!isSubmission ? 'is-active' : otherChosen ? 'is-locked' : 'is-ghost'}`}>
-            Voting · {vote ? formatWindowDuration(vote) : '…'}{isSubmission && !otherChosen ? ' (next question)' : ''}
-          </span>
-          <span className="v4-window-node">
-            Winner{voteEnd ? ` · ${fmtWhen(voteEnd, sub + vote < 1)}` : ''}
-          </span>
-        </div>
-      </div>
-
       <div className="v4-multichips-footer">
-        <span className="v4-multichips-count">
-          {selected ? formatWindowDuration(selected) : 'Pick a window'}
-        </span>
+        <span className="v4-multichips-count">Tap a stage to change it</span>
         <button
           type="submit"
           className="v4-multichips-submit"
-          disabled={!selected}
-          onClick={() => selected && onSubmit(selected)}
+          onClick={() => onSubmit({ submissionDays: sub, votingDays: vote })}
         >
           Continue <ArrowRight weight="bold" size={14} />
         </button>

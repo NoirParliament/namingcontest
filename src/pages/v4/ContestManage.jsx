@@ -25,7 +25,7 @@ import BrandLink from '../../components/v4/BrandLink';
 import creatorProfile from '../../assets/creator-profile.png';
 import {
   readSetup, writeSetup, getSegmentLabel, getContestDescriptor, getQuestionsFor,
-  formatWindowDuration,
+  formatWindowDuration, formatScheduleSummary,
 } from '../../utils/v4Brief';
 import { buildLiveData, buildLiveDataFromReal } from '../../utils/v4LiveData';
 import { getMockContestById } from '../../data/v4/mockContests';
@@ -352,7 +352,11 @@ export default function ContestManage() {
     briefAnswers.customRequirements = settingsAnswers.customRequirements;
   }
   const filledBrief = briefQuestions.filter((q) => briefAnswers[q.id] !== undefined);
-  const filledSettings = SHARED_SETTINGS_QUESTIONS.filter((q) => settingsAnswers[q.id] !== undefined);
+  const filledSettings = SHARED_SETTINGS_QUESTIONS.filter((q) =>
+    q.type === 'contestSchedule'
+      ? settingsAnswers.submissionDays !== undefined || settingsAnswers.votingDays !== undefined
+      : settingsAnswers[q.id] !== undefined
+  );
 
   // Phase timing. A real contest reads its actual submission_ends_at /
   // voting_ends_at — the very timestamps the cron job flips on — so the
@@ -434,17 +438,22 @@ export default function ContestManage() {
   const handleEditSave = async (newValue) => {
     if (!editingQuestion) return;
     const { question, section } = editingQuestion;
+    // The schedule question answers both windows at once — spread into the
+    // real keys instead of storing under its own id.
+    const patch = question.type === 'contestSchedule'
+      ? { submissionDays: newValue.submissionDays, votingDays: newValue.votingDays }
+      : { [question.id]: newValue };
     if (dbContest && !mockContest && (section === 'brief' || section === 'settings')) {
       // Real contest → persist the edit to the database and update state.
-      const updated = { ...(dbContest[section] || {}), [question.id]: newValue };
+      const updated = { ...(dbContest[section] || {}), ...patch };
       await supabase.from('contests').update({ [section]: updated }).eq('id', dbContest.id);
       setDbContest((c) => (c ? { ...c, [section]: updated } : c));
     } else {
       const cur = readSetup();
       if (section === 'brief') {
-        writeSetup({ brief: { ...(cur.brief || {}), [question.id]: newValue } });
+        writeSetup({ brief: { ...(cur.brief || {}), ...patch } });
       } else if (section === 'settings') {
-        writeSetup({ settings: { ...(cur.settings || {}), [question.id]: newValue } });
+        writeSetup({ settings: { ...(cur.settings || {}), ...patch } });
       }
     }
     setEditTick((t) => t + 1);
@@ -1347,6 +1356,8 @@ export default function ContestManage() {
           currentAnswer={
             editingQuestion?.section === 'brief'
               ? liveBriefAnswers[editingQuestion?.question?.id]
+              : editingQuestion?.question?.type === 'contestSchedule'
+              ? formatScheduleSummary(liveSettingsAnswers)
               : liveSettingsAnswers[editingQuestion?.question?.id]
           }
           onClose={() => setEditingQuestion(null)}
@@ -1500,7 +1511,7 @@ function BriefRecapCollapser({
   // plain read-only lines — no pencil, no click — so the creator can still
   // review the brief but can't change it under the participants.
   const fmtRow = (q, value) =>
-    q.type === 'windowDays' ? formatWindowDuration(value) : formatAnswer(value);
+    q.type === 'contestSchedule' ? formatScheduleSummary(settingsAnswers) : formatAnswer(value);
   const Row = ({ q, value, onEdit }) => editable ? (
     <button type="button" className="v4-manage-recap-row" onClick={() => onEdit?.(q)}>
       <span className="v4-manage-recap-row-label">{q.label}</span>

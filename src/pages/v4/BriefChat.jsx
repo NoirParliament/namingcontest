@@ -48,7 +48,7 @@ import {
   getArticleFor,
   getSegmentLabel,
   getSetupStepTotal,
-  formatWindowDuration,
+  formatScheduleSummary,
 } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS, getIntroQuestionFor } from '../../data/v4/briefQuestions';
 import { VOTER_TIER_QUESTION } from '../../data/v4/voterTiers';
@@ -202,6 +202,17 @@ function persistAnswer(question, value) {
     return writeSetup({ brief });
   }
   if (question.section === 'settings') {
+    // The schedule question answers BOTH windows at once — spread them into
+    // their real keys so launch, cron, and every reader stay untouched.
+    if (question.type === 'contestSchedule') {
+      return writeSetup({
+        settings: {
+          ...(current.settings || {}),
+          submissionDays: value.submissionDays,
+          votingDays: value.votingDays,
+        },
+      });
+    }
     return writeSetup({ settings: { ...(current.settings || {}), [question.id]: value } });
   }
   return current;
@@ -391,8 +402,8 @@ export default function BriefChat() {
 
     const display = currentQ.section === 'voter'
       ? `Up to ${value} participants`
-      : currentQ.type === 'windowDays'
-        ? formatWindowDuration(value)
+      : currentQ.type === 'contestSchedule'
+        ? formatScheduleSummary(value)
         : answerToDisplay(value);
     setUserReply(display);
     setTimeout(() => {
@@ -454,8 +465,8 @@ export default function BriefChat() {
       next[i] = {
         ...turn,
         answer: value,
-        display: turn.question.type === 'windowDays'
-          ? formatWindowDuration(value)
+        display: turn.question.type === 'contestSchedule'
+          ? formatScheduleSummary(value)
           : answerToDisplay(value),
       };
       return next;

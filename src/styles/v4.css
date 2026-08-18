@@ -10944,32 +10944,11 @@ select.v4-pvote-sort-select:hover {
   color: var(--v4-muted);
 }
 
-/* ── Window picker (submission / voting) ─────────────────────────────
-   Day chips + hour presets + the whole-contest schedule. The counterpart
-   window rides in the same timeline: locked (already chosen) or ghost
-   ("next question"), so both decisions read as one roadmap. */
-.v4-window-hours {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
-}
-.v4-window-hours-label {
-  font-family: var(--font-text);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--v4-muted);
-  margin-right: 2px;
-}
-.v4-window-timeline {
-  margin-top: 14px;
-  padding: 12px 14px;
-  background: var(--v4-bg);
-  border: 1px solid var(--v4-faint);
-  border-radius: 12px;
-}
-.v4-window-note {
+/* ── Contest schedule (one roadmap, tappable legs) ───────────────────
+   Vertical stepper: Launch → Submissions → Names in → Voting → Winner.
+   Events are plain rows on a dotted rail; the two legs are bordered,
+   tappable rows that open a focused picker. */
+.v4-sched-note {
   display: block;
   font-family: var(--font-text);
   font-size: 11px;
@@ -10977,39 +10956,117 @@ select.v4-pvote-sort-select:hover {
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--v4-muted);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
-.v4-window-track {
+.v4-sched-steps {
+  display: flex;
+  flex-direction: column;
+}
+.v4-sched-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.v4-sched-rail {
+  width: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-self: stretch;
+  flex: none;
+}
+.v4-sched-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--v4-fg);
+  margin: auto 0;
+}
+.v4-sched-line {
+  width: 2px;
+  flex: 1;
+  background: rgba(3, 3, 2, 0.15);
+  border-radius: 2px;
+}
+.v4-sched-event {
+  font-family: var(--font-text);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--v4-fg);
+  padding: 6px 0;
+}
+.v4-sched-when {
+  margin-left: auto;
+  font-family: var(--font-text);
+  font-size: 12.5px;
+  color: var(--v4-muted);
+  white-space: nowrap;
+}
+.v4-sched-leg {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 6px 0;
+  padding: 11px 14px;
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: var(--font-text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.v4-sched-leg:hover {
+  border-color: rgba(3, 3, 2, 0.3);
+  box-shadow: 0 4px 14px -8px rgba(3, 3, 2, 0.25);
+}
+.v4-sched-leg-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--v4-fg);
+}
+.v4-sched-leg-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--v4-fg);
+}
+.v4-sched-leg-value svg { opacity: 0.45; }
+.v4-sched-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 0 0 10px;
+  font-family: var(--font-text);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--v4-muted);
+}
+.v4-sched-back:hover { color: var(--v4-fg); }
+.v4-sched-picker-title {
+  font-family: var(--font-text);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  margin-bottom: 10px;
+}
+.v4-sched-hours {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
+  margin-top: 10px;
+}
+.v4-sched-hours-label {
   font-family: var(--font-text);
-  font-size: 12.5px;
-  line-height: 1.5;
-}
-.v4-window-node {
-  font-weight: 700;
-  color: var(--v4-fg);
-  white-space: nowrap;
-}
-.v4-window-seg {
-  position: relative;
-  padding: 3px 10px;
-  border-radius: 999px;
-  white-space: nowrap;
-}
-.v4-window-seg.is-active {
-  background: var(--v4-fg);
-  color: #fff;
+  font-size: 12px;
   font-weight: 600;
-}
-.v4-window-seg.is-locked {
-  background: rgba(3, 3, 2, 0.08);
-  color: var(--v4-fg);
-  font-weight: 600;
-}
-.v4-window-seg.is-ghost {
-  border: 1.5px dashed rgba(3, 3, 2, 0.24);
   color: var(--v4-muted);
+  margin-right: 2px;
 }

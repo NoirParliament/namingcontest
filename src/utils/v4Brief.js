@@ -112,6 +112,17 @@ export function formatWindowDuration(days) {
   return n === 1 ? '1 day' : `${n} days`;
 }
 
+// One-line summary of the contest schedule ("Submissions 5 days · Voting
+// 3 days") for review rows, recap rows, and the chat's answer bubble.
+export function formatScheduleSummary(settings) {
+  const sub = settings?.submissionDays;
+  const vote = settings?.votingDays;
+  const parts = [];
+  if (sub) parts.push(`Submissions ${formatWindowDuration(sub)}`);
+  if (vote) parts.push(`Voting ${formatWindowDuration(vote)}`);
+  return parts.join(' · ');
+}
+
 // Resolve the article (if any) referenced by a question's guideId.
 export function getArticleFor(subId, guideId) {
   if (!guideId) return null;

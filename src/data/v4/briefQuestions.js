@@ -1260,33 +1260,25 @@ export const SHARED_SETTINGS_QUESTIONS = [
     descPlaceholder: 'Prize description (optional)',
     hint: `A small reward—a gift card, a shout-out, or something else—can get more people submitting. Totally optional. If you do offer a prize, you're responsible for providing it to the winner.`,
   },
-  // 2026-08-18 client revision: day options 1/2/5/7/10 with 5 recommended
-  // (submissions) and hour presets for same-day contests ("what if I just
-  // want a few hours?"). Hours store as day fractions (0.125/0.25/0.5), so
-  // launch math and the phase cron need no changes. Rendered by
-  // WindowDaysInput: chips + a live schedule preview that shows BOTH
-  // windows in one timeline.
+  // 2026-08-18: ONE schedule question replaces the two window questions.
+  // Rendered as a vertical roadmap (Launch → Submissions → Names in →
+  // Voting → Winner); tapping a leg opens a focused picker (day chips per
+  // the client: submissions 1/2/5/7/10 rec 5, voting 1/2/3/5 rec 3, plus
+  // 3/6/12h same-day presets stored as day fractions), then returns to the
+  // roadmap. Continue submits BOTH values, still stored as
+  // settings.submissionDays / settings.votingDays so launch, cron, and
+  // every reader are untouched.
   {
-    id: 'submissionDays',
-    type: 'windowDays',
-    window: 'submission',
-    options: [1, 2, 5, 7, 10],
+    id: 'schedule',
+    type: 'contestSchedule',
+    label: 'Schedule',
+    prompt: 'How long should your contest run?',
+    subOptions: [1, 2, 5, 7, 10],
+    subDefault: 5,
+    voteOptions: [1, 2, 3, 5],
+    voteDefault: 3,
     hourOptions: [3, 6, 12],
-    defaultValue: 5,
-    label: 'Submission window',
-    prompt: 'How long should submissions stay open?',
-    hint: `5 days works for most contests: enough time for everyone to get their names in without losing momentum. Go shorter for a quick group, or pick hours for a same-day contest.`,
-  },
-  {
-    id: 'votingDays',
-    type: 'windowDays',
-    window: 'voting',
-    options: [1, 2, 3, 5],
-    hourOptions: [3, 6, 12],
-    defaultValue: 3,
-    label: 'Voting window',
-    prompt: 'And after submissions close, how long should voting stay open?',
-    hint: `3 days is plenty for most contests: enough time to vote, not so long that people forget to. The schedule below shows how your whole contest plays out.`,
+    hint: `Here’s your contest from launch to winner. Tap a stage to change how long it runs; most contests do well with 5 days of submissions and 3 of voting.`,
   },
 ];
 
