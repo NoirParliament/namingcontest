@@ -1258,7 +1258,7 @@ export const SHARED_SETTINGS_QUESTIONS = [
     description: 'Reward the person who submitted the winning name',
     namePlaceholder: 'Prize name (e.g. $50 gift card)',
     descPlaceholder: 'Prize description (optional)',
-    hint: `A small reward — a gift card, a shout-out — gets more people submitting. Totally optional.`,
+    hint: `A small reward—a gift card, a shout-out, or something else—can get more people submitting. Totally optional. If you do offer a prize, you're responsible for providing it to the winner.`,
   },
   {
     id: 'submissionDays',
