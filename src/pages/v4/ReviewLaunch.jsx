@@ -293,7 +293,7 @@ export default function ReviewLaunch() {
   if (pendingEmail) {
     return (
       <div className="v4 lp-v3">
-        <div className="v4-screen">
+        <div className="v4-screen v4-review-screen">
           <SegmentThemeBackdrop subId={subId} minimal />
           <main className="v4-review" role="main">
             <div className="v4-review-inner" style={{ textAlign: 'center', paddingTop: 72 }}>
@@ -321,7 +321,7 @@ export default function ReviewLaunch() {
 
   return (
     <div className="v4 lp-v3">
-      <div className="v4-screen">
+      <div className="v4-screen v4-review-screen">
         {/* Per-segment soft glow + line-art scene — the same minimal backdrop
             the winner/manage dashboard uses, so review reads as the same
             world as the finish line. */}
@@ -505,7 +505,7 @@ export default function ReviewLaunch() {
               )}
             </button>
             <p className="v4-review-fineprint">
-              You’ll get a link to share with your participants — and you can edit anything from your dashboard later.
+              You’ll get a link to share with your participants.
             </p>
           </div>
           </div>

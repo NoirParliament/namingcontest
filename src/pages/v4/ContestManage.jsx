@@ -285,12 +285,12 @@ export default function ContestManage() {
   // empty leaderboard — the pick-winner flow must not be offered for it.
   const hasNamesToCrown = (liveData.names?.length || 0) > 0;
 
-  // The brief can only be edited BEFORE the first real submission arrives —
-  // once participants have answered the brief, changing it under them would be
-  // unfair. Demo/mock contests stay fully editable. While the real submissions
-  // are still loading (null) we keep it locked so the edit affordance can't
-  // flash then vanish.
-  const briefEditable = mockContest ? true : (realSubs !== null && realSubs.length === 0);
+  // 2026-08-18 (client decision): a real contest locks at launch — the launch
+  // modal says "Your contest can't be edited after launch", and this is what
+  // makes that true. Used to allow edits until the first submission; now the
+  // recap is read-only for every real contest. Demo/mock contests stay
+  // editable (they're a sandbox, not a launched contest).
+  const briefEditable = !!mockContest;
   const getLiveParticipantById = (pid) =>
     liveData.participants.find((p) => p.id === pid) || null;
   // Resolve winner data (only meaningful when isWinnerPicked).
@@ -1522,7 +1522,7 @@ function BriefRecapCollapser({
           <CalendarBlank weight="duotone" size={16} />
         </span>
         <span className="v4-manage-recap-text">
-          Your brief · {totalAnswered} answered{editable ? ' · click any to edit' : ' · locked (entries are in)'}
+          Your brief · {totalAnswered} answered{editable ? ' · click any to edit' : ' · locked at launch'}
         </span>
         <span className="v4-manage-recap-meta">
           {open ? 'Hide' : 'Show'}

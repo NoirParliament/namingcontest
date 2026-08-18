@@ -10898,3 +10898,7 @@ select.v4-pvote-sort-select:hover {
   background: var(--v4-bg);
   border: 1.5px dashed rgba(3, 3, 2, 0.24);
 }
+
+/* Review screen: the line-art competes with the congrats lead-in and the
+   review reading flow — fade it further than the dashboard's 0.45. */
+.v4-review-screen .v4-dash-image { opacity: 0.22; }
