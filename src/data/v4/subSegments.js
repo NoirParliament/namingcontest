@@ -48,8 +48,8 @@ export const SUB_SEGMENTS = {
     // kept below (commented) so they're restorable; their question
     // sets/themes stay in the data files.
     options: [
-      { id: 'b1', icon: 'Buildings',        tone: TONES.periwinkle, title: 'A company',       body: 'Brand-new venture or established entity.' },
-      { id: 'b2', icon: 'Package',          tone: TONES.butter,     title: 'A product',       body: 'Software, physical good, or service offering.' },
+      { id: 'b1', icon: 'Buildings',        tone: TONES.periwinkle, title: 'Company',       body: 'Start-up, new venture, or company renaming.' },
+      { id: 'b2', icon: 'Package',          tone: TONES.butter,     title: 'Product',       body: 'Anything your business offers, from food & beverage to software to an experience or service.' },
       // { id: 'b3', icon: 'Target',           tone: TONES.blush,      title: 'A project or initiative',  body: 'Internal initiative, campaign, or program.' },
       // { id: 'b4', icon: 'ArrowsClockwise',  tone: TONES.mint,       title: 'A rebrand',                body: 'Refresh of an existing name.' },
       { id: 'b5', icon: 'PencilSimple',     tone: TONES.sky,        title: 'Something else',  body: 'Initiatives, off-sites, meeting rooms — anything that needs a name.' },
