@@ -99,7 +99,7 @@ export const BRIEF_QUESTIONS = {
         type: 'chips',
         options: ['Yes — open to it', 'Prefer English', 'Not sure'],
         describeOption: 'Yes — open to it',
-        describePlaceholder: 'Which languages? e.g. Latin, Italian, Japanese',
+        describePlaceholder: 'e.g. Latin, Italian, Japanese',
         hint: `For example, would you consider names that use or adapt words from Latin, Greek, Italian, or other languages?`,
       },
       {
@@ -222,7 +222,7 @@ export const BRIEF_QUESTIONS = {
         type: 'chips',
         options: ['Yes — open to it', 'Prefer English', 'Not sure'],
         describeOption: 'Yes — open to it',
-        describePlaceholder: 'Which languages? e.g. Latin, Italian, Japanese',
+        describePlaceholder: 'e.g. Latin, Italian, Japanese',
         hint: `For example, would you consider names that use or adapt words from Latin, Greek, Italian, or other languages?`,
       },
       {
