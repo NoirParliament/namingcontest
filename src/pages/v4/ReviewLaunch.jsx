@@ -18,6 +18,7 @@ import { priceForVoters, VOTER_TIER_QUESTION } from '../../data/v4/voterTiers';
 import { useAuth } from '../../lib/AuthContext';
 import { supabase } from '../../lib/supabaseClient';
 import EditQuestionModal from '../../components/v4/EditQuestionModal';
+import { ContestScheduleInput } from '../../components/v4/QuestionInput';
 import ExitLink from '../../components/v4/ExitLink';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
@@ -165,11 +166,10 @@ export default function ReviewLaunch() {
   // ones flagged (grey "Skipped") and still editable, so nothing silently
   // vanishes and the creator can fill any gap right here before launch.
   const isAnswered = (v) => v !== undefined && v !== null && v !== '';
-  const filledSettings = SHARED_SETTINGS_QUESTIONS.filter((q) =>
-    q.type === 'contestSchedule'
-      ? settingsAnswers.submissionDays !== undefined || settingsAnswers.votingDays !== undefined
-      : settingsAnswers[q.id] !== undefined
+  const filledSettings = SHARED_SETTINGS_QUESTIONS.filter(
+    (q) => q.type !== 'contestSchedule' && settingsAnswers[q.id] !== undefined
   );
+  const scheduleQuestion = SHARED_SETTINGS_QUESTIONS.find((q) => q.type === 'contestSchedule');
 
   // ?launch=1 (from the platform map) auto-opens the launch/checkout
   // modal so that flow step lands directly on it.
@@ -474,6 +474,32 @@ export default function ReviewLaunch() {
             </section>
           )}
 
+          {/* Schedule — its own card, working exactly like the chat: the
+              vertical roadmap with tappable stages, picker swapping in
+              place, every change saved live. No modal-on-roadmap. */}
+          {scheduleQuestion && (
+            <section className="v4-review-section v4-review-section--private">
+              <header className="v4-review-section-head">
+                <h2>Schedule</h2>
+                <span className="v4-review-section-hint">Only you see this · tap a stage to change it</span>
+              </header>
+              <ContestScheduleInput
+                question={scheduleQuestion}
+                mode="inline"
+                onChange={(v) => {
+                  const cur = readSetup();
+                  writeSetup({
+                    settings: {
+                      ...(cur.settings || {}),
+                      submissionDays: v.submissionDays,
+                      votingDays: v.votingDays,
+                    },
+                  });
+                }}
+              />
+            </section>
+          )}
+
           {/* Settings — same inline-edit pattern as the brief. */}
           {filledSettings.length > 0 && (
             <section className="v4-review-section v4-review-section--private">
@@ -482,61 +508,19 @@ export default function ReviewLaunch() {
                 <span className="v4-review-section-hint">Only you see this · click any answer to edit</span>
               </header>
               <ul className="v4-review-list v4-review-list-editable">
-                {filledSettings.map((q) => {
-                  // The schedule renders as the full horizontal roadmap, not
-                  // a terse text row — launch is imminent here, so the
-                  // as-if-today dates are honest. Still one click to edit.
-                  if (q.type === 'contestSchedule') {
-                    const sub = Number(settingsAnswers.submissionDays) || 5;
-                    const vote = Number(settingsAnswers.votingDays) || 3;
-                    const DAY = 86400000;
-                    const subEnd = Date.now() + sub * DAY;
-                    const voteEnd = Date.now() + (sub + vote) * DAY;
-                    const when = (t, hourLevel) =>
-                      hourLevel
-                        ? new Date(t).toLocaleString(undefined, { weekday: 'short', hour: 'numeric', minute: '2-digit' })
-                        : new Date(t).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
-                    return (
-                      <li key={q.id}>
-                        <button
-                          type="button"
-                          className="v4-review-row-edit v4-sched-h"
-                          onClick={() => setEditingQuestion({ question: q, section: 'settings' })}
-                          aria-label="Edit contest schedule"
-                        >
-                          <span className="v4-sched-h-node">
-                            <b>Launch</b>
-                            <span>Today</span>
-                          </span>
-                          <span className="v4-sched-h-seg"><em>{formatWindowDuration(sub)}</em></span>
-                          <span className="v4-sched-h-node">
-                            <b>Names in</b>
-                            <span>{when(subEnd, sub < 1)}</span>
-                          </span>
-                          <span className="v4-sched-h-seg"><em>{formatWindowDuration(vote)}</em></span>
-                          <span className="v4-sched-h-node">
-                            <b>Pick the winner</b>
-                            <span>{when(voteEnd, sub + vote < 1)}</span>
-                          </span>
-                          <PencilSimple size={12} weight="bold" className="v4-sched-h-edit" />
-                        </button>
-                      </li>
-                    );
-                  }
-                  return (
-                    <li key={q.id}>
-                      <button
-                        type="button"
-                        className="v4-review-row v4-review-row-edit"
-                        onClick={() => setEditingQuestion({ question: q, section: 'settings' })}
-                      >
-                        <span className="v4-review-row-label">{q.label}</span>
-                        <span className="v4-review-row-value">{formatAnswer(settingsAnswers[q.id])}</span>
-                        <PencilSimple size={12} weight="bold" className="v4-review-row-edit-icon" />
-                      </button>
-                    </li>
-                  );
-                })}
+                {filledSettings.map((q) => (
+                  <li key={q.id}>
+                    <button
+                      type="button"
+                      className="v4-review-row v4-review-row-edit"
+                      onClick={() => setEditingQuestion({ question: q, section: 'settings' })}
+                    >
+                      <span className="v4-review-row-label">{q.label}</span>
+                      <span className="v4-review-row-value">{formatAnswer(settingsAnswers[q.id])}</span>
+                      <PencilSimple size={12} weight="bold" className="v4-review-row-edit-icon" />
+                    </button>
+                  </li>
+                ))}
               </ul>
             </section>
           )}

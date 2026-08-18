@@ -391,7 +391,7 @@ function NumberChipsInput({ question, onSubmit }) {
 // plus 3/6/12h same-day presets stored as day fractions); picking
 // returns to the roadmap. Continue submits BOTH values at once as
 // { submissionDays, votingDays }.
-function ContestScheduleInput({ question, onSubmit }) {
+export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onChange }) {
   // Prefill from anything already stored (editing from review/manage).
   const stored = readSetup()?.settings || {};
   const [sub, setSub] = useState(
@@ -401,6 +401,12 @@ function ContestScheduleInput({ question, onSubmit }) {
     Number(stored.votingDays) > 0 ? Number(stored.votingDays) : (question.voteDefault ?? 3)
   );
   const [editing, setEditing] = useState(null); // null | 'submission' | 'voting'
+
+  // Inline mode (review page): persist every change immediately — there is
+  // no Continue, the roadmap itself is the saved state.
+  useEffect(() => {
+    if (mode === 'inline') onChange?.({ submissionDays: sub, votingDays: vote });
+  }, [sub, vote]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const DAY = 86400000;
   const now = Date.now();
@@ -497,16 +503,18 @@ function ContestScheduleInput({ question, onSubmit }) {
         <Leg label="Voting opens" value={vote} onClick={() => setEditing('voting')} />
         <Event label="Pick the winner" when={fmtWhen(voteEnd, sub + vote < 1)} />
       </div>
-      <div className="v4-multichips-footer">
-        <span className="v4-multichips-count">Tap a stage to change it</span>
-        <button
-          type="submit"
-          className="v4-multichips-submit"
-          onClick={() => onSubmit({ submissionDays: sub, votingDays: vote })}
-        >
-          Continue <ArrowRight weight="bold" size={14} />
-        </button>
-      </div>
+      {mode === 'submit' && (
+        <div className="v4-multichips-footer">
+          <span className="v4-multichips-count">Tap a stage to change it</span>
+          <button
+            type="submit"
+            className="v4-multichips-submit"
+            onClick={() => onSubmit({ submissionDays: sub, votingDays: vote })}
+          >
+            Continue <ArrowRight weight="bold" size={14} />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

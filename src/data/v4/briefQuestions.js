@@ -917,13 +917,7 @@ export const BRIEF_QUESTIONS = {
         required: true,
         placeholder: `e.g. First baby, a girl, due in March. We want something timeless but not in this year’s top 100, and ideally something that travels well across our two families’ languages.`,
       },
-      {
-        id: 'dueDate',
-        label: 'Due date',
-        prompt: 'What is your baby’s due date?',
-        type: 'date',
-        required: false,
-      },
+
       {
         id: 'gender',
         label: 'Do you know the gender?',
@@ -931,6 +925,13 @@ export const BRIEF_QUESTIONS = {
         type: 'chips',
         options: ['Boy', 'Girl', 'Surprise', 'Prefer not to say'],
         hint: `If surprise, people can suggest both boy and girl names. You pick after baby arrives. We’ll keep all submissions organized.`,
+      },
+      {
+        id: 'dueDate',
+        label: 'Due date',
+        prompt: 'What is your baby’s due date?',
+        type: 'date',
+        required: false,
       },
       {
         id: 'lastName',
