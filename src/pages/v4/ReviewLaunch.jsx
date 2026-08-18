@@ -11,7 +11,7 @@ import {
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
 import { readSetup, writeSetup, getQuestionsFor, getSetupStepTotal } from '../../utils/v4Brief';
-import { SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
+import { SHARED_SETTINGS_QUESTIONS, INTRO_QUESTION } from '../../data/v4/briefQuestions';
 import { SegmentThemeBackdrop, getSegmentTone, getSegmentIcon, getSegmentPalette } from '../../data/v4/segmentTheme';
 import LaunchModal from '../../components/v4/LaunchModal';
 import { priceForVoters, VOTER_TIER_QUESTION } from '../../data/v4/voterTiers';
@@ -80,6 +80,23 @@ export default function ReviewLaunch() {
   const setup = readSetup();
   void editTick; // keep eslint quiet — used as the re-read trigger
 
+  // ── Intro to participants ─────────────────────────────────────────
+  // Written here, on review, rather than in the chat: a cover letter is
+  // written after you know what's in the package. Saved to brief.intro on
+  // blur; required to launch (soft gate — the Launch click nudges and
+  // scrolls here instead of a mute disabled button).
+  const [intro, setIntro] = useState(() => readSetup().brief?.intro || '');
+  const [introNudge, setIntroNudge] = useState(false);
+  const introRef = useRef(null);
+  const saveIntro = (value) => {
+    const cur = readSetup();
+    const brief = { ...(cur.brief || {}) };
+    const trimmed = value.trim();
+    if (trimmed) brief.intro = trimmed;
+    else delete brief.intro;
+    writeSetup({ brief });
+  };
+
   // Track scroll for the glass nav state (matches BriefChat behavior)
   const scrollRef = useRef(null);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -147,6 +164,16 @@ export default function ReviewLaunch() {
 
   const handleLaunch = () => {
     if (launching) return;
+    // The intro is the one thing participants read first — a contest
+    // shouldn't go out without it. Soft gate: nudge + scroll, not a
+    // disabled button (disabled-with-no-explanation is how dead ends
+    // happen).
+    if (!intro.trim()) {
+      setIntroNudge(true);
+      introRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      introRef.current?.querySelector('textarea')?.focus();
+      return;
+    }
     // Open the combined Launch modal (email + Stripe payment).
     // This always opens — even if userEmail was set by an earlier
     // save-progress, we still need to collect payment.
@@ -347,9 +374,35 @@ export default function ReviewLaunch() {
             )}
           </div>
 
+          {/* Intro to participants — the creator's own words, shown first
+              on the invitation and both participant pages. Inline textarea
+              (not a modal row): writing a paragraph wants a real field. */}
+          <section className="v4-review-section" ref={introRef}>
+            <header className="v4-review-section-head">
+              <h2>{INTRO_QUESTION.prompt}</h2>
+              <span className="v4-review-section-hint">Participants see this first</span>
+            </header>
+            <textarea
+              className="v4-input v4-textarea"
+              style={{ width: '100%', boxSizing: 'border-box' }}
+              rows={INTRO_QUESTION.rows}
+              maxLength={600}
+              value={intro}
+              placeholder={INTRO_QUESTION.placeholder}
+              onChange={(e) => { setIntro(e.target.value); if (e.target.value.trim()) setIntroNudge(false); }}
+              onBlur={(e) => saveIntro(e.target.value)}
+              aria-label={INTRO_QUESTION.label}
+            />
+            <span className="v4-settings-field-hint" style={introNudge ? { color: '#a8321f' } : undefined} role={introNudge ? 'alert' : undefined}>
+              {introNudge
+                ? 'Write a quick hello before launching — it’s the first thing your participants read.'
+                : 'A couple of sentences in your own voice: what you’re naming, and what would make a great name.'}
+            </span>
+          </section>
+
           {/* The brief — each row is now a button that opens the
               EditQuestionModal in place. The old "Edit" section link
-              that bounced back to the brief chat is gone. */}
+              that bounced back to the full chat is gone. */}
           {briefQuestions.length > 0 && (
             <section className="v4-review-section">
               <header className="v4-review-section-head">

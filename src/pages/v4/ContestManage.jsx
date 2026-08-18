@@ -31,7 +31,7 @@ import { getMockContestById } from '../../data/v4/mockContests';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../../lib/AuthContext';
 import {
-  BRIEF_QUESTIONS, SHARED_SETTINGS_QUESTIONS,
+  BRIEF_QUESTIONS, SHARED_SETTINGS_QUESTIONS, INTRO_QUESTION,
 } from '../../data/v4/briefQuestions';
 import { SegmentThemeBackdrop, getSegmentTone, getSegmentPalette, getSegmentIcon } from '../../data/v4/segmentTheme';
 import confetti from 'canvas-confetti';
@@ -339,8 +339,10 @@ export default function ContestManage() {
 
   // Brief + settings answers (for the recap collapser). Use getQuestionsFor
   // so the recap matches the effective brief (cuts/merges applied) and picks
-  // up customRequirements, which now closes the brief.
-  const briefQuestions = getQuestionsFor(subId, null);
+  // up customRequirements, which now closes the brief. The intro (written on
+  // the review page, not in the chat) leads the recap so it stays editable
+  // after launch through the same modal.
+  const briefQuestions = [INTRO_QUESTION, ...getQuestionsFor(subId, null)];
   const settingsAnswers = setup.settings || {};
   const briefAnswers = { ...(setup.brief || {}) };
   // customRequirements moved from settings to the brief (2026-08-17); older

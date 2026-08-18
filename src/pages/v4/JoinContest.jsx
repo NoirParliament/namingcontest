@@ -85,7 +85,9 @@ export default function JoinContest() {
           group: r.tier,
           status: r.status,
           settings: r.settings || {},
-          brief: { projectSummary: r.project_summary },
+          // r.intro arrives once migration 0024 is applied; until then it's
+          // undefined and the summary fallback keeps working as before.
+          brief: { projectSummary: r.project_summary, intro: r.intro },
           Icon: getSegmentIcon(r.sub_segment_id),
           // Real inviter + real phase deadlines so the header, countdown and
           // footer flow reflect the contest's true stage.
@@ -338,7 +340,10 @@ export default function JoinContest() {
   // dedicated `projectSummary` brief field — the first question every
   // segment asks the creator, specifically written so the answer can
   // land on this invitation page without further editing.
-  const briefSummary = contest.brief?.projectSummary || null;
+  // The creator's own intro leads when they wrote one (it's written for
+  // exactly this page); projectSummary stays as the fallback for contests
+  // launched before the intro existed.
+  const briefSummary = contest.brief?.intro || contest.brief?.projectSummary || null;
   const prize = contest.settings?.submitterPrize?.enabled
     ? contest.settings?.submitterPrize
     : null;

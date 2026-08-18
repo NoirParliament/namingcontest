@@ -1294,6 +1294,24 @@ export const SHARED_SETTINGS_QUESTIONS = [
 // setup.brief.customRequirements; older contests keep it under settings and
 // the readers fall back for display.
 // ────────────────────────────────────────────────────────────────
+// ────────────────────────────────────────────────────────────────
+// 2a. INTRO_QUESTION — the creator's personal note to participants
+// (client request 2026-08-18: "Write a short intro paragraph to your
+// participants"). NOT part of any chat flow: it's written on the REVIEW
+// page, after the creator has seen their whole brief — a cover letter is
+// written last. Stored at brief.intro; shown at the top of the join page
+// and both participant brief cards. Required to launch.
+// ────────────────────────────────────────────────────────────────
+export const INTRO_QUESTION = {
+  id: 'intro',
+  label: 'Intro to participants',
+  prompt: 'Write a short intro to your participants.',
+  type: 'textarea',
+  rows: 4,
+  required: true,
+  placeholder: `e.g. Please help us name our new band! We're an all-girl punk group with a shared obsession with cats, and we're after something catchy and unusual. The guidelines are below, but use your imagination. Can't wait to see your ideas!`,
+};
+
 export const BRIEF_CLOSING_QUESTIONS = [
   {
     id: 'customRequirements',

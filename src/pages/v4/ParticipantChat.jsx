@@ -75,7 +75,11 @@ function buildBriefRows(contest) {
   }
 
   const rows = briefQs
-    .filter((q) => q.id !== 'projectSummary')
+    // The header quote shows the creator's intro when they wrote one, and
+    // falls back to projectSummary when they didn't. Whichever is quoted
+    // stays out of the rows; when the intro is the quote, the background
+    // summary belongs back IN the rows.
+    .filter((q) => (briefAnswers.intro ? true : q.id !== 'projectSummary'))
     .filter((q) => {
       const v = briefAnswers[q.id];
       if (v === undefined || v === null || v === '') return false;
@@ -1009,7 +1013,7 @@ export default function ParticipantChat() {
 
 // ── Brief card (full creator answers as label/value rows) ──────────
 function ParticipantBriefCard({ contest, tone, briefRows, settingsRows }) {
-  const projectSummary = contest.brief?.projectSummary;
+  const projectSummary = contest.brief?.intro || contest.brief?.projectSummary;
   return (
     <section className="v4-pchat-brief">
       <header className="v4-pchat-brief-head">

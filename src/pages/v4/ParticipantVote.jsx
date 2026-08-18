@@ -78,7 +78,9 @@ function buildBriefRows(contest) {
   }
 
   const rows = briefQs
-    .filter((q) => q.id !== 'projectSummary')
+    // Header quote = intro when present (projectSummary as fallback); the
+    // quoted field stays out of the rows, the other one stays in.
+    .filter((q) => (briefAnswers.intro ? true : q.id !== 'projectSummary'))
     .filter((q) => {
       const v = briefAnswers[q.id];
       if (v === undefined || v === null || v === '') return false;
@@ -681,7 +683,7 @@ export default function ParticipantVote() {
 // ── Brief card — same exact classes as ParticipantChat's brief
 //    card so the layout reads identically across the two pages.
 function ParticipantBriefCard({ contest, tone, briefRows, settingsRows }) {
-  const projectSummary = contest.brief?.projectSummary;
+  const projectSummary = contest.brief?.intro || contest.brief?.projectSummary;
   return (
     <section className="v4-pchat-brief">
       <header className="v4-pchat-brief-head">
