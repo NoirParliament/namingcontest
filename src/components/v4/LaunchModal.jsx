@@ -235,7 +235,6 @@ function LaunchModalInner({ onClose, onCreateIntent, onPaid, contextLabel, tier,
             <p className="v4-auth-blurb">
               One charge of <strong>${price}</strong> for up to <strong>{voterTier}</strong> participants.
               We’ll email you a magic link to manage results.
-              Your contest can’t be edited after launch.
             </p>
 
             <form onSubmit={handleSubmit} className="v4-launch-form">
@@ -307,6 +306,9 @@ function LaunchModalInner({ onClose, onCreateIntent, onPaid, contextLabel, tier,
               <p className="v4-launch-secure">
                 <LockKey weight="duotone" size={12} />
                 <span>Secured by Stripe · No subscription · Charged once</span>
+              </p>
+              <p className="v4-launch-secure" style={{ marginTop: 2 }}>
+                <span>Your contest can’t be edited after launch.</span>
               </p>
             </form>
           </>

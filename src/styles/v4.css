@@ -10899,6 +10899,11 @@ select.v4-pvote-sort-select:hover {
   border: 1.5px dashed rgba(3, 3, 2, 0.24);
 }
 
-/* Review screen: the line-art competes with the congrats lead-in and the
-   review reading flow — fade it further than the dashboard's 0.45. */
-.v4-review-screen .v4-dash-image { opacity: 0.22; }
+/* Review screen: keep the line-art at full strength at the bottom, but
+   fade its UPPER region — the part page content (settings card, launch
+   button, footer) actually sits over — so text reads cleanly without
+   dimming the whole illustration. */
+.v4-review-screen .v4-dash-image {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.35) 40%, #000 72%);
+  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.35) 40%, #000 72%);
+}
