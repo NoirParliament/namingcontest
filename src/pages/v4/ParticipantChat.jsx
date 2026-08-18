@@ -244,7 +244,8 @@ export default function ParticipantChat() {
   // would offer slots the insert trigger then refuses, so the participant
   // meets a raw database error on a name they were invited to type.
   // Anything missing or malformed falls back to 3.
-  const MAX_SUBMISSIONS = 5;
+  // Ceiling matches the DB trigger (migration 0025) — was 5.
+  const MAX_SUBMISSIONS = 10;
   const rawLimit = contest?.settings?.submissionLimit;
   const submissionLimit = Math.min(
     Number.isFinite(rawLimit) && rawLimit > 0

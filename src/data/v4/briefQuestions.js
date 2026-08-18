@@ -1237,15 +1237,14 @@ export const SHARED_SETTINGS_QUESTIONS = [
   {
     id: 'submissionLimit',
     type: 'numberChips',
-    // Capped at 5, and no 'Unlimited'. One person submitting dozens drowns
-    // everyone else and skews the vote — the opposite of what a contest is
-    // for. The database enforces the same ceiling (migration 0016), so this
-    // list is the polite version of a rule that holds either way.
-    options: [1, 2, 3, 5],
+    // 2026-08-18 client decision: 1 / 2 / 3 / 5 / 10. The database enforces
+    // the same 10 ceiling (migration 0025), so this list is the polite
+    // version of a rule that holds either way.
+    options: [1, 2, 3, 5, 10],
     defaultValue: 3,
     label: 'Submissions per person',
     prompt: 'How many names can each person submit?',
-    hint: `Three to five is the room most people need — enough for their best ideas, not so many the list drowns. Fewer for small teams, more for big crowds.`,
+    hint: `3 is the default and works for most groups. Pick 1 or 2 when you want people to commit to their single best ideas, or 5 to 10 when the group is small and you need volume.`,
   },
   // Custom branding moved out of the brief — handled at the winner
   // stage instead, where it directly customizes the share card.
