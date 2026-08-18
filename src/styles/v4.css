@@ -10892,8 +10892,9 @@ select.v4-pvote-sort-select:hover {
    to a quiet paper tone (vs the white participant-facing cards) and
    wears a small lock in its heading. */
 .v4-review-section--private {
-  /* Translucent ink wash, not a fixed hue: darkens whatever segment tint
-     sits behind it, so the "recessed" read works on every category. */
-  background: rgba(3, 3, 2, 0.04);
-  border-color: rgba(3, 3, 2, 0.06);
+  /* Same ghost language as skipped answers (.v4-bubble-skipped): keep the
+     background, dash the outline. Reads as "aside from the brief" in the
+     app's own vocabulary instead of a new tint. */
+  background: transparent;
+  border: 1.5px dashed rgba(3, 3, 2, 0.24);
 }
