@@ -1212,7 +1212,7 @@ export const SHARED_SETTINGS_QUESTIONS = [
     id: 'anonymity',
     type: 'radioCards',
     label: 'Credit',
-    prompt: 'How should names be credited?',
+    prompt: 'How should people’s names appear with their submissions?',
     defaultValue: 'Let participants choose',
     options: [
       {
@@ -1232,7 +1232,7 @@ export const SHARED_SETTINGS_QUESTIONS = [
         sublabel: 'No names are credited to anyone',
       },
     ],
-    hint: `Letting each person choose works like donations — some want credit for a clever name, others would rather stay private. Or set one rule for everyone.`,
+    hint: `Participants can choose to be credited or stay anonymous, or you can set one approach for everyone. Some people like getting credit for a clever name; others would rather keep it private.`,
   },
   {
     id: 'submissionLimit',
