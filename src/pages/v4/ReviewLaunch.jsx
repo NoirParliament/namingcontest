@@ -464,7 +464,7 @@ export default function ReviewLaunch() {
             <section className="v4-review-section">
               <header className="v4-review-section-head">
                 <h2>Settings</h2>
-                <span className="v4-review-section-hint">Click any answer to edit</span>
+                <span className="v4-review-section-hint">Only you see these · click to edit</span>
               </header>
               <ul className="v4-review-list v4-review-list-editable">
                 {filledSettings.map((q) => (
