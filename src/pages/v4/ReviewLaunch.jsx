@@ -376,6 +376,14 @@ export default function ReviewLaunch() {
                 <PencilSimple size={12} weight="bold" className="v4-review-package-icon" />
               </button>
             )}
+            {/* Client-requested lead-in (2026-08-18): mark the moment — the
+                brief is done, this page is the read-through before launch. */}
+            <p className="v4-review-congrats">
+              <strong>Congratulations! You’ve completed your contest brief.</strong>
+              Below is the brief your participants will see when they submit and
+              vote on names. Take a moment to review it and make any changes
+              you’d like before launching your contest.
+            </p>
           </div>
 
           {/* Intro to participants — the creator's own words, shown first
