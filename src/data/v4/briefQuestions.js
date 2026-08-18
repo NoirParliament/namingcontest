@@ -136,64 +136,64 @@ export const BRIEF_QUESTIONS = {
   },
 
   // ── b2 · Product / service ──
-  // 2026-08-18: rebuilt on the Company (b1) brief per client — Product shares
-  // Company's questions and wording, plus product-specific context and a
-  // product-vs-company guide. (Old bespoke set — prodDesc/architecture/
-  // primaryUser/differentiator/competitors — folded into these.)
+  // 2026-08-18: rebuilt to Maria's product question set (COPY NOTES). Her seven
+  // product questions appear distinctly — the three brand-relationship Yes/Nos
+  // combined into one — followed by the shared naming-preference questions
+  // (Company wording). Two guides: product-vs-company + name styles.
   b2: {
     label: 'Product / service',
     suggestedDeadlineDays: 10,
     questions: [
       {
-        id: 'namingTarget',
-        label: 'What are you naming?',
-        prompt: 'What exactly is the product?',
-        type: 'textarea',
-        rows: 2,
-        required: false,
-        placeholder: 'e.g. A screen-time app that blocks distracting apps on a schedule',
-        hint: `A physical product, an app, a service, or a feature — tell us what it is.`,
-        guideId: 'b2-vs-company',
-      },
-      {
         id: 'projectSummary',
         label: 'About the product',
-        prompt: 'What does the product do, who is it for, and what sets it apart?',
+        prompt: 'What exactly is the product, and what does it do?',
         type: 'textarea',
         rows: 4,
         required: true,
-        placeholder: 'e.g. An app that blocks distracting apps on a schedule you set. For people who want focus without deleting everything. Gentler than the hardcore blockers.',
-        hint: `Share whatever context will help participants understand the product, such as who uses it, what it does, and how it differs from the alternatives. Include any feature or benefit the name should convey.`,
+        placeholder: 'e.g. An app that blocks distracting apps on a schedule you set. For people who want focus without deleting everything.',
+        hint: `Tell us what it is, what it does, and who it’s for. The clearer the picture, the better participants can name it.`,
+        guideId: 'b2-vs-company',
       },
       {
-        id: 'productContext',
-        label: 'Part of a larger brand?',
-        prompt: 'Is this part of a larger brand or product family?',
-        type: 'textarea',
-        rows: 2,
-        required: false,
-        placeholder: 'e.g. It sits under Acme, alongside Acme Focus and Acme Timer.',
-        hint: `Tell us the parent company or brand, any existing product names it should sit alongside, and whether the new name will be paired with the company name (like Google Maps) or stand on its own (like Tide).`,
-      },
-      {
-        id: 'nameCommunicate',
-        label: 'What should the name communicate?',
-        prompt: 'What should the name communicate? Are there ideas or themes you’d like participants to explore?',
+        id: 'brandRelationship',
+        label: 'Relationship to your brand',
+        prompt: 'How does the product name relate to your company or brand?',
         type: 'textarea',
         rows: 3,
         required: false,
-        placeholder: 'e.g. Explore calm, focus, and control. Maybe look at ideas around quiet, boundaries, or deep work.',
-        hint: `For example: speed, growth, simplicity, precision, trust, discovery, craftsmanship, or connection. You can also suggest creative territories such as nature, navigation, transformation, mythology, history, movement, or distinctive animals. Metaphors can open up even more possibilities: a product that simplifies complexity might explore ideas like bridges, shortcuts, or light.`,
+        placeholder: 'e.g. It sits under Acme, alongside Focus and Timer, and should read as part of that family.',
+        hint: `Is it part of a larger brand or product family? Will there be other products in this line? Should the name be paired with the company name (like Google Maps) or stand on its own (like Tide)?`,
       },
       {
-        id: 'brandPersonality',
-        label: 'Personality',
-        prompt: 'What personality should the product name have?',
+        id: 'namingConventions',
+        label: 'Existing naming conventions?',
+        prompt: 'Are there existing naming conventions this product needs to follow?',
         type: 'textarea',
         rows: 2,
         required: false,
-        placeholder: 'e.g. Calm and confident, more friend than drill sergeant',
-        hint: `Should it feel bold or understated? Playful or serious? Modern or timeless? Warm or authoritative? Describe the qualities you want people to sense when they encounter the name.`,
+        placeholder: 'e.g. Our products are all one-syllable verbs',
+        hint: `Any patterns your other names follow, or rules the new name has to fit — length, structure, or a shared theme.`,
+      },
+      {
+        id: 'featuresBenefits',
+        label: 'Features or benefits to convey?',
+        prompt: 'Are there features or benefits this name should convey?',
+        type: 'textarea',
+        rows: 2,
+        required: false,
+        placeholder: 'e.g. Focus and control, without feeling strict',
+        hint: `Product names can lean into a specific feature or benefit. Is there something the name should hint at, like speed, simplicity, or a feeling the product creates?`,
+      },
+      {
+        id: 'nameUsage',
+        label: 'How will the name be used?',
+        prompt: 'How will the product name appear and be used?',
+        type: 'textarea',
+        rows: 2,
+        required: false,
+        placeholder: 'e.g. On the app store, in the app icon, and in a URL',
+        hint: `Where the name shows up shapes what works. An app-store listing, a URL, a label on a shelf, and a spoken name each have different needs.`,
       },
       {
         id: 'nameStyles',
@@ -201,7 +201,8 @@ export const BRIEF_QUESTIONS = {
         prompt: 'What kinds of name styles do you like? Pick any that apply.',
         type: 'multiChips',
         options: ['Real words', 'Coined / made-up words', 'Combined words'],
-        hint: `Real words (like Nest or Amazon), coined words (like Pixar or Verizon), or combined words (like YouTube or MasterCard). Pick any that appeal.`,
+        hint: `Real words (like Nest or Amazon), coined words (like Pixar or Verizon), or combined words (like YouTube or MasterCard). Pick any that appeal — the guide breaks each one down.`,
+        guideId: 'b2-styles',
       },
       {
         id: 'descriptiveEvocative',
@@ -1441,7 +1442,7 @@ export const ARTICLES = {
   b2: [
     {
       id: 'b2-vs-company',
-      title: 'Naming a Product Is Not Naming a Company',
+      title: 'Product Names Play by Different Rules',
       readTime: '2 min',
       icon: 'Compass',
       sections: [
@@ -1461,6 +1462,38 @@ export const ARTICLES = {
       callout: {
         type: 'insight',
         text: `A company name is a promise about who you are. A product name is a promise about what this one thing does. Brief participants for the narrower promise and the names get sharper.`,
+      },
+    },
+    {
+      id: 'b2-styles',
+      title: 'Real, Coined or Compound?',
+      readTime: '4 min',
+      icon: 'TextAa',
+      sections: [
+        {
+          heading: 'Three ways to build a name',
+          body: `Great names can be built in different ways. Some borrow a word that already has meaning. Some create a new word from existing sounds, roots, or ideas. Others combine familiar words to create something new. None is inherently better. Each offers a different balance of familiarity, distinctiveness, meaning, and flexibility.`,
+        },
+        {
+          heading: 'Real words: meaning you already know',
+          body: `Apple. Amazon. Nest. Denim. Real words come with associations built in, which can make them elegant, memorable, and emotionally resonant from the start. The challenge is distinctiveness: familiar words can be harder to search for and protect as trademarks. But an unexpected connection can be powerful. Apple has nothing to do with computers; Denim has nothing to do with freight finance. That distance can make a familiar word feel fresh in an unexpected context.`,
+        },
+        {
+          heading: 'Coined names: create something new',
+          body: `Zappos. Verizon. Versant. Google. Coined names are newly created, but they don’t have to be completely invented. They can combine or modify existing words, roots, sounds, or ideas to create something distinctive. Versant draws on “versatile” and “conversant”; Verizon combines ideas of verity and horizon. Google began with “googol,” then took on its own identity through a playful spelling. The best coined names can feel new while still giving people something to understand, remember, or discover.`,
+        },
+        {
+          heading: 'Compound names: put ideas together',
+          body: `YouTube. Keysight. Facebook. Upwork. Compound names bring two or more recognizable words or word elements together to create a new idea. YouTube and Facebook are straightforward combinations; Keysight pairs “key” with “sight” to suggest important insight. Upwork is a more natural coining, combining “up” and “work” to suggest elevating or improving work. The combination can be literal, suggestive, or unexpected.`,
+        },
+        {
+          heading: 'Which approach feels right?',
+          body: `Think about how much meaning you want to inherit versus create. A real word brings established associations. A coined name lets you shape something new around an idea or linguistic connection. A compound uses familiar building blocks to create a fresh concept. You don’t need to choose one approach before seeing the ideas. If you’re open to all three, exploring them can reveal a direction you hadn’t considered.`,
+        },
+      ],
+      callout: {
+        type: 'insight',
+        text: `The best naming process doesn’t assume that one construction is always right. It explores different ways of creating meaning, then weighs the strongest candidates against what the name needs to accomplish.`,
       },
     },
     {
