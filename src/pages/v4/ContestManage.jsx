@@ -25,6 +25,7 @@ import BrandLink from '../../components/v4/BrandLink';
 import creatorProfile from '../../assets/creator-profile.png';
 import {
   readSetup, writeSetup, getSegmentLabel, getContestDescriptor, getQuestionsFor,
+  formatWindowDuration,
 } from '../../utils/v4Brief';
 import { buildLiveData, buildLiveDataFromReal } from '../../utils/v4LiveData';
 import { getMockContestById } from '../../data/v4/mockContests';
@@ -1498,16 +1499,18 @@ function BriefRecapCollapser({
   // Once editing is locked (a real contest with submissions in), rows are
   // plain read-only lines — no pencil, no click — so the creator can still
   // review the brief but can't change it under the participants.
+  const fmtRow = (q, value) =>
+    q.type === 'windowDays' ? formatWindowDuration(value) : formatAnswer(value);
   const Row = ({ q, value, onEdit }) => editable ? (
     <button type="button" className="v4-manage-recap-row" onClick={() => onEdit?.(q)}>
       <span className="v4-manage-recap-row-label">{q.label}</span>
-      <span className="v4-manage-recap-row-value">{formatAnswer(value)}</span>
+      <span className="v4-manage-recap-row-value">{fmtRow(q, value)}</span>
       <PencilSimple weight="regular" size={12} className="v4-manage-recap-row-edit" />
     </button>
   ) : (
     <div className="v4-manage-recap-row is-readonly">
       <span className="v4-manage-recap-row-label">{q.label}</span>
-      <span className="v4-manage-recap-row-value">{formatAnswer(value)}</span>
+      <span className="v4-manage-recap-row-value">{fmtRow(q, value)}</span>
     </div>
   );
 

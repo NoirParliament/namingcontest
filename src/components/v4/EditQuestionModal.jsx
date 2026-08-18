@@ -6,6 +6,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { X } from '@phosphor-icons/react';
 import QuestionInput from './QuestionInput';
+import { formatWindowDuration } from '../../utils/v4Brief';
 import '../../styles/landing-v3.css';
 
 // Re-seed each time the modal opens so the scattered shapes land in
@@ -118,7 +119,9 @@ export default function EditQuestionModal({
           <div className="v4-edit-modal-current">
             <span className="v4-edit-modal-current-label">Current:</span>
             <span className="v4-edit-modal-current-value">
-              {formatAnswerForDisplay(currentAnswer)}
+              {question.type === 'windowDays'
+                ? formatWindowDuration(currentAnswer)
+                : formatAnswerForDisplay(currentAnswer)}
             </span>
           </div>
         )}

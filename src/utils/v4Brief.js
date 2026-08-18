@@ -98,6 +98,20 @@ export function getSetupStepTotal(subId) {
   return 3 + brief + settings + 1 /* intro */ + 1 /* tier pick */ + 1 /* review */;
 }
 
+// Human label for a contest window duration. Windows are stored as DAY
+// counts; hour presets store fractions (0.125 = 3h, 0.25 = 6h, 0.5 = 12h),
+// which keeps the whole backend contract untouched — confirm-launch just
+// multiplies by a day in ms, and the phase cron flips on timestamps.
+export function formatWindowDuration(days) {
+  const n = Number(days);
+  if (!Number.isFinite(n) || n <= 0) return String(days ?? '');
+  if (n < 1) {
+    const h = Math.round(n * 24);
+    return h === 1 ? '1 hour' : `${h} hours`;
+  }
+  return n === 1 ? '1 day' : `${n} days`;
+}
+
 // Resolve the article (if any) referenced by a question's guideId.
 export function getArticleFor(subId, guideId) {
   if (!guideId) return null;

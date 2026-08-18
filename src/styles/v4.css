@@ -10943,3 +10943,73 @@ select.v4-pvote-sort-select:hover {
   line-height: 1.55;
   color: var(--v4-muted);
 }
+
+/* ── Window picker (submission / voting) ─────────────────────────────
+   Day chips + hour presets + the whole-contest schedule. The counterpart
+   window rides in the same timeline: locked (already chosen) or ghost
+   ("next question"), so both decisions read as one roadmap. */
+.v4-window-hours {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.v4-window-hours-label {
+  font-family: var(--font-text);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--v4-muted);
+  margin-right: 2px;
+}
+.v4-window-timeline {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: var(--v4-bg);
+  border: 1px solid var(--v4-faint);
+  border-radius: 12px;
+}
+.v4-window-note {
+  display: block;
+  font-family: var(--font-text);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin-bottom: 8px;
+}
+.v4-window-track {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-family: var(--font-text);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+.v4-window-node {
+  font-weight: 700;
+  color: var(--v4-fg);
+  white-space: nowrap;
+}
+.v4-window-seg {
+  position: relative;
+  padding: 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.v4-window-seg.is-active {
+  background: var(--v4-fg);
+  color: #fff;
+  font-weight: 600;
+}
+.v4-window-seg.is-locked {
+  background: rgba(3, 3, 2, 0.08);
+  color: var(--v4-fg);
+  font-weight: 600;
+}
+.v4-window-seg.is-ghost {
+  border: 1.5px dashed rgba(3, 3, 2, 0.24);
+  color: var(--v4-muted);
+}

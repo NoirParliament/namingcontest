@@ -10,7 +10,7 @@ import {
 } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
-import { readSetup, writeSetup, getQuestionsFor, getSetupStepTotal } from '../../utils/v4Brief';
+import { readSetup, writeSetup, getQuestionsFor, getSetupStepTotal, formatWindowDuration } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS, INTRO_QUESTION, getIntroQuestionFor } from '../../data/v4/briefQuestions';
 import { SegmentThemeBackdrop, getSegmentTone, getSegmentIcon, getSegmentPalette } from '../../data/v4/segmentTheme';
 import LaunchModal from '../../components/v4/LaunchModal';
@@ -475,7 +475,11 @@ export default function ReviewLaunch() {
                       onClick={() => setEditingQuestion({ question: q, section: 'settings' })}
                     >
                       <span className="v4-review-row-label">{q.label}</span>
-                      <span className="v4-review-row-value">{formatAnswer(settingsAnswers[q.id])}</span>
+                      <span className="v4-review-row-value">
+                        {q.type === 'windowDays'
+                          ? formatWindowDuration(settingsAnswers[q.id])
+                          : formatAnswer(settingsAnswers[q.id])}
+                      </span>
                       <PencilSimple size={12} weight="bold" className="v4-review-row-edit-icon" />
                     </button>
                   </li>

@@ -1260,26 +1260,33 @@ export const SHARED_SETTINGS_QUESTIONS = [
     descPlaceholder: 'Prize description (optional)',
     hint: `A small reward—a gift card, a shout-out, or something else—can get more people submitting. Totally optional. If you do offer a prize, you're responsible for providing it to the winner.`,
   },
+  // 2026-08-18 client revision: day options 1/2/5/7/10 with 5 recommended
+  // (submissions) and hour presets for same-day contests ("what if I just
+  // want a few hours?"). Hours store as day fractions (0.125/0.25/0.5), so
+  // launch math and the phase cron need no changes. Rendered by
+  // WindowDaysInput: chips + a live schedule preview that shows BOTH
+  // windows in one timeline.
   {
     id: 'submissionDays',
-    type: 'numberChips',
-    // BETA-ONLY: leading `1` lets testers run a full contest in 2 days total.
-    // REMOVE before public launch (drop the 1). See GOING-LIVE.md checklist.
-    options: [1, 3, 5, 7, 10, 14],
-    defaultValue: 7,
+    type: 'windowDays',
+    window: 'submission',
+    options: [1, 2, 5, 7, 10],
+    hourOptions: [3, 6, 12],
+    defaultValue: 5,
     label: 'Submission window',
     prompt: 'How long should submissions stay open?',
-    hint: `Five to seven days keeps it alive — long enough nobody misses it, short enough to keep momentum.`,
+    hint: `5 days works for most contests: enough time for everyone to get their names in without losing momentum. Go shorter for a quick group, or pick hours for a same-day contest.`,
   },
   {
     id: 'votingDays',
-    type: 'numberChips',
-    // BETA-ONLY: leading `1` — remove before launch (see GOING-LIVE.md).
-    options: [1, 2, 3, 5, 7],
+    type: 'windowDays',
+    window: 'voting',
+    options: [1, 2, 3, 5],
+    hourOptions: [3, 6, 12],
     defaultValue: 3,
     label: 'Voting window',
     prompt: 'And after submissions close, how long should voting stay open?',
-    hint: `Two or three days is plenty — enough time to vote, not so long that people forget to.`,
+    hint: `3 days is plenty for most contests: enough time to vote, not so long that people forget to. The schedule below shows how your whole contest plays out.`,
   },
 ];
 

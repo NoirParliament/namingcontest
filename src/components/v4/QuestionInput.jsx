@@ -21,6 +21,7 @@ import {
   DeferLaunchInput,
 } from './CompoundInputs';
 import { VOTER_TIERS } from '../../data/v4/voterTiers';
+import { readSetup, formatWindowDuration } from '../../utils/v4Brief';
 
 const SEGMENT_ICONS = {
   Baby, PawPrint, House, PencilSimple,
@@ -54,6 +55,7 @@ export default function QuestionInput({ question, onSubmit, autoFocus = true }) 
   if (type === 'multiChips')     return <MultiChipsInput question={question} onSubmit={onSubmit} />;
   if (type === 'radioCards')     return <RadioCardsInput question={question} onSubmit={onSubmit} />;
   if (type === 'numberChips')    return <NumberChipsInput question={question} onSubmit={onSubmit} />;
+  if (type === 'windowDays')     return <WindowDaysInput question={question} onSubmit={onSubmit} />;
   if (type === 'voterTier')      return <VoterTierInput question={question} onSubmit={onSubmit} />;
   if (type === 'toggle')         return <ToggleInput question={question} onSubmit={onSubmit} />;
   if (type === 'date')           return <DateInput question={question} onSubmit={onSubmit} />;
@@ -378,6 +380,114 @@ function NumberChipsInput({ question, onSubmit }) {
           </button>
         );
       })}
+    </div>
+  );
+}
+
+// ── windowDays (submission / voting window + live schedule) ─────────
+// Day chips plus hour presets (stored as day fractions — 0.25 = 6h — so
+// launch math and the phase cron are untouched), and a roadmap of the
+// WHOLE contest: while picking one window, the other is shown in the same
+// timeline (locked when already chosen, ghosted "next" when not yet), so
+// the two decisions always read as one schedule. Dates are computed
+// as-if-launched-today, and say so.
+function WindowDaysInput({ question, onSubmit }) {
+  const isSubmission = question.window === 'submission';
+  const [selected, setSelected] = useState(question.defaultValue ?? null);
+
+  // Counterpart window, read from the setup blob: when picking VOTING the
+  // creator has just answered submissions; when picking SUBMISSIONS the
+  // voting leg previews its default until it's actually asked.
+  const setup = readSetup();
+  const otherRaw = Number(isSubmission ? setup?.settings?.votingDays : setup?.settings?.submissionDays);
+  const otherChosen = Number.isFinite(otherRaw) && otherRaw > 0;
+  const other = otherChosen ? otherRaw : (isSubmission ? 3 : 5);
+
+  const sub = isSubmission ? selected : other;
+  const vote = isSubmission ? other : selected;
+
+  const DAY = 86400000;
+  const now = Date.now();
+  const subEnd = sub ? now + sub * DAY : null;
+  const voteEnd = sub && vote ? now + (sub + vote) * DAY : null;
+  const fmtWhen = (t, hourLevel) =>
+    hourLevel
+      ? new Date(t).toLocaleString(undefined, { weekday: 'short', hour: 'numeric', minute: '2-digit' })
+      : new Date(t).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+
+  const dayChip = (d) => (
+    <button
+      key={d}
+      type="button"
+      role="radio"
+      aria-checked={selected === d}
+      className={`v4-chip v4-chip-number ${selected === d ? 'is-checked' : ''} ${d === question.defaultValue ? 'is-default' : ''}`}
+      onClick={() => setSelected(d)}
+    >
+      {formatWindowDuration(d)}
+      {d === question.defaultValue && <span className="v4-chip-tag">Recommended</span>}
+    </button>
+  );
+
+  return (
+    <div className="v4-window-block">
+      <div className="v4-chips-row v4-number-chips" role="radiogroup" aria-label={question.label}>
+        {(question.options || []).map(dayChip)}
+      </div>
+
+      {(question.hourOptions || []).length > 0 && (
+        <div className="v4-window-hours">
+          <span className="v4-window-hours-label">Same-day contest?</span>
+          {question.hourOptions.map((h) => {
+            const v = h / 24;
+            return (
+              <button
+                key={h}
+                type="button"
+                role="radio"
+                aria-checked={selected === v}
+                className={`v4-chip ${selected === v ? 'is-checked' : ''}`}
+                onClick={() => setSelected(v)}
+              >
+                {h} hours
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      <div className="v4-window-timeline">
+        <span className="v4-window-note">If you launch today:</span>
+        <div className="v4-window-track">
+          <span className="v4-window-node">Launch</span>
+          <span className={`v4-window-seg ${isSubmission ? 'is-active' : 'is-locked'}`}>
+            Submissions · {sub ? formatWindowDuration(sub) : '…'}
+          </span>
+          <span className="v4-window-node">
+            Names in{subEnd ? ` · ${fmtWhen(subEnd, sub < 1)}` : ''}
+          </span>
+          <span className={`v4-window-seg ${!isSubmission ? 'is-active' : otherChosen ? 'is-locked' : 'is-ghost'}`}>
+            Voting · {vote ? formatWindowDuration(vote) : '…'}{isSubmission && !otherChosen ? ' (next question)' : ''}
+          </span>
+          <span className="v4-window-node">
+            Winner{voteEnd ? ` · ${fmtWhen(voteEnd, sub + vote < 1)}` : ''}
+          </span>
+        </div>
+      </div>
+
+      <div className="v4-multichips-footer">
+        <span className="v4-multichips-count">
+          {selected ? formatWindowDuration(selected) : 'Pick a window'}
+        </span>
+        <button
+          type="submit"
+          className="v4-multichips-submit"
+          disabled={!selected}
+          onClick={() => selected && onSubmit(selected)}
+        >
+          Continue <ArrowRight weight="bold" size={14} />
+        </button>
+      </div>
     </div>
   );
 }
