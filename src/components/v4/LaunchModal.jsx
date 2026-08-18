@@ -291,6 +291,13 @@ function LaunchModalInner({ onClose, onCreateIntent, onPaid, contextLabel, tier,
                 )}
               </div>
 
+              {/* Lock disclosure — a tinted callout so it's actually seen
+                  before paying, not buried in the grey fine print. */}
+              <p className="v4-launch-locknote">
+                <LockKey weight="duotone" size={14} />
+                <span>You won’t be able to edit the contest after launch.</span>
+              </p>
+
               <button
                 type="submit"
                 className={`btn btn-primary btn-lg v4-launch-btn-modal ${submitting ? 'is-loading' : ''}`}
@@ -306,9 +313,6 @@ function LaunchModalInner({ onClose, onCreateIntent, onPaid, contextLabel, tier,
               <p className="v4-launch-secure">
                 <LockKey weight="duotone" size={12} />
                 <span>Secured by Stripe · No subscription · Charged once</span>
-              </p>
-              <p className="v4-launch-secure" style={{ marginTop: 2 }}>
-                <span>Your contest can’t be edited after launch.</span>
               </p>
             </form>
           </>

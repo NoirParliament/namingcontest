@@ -10899,11 +10899,36 @@ select.v4-pvote-sort-select:hover {
   border: 1.5px dashed rgba(3, 3, 2, 0.24);
 }
 
-/* Review screen: keep the line-art at full strength at the bottom, but
-   fade its UPPER region — the part page content (settings card, launch
-   button, footer) actually sits over — so text reads cleanly without
-   dimming the whole illustration. */
+/* Review screen: identical fade recipe to the chat/join screens (full art
+   at the side margins, faded behind the centered content column), plus a
+   small extra fade on the art's top edge where it meets the info above. */
 .v4-review-screen .v4-dash-image {
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.35) 40%, #000 72%);
-  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.35) 40%, #000 72%);
+  opacity: 0.42;
+  -webkit-mask-image:
+    linear-gradient(to right, #000 0%, #000 13%, rgba(0, 0, 0, 0.12) 50%, #000 87%, #000 100%),
+    linear-gradient(to bottom, transparent 0%, #000 32%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, #000 0%, #000 13%, rgba(0, 0, 0, 0.12) 50%, #000 87%, #000 100%),
+    linear-gradient(to bottom, transparent 0%, #000 32%);
+  mask-composite: intersect;
+}
+
+/* ── Launch modal · lock disclosure ──────────────────────────────────
+   Butter-toned callout above the pay button: important but not
+   blocking — seen at the moment of commitment without adding friction. */
+.v4-launch-locknote {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #fceebc;
+  color: #8a6a14;
+  border-radius: 10px;
+  padding: 9px 12px;
+  margin: 0;
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
 }
