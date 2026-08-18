@@ -1305,12 +1305,36 @@ export const SHARED_SETTINGS_QUESTIONS = [
 export const INTRO_QUESTION = {
   id: 'intro',
   label: 'Intro to participants',
-  prompt: 'Write a short intro to your participants.',
+  prompt: 'Last thing — write a short intro for your participants. It opens your invitation, so it’s the first thing they read.',
   type: 'textarea',
   rows: 4,
   required: true,
+  hint: `A couple of sentences in your own voice: what you’re naming, what would make a great name, and a little enthusiasm. It sits above the brief on every page your participants see.`,
   placeholder: `e.g. Please help us name our new band! We're an all-girl punk group with a shared obsession with cats, and we're after something catchy and unusual. The guidelines are below, but use your imagination. Can't wait to see your ideas!`,
 };
+
+// Per-category intro placeholders — the example a baby-naming parent needs is
+// not the one a founder needs. Falls back to INTRO_QUESTION.placeholder for
+// unmapped ids (b3/b4, future categories).
+export const INTRO_PLACEHOLDERS = {
+  p1: `e.g. We're expecting a baby girl in March and would love your help finding her name! We like timeless names that aren't in this year's top 100. Can't wait to see your ideas!`,
+  p2: `e.g. Help us name our new golden retriever puppy! She's goofy, fearless, and sleeps in the strangest positions. We'd love a name that's as fun as she is.`,
+  p3: `e.g. We finally have the lake cabin of our dreams, and it needs a name! Something warm and a little witty that looks right on a sign by the door. Excited to see your ideas!`,
+  p4: `e.g. Our Saturday brunch crew has gone four years without a name, and it's time to fix that. Help us find something that captures the chaos. Best idea earns eternal glory!`,
+  t1: `e.g. Our Sunday soccer team needs a real name before the season starts! We're scrappy, loud, and more serious than we look. Give us something we can chant from the sideline!`,
+  t2: `e.g. Please help us name our new band! We're an all-girl punk group obsessed with cats, and we want something catchy and unusual. Use your imagination, and have fun with it!`,
+  t3: `e.g. We're launching a podcast where first-time founders tell the truth about year one, and it needs a name! Something sharp people will remember. Can't wait to hear your ideas!`,
+  t4: `e.g. Our Thursday-night chess club has officially outgrown "the chess club", and we want a proper name! Something welcoming with a bit of wit. Help us out!`,
+  t6: `e.g. We've been meeting for years and still don't have a name, and it's starting to get embarrassing. Help us find one that feels like us. Best suggestion wins bragging rights!`,
+  b1: `e.g. We're launching our new company and need a name that sticks! We roast small-batch coffee for cafés across the Midwest, and we'd love something warm and confident. Thanks for helping us name this thing!`,
+  b2: `e.g. Help us name our newest product! It's a hot sauce made with fermented local peppers, flavor first, and the name should be as bold as the sauce. Excited for your ideas!`,
+  b5: `e.g. We're naming our company's new innovation program and want your ideas! It runs two hackathons a year and deserves better than "the program". Have fun with this one!`,
+};
+
+export function getIntroQuestionFor(subId) {
+  const placeholder = INTRO_PLACEHOLDERS[subId];
+  return placeholder ? { ...INTRO_QUESTION, placeholder } : INTRO_QUESTION;
+}
 
 export const BRIEF_CLOSING_QUESTIONS = [
   {

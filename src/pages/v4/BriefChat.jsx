@@ -49,7 +49,7 @@ import {
   getSegmentLabel,
   getSetupStepTotal,
 } from '../../utils/v4Brief';
-import { SHARED_SETTINGS_QUESTIONS, INTRO_QUESTION } from '../../data/v4/briefQuestions';
+import { SHARED_SETTINGS_QUESTIONS, getIntroQuestionFor } from '../../data/v4/briefQuestions';
 import { VOTER_TIER_QUESTION } from '../../data/v4/voterTiers';
 import { SUB_SEGMENTS } from '../../data/v4/subSegments';
 import GuideExpandable from '../../components/v4/GuideExpandable';
@@ -238,7 +238,7 @@ export default function BriefChat() {
     // answered everything, so the "short hello to your participants" almost
     // writes itself. section 'brief' routes the answer to brief.intro — the
     // same field the review card edits and every participant page reads.
-    list.push(BRIEF_INTRO, ...brief, SECTION_BREAK, ...settings, { ...INTRO_QUESTION, section: 'brief' });
+    list.push(BRIEF_INTRO, ...brief, SECTION_BREAK, ...settings, { ...getIntroQuestionFor(subId), section: 'brief' });
     return list;
   }, [subId, initial]);
 

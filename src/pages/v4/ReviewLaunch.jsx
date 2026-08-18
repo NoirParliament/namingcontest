@@ -11,7 +11,7 @@ import {
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
 import { readSetup, writeSetup, getQuestionsFor, getSetupStepTotal } from '../../utils/v4Brief';
-import { SHARED_SETTINGS_QUESTIONS, INTRO_QUESTION } from '../../data/v4/briefQuestions';
+import { SHARED_SETTINGS_QUESTIONS, INTRO_QUESTION, getIntroQuestionFor } from '../../data/v4/briefQuestions';
 import { SegmentThemeBackdrop, getSegmentTone, getSegmentIcon, getSegmentPalette } from '../../data/v4/segmentTheme';
 import LaunchModal from '../../components/v4/LaunchModal';
 import { priceForVoters, VOTER_TIER_QUESTION } from '../../data/v4/voterTiers';
@@ -379,7 +379,7 @@ export default function ReviewLaunch() {
               (not a modal row): writing a paragraph wants a real field. */}
           <section className="v4-review-section" ref={introRef}>
             <header className="v4-review-section-head">
-              <h2>{INTRO_QUESTION.prompt}</h2>
+              <h2>Write a short intro paragraph to your participants describing your ideal name</h2>
               <span className="v4-review-section-hint">Participants see this first</span>
             </header>
             <textarea
@@ -388,16 +388,16 @@ export default function ReviewLaunch() {
               rows={INTRO_QUESTION.rows}
               maxLength={600}
               value={intro}
-              placeholder={INTRO_QUESTION.placeholder}
+              placeholder={getIntroQuestionFor(subId).placeholder}
               onChange={(e) => { setIntro(e.target.value); if (e.target.value.trim()) setIntroNudge(false); }}
               onBlur={(e) => saveIntro(e.target.value)}
               aria-label={INTRO_QUESTION.label}
             />
-            <span className="v4-settings-field-hint" style={introNudge ? { color: '#a8321f' } : undefined} role={introNudge ? 'alert' : undefined}>
-              {introNudge
-                ? 'Write a quick hello before launching — it’s the first thing your participants read.'
-                : 'A couple of sentences in your own voice: what you’re naming, and what would make a great name.'}
-            </span>
+            {introNudge && (
+              <span className="v4-settings-field-hint" style={{ color: '#a8321f' }} role="alert">
+                Write a quick hello before launching — it’s the first thing your participants read.
+              </span>
+            )}
           </section>
 
           {/* The brief — each row is now a button that opens the
