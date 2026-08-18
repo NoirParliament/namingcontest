@@ -105,6 +105,16 @@ export function AuthProvider({ children }) {
         email: email.trim(),
         options: { emailRedirectTo: redirectTo || window.location.origin },
       }),
+    // Starts an email change. Supabase emails a confirmation link and only
+    // moves the address once it's clicked — the session (and therefore where
+    // future magic links go) is untouched until then, so a typo can't lock
+    // anyone out. With "Secure email change" on (Supabase's default) it
+    // confirms from BOTH the old and new address; the UI says so.
+    changeEmail: (newEmail, redirectTo) =>
+      supabase.auth.updateUser(
+        { email: newEmail.trim() },
+        { emailRedirectTo: redirectTo || `${window.location.origin}/v4/settings` }
+      ),
     signOut: () => supabase.auth.signOut(),
   };
 

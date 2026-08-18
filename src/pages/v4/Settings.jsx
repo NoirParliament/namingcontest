@@ -8,7 +8,7 @@ import { Link, useNavigate, Navigate } from 'react-router-dom';
 import {
   X, EnvelopeSimple, User, CreditCard, Receipt, ArrowSquareOut,
   Heart, UsersThree, Briefcase, Camera, Info, Trash, Plus,
-  ArrowRight, ListBullets, Trophy, Clock,
+  ArrowRight, ListBullets, Trophy, Clock, CheckCircle, PaperPlaneTilt,
 } from '@phosphor-icons/react';
 import useCountdown, { pad2 } from '../../utils/useCountdown';
 import participantProfile from '../../assets/participant-profile.png';
@@ -103,7 +103,7 @@ export default function Settings() {
   // rows) so a real user never sees or clicks a fake contest. Real contests
   // arrive from the database in Phase 2. The non-authenticated demo path
   // (/v4/map) still shows the mocks.
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, changeEmail } = useAuth();
   const isRealUser = !!user;
   // Real contests this user created (most-recent first). `latest` drives the
   // page's segment color/background and the account-menu contest chip.
@@ -193,6 +193,25 @@ export default function Settings() {
   // True once the user edits the name — so a late-arriving profile fetch
   // can't clobber what they just typed (the bug that made saves "revert").
   const nameEditedRef = useRef(false);
+
+  // ── Change-email flow ───────────────────────────────────────────────
+  // The address stays exactly as it is until Supabase's confirmation link is
+  // clicked, so nothing here can strand an account: on submit we only ASK for
+  // the change. 'sent' is the waiting state, not a done state.
+  const [emailEditing, setEmailEditing] = useState(false);
+  const [newEmail, setNewEmail] = useState('');
+  const [emailStatus, setEmailStatus] = useState('idle'); // idle | sending | sent | error
+  const [emailError, setEmailError] = useState('');
+  const [emailPending, setEmailPending] = useState('');   // address awaiting confirmation
+
+  // Keep the localStorage mirror in step with the real session address, so the
+  // moment a confirmation lands (USER_UPDATED) the rest of the app stops
+  // showing the old one.
+  useEffect(() => {
+    if (user?.email && setup.userEmail && setup.userEmail !== user.email) {
+      writeSetup({ userEmail: user.email });
+    }
+  }, [user?.email]);
 
   // Load the saved display name from the user's profile row on mount.
   useEffect(() => {
@@ -444,6 +463,47 @@ export default function Settings() {
     nameEditedRef.current = false; // saved value is now the source of truth
     setSavedFlash(true);
     setTimeout(() => setSavedFlash(false), 2200);
+  };
+
+  // Ask Supabase to move the account to a new address. It emails a
+  // confirmation link (and, with Secure email change on, one to the current
+  // address too); the switch only happens once those are clicked, so a typo
+  // here costs nothing but a resend.
+  const handleEmailChange = async () => {
+    const next = newEmail.trim();
+    const current = (email || '').trim();
+    if (!next) return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(next)) {
+      setEmailStatus('error');
+      setEmailError('That doesn’t look like an email address.');
+      return;
+    }
+    if (next.toLowerCase() === current.toLowerCase()) {
+      setEmailStatus('error');
+      setEmailError('That’s already the address on this account.');
+      return;
+    }
+    setEmailStatus('sending');
+    setEmailError('');
+    const { error } = await changeEmail(next, `${window.location.origin}/v4/settings`);
+    if (error) {
+      setEmailStatus('error');
+      // Supabase's own wording is decent here (already registered, rate
+      // limited, etc.) — surface it rather than flattening every case.
+      setEmailError(error.message || 'Could not start the change. Please try again.');
+      return;
+    }
+    setEmailPending(next);
+    setEmailStatus('sent');
+    setEmailEditing(false);
+    setNewEmail('');
+  };
+
+  const cancelEmailChange = () => {
+    setEmailEditing(false);
+    setNewEmail('');
+    setEmailStatus('idle');
+    setEmailError('');
   };
 
   const handleStartNewContest = () => {
@@ -1093,32 +1153,108 @@ export default function Settings() {
                       />
                     </label>
 
-                    {/* Email is locked. It's the magic-link sign-in
-                        identity, so changing it would orphan the
-                        account. Shown read-only so the user knows what
-                        we have on file. In the future this could open
-                        a "change email" confirmation flow. */}
-                    <label className="v4-settings-field">
+                    {/* Email is the magic-link sign-in identity, so it only
+                        moves via Supabase's confirmation link — the address
+                        below stays live until that link is clicked. Not a
+                        <label>/<form>: this sits inside the profile form, and
+                        nesting either would hijack its submit. */}
+                    <div className="v4-settings-field">
                       <span className="v4-settings-field-label">Email</span>
-                      <div className="v4-settings-input-with-icon">
-                        <EnvelopeSimple weight="bold" size={14} className="v4-settings-input-icon" />
-                        <input
-                          type="email"
-                          className="v4-settings-input v4-settings-input-padded v4-settings-input-locked"
-                          value={email}
-                          readOnly
-                          disabled
-                          aria-readonly="true"
-                          tabIndex={-1}
-                          placeholder="you@example.com"
-                        />
-                      </div>
-                      <span className="v4-settings-field-hint">
-                        Your sign-in links land here, so this address can’t be
-                        changed. Need to switch it? Reach out via the contact
-                        page and we’ll move your account over.
-                      </span>
-                    </label>
+
+                      {!emailEditing && (
+                        <>
+                          <div className="v4-settings-input-with-icon">
+                            <EnvelopeSimple weight="bold" size={14} className="v4-settings-input-icon" />
+                            <input
+                              type="email"
+                              className="v4-settings-input v4-settings-input-padded v4-settings-input-locked"
+                              value={email}
+                              readOnly
+                              disabled
+                              aria-readonly="true"
+                              tabIndex={-1}
+                              placeholder="you@example.com"
+                            />
+                          </div>
+
+                          {emailStatus === 'sent' ? (
+                            <span className="v4-settings-field-hint" role="status">
+                              <CheckCircle weight="duotone" size={14} />{' '}
+                              Confirmation sent to <strong>{emailPending}</strong>. Open
+                              the link there to finish the switch. For security you may
+                              also get one at your current address, which needs
+                              confirming too. Until then, keep using this address to
+                              sign in.{' '}
+                              <button
+                                type="button"
+                                className="btn btn-link"
+                                onClick={() => { setEmailStatus('idle'); setEmailEditing(true); setNewEmail(emailPending); }}
+                              >
+                                Send again
+                              </button>
+                            </span>
+                          ) : (
+                            <span className="v4-settings-field-hint">
+                              Your sign-in links land here.{' '}
+                              <button
+                                type="button"
+                                className="btn btn-link"
+                                onClick={() => { setEmailEditing(true); setEmailStatus('idle'); setEmailError(''); }}
+                                disabled={!isRealUser}
+                              >
+                                Change email
+                              </button>
+                            </span>
+                          )}
+                        </>
+                      )}
+
+                      {emailEditing && (
+                        <>
+                          <div className="v4-settings-input-with-icon">
+                            <EnvelopeSimple weight="bold" size={14} className="v4-settings-input-icon" />
+                            <input
+                              type="email"
+                              className="v4-settings-input v4-settings-input-padded"
+                              value={newEmail}
+                              onChange={(e) => { setNewEmail(e.target.value); setEmailStatus('idle'); setEmailError(''); }}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') { e.preventDefault(); handleEmailChange(); }
+                                if (e.key === 'Escape') cancelEmailChange();
+                              }}
+                              placeholder="new@example.com"
+                              autoFocus
+                              autoComplete="email"
+                              aria-label="New email address"
+                            />
+                          </div>
+
+                          <div className="v4-settings-photo-actions" style={{ marginTop: 10 }}>
+                            <button
+                              type="button"
+                              className="btn btn-secondary btn-sm"
+                              onClick={handleEmailChange}
+                              disabled={emailStatus === 'sending' || !newEmail.trim()}
+                            >
+                              <PaperPlaneTilt weight="bold" size={14} />
+                              {emailStatus === 'sending' ? 'Sending…' : 'Send confirmation'}
+                            </button>
+                            <button type="button" className="btn btn-link" onClick={cancelEmailChange}>
+                              Cancel
+                            </button>
+                          </div>
+
+                          <span className="v4-settings-field-hint">
+                            {emailStatus === 'error' ? (
+                              <span role="alert" style={{ color: '#a8321f' }}>{emailError}</span>
+                            ) : (
+                              <>Nothing changes until you open the confirmation link we
+                              send to the new address.</>
+                            )}
+                          </span>
+                        </>
+                      )}
+                    </div>
 
                     <div className="v4-settings-form-foot">
                       <button
