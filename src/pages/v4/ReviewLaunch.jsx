@@ -392,7 +392,7 @@ export default function ReviewLaunch() {
           <section className="v4-review-section" ref={introRef}>
             <header className="v4-review-section-head">
               <h2>A note from you</h2>
-              <span className="v4-review-section-hint">Opens your invitation</span>
+              <span className="v4-review-section-hint">Opens your invitation · click to edit</span>
             </header>
             {intro.trim() && !introEditing ? (
               /* Preview: just the words, as typography — no inner box.
@@ -434,7 +434,7 @@ export default function ReviewLaunch() {
             <section className="v4-review-section">
               <header className="v4-review-section-head">
                 <h2>Your brief</h2>
-                <span className="v4-review-section-hint">Click any answer to edit</span>
+                <span className="v4-review-section-hint">Participants see this · click any answer to edit</span>
               </header>
               <ul className="v4-review-list v4-review-list-editable">
                 {briefQuestions.map((q) => {
@@ -464,7 +464,7 @@ export default function ReviewLaunch() {
             <section className="v4-review-section v4-review-section--private">
               <header className="v4-review-section-head">
                 <h2>Settings</h2>
-                <span className="v4-review-section-hint">Only you can see this · click to edit</span>
+                <span className="v4-review-section-hint">Only you see this · click any answer to edit</span>
               </header>
               <ul className="v4-review-list v4-review-list-editable">
                 {filledSettings.map((q) => (
