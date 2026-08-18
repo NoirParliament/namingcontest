@@ -1305,7 +1305,7 @@ export const SHARED_SETTINGS_QUESTIONS = [
 export const INTRO_QUESTION = {
   id: 'intro',
   label: 'Intro to participants',
-  prompt: 'Last thing — write a short intro for your participants. It opens your invitation, so it’s the first thing they read.',
+  prompt: 'One last thing: write a short intro for your participants. It opens your invitation, so it’s the first thing they read.',
   type: 'textarea',
   rows: 4,
   required: true,

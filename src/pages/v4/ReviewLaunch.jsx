@@ -379,7 +379,7 @@ export default function ReviewLaunch() {
               (not a modal row): writing a paragraph wants a real field. */}
           <section className="v4-review-section" ref={introRef}>
             <header className="v4-review-section-head">
-              <h2>Your intro to participants</h2>
+              <h2>Introduction</h2>
               <span className="v4-review-section-hint">Participants see this first</span>
             </header>
             <textarea
