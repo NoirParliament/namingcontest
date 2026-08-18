@@ -190,8 +190,10 @@ export const BRIEF_QUESTIONS = {
         label: 'Paired with the company name?',
         prompt: 'Will the product name be paired with the company name?',
         type: 'chips',
-        options: ['Yes — usually appears together', 'No — stands on its own', 'Not sure yet'],
-        hint: `Google Maps almost always appears with Google in front; Tide never mentions P&G. If the two names will be said and seen together, they need to sound good together — and the product name can stay simpler.`,
+        options: ['Yes, usually together', 'No, it stands on its own', 'Not sure yet'],
+        describeOption: 'Yes, usually together',
+        describePlaceholder: 'e.g. Paired with Acme',
+        hint: `Google Maps almost always appears with Google in front; Tide never mentions P&G. If the two names will be said and seen together, they need to sound good together, and the product name can stay simpler. If yes, tell us the company name.`,
       },
       {
         id: 'featuresBenefits',
