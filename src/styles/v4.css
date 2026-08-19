@@ -6884,7 +6884,11 @@ textarea.v4-settings-input:focus {
   border-color: rgba(3, 3, 2, 0.4);
   box-shadow: 0 0 0 3px var(--v4-ring);
 }
-input.v4-settings-input::placeholder {
+/* Both variants: without the textarea selector, the "why it fits"
+   placeholder inherited the field's 500 weight + full ink and read as
+   bold text instead of a faded example. */
+input.v4-settings-input::placeholder,
+textarea.v4-settings-input::placeholder {
   color: rgba(3, 3, 2, 0.35);
   font-weight: 400;
 }
@@ -9128,6 +9132,21 @@ button.v4-pchat-draft.v4-pchat-draft-editable:focus-visible .v4-pchat-draft-edit
 
 
 /* ── Before-you-send checklist ──────────────────────────────────── */
+.v4-pchat-checklist-head {
+  margin-bottom: 2px;
+}
+.v4-pchat-checklist-title {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--v4-fg);
+}
+.v4-pchat-checklist-sub {
+  margin: 3px 0 0;
+  font-size: 12.5px;
+  color: var(--v4-muted);
+}
 .v4-pchat-checklist {
   width: 100%;
   background: var(--v4-bubble-bg);

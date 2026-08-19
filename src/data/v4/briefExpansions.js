@@ -99,13 +99,13 @@ export const BRIEF_EXPANSIONS = {
     'Intimidating / Feared': 'names that read like a threat in the lobby, the way Evil Geniuses does.', // [lore]
     'Meme-worthy / Ironic': 'names that play the joke on purpose, like a squad called 404: Skill Not Found.', // [lore]
     'Clean / Professional': 'jersey-ready names with no baggage, in the mold of Liquid or Sentinels.', // [lore]
-    'Fun / Casual': 'easygoing names for a crew that plays for the fun of it.', // [proposed]
-    'Serious / Professional': 'polished names that would look right on a meeting invite.', // [proposed]
-    'Aspirational': 'names that say what the group is becoming, not just what it is.', // [proposed]
+    'Fun / Casual': 'easygoing names that don’t take themselves too seriously.', // [proposed]
+    'Serious / Professional': 'polished names that hold up in any room.', // [proposed]
+    'Aspirational': 'names that point at what this could become, not just what it is.', // [proposed]
     'Irreverent / Playful': 'cheeky names that bend the rules, the way Between the Wines does for a book club.', // [lore]
     'Cozy / Warm': 'warm, familiar names that feel like home.', // [proposed]
     'Elegant / Sophisticated': 'polished names with a bit of occasion to them.', // [proposed]
-    'Funny / Playful': 'names that get the group chat laughing on the first read.', // [proposed]
+    'Funny / Playful': 'names that get a laugh on the first read.', // [proposed]
   },
 
   // p2 pet — grounded in the pet hints ("'Professor' works for a dignified

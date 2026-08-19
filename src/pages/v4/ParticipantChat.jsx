@@ -142,20 +142,33 @@ function clearDraftStash(contestId) {
 
 const SUBMIT_BUBBLE_DELAY = 600;  // pacing between user-bubble and the next prompt
 
-// Per-submission tips. Generic on purpose — about the creative
-// process, not the segment. Rotates by submission number so each card
-// has its own little nudge without repeating the fun facts above.
-const SUBMISSION_TIPS = [
-  `Your first instinct is usually your most obvious. Submit it anyway; it sets the baseline.`,
-  `Try a different angle from #1: change the tone, archetype, or length.`,
-  `The third one is usually the boldest. Don’t censor it.`,
-  `You’ve covered the obvious territory. Try something the room would push back on.`,
-  `Diminishing returns from here. Make this one weird or call it.`,
-];
-const TIPPED_LIMIT = 5; // submissions 1–5 get a tip; 6+ go rapid-fire
-function getSubmissionTip(n) {
-  if (n > TIPPED_LIMIT) return null;
-  return SUBMISSION_TIPS[n - 1] || null;
+// Per-segment example pair for the submission card placeholders. The name
+// field and the "what it means + why it fits" field each model the format
+// for THIS kind of contest, instead of showing everyone the football
+// example. The why examples all follow the same shape the field asks for:
+// the meaning first, then why it lands for the brief.
+const PARTICIPANT_EXAMPLES = {
+  b1: { name: 'e.g. Northbeam', why: 'e.g. Northbeam: a steady light to navigate by. Sounds like a company you can trust.' },
+  b2: { name: 'e.g. Driftless', why: 'e.g. Driftless: focus without the wander. Short, sharp, easy to say in a demo.' },
+  b3: { name: 'e.g. Project Lighthouse', why: 'e.g. Lighthouse: guides every team to the same shore. Reads clean on a slide.' },
+  b4: { name: 'e.g. Meridian', why: 'e.g. Meridian: a new line through the same map. Keeps the trust of the old name.' },
+  b5: { name: 'e.g. The Forge', why: 'e.g. The Forge: where rough ideas get hammered into shape. Works on a door and a deck.' },
+  t1: { name: 'e.g. Iron Boots FC', why: 'e.g. Heron: the bird that fishes along our river. Single sharp word, easy on a jersey.' },
+  t2: { name: 'e.g. Velvet Static', why: 'e.g. Velvet Static: soft and loud at once, like our sound. Looks right on a poster.' },
+  t3: { name: 'e.g. Second Guess', why: 'e.g. Second Guess: what every founder does at 2am. Easy to say in the intro.' },
+  t4: { name: 'e.g. The Common Table', why: 'e.g. The Common Table: everyone gets a seat. Warm, civic, easy to trust.' },
+  t5: { name: 'e.g. Nightshift', why: 'e.g. Nightshift: when this squad actually queues. Compresses to a clean tag.' },
+  t6: { name: 'e.g. The Standing Order', why: 'e.g. The Standing Order: same table, same time, no invite needed.' },
+  p1: { name: 'e.g. Wren', why: 'e.g. Wren: small bird, big song. Short, timeless, and lovely with most last names.' },
+  p2: { name: 'e.g. Biscuit', why: 'e.g. Biscuit: golden, warm, a little crumbly. Easy to call across a park.' },
+  p3: { name: 'e.g. Driftwood', why: 'e.g. Driftwood: carried in by the water and settled for good. At home on a sign.' },
+  p4: { name: 'e.g. The Usual Suspects', why: 'e.g. The Usual Suspects: the ones who always show up. Impossible not to grin at.' },
+};
+function getParticipantExamples(subId) {
+  return PARTICIPANT_EXAMPLES[subId] || {
+    name: 'A name…',
+    why: 'e.g. What it means, and why it fits this brief.',
+  };
 }
 
 // First-turn prompt — only used when there are no drafts yet.
@@ -204,7 +217,9 @@ const TURN_RESPONSE_OVERRIDES = [
   `Nice! That’s two. One more, or call it?`,           // after #2
   `Three solid ones. Anything else, or wrap?`,          // after #3
   `Four in. You’ve covered a lot, want a fifth?`,      // after #4
-  `Five. Diminishing returns from here. Last one?`,    // after #5
+  // No "last one?" here: the creator can allow up to 10, and the real
+  // final turn gets its own message from isFinalTurn below.
+  `Five in. You’re on a roll. Another?`,               // after #5
 ];
 function getSystemResponse(submittedCount, isFinalTurn) {
   // Hitting the creator-set limit lands on a "thank you + next move"
@@ -519,7 +534,6 @@ export default function ParticipantChat() {
 
   // Current submission number (1-indexed). Sits at remainingSlots
   // boundary when all slots filled.
-  const submissionNumber = drafts.length + 1;
   const submissionsRemaining = remainingSlots - drafts.length;
   // Just require both fields to have something. The earlier
   // length-thresholds silently disabled the button if "why it fits"
@@ -996,11 +1010,7 @@ export default function ParticipantChat() {
                         index={i}
                         draft={d}
                         isEditing={isEditingThis}
-                        segmentExample={
-                          contest.subSegmentId === 't1'
-                            ? 'e.g. Iron Boots FC'
-                            : 'A name…'
-                        }
+                        examples={getParticipantExamples(contest.subSegmentId)}
                         onStartEdit={() => handleStartEditDraft(i)}
                         onEditSave={handleEditDraftSave}
                         onEditCancel={handleCancelEditDraft}
@@ -1046,31 +1056,21 @@ export default function ParticipantChat() {
                         )}
                       </>
                     )}
-                    {/* Tip + form. Stage gating only matters on the
-                        first turn — once drafts exist, the user is
-                        past intro and everything renders normally. */}
+                    {/* Form. Stage gating only matters on the first
+                        turn — once drafts exist, the user is past intro
+                        and everything renders normally. (The rotating
+                        per-submission "Tip" line was dropped: with up
+                        to 10 slots it read as filler by the third.) */}
                     {(drafts.length > 0 || introStage >= 6) && (
-                      <>
-                        {getSubmissionTip(submissionNumber) && (
-                          <div className="v4-hint">
-                            <strong>Tip · </strong>
-                            {getSubmissionTip(submissionNumber)}
-                          </div>
-                        )}
-                        <SubmissionCard
-                          draft={activeDraft}
-                          onChange={setActiveDraft}
-                          segmentExample={
-                            contest.subSegmentId === 't1'
-                              ? 'e.g. Iron Boots FC'
-                              : 'A name…'
-                          }
-                          canAdd={hasMin}
-                          onAdd={handleAddDraft}
-                          canSkip={drafts.length > 0}
-                          onSkip={handleImDone}
-                        />
-                      </>
+                      <SubmissionCard
+                        draft={activeDraft}
+                        onChange={setActiveDraft}
+                        examples={getParticipantExamples(contest.subSegmentId)}
+                        canAdd={hasMin}
+                        onAdd={handleAddDraft}
+                        canSkip={drafts.length > 0}
+                        onSkip={handleImDone}
+                      />
                     )}
                   </>
                 )}
@@ -1183,7 +1183,7 @@ function ParticipantBriefCard({ contest, tone, briefRows, settingsRows }) {
 // The chat (prompt bubble above + tip + user reply below) carries
 // all the context; the card is a clean input surface.
 function SubmissionCard({
-  draft, onChange, segmentExample,
+  draft, onChange, examples,
   canAdd, onAdd, canSkip, onSkip,
 }) {
   return (
@@ -1195,7 +1195,7 @@ function SubmissionCard({
           className="v4-settings-input"
           value={draft.text}
           onChange={(e) => onChange({ ...draft, text: e.target.value })}
-          placeholder={segmentExample}
+          placeholder={examples.name}
           maxLength={48}
           autoFocus
         />
@@ -1212,7 +1212,7 @@ function SubmissionCard({
           rows={4}
           value={draft.whyItFits}
           onChange={(e) => onChange({ ...draft, whyItFits: e.target.value })}
-          placeholder="Heron — the bird that fishes along our river. Single sharp word, easy on a jersey."
+          placeholder={examples.why}
           maxLength={320}
         />
       </label>
@@ -1254,7 +1254,7 @@ function SubmissionCard({
 // it swaps to an inline edit form with Save / Cancel. Saves replace
 // the entry in-place; cancels exit without changes.
 function DraftBubble({
-  index, draft, isEditing, segmentExample,
+  index, draft, isEditing, examples,
   onStartEdit, onEditSave, onEditCancel,
 }) {
   const [edit, setEdit] = useState(draft);
@@ -1279,7 +1279,7 @@ function DraftBubble({
             className="v4-settings-input"
             value={edit.text}
             onChange={(e) => setEdit({ ...edit, text: e.target.value })}
-            placeholder={segmentExample}
+            placeholder={examples.name}
             maxLength={48}
             autoFocus
           />
@@ -1293,7 +1293,7 @@ function DraftBubble({
             rows={4}
             value={edit.whyItFits}
             onChange={(e) => setEdit({ ...edit, whyItFits: e.target.value })}
-            placeholder="Heron — the bird that fishes along our river. Single sharp word, easy on a jersey."
+            placeholder={examples.why}
             maxLength={320}
           />
         </label>
@@ -1348,9 +1348,19 @@ function DraftBubble({
 // participant opts to be credited (or when the host made it mandatory).
 // The confirmed name is saved as the account/profile name.
 // ── Read-only checklist before submit ──────────────────────────────
+// Framed with a header so the block reads as a deliberate final
+// self-check, not four unexplained rows between the chat and the
+// submit button. Copy per sub-segment lives in participantArticles.
 function ChecklistCard({ items }) {
+  if (!items.length) return null;
   return (
     <section className="v4-pchat-checklist">
+      <header className="v4-pchat-checklist-head">
+        <div className="v4-pchat-checklist-title">Before you send, a quick check</div>
+        <p className="v4-pchat-checklist-sub">
+          Run your names through these. Tap any name above to edit it.
+        </p>
+      </header>
       {items.map((item, i) => (
         <div key={i} className="v4-pchat-checklist-row">
           <CheckCircle weight="duotone" size={18} className="v4-pchat-checklist-icon" />
