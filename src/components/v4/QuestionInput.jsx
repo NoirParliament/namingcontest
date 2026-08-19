@@ -29,7 +29,11 @@ const SEGMENT_ICONS = {
   Buildings, Package, Target, ArrowsClockwise,
 };
 
-export default function QuestionInput({ question, onSubmit, autoFocus = true }) {
+// `currentAnswer` prefills the input when EDITING an existing answer (review
+// recap, manage recap, chat edit). Without it every edit opened blank: text
+// had to be retyped, and multi-select selections were silently dropped when
+// the creator re-picked only one chip.
+export default function QuestionInput({ question, onSubmit, autoFocus = true, currentAnswer }) {
   const { type } = question;
 
   // Optional free-text questions get an explicit Skip affordance — the
@@ -38,7 +42,7 @@ export default function QuestionInput({ question, onSubmit, autoFocus = true }) 
   if (type === 'text') {
     return (
       <>
-        <TextInput question={question} onSubmit={onSubmit} autoFocus={autoFocus} />
+        <TextInput question={question} onSubmit={onSubmit} autoFocus={autoFocus} currentAnswer={currentAnswer} />
         {!question.required && <SkipLink onSkip={() => onSubmit('')} />}
       </>
     );
@@ -46,21 +50,21 @@ export default function QuestionInput({ question, onSubmit, autoFocus = true }) 
   if (type === 'textarea') {
     return (
       <>
-        <TextareaInput question={question} onSubmit={onSubmit} autoFocus={autoFocus} />
+        <TextareaInput question={question} onSubmit={onSubmit} autoFocus={autoFocus} currentAnswer={currentAnswer} />
         {!question.required && <SkipLink onSkip={() => onSubmit('')} />}
       </>
     );
   }
-  if (type === 'chips')          return <ChipsInput question={question} onSubmit={onSubmit} />;
-  if (type === 'multiChips')     return <MultiChipsInput question={question} onSubmit={onSubmit} />;
+  if (type === 'chips')          return <ChipsInput question={question} onSubmit={onSubmit} currentAnswer={currentAnswer} />;
+  if (type === 'multiChips')     return <MultiChipsInput question={question} onSubmit={onSubmit} currentAnswer={currentAnswer} />;
   if (type === 'radioCards')     return <RadioCardsInput question={question} onSubmit={onSubmit} />;
-  if (type === 'numberChips')    return <NumberChipsInput question={question} onSubmit={onSubmit} />;
+  if (type === 'numberChips')    return <NumberChipsInput question={question} onSubmit={onSubmit} currentAnswer={currentAnswer} />;
   if (type === 'contestSchedule') return <ContestScheduleInput question={question} onSubmit={onSubmit} />;
   if (type === 'voterTier')      return <VoterTierInput question={question} onSubmit={onSubmit} />;
   if (type === 'toggle')         return <ToggleInput question={question} onSubmit={onSubmit} />;
   if (type === 'date')           return <DateInput question={question} onSubmit={onSubmit} />;
-  if (type === 'toggleTextarea') return <ToggleTextareaInput question={question} onSubmit={onSubmit} />;
-  if (type === 'toggleNameDesc') return <ToggleNameDescInput question={question} onSubmit={onSubmit} />;
+  if (type === 'toggleTextarea') return <ToggleTextareaInput question={question} onSubmit={onSubmit} currentAnswer={currentAnswer} />;
+  if (type === 'toggleNameDesc') return <ToggleNameDescInput question={question} onSubmit={onSubmit} currentAnswer={currentAnswer} />;
   if (type === 'brandingBlock')  return <BrandingBlockInput question={question} onSubmit={onSubmit} />;
   if (type === 'brandingFull')   return <BrandingFullInput question={question} onSubmit={onSubmit} />;
   if (type === 'segmentCards')   return <SegmentCardsInput question={question} onSubmit={onSubmit} />;
@@ -79,8 +83,8 @@ function SkipLink({ onSkip }) {
 }
 
 // ── text (single line) ───────────────────────────────────────────────
-function TextInput({ question, onSubmit, autoFocus }) {
-  const [value, setValue] = useState('');
+function TextInput({ question, onSubmit, autoFocus, currentAnswer }) {
+  const [value, setValue] = useState(typeof currentAnswer === 'string' ? currentAnswer : '');
   const inputRef = useRef(null);
   const trimmed = value.trim();
   const canSubmit = question.required ? trimmed.length >= 1 : true;
@@ -120,8 +124,8 @@ function TextInput({ question, onSubmit, autoFocus }) {
 }
 
 // ── textarea (multi line) ────────────────────────────────────────────
-function TextareaInput({ question, onSubmit, autoFocus }) {
-  const [value, setValue] = useState('');
+function TextareaInput({ question, onSubmit, autoFocus, currentAnswer }) {
+  const [value, setValue] = useState(typeof currentAnswer === 'string' ? currentAnswer : '');
   const taRef = useRef(null);
   const trimmed = value.trim();
   const canSubmit = question.required ? trimmed.length >= 1 : true;
@@ -171,7 +175,7 @@ function TextareaInput({ question, onSubmit, autoFocus }) {
 }
 
 // ── chips (single-select pill list) ──────────────────────────────────
-function ChipsInput({ question, onSubmit }) {
+function ChipsInput({ question, onSubmit, currentAnswer }) {
   const opts = question.options || [];
   // An option can reveal a follow-up text field (e.g. "Specific language"
   // → type which one) via question.describeOption. Picking it shows the
@@ -201,7 +205,7 @@ function ChipsInput({ question, onSubmit }) {
         {opts.map((opt) => {
           const value = typeof opt === 'string' ? opt : (opt.label || opt.id);
           const label = typeof opt === 'string' ? opt : (opt.label || opt.id);
-          const active = describing && value === describeOption;
+          const active = (describing && value === describeOption) || (!describing && value === currentAnswer);
           return (
             <button
               key={value}
@@ -238,13 +242,19 @@ function ChipsInput({ question, onSubmit }) {
 }
 
 // ── multiChips (multi-select pill list — needs Continue button) ─────
-function MultiChipsInput({ question, onSubmit }) {
+function MultiChipsInput({ question, onSubmit, currentAnswer }) {
   const opts = question.options || [];
   const norm = (opt) => (typeof opt === 'string' ? opt : (opt.label || opt.id));
-  const [selected, setSelected] = useState([]);
+  // Editing an existing answer starts from what's already selected — this
+  // used to start empty, so re-picking one chip silently dropped the rest.
+  const initial = Array.isArray(currentAnswer) ? currentAnswer : [];
+  const [selected, setSelected] = useState(initial);
   // Custom-added options (question.allowCustom) — let people add their own
-  // (e.g. "Shy / Timid") alongside the preset chips.
-  const [extra, setExtra] = useState([]);
+  // (e.g. "Shy / Timid") alongside the preset chips. Custom values already
+  // in the answer are restored as chips so they survive an edit too.
+  const [extra, setExtra] = useState(
+    () => initial.filter((v) => !opts.map(norm).includes(v))
+  );
   const [customText, setCustomText] = useState('');
 
   const toggle = (val) => {
@@ -358,7 +368,7 @@ function RadioCardsInput({ question, onSubmit }) {
 }
 
 // ── numberChips (numeric chip select — submission limit, voting days) ─
-function NumberChipsInput({ question, onSubmit }) {
+function NumberChipsInput({ question, onSubmit, currentAnswer }) {
   const opts = question.options || [];
   const defaultVal = question.defaultValue;
   return (
@@ -372,7 +382,7 @@ function NumberChipsInput({ question, onSubmit }) {
             type="button"
             role="radio"
             aria-checked={false}
-            className={`v4-chip v4-chip-number ${isDefault ? 'is-default' : ''}`}
+            className={`v4-chip v4-chip-number ${opt === currentAnswer ? 'is-checked' : ''} ${isDefault ? 'is-default' : ''}`}
             onClick={() => onSubmit(opt)}
           >
             {label}

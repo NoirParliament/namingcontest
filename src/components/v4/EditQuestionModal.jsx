@@ -128,6 +128,7 @@ export default function EditQuestionModal({
             question={question}
             onSubmit={handleSubmit}
             autoFocus
+            currentAnswer={currentAnswer}
           />
         </div>
       </div>

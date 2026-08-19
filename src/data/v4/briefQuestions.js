@@ -1027,6 +1027,8 @@ export const BRIEF_QUESTIONS = {
         prompt: `What kind of pet are you naming?`,
         type: 'chips',
         options: ['Dog', 'Cat', 'Bird', 'Reptile', 'Rabbit / Small Animal', 'Fish / Aquatic', 'Other'],
+        describeOption: 'Other',
+        describePlaceholder: 'e.g. Ferret, horse, tortoise',
         required: true,
       },
       {
@@ -1097,6 +1099,8 @@ export const BRIEF_QUESTIONS = {
         prompt: 'What are you naming?',
         type: 'chips',
         options: ['House / Home', 'Vacation Home / Cabin', 'Boat / Watercraft', 'Car / Vehicle', 'WiFi network', 'Other'],
+        describeOption: 'Other',
+        describePlaceholder: 'e.g. A treehouse, a fire pit, a boat trailer',
         required: true,
       },
       {
