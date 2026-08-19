@@ -29,7 +29,7 @@ import { getMockContestById } from '../../data/v4/mockContests';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../../lib/AuthContext';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
-import { readSetup, writeSetup } from '../../utils/v4Brief';
+import { readSetup, writeSetup, formatDateAnswer } from '../../utils/v4Brief';
 import { readParticipation, recordSubmission, writeParticipation } from '../../utils/v4Participant';
 import { anonymityMode } from '../../utils/v4Anonymity';
 import {
@@ -60,6 +60,8 @@ function formatAnswer(value) {
       return 'Yes';
     }
   }
+  // Date-shaped answers (e.g. the baby due date) → "March 15, 2026".
+  if (typeof value === 'string') return formatDateAnswer(value);
   return String(value);
 }
 

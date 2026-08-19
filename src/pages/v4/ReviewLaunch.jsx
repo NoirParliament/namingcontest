@@ -10,7 +10,7 @@ import {
 } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
-import { readSetup, writeSetup, getQuestionsFor, getSetupStepTotal, formatScheduleSummary, formatWindowDuration } from '../../utils/v4Brief';
+import { readSetup, writeSetup, getQuestionsFor, getSetupStepTotal, formatScheduleSummary, formatWindowDuration, formatDateAnswer } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS, INTRO_QUESTION, getIntroQuestionFor } from '../../data/v4/briefQuestions';
 import { SegmentThemeBackdrop, getSegmentTone, getSegmentIcon, getSegmentPalette } from '../../data/v4/segmentTheme';
 import LaunchModal from '../../components/v4/LaunchModal';
@@ -57,6 +57,8 @@ function formatAnswer(value) {
       return 'Yes';
     }
   }
+  // Date-shaped answers (e.g. the baby due date) → "March 15, 2026".
+  if (typeof value === 'string') return formatDateAnswer(value);
   return String(value);
 }
 

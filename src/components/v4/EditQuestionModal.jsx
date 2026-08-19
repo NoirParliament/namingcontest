@@ -6,6 +6,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { X } from '@phosphor-icons/react';
 import QuestionInput from './QuestionInput';
+import { formatDateAnswer } from '../../utils/v4Brief';
 import '../../styles/landing-v3.css';
 
 // Re-seed each time the modal opens so the scattered shapes land in
@@ -152,5 +153,7 @@ function formatAnswerForDisplay(value) {
     if (value.title) return value.title;
     if (value.name) return value.name;
   }
+  // Date-shaped answers (e.g. the baby due date) → "March 15, 2026".
+  if (typeof value === 'string') return formatDateAnswer(value);
   return String(value);
 }

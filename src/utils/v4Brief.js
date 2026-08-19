@@ -112,6 +112,23 @@ export function formatWindowDuration(days) {
   return n === 1 ? '1 day' : `${n} days`;
 }
 
+// Format a stored date answer ("YYYY-MM-DD", as the date picker saves it)
+// into a human date ("March 15, 2026") for the review + participant recap
+// rows. Parts are read manually so the date isn't shifted by a timezone
+// offset (new Date('2026-03-15') would parse as UTC midnight). Anything
+// that isn't exactly a date-shaped string passes through untouched, so
+// it's safe to run over any textual answer in the shared formatters.
+export function formatDateAnswer(value) {
+  if (typeof value !== 'string') return value;
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
+  if (!m) return value;
+  const dt = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  if (Number.isNaN(dt.getTime())) return value;
+  return dt.toLocaleDateString('en-US', {
+    year: 'numeric', month: 'long', day: 'numeric',
+  });
+}
+
 // One-line summary of the contest schedule ("Submissions 5 days · Voting
 // 3 days") for review rows, recap rows, and the chat's answer bubble.
 export function formatScheduleSummary(settings) {
