@@ -335,6 +335,67 @@ export default function BriefChat() {
     return () => timers.forEach(clearTimeout);
   }, [idx, isDone, isEditing, currentQ]);
 
+  // ── Resume (client request): answers persist per-turn, but re-entering
+  // used to restart the chat from the top, re-asking everything — which
+  // read as "Exit lost all my responses". On mount, rebuild the completed
+  // turns from storage and land on the first question AFTER the last
+  // answered one. Unanswered questions before that frontier were skipped
+  // deliberately, so they resume as "Skipped" (still tappable to edit).
+  const didResumeRef = useRef(false);
+  useEffect(() => {
+    if (didResumeRef.current || !subId || questions.length <= 1) return;
+    didResumeRef.current = true;
+    const saved = readSetup();
+    const answerFor = (q) => {
+      if (q.section === 'working') return saved.workingName || undefined;
+      if (q.section === 'voter') return saved.voterTier || undefined;
+      if (q.type === 'contestSchedule') {
+        const st = saved.settings || {};
+        return st.submissionDays !== undefined || st.votingDays !== undefined
+          ? { submissionDays: st.submissionDays, votingDays: st.votingDays }
+          : undefined;
+      }
+      if (q.section === 'brief') return (saved.brief || {})[q.id];
+      if (q.section === 'settings') return (saved.settings || {})[q.id];
+      return undefined;
+    };
+    let frontier = -1;
+    questions.forEach((q, i) => {
+      if (q.type === 'narrator' || q.section === 'segment') return;
+      if (answerFor(q) !== undefined) frontier = i;
+    });
+    if (frontier < 1) return; // nothing to resume past
+    const turns = [];
+    if (preSeededSegment) {
+      turns.push({
+        question: preSeededSegment.question,
+        answer: preSeededSegment.option,
+        display: preSeededSegment.option.title,
+        article: null,
+      });
+    }
+    // Start after the segment turn when one exists; otherwise the list
+    // begins at the working-name question (index 0).
+    for (let i = preSeededSegment ? 1 : 0; i <= frontier; i++) {
+      const q = questions[i];
+      if (q.type === 'narrator') {
+        turns.push({ question: q, answer: null, display: null, article: null });
+        continue;
+      }
+      const a = answerFor(q);
+      const value = a === undefined ? '' : a;
+      const display = q.section === 'voter'
+        ? `Up to ${value} participants · $${priceForVoters(value)}`
+        : q.type === 'contestSchedule'
+          ? formatScheduleSummary(value)
+          : answerToDisplay(value);
+      turns.push({ question: q, answer: value, display, article: getArticleFor(subId, q.guideId) || null });
+    }
+    setHistory(turns);
+    setIdx(frontier + 1);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subId, questions]);
+
   // Auto-scroll the chat container (option B: internal scroll, not window).
   // Skip during edit to keep view stable while user is typing.
   const chatRef = useRef(null);
@@ -531,7 +592,21 @@ export default function BriefChat() {
               </div>
             );
           })()}
-          <ExitLink to="/" aria-label="Exit" />
+          {/* Exit asks first (client hit this trying to close a guide) and
+              reassures that nothing is lost — resume picks up right here. */}
+          <button
+            type="button"
+            className="v4-exit"
+            aria-label="Exit"
+            onClick={() => {
+              if (window.confirm('Your answers are saved. You can pick up right where you left off. Leave setup?')) {
+                navigate('/');
+              }
+            }}
+          >
+            <X weight="regular" size={14} />
+            <span>Exit</span>
+          </button>
         </header>
 
           <div className="v4-chat-inner">
