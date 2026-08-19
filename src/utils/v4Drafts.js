@@ -81,3 +81,22 @@ export function getPendingDraft() {
   }
   return creator || participant;
 }
+
+// Delete a pending draft (the pill's trash action, behind a confirm).
+// Creator: strip only the draft fields — identity (email/name/photo) and any
+// launch stamps stay, so the account menu and guest receipt keep what they
+// read. Participant: drop that contest's stash key. Either way the pill's
+// next read comes back empty.
+export function deleteDraft(draft) {
+  if (!draft) return;
+  try {
+    if (draft.kind === 'creator') {
+      const s = readSetup();
+      ['subSegmentId', 'workingName', 'brief', 'settings', 'voterTier', 'group', 'savedAt']
+        .forEach((key) => { delete s[key]; });
+      localStorage.setItem('v4_contest_setup', JSON.stringify(s));
+    } else if (draft.kind === 'participant' && draft.contestId) {
+      localStorage.removeItem(PCHAT_PREFIX + draft.contestId);
+    }
+  } catch { /* localStorage unavailable */ }
+}

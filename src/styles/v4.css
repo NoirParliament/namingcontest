@@ -11305,6 +11305,7 @@ select.v4-pvote-sort-select:hover {
   width: 100%;
   max-width: 400px;
   background: #ffffff;
+  overflow: hidden;
   border-radius: 22px;
   padding: 30px 30px 24px;
   text-align: left;
@@ -11362,6 +11363,23 @@ select.v4-pvote-sort-select:hover {
 /* Danger tone: the confirm wipes something. Same ink button (the v4
    language has no red), the weight is carried by the copy. */
 
+/* Minimal signature scatter — three floating pastels (mint dot,
+   periwinkle lozenge, blush dot), the small-dialog take on the edit
+   modal's five-shape recipe. Content lifts above them. */
+.v4-confirm-shape {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.55;
+  animation: decorFloat 12s ease-in-out infinite;
+  z-index: 0;
+  transform: scale(var(--jitter-scale, 1));
+}
+.v4-confirm-shape-1 { top: 22px;    right: 54px;  width: 9px;  height: 9px;  background: var(--panel-mint, #a6dcb3); }
+.v4-confirm-shape-2 { bottom: 64px; left: 18px;   width: 20px; height: 9px;  background: var(--panel-periwinkle, #b3c4f0); border-radius: 12px 4px 14px 4px; transform: rotate(-12deg) scale(var(--jitter-scale, 1)); animation-name: decorFloat2; animation-delay: -3s; }
+.v4-confirm-shape-3 { bottom: 22px; right: 30px;  width: 11px; height: 11px; background: var(--panel-blush, #fadecc); animation-delay: -5s; }
+.v4-confirm-modal > *:not(.v4-confirm-shape) { position: relative; z-index: 1; }
+
 /* ── Exit button: reset native chrome ───────────────────────────────
    .v4-exit began life on an <a>; when it became a <button> (to ask
    before leaving) the UA's outset border + grey fill leaked through.
@@ -11381,8 +11399,7 @@ button.v4-exit {
 .v4-resume-pill {
   position: fixed;
   bottom: 22px;
-  left: 50%;
-  transform: translateX(-50%);
+  right: 22px;
   z-index: 900;
   display: inline-flex;
   align-items: center;
@@ -11400,14 +11417,14 @@ button.v4-exit {
   transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease;
 }
 .v4-resume-pill:hover {
-  transform: translateX(-50%) translateY(-2px);
+  transform: translateY(-2px);
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.04),
     0 14px 34px -8px rgba(0, 0, 0, 0.2);
 }
 @keyframes v4-resume-in {
-  from { opacity: 0; transform: translateX(-50%) translateY(14px); }
-  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 .v4-resume-pill-text {
   display: flex;
@@ -11466,6 +11483,6 @@ button.v4-exit {
   color: var(--v4-fg);
 }
 @media (max-width: 560px) {
-  .v4-resume-pill { bottom: 16px; max-width: calc(100vw - 32px); }
+  .v4-resume-pill { bottom: 16px; right: 16px; max-width: calc(100vw - 32px); }
   .v4-resume-pill-title { max-width: 130px; }
 }
