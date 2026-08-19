@@ -26,6 +26,7 @@ import { SegmentThemeBackdrop, getSegmentTone, getSegmentIcon } from '../../data
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import CatchwordConsultBlock from '../../components/v4/CatchwordConsultBlock';
 import ResumeDraftPill from '../../components/v4/ResumeDraftPill';
+import { writeProfileCache } from '../../lib/useProfile';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -233,6 +234,9 @@ export default function Settings() {
         // An empty name is correct there: it shows the "Add your name" prompt.
         if (!nameEditedRef.current) setName(data?.display_name || '');
         setPhoto(data?.avatar_url || null);
+        // Keep the shared header cache fresh so every other page's account
+        // menu paints the right avatar/name on its first frame.
+        if (data) writeProfileCache(user.id, data);
         setProfileReady(true);
       });
     return () => { active = false; };
@@ -317,6 +321,7 @@ export default function Settings() {
       setPhoto(url);
       if (user?.id) {
         await supabase.from('profiles').update({ avatar_url: url }).eq('id', user.id);
+        writeProfileCache(user.id, { avatar_url: url });
       }
       writeSetup({ userPhoto: url });
     } catch (err) {
@@ -329,6 +334,7 @@ export default function Settings() {
     setPhoto(null);
     if (user?.id) {
       await supabase.from('profiles').update({ avatar_url: null }).eq('id', user.id);
+      writeProfileCache(user.id, { avatar_url: null });
     }
     writeSetup({ userPhoto: null });
   };
@@ -459,6 +465,7 @@ export default function Settings() {
         .select();
       if (error) console.error('[profile save] failed:', error.message);
       else if (!data?.length) console.warn('[profile save] 0 rows updated (check RLS)');
+      else writeProfileCache(user.id, { display_name: clean });
     }
     writeSetup({ userName: clean });
     nameEditedRef.current = false; // saved value is now the source of truth

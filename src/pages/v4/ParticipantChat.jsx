@@ -28,6 +28,7 @@ import participantProfile from '../../assets/participant-profile.png';
 import { getMockContestById } from '../../data/v4/mockContests';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../../lib/AuthContext';
+import { useProfile } from '../../lib/useProfile';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
 import { readSetup, writeSetup, formatDateAnswer } from '../../utils/v4Brief';
 import { readParticipation, recordSubmission, writeParticipation } from '../../utils/v4Participant';
@@ -294,15 +295,9 @@ export default function ParticipantChat() {
   const userName = setup.userName || (userEmail.split('@')[0] || 'You');
   const userPhoto = setup.userPhoto || null;
   // Real signed-in identity for the account menu (so it shows YOU, not the
-  // mock participant photo).
-  const [profile, setProfile] = useState(null);
-  useEffect(() => {
-    if (!user?.id) return;
-    let active = true;
-    supabase.from('profiles').select('*').eq('id', user.id).single()
-      .then(({ data }) => { if (active && data) setProfile(data); });
-    return () => { active = false; };
-  }, [user?.id]);
+  // mock participant photo). Cached hook = no placeholder flash; the setter
+  // also updates the cache when the credit step saves a display name.
+  const [profile, setProfile] = useProfile(user);
   const articles = useMemo(
     () => (contest ? getParticipantArticles(contest.subSegmentId) : []),
     [contest]

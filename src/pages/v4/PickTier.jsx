@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { X } from '@phosphor-icons/react';
 import ExitLink from '../../components/v4/ExitLink';
@@ -9,7 +9,7 @@ import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import { useAuth } from '../../lib/AuthContext';
-import { supabase } from '../../lib/supabaseClient';
+import { useProfile } from '../../lib/useProfile';
 import { getSegmentTone } from '../../data/v4/segmentTheme';
 import { readSetup } from '../../utils/v4Brief';
 import '../../styles/landing-v3.css';
@@ -56,14 +56,7 @@ export default function PickTier() {
   // review steps, so the account picture is continuous across the whole
   // creator flow (guests just see Exit).
   const { user } = useAuth();
-  const [profile, setProfile] = useState(null);
-  useEffect(() => {
-    if (!user?.id) return;
-    let active = true;
-    supabase.from('profiles').select('*').eq('id', user.id).single()
-      .then(({ data }) => { if (active && data) setProfile(data); });
-    return () => { active = false; };
-  }, [user?.id]);
+  const [profile] = useProfile(user);
   const navSetup = readSetup();
   const navTone = navSetup.subSegmentId ? getSegmentTone(navSetup.subSegmentId) : null;
 

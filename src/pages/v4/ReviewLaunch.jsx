@@ -16,6 +16,7 @@ import { SegmentThemeBackdrop, getSegmentTone, getSegmentIcon, getSegmentPalette
 import LaunchModal from '../../components/v4/LaunchModal';
 import { priceForVoters, VOTER_TIER_QUESTION } from '../../data/v4/voterTiers';
 import { useAuth } from '../../lib/AuthContext';
+import { useProfile } from '../../lib/useProfile';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import { supabase } from '../../lib/supabaseClient';
 import EditQuestionModal from '../../components/v4/EditQuestionModal';
@@ -116,15 +117,8 @@ export default function ReviewLaunch() {
     return () => el.removeEventListener('scroll', handler);
   }, []);
   // Signed-in host → their avatar in the header, continuous with the chat
-  // and pick steps (guests just see Exit).
-  const [profile, setProfile] = useState(null);
-  useEffect(() => {
-    if (!user?.id) return;
-    let active = true;
-    supabase.from('profiles').select('*').eq('id', user.id).single()
-      .then(({ data }) => { if (active && data) setProfile(data); });
-    return () => { active = false; };
-  }, [user?.id]);
+  // and pick steps (guests just see Exit). Cached hook = no placeholder flash.
+  const [profile] = useProfile(user);
   const subId = setup.subSegmentId || 'b1';
   // Review is the final step of the setup flow — show it as N/N so the
   // progress counter that ran through the chat lands here.

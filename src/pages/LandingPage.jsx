@@ -24,6 +24,7 @@ import { readSetup, getQuestionsFor } from '../utils/v4Brief';
 import { getSegmentTone } from '../data/v4/segmentTheme';
 import AvatarMenu from '../components/v4/AvatarMenu';
 import ResumeDraftPill from '../components/v4/ResumeDraftPill';
+import { useProfile } from '../lib/useProfile';
 import UserAvatar from '../components/v4/UserAvatar';
 import SignInModal from '../components/v4/SignInModal';
 import { useAuth } from '../lib/AuthContext';
@@ -132,11 +133,10 @@ export function Nav() {
   // transition (a returning demo user with an in-progress contest).
   const { user } = useAuth();
   const setup = readSetup();
-  // The user's profile row — so the homepage account menu shows the same
-  // uploaded avatar + name as the Namespace. Without this the homepage fell
-  // back to localStorage (setup.userPhoto), which a real uploaded photo
-  // (stored in profiles.avatar_url) never populates.
-  const [profile, setProfile] = useState(null);
+  // The user's profile row (cached hook) — so the homepage account menu
+  // shows the same uploaded avatar + name as the Namespace, without the
+  // flash of a placeholder while the row refetches on every navigation.
+  const [profile] = useProfile(user);
   const isAuthed = !!user || !!(setup.userEmail || setup.contestId);
   const authEmail = user?.email || setup.userEmail;
   const authName = profile?.display_name || user?.user_metadata?.display_name || setup.userName || user?.email?.split('@')[0];
@@ -146,7 +146,7 @@ export function Nav() {
   // show it (and jump into it) from the homepage.
   const [latestContest, setLatestContest] = useState(null);
   useEffect(() => {
-    if (!user?.id) { setLatestContest(null); setProfile(null); return; }
+    if (!user?.id) { setLatestContest(null); return; }
     let active = true;
     supabase
       .from('contests')
@@ -162,8 +162,6 @@ export function Nav() {
           try { localStorage.setItem('v4_last_sub', data.sub_segment_id); } catch { /* ignore */ }
         }
       });
-    supabase.from('profiles').select('*').eq('id', user.id).single()
-      .then(({ data }) => { if (active && data) setProfile(data); });
     return () => { active = false; };
   }, [user?.id]);
   const segmentTone = getSegmentTone(setup.subSegmentId || 'b1');
@@ -296,8 +294,8 @@ export function Nav() {
                   onClick={() => { closeMenu(); navigate('/v4/settings'); }}
                 >
                   <span className="nav-mobile-menu-account-avatar" aria-hidden="true">
-                    {setup.userPhoto ? (
-                      <img src={setup.userPhoto} alt="" />
+                    {authPhoto ? (
+                      <img src={authPhoto} alt="" />
                     ) : user?.id ? (
                       <UserAvatar seed={user.id} size={38} />
                     ) : (

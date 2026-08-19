@@ -20,6 +20,7 @@ import { readSetup } from '../../utils/v4Brief';
 import { readParticipation } from '../../utils/v4Participant';
 import { showSubmitter } from '../../utils/v4Anonymity';
 import { useAuth } from '../../lib/AuthContext';
+import { readProfileCache } from '../../lib/useProfile';
 import { supabase } from '../../lib/supabaseClient';
 import useCountdown, { pad2 } from '../../utils/useCountdown';
 import '../../styles/landing-v3.css';
@@ -44,7 +45,9 @@ export default function ParticipantVoteThanks() {
   const [dbVotes, setDbVotes] = useState([]);
   const [ballot, setBallot] = useState([]);
   const [mySubCount, setMySubCount] = useState(0);
-  const [profile, setProfile] = useState(null);
+  // Seed from the shared cache so the header avatar paints right on the
+  // first frame; the combined fetch below still refreshes from the DB.
+  const [profile, setProfile] = useState(() => readProfileCache(user?.id));
   const [dbLoading, setDbLoading] = useState(!mockContest);
   useEffect(() => {
     if (mockContest || !user?.id) return;

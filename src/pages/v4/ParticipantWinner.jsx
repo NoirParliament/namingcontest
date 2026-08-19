@@ -28,6 +28,7 @@ import { readSetup } from '../../utils/v4Brief';
 import { readParticipation } from '../../utils/v4Participant';
 import { buildLiveData } from '../../utils/v4LiveData';
 import { useAuth } from '../../lib/AuthContext';
+import { readProfileCache } from '../../lib/useProfile';
 import { supabase } from '../../lib/supabaseClient';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
@@ -71,7 +72,9 @@ export default function ParticipantWinner() {
   const [dbTotalVotes, setDbTotalVotes] = useState(0);
   const [dbMySubCount, setDbMySubCount] = useState(0);
   const [dbIWon, setDbIWon] = useState(false);
-  const [profile, setProfile] = useState(null);
+  // Seed from the shared cache so the header avatar paints right on the
+  // first frame; the combined fetch below still refreshes from the DB.
+  const [profile, setProfile] = useState(() => readProfileCache(user?.id));
   const [dbLoading, setDbLoading] = useState(!mockContest);
   useEffect(() => {
     if (mockContest || !user?.id) return;

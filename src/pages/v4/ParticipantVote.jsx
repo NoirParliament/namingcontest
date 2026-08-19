@@ -32,6 +32,7 @@ import { showSubmitter, anonymityMode } from '../../utils/v4Anonymity';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import CreditNameEntry from '../../components/v4/CreditNameEntry';
 import { useAuth } from '../../lib/AuthContext';
+import { readProfileCache } from '../../lib/useProfile';
 import { supabase } from '../../lib/supabaseClient';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
@@ -131,7 +132,9 @@ export default function ParticipantVote() {
   const [dbContest, setDbContest] = useState(null);
   const [dbSubs, setDbSubs] = useState([]);
   const [myVoteIds, setMyVoteIds] = useState([]);
-  const [profile, setProfile] = useState(null);
+  // Seed from the shared cache so the header avatar paints right on the
+  // first frame; the combined fetch below still refreshes from the DB.
+  const [profile, setProfile] = useState(() => readProfileCache(user?.id));
   const [dbLoading, setDbLoading] = useState(!mockContest);
   useEffect(() => {
     if (mockContest || !user?.id) return;

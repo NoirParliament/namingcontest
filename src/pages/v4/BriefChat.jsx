@@ -29,7 +29,7 @@ import {
 } from '@phosphor-icons/react';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
 import { useAuth } from '../../lib/AuthContext';
-import { supabase } from '../../lib/supabaseClient';
+import { useProfile } from '../../lib/useProfile';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 
 
@@ -239,14 +239,7 @@ export default function BriefChat() {
   // creator starting a new contest). Guests (the common first-run case,
   // since payment/sign-up happens at launch) see just the Exit control.
   const { user } = useAuth();
-  const [profile, setProfile] = useState(null);
-  useEffect(() => {
-    if (!user?.id) return;
-    let active = true;
-    supabase.from('profiles').select('*').eq('id', user.id).single()
-      .then(({ data }) => { if (active && data) setProfile(data); });
-    return () => { active = false; };
-  }, [user?.id]);
+  const [profile] = useProfile(user);
   const navTone = subId ? getSegmentTone(subId) : null;
   const navSetup = readSetup();
 
