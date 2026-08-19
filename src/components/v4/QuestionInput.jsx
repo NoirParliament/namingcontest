@@ -540,20 +540,25 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
 // Three chips; returns the numeric voter count (15 | 30 | 60). Price is
 // shown inline but derived from VOTER_TIERS so it stays one source.
 function VoterTierInput({ question, onSubmit }) {
+  // Price cards, not pills: this is the one question that IS a purchase, so
+  // the options are shaped like what you're buying — amount first, capacity
+  // under it — and the answer bubble echoes the same card.
   return (
-    <div className="v4-chips-row v4-number-chips" role="radiogroup" aria-label={question.label}>
+    <div className="v4-tier-cards" role="radiogroup" aria-label={question.label}>
       {VOTER_TIERS.map((t) => (
         <button
           key={t.voters}
           type="button"
           role="radio"
           aria-checked={false}
-          className="v4-chip"
+          className="v4-tier-card"
           onClick={() => onSubmit(t.voters)}
         >
-          Up to {t.voters} participants · ${t.price}
+          <span className="v4-tier-card-price">${t.price}</span>
+          <span className="v4-tier-card-cap">Up to {t.voters}<br />participants</span>
         </button>
       ))}
+      <span className="v4-tier-cards-note">One payment per contest · no subscription</span>
     </div>
   );
 }

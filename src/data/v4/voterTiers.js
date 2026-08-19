@@ -33,14 +33,22 @@ export function voterCapLabel(voters) {
 // model is explained (tier question hint in chat + edit modal, landing FAQ,
 // legacy mockData). Derived from VOTER_TIERS so the numbers can't drift.
 const [T1, T2, T3] = VOTER_TIERS;
-export const PRICING_EXPLANATION =
-  `The price depends only on how many people take part: ` +
-  `$${T1.price} for up to ${T1.voters} participants, $${T2.price} for up to ${T2.voters}, or $${T3.price} for up to ${T3.voters}. ` +
+// The half of the explanation the price cards DON'T already show. Used as
+// the tier question's hint in the chat, where repeating the amounts under
+// three cards that display them is just a wall of text.
+export const PRICING_TERMS =
   `You pay once per contest, with no subscription and no per-name or per-participant charges on top. ` +
   `The tier is the only thing that changes: a $${T1.price} contest works exactly like a $${T3.price} one. ` +
   `Invitations are unlimited, so share your link with as many people as you like. ` +
   `A spot is only used when someone signs in with their email to take part, whether to submit names or to vote; just opening the link doesn’t count. ` +
   `Fees aren’t refundable once a contest has launched.`;
+
+export const PRICING_EXPLANATION =
+  `The price depends only on how many people take part: ` +
+  `$${T1.price} for up to ${T1.voters} participants, $${T2.price} for up to ${T2.voters}, or $${T3.price} for up to ${T3.voters}. ` +
+  PRICING_TERMS;
+
+
 
 // The voter-package question shape — shared so BriefChat (asks it) and
 // ReviewLaunch (lets you change it before launch) render the same step.
@@ -51,5 +59,5 @@ export const VOTER_TIER_QUESTION = {
   label: 'Participants',
   prompt: 'How many people will take part in the contest?',
   required: true,
-  hint: PRICING_EXPLANATION,
+  hint: PRICING_TERMS,
 };
