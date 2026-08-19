@@ -150,10 +150,10 @@ const SUBMIT_BUBBLE_DELAY = 600;  // pacing between user-bubble and the next pro
 const PARTICIPANT_EXAMPLES = {
   b1: { name: 'e.g. Northbeam', why: 'e.g. Northbeam: a steady light to navigate by. Sounds like a company you can trust.' },
   b2: { name: 'e.g. Driftless', why: 'e.g. Driftless: focus without the wander. Short, sharp, easy to say in a demo.' },
-  b3: { name: 'e.g. Project Lighthouse', why: 'e.g. Lighthouse: guides every team to the same shore. Reads clean on a slide.' },
+  b3: { name: 'e.g. Project Lighthouse', why: 'e.g. Project Lighthouse: guides every team to the same shore. Reads clean on a slide.' },
   b4: { name: 'e.g. Meridian', why: 'e.g. Meridian: a new line through the same map. Keeps the trust of the old name.' },
   b5: { name: 'e.g. The Forge', why: 'e.g. The Forge: where rough ideas get hammered into shape. Works on a door and a deck.' },
-  t1: { name: 'e.g. Iron Boots FC', why: 'e.g. Heron: the bird that fishes along our river. Single sharp word, easy on a jersey.' },
+  t1: { name: 'e.g. Iron Boots FC', why: 'e.g. Iron Boots FC: hard graft in the name, same as on the pitch. Chants easily from the touchline.' },
   t2: { name: 'e.g. Velvet Static', why: 'e.g. Velvet Static: soft and loud at once, like our sound. Looks right on a poster.' },
   t3: { name: 'e.g. Second Guess', why: 'e.g. Second Guess: what every founder does at 2am. Easy to say in the intro.' },
   t4: { name: 'e.g. The Common Table', why: 'e.g. The Common Table: everyone gets a seat. Warm, civic, easy to trust.' },
@@ -824,10 +824,15 @@ export default function ParticipantChat() {
                         First, should your name show on the names you suggest?
                       </span>
                     </div>
+                    {/* Only when the creator set a prize. "the prize (name)"
+                        instead of splicing the raw prize text into the
+                        sentence: creator-written prize names are arbitrary
+                        phrases ("A round at The Crown") that break the
+                        grammar when inlined directly. */}
                     {prize?.name && (
                       <div className="v4-hint">
-                        Heads up, anonymous names aren’t eligible for{' '}
-                        {prize.name}.
+                        Heads up, anonymous names aren’t eligible for the
+                        prize ({prize.name}).
                       </div>
                     )}
                     <div
@@ -1052,7 +1057,7 @@ export default function ParticipantChat() {
                           <span>{INITIAL_PROMPT}</span>
                         </div>
                         {featuredArticle && (
-                          <GuideExpandable article={featuredArticle} compact />
+                          <GuideExpandable article={featuredArticle} compact tone={tone} />
                         )}
                       </>
                     )}

@@ -285,9 +285,18 @@ function MultiChipsInput({ question, onSubmit, currentAnswer }) {
     ...extra.map((v) => ({ value: v, eg: null })),
   ];
 
+  // Example-bearing option sets render as uniform full-width rows (the
+  // examples make chips long and ragged when content-sized); plain string
+  // sets stay compact inline pills. One rule, applied consistently.
+  const hasEgs = opts.some((o) => o && typeof o === 'object' && o.eg);
+
   return (
     <form className="v4-multichips-block" onSubmit={handleSubmit}>
-      <div className="v4-chips-row" role="group" aria-label={question.label}>
+      <div
+        className={`v4-chips-row${hasEgs ? ' v4-chips-row--stacked' : ''}`}
+        role="group"
+        aria-label={question.label}
+      >
         {chips.map(({ value, eg }) => {
           const isOn = selected.includes(value);
           return (
@@ -305,6 +314,9 @@ function MultiChipsInput({ question, onSubmit, currentAnswer }) {
           );
         })}
       </div>
+      {/* Custom entry is open by default on allowCustom questions: the
+          "Add your own" field sits under the option cards so a picker can
+          drop in a territory the presets miss without hunting for it. */}
       {question.allowCustom && (
         <div className="v4-chips-custom-row" style={{ display: 'flex', gap: 8, marginTop: 10 }}>
           <input

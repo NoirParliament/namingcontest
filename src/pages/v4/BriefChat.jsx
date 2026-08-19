@@ -649,6 +649,7 @@ export default function BriefChat() {
                 <HistoryTurn
                   key={turn.question.id + '_' + i}
                   turn={turn}
+                  tone={navTone}
                   isEditing={editingIndex === i}
                   onStartEdit={() => startEditing(i)}
                   onEditSubmit={handleEditSubmit}
@@ -662,6 +663,7 @@ export default function BriefChat() {
               <CurrentQuestion
                 question={currentQ}
                 article={currentArticle}
+                tone={navTone}
                 phase={phase}
                 userReply={userReply}
                 onSubmit={handleSubmit}
@@ -806,7 +808,7 @@ function VoterReply({ voters, editable, onEdit, ariaLabel }) {
 }
 
 // ── Single completed turn in history ────────────────────────────────
-function HistoryTurn({ turn, isEditing, onStartEdit, onEditSubmit, onCancelEdit, onSaveProgress, alreadySaved }) {
+function HistoryTurn({ turn, tone, isEditing, onStartEdit, onEditSubmit, onCancelEdit, onSaveProgress, alreadySaved }) {
   const { question, answer, display, article } = turn;
   const isNarrator = question.type === 'narrator';
   const isSegment = question.section === 'segment';
@@ -833,7 +835,7 @@ function HistoryTurn({ turn, isEditing, onStartEdit, onEditSubmit, onCancelEdit,
 
       {/* Guide stays attached to the question in history — collapsed by
           default but always one tap away if the user wants to re-read. */}
-      {article && <GuideExpandable article={article} compact />}
+      {article && <GuideExpandable article={article} compact tone={tone} />}
 
 
       {/* Editable user reply — stays visible at all times (including
@@ -879,7 +881,7 @@ function HistoryTurn({ turn, isEditing, onStartEdit, onEditSubmit, onCancelEdit,
 }
 
 // ── Current question being revealed ─────────────────────────────────
-function CurrentQuestion({ question, article, phase, userReply, onSubmit }) {
+function CurrentQuestion({ question, article, tone, phase, userReply, onSubmit }) {
   const isNarrator = question.type === 'narrator';
 
   // Narrator — no input. Two flavors: the badge divider (section break)
@@ -908,7 +910,7 @@ function CurrentQuestion({ question, article, phase, userReply, onSubmit }) {
       )}
 
       {phase >= 2 && article && !userReply && (
-        <GuideExpandable article={article} />
+        <GuideExpandable article={article} tone={tone} />
       )}
 
       {phase >= 3 && !userReply && (

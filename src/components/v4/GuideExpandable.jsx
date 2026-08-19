@@ -28,23 +28,42 @@ const ICONS = {
   CheckCircle, ListChecks, Wrench,
 };
 
-// Pull-quote tones — left border accent in the segment's pastel hue
+// Callout kinds keep distinct icons + labels, but their accent colour now
+// comes from the segment tone (var --guide-accent) so the guide reads as
+// one coloured object instead of scattering unrelated hues (client
+// feedback 2026-08-19: "random colors in guides not matching segment").
 const CALLOUT_META = {
-  insight: { accent: '#b25620', Icon: Lightbulb,      label: 'Insight' },
-  example: { accent: '#3f8850', Icon: ChatCircleText, label: 'Example' },
-  warning: { accent: '#8a6a14', Icon: ShieldWarning,  label: 'Heads up' },
+  insight: { Icon: Lightbulb,      label: 'Insight' },
+  example: { Icon: ChatCircleText, label: 'Example' },
+  warning: { Icon: ShieldWarning,  label: 'Heads up' },
 };
 
-export default function GuideExpandable({ article, compact = false }) {
+export default function GuideExpandable({ article, compact = false, tone = null }) {
   const [open, setOpen] = useState(false);
   if (!article) return null;
+
+  // Segment tone drives the callout's wash + accent so the guide reads as
+  // an editorial aside in the contest's own colour, not a look-alike of the
+  // white input/radio cards above it (client feedback 2026-08-19).
+  const toneVars = tone
+    ? { '--guide-tint': tone.bg, '--guide-accent': tone.fg }
+    : undefined;
 
   const HeaderIcon = ICONS[article.icon] || BookOpen;
   const callout = article.callout;
   const calloutMeta = callout ? CALLOUT_META[callout.type] : null;
+  // Authored teaser: the article's first section heading doubles as a
+  // one-line takeaway, so the card reads as an editorial object (title +
+  // what you'll get) instead of a second block of instructions after the
+  // hint. Client feedback 2026-08-19: hint then guide-chip read as two
+  // stacked "helpful things"; the card separates their jobs visually.
+  const teaser = article.sections?.[0]?.heading || null;
 
   return (
-    <div className={`v4-guide ${open ? 'is-open' : ''} ${compact ? 'v4-guide-compact' : ''}`}>
+    <div
+      className={`v4-guide ${open ? 'is-open' : ''} ${compact ? 'v4-guide-compact' : ''}`}
+      style={toneVars}
+    >
       <button
         type="button"
         className="v4-guide-trigger"
@@ -52,14 +71,20 @@ export default function GuideExpandable({ article, compact = false }) {
         aria-expanded={open}
       >
         <span className="v4-guide-trigger-icon" aria-hidden="true">
-          <BookOpen weight="duotone" size={16} />
+          <HeaderIcon weight="duotone" size={compact ? 17 : 19} />
         </span>
         <span className="v4-guide-trigger-text">
-          {open ? 'Hide guide' : 'Read the guide'}
-          <span className="v4-guide-trigger-title"> · {article.title}</span>
+          <span className="v4-guide-trigger-eyebrow">
+            <BookOpen weight="fill" size={11} aria-hidden="true" />
+            Guide · {article.readTime} read
+          </span>
+          <span className="v4-guide-trigger-title">{article.title}</span>
+          {!compact && teaser && (
+            <span className="v4-guide-trigger-teaser">{teaser}</span>
+          )}
         </span>
         <span className="v4-guide-trigger-meta">
-          {article.readTime}
+          <span className="v4-guide-trigger-cta">{open ? 'Hide' : 'Read'}</span>
           <span className="v4-guide-trigger-caret" aria-hidden="true">
             {open ? <CaretDown size={12} weight="bold" /> : <CaretRight size={12} weight="bold" />}
           </span>
@@ -86,11 +111,8 @@ export default function GuideExpandable({ article, compact = false }) {
           ))}
 
           {callout && calloutMeta && (
-            <aside
-              className="v4-guide-callout"
-              style={{ borderLeftColor: calloutMeta.accent }}
-            >
-              <div className="v4-guide-callout-label" style={{ color: calloutMeta.accent }}>
+            <aside className="v4-guide-callout">
+              <div className="v4-guide-callout-label">
                 <calloutMeta.Icon weight="duotone" size={14} />
                 <span>{calloutMeta.label}</span>
               </div>

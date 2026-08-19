@@ -3903,6 +3903,8 @@ input.v4-results-search-input::placeholder {
    GUIDE EXPANDABLE — the "📖 Read the guide" card
    ============================================ */
 .v4-guide {
+  --guide-tint: var(--v4-bubble-bg);
+  --guide-accent: var(--v4-fg);
   width: 100%;
   max-width: 560px;
   margin: 4px 0 14px;
@@ -3910,106 +3912,140 @@ input.v4-results-search-input::placeholder {
   opacity: 0;
 }
 
-/* ── Trigger pill ─────────────────────────────────────────────────── */
+/* ── Trigger: editorial guide callout ───────────────────────────────
+   Client feedback (2026-08-19, round two): the teaser CARD read as just
+   another radio card (white surface, rounded tile, title + subline). The
+   trigger is now a tinted ASIDE in the segment's own colour — a wash
+   background, a solid accent rail down the left edge, a round accent
+   badge, an accent GUIDE eyebrow, and a "Read" pill. This is the standard
+   docs/Notion "callout" affordance: inputs are white, help is tinted, so
+   the eye sorts them apart instantly. Colour comes from CSS vars set on
+   the element (--guide-tint / --guide-accent); falls back to the neutral
+   ink scheme when no segment tone is supplied. */
 .v4-guide-trigger {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 10px;
-  background: #ffffff;
-  border: 1px solid var(--v4-faint);
-  border-radius: 999px;
-  padding: 8px 16px 8px 12px;
+  gap: 13px;
+  width: 100%;
+  background: color-mix(in srgb, var(--guide-tint) 34%, #fff);
+  border: 1px solid color-mix(in srgb, var(--guide-accent) 14%, transparent);
+  border-left: 3px solid var(--guide-accent);
+  border-radius: 5px 15px 15px 5px;
+  padding: 13px 15px 13px 16px;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  font-size: 13px;
   color: var(--v4-fg);
+  text-align: left;
   cursor: pointer;
   outline: none;
-  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   max-width: 100%;
 }
 .v4-guide-trigger:hover {
-  border-color: rgba(3, 3, 2, 0.35);
+  background: color-mix(in srgb, var(--guide-tint) 52%, #fff);
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px -10px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 8px 20px -12px color-mix(in srgb, var(--guide-accent) 55%, transparent);
 }
 .v4-guide-trigger:focus-visible {
-  border-color: rgba(3, 3, 2, 0.45);
-  box-shadow: 0 0 0 3px var(--v4-ring);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--guide-accent) 28%, transparent);
 }
 .v4-guide.is-open .v4-guide-trigger {
-  background: var(--v4-bubble-bg);
-  border-color: rgba(3, 3, 2, 0.2);
-}
-
-/* Compact variant — used when guide lives in history (already-answered turn).
-   Slightly tighter, slightly muted, comes alive on hover/expand so the
-   re-read affordance stays discoverable without competing with the
-   current question. */
-.v4-guide-compact {
-  margin: 4px 0 18px;
-}
-.v4-guide-compact .v4-guide-trigger {
-  padding: 6px 12px 6px 10px;
-  font-size: 12px;
-  background: transparent;
-  border-color: var(--v4-faint);
-  opacity: 0.7;
-  transition: opacity 0.2s ease, border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
-}
-.v4-guide-compact .v4-guide-trigger:hover {
-  opacity: 1;
-  background: #ffffff;
-  border-color: rgba(3, 3, 2, 0.3);
-}
-.v4-guide-compact.is-open .v4-guide-trigger {
-  opacity: 1;
-  background: var(--v4-bubble-bg);
-  border-color: rgba(3, 3, 2, 0.2);
-}
-.v4-guide-compact .v4-guide-trigger-icon svg {
-  width: 14px;
-  height: 14px;
-}
-.v4-guide-compact .v4-guide-trigger-text {
-  font-weight: 500;
-  max-width: 320px;
-}
-.v4-guide-compact .v4-guide-trigger-meta {
-  font-size: 10px;
+  background: color-mix(in srgb, var(--guide-tint) 52%, #fff);
 }
 .v4-guide-trigger-icon {
   display: inline-flex;
-  color: var(--v4-fg);
+  align-items: center;
+  justify-content: center;
   flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--guide-accent) 15%, #fff);
+  color: var(--guide-accent);
 }
 .v4-guide-trigger-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.v4-guide-trigger-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--guide-accent);
+}
+.v4-guide-trigger-title {
+  font-family: var(--font-display);
+  font-size: 15px;
   font-weight: 600;
-  letter-spacing: -0.005em;
+  letter-spacing: -0.01em;
+  color: var(--v4-fg);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 360px;
 }
-.v4-guide-trigger-title {
+.v4-guide-trigger-teaser {
+  font-size: 12.5px;
   color: var(--v4-muted);
-  font-weight: 400;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .v4-guide-trigger-meta {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
+  margin-left: auto;
+  padding: 5px 9px 5px 11px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--guide-accent) 12%, #fff);
+  color: var(--guide-accent);
   font-size: 11px;
-  color: var(--v4-muted);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  margin-left: auto;
-  padding-left: 8px;
   white-space: nowrap;
+  flex: none;
+}
+.v4-guide-trigger:hover .v4-guide-trigger-meta {
+  background: color-mix(in srgb, var(--guide-accent) 20%, #fff);
 }
 .v4-guide-trigger-caret {
   display: inline-flex;
-  color: var(--v4-muted);
+}
+
+/* Compact variant — used when guide lives in history (already-answered
+   turn) and on the participant chat. Slimmer rail-and-wash bar: smaller
+   badge, no teaser line (hidden in JSX), lighter wash until hover. */
+.v4-guide-compact {
+  margin: 4px 0 18px;
+}
+.v4-guide-compact .v4-guide-trigger {
+  padding: 9px 12px 9px 13px;
+  background: color-mix(in srgb, var(--guide-tint) 20%, #fff);
+  border-left-width: 3px;
+}
+.v4-guide-compact .v4-guide-trigger:hover {
+  background: color-mix(in srgb, var(--guide-tint) 40%, #fff);
+}
+.v4-guide-compact.is-open .v4-guide-trigger {
+  background: color-mix(in srgb, var(--guide-tint) 40%, #fff);
+}
+.v4-guide-compact .v4-guide-trigger-icon {
+  width: 28px;
+  height: 28px;
+}
+.v4-guide-compact .v4-guide-trigger-title {
+  font-size: 13.5px;
+}
+.v4-guide-compact .v4-guide-trigger-meta {
+  font-size: 10px;
+  padding: 4px 8px 4px 10px;
 }
 
 /* ── Expanded body ───────────────────────────────────────────────── */
@@ -4041,9 +4077,9 @@ input.v4-results-search-input::placeholder {
   justify-content: center;
   width: 40px;
   height: 40px;
-  border-radius: 12px;
-  background: var(--v4-bubble-bg);
-  color: var(--v4-fg);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--guide-accent) 15%, #fff);
+  color: var(--guide-accent);
   flex: none;
 }
 .v4-guide-head-text {
@@ -4097,7 +4133,7 @@ input.v4-results-search-input::placeholder {
   gap: 8px;
   margin: 26px 0 6px;
   padding: 4px 0 4px 18px;
-  border-left: 3px solid var(--v4-fg);
+  border-left: 3px solid var(--guide-accent);
 }
 .v4-guide-callout-label {
   display: inline-flex;
@@ -4108,6 +4144,7 @@ input.v4-results-search-input::placeholder {
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  color: var(--guide-accent);
 }
 .v4-guide-callout-quote {
   font-family: 'Fraunces', ui-serif, Georgia, serif;
@@ -11646,4 +11683,43 @@ button.v4-exit {
 }
 .v4-brief-expand-text {
   color: var(--v4-muted);
+}
+
+/* ── Stacked multi-select (options with examples) ───────────────────
+   Chips whose options carry examples render as uniform cards in a
+   two-column grid (one column on phones), so an 8-option set is 4 rows
+   not 8. Inside each card the example sits UNDER the label, the way
+   radioCards stack label + sublabel. Plain string sets keep the compact
+   inline pill layout. */
+.v4-chips-row--stacked {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  align-items: stretch;
+}
+.v4-chips-row--stacked .v4-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  text-align: left;
+  /* Full-width elements are cards in this design language, not stretched
+     pills — match the radioCards these questions replaced. */
+  border-radius: 14px;
+  padding: 12px 16px;
+}
+.v4-chips-row--stacked .v4-chip .v4-chip-eg {
+  margin-left: 0;
+  text-align: left;
+}
+/* Options with no example (e.g. "Open to anything", "Other") shouldn't
+   leave a gap where the example line would sit — center their label. */
+.v4-chips-row--stacked .v4-chip:not(:has(.v4-chip-eg)) {
+  justify-content: center;
+}
+@media (max-width: 560px) {
+  .v4-chips-row--stacked {
+    grid-template-columns: 1fr;
+  }
 }

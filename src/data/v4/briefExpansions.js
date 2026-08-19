@@ -64,7 +64,9 @@ export const BRIEF_EXPANSIONS = {
     'Underdog / Gritty': 'names that make gritty a badge of honor, in the Mighty Ducks tradition.', // [lore]
   },
 
-  // t1 territories — grounded in the OKC Thunder / Seattle Kraken hint
+  // t1 sports territories (grounded in the OKC Thunder / Seattle Kraken
+  // hint) + t3 podcast territories (same question id, distinct labels; the
+  // real-show examples come from the option egs)
   namingDirection: {
     'Animal / Mascot': 'a creature to rally behind, like Lions, Hawks, or Seattle’s Kraken.', // [eg + hint]
     'Force of Nature': 'names that evoke a powerful force of nature, like Thunder or Blaze.', // [hint + eg]
@@ -72,6 +74,11 @@ export const BRIEF_EXPANSIONS = {
     'Elite / Best': 'names that plant a flag at the top, like Apex or Vanguard.', // [eg]
     'Tough / Fierce': 'hard-edged names, like Renegades or Predators.', // [eg]
     'Open to anything': 'no set territory: the door is open for an unexpected idea.', // [hint]
+    'Says what it is': 'tells listeners exactly what they get, like The Daily or How I Built This.', // [eg]
+    'Single evocative word': 'one word that carries the whole mood, like Serial or Heavyweight.', // [eg]
+    'Host-forward': 'built on the host’s own name, like The Joe Rogan Experience.', // [eg]
+    'A phrase with attitude': 'a spoken phrase with personality, like Stuff You Should Know.', // [eg]
+    'Wordplay / pun': 'runs on the pun, like Pod Save America.', // [eg]
   },
 
   // t2 band — the authored examples, each grounded in its documented origin
