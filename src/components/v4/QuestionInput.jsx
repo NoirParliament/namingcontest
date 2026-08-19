@@ -20,7 +20,7 @@ import {
   BrandingFullInput,
   DeferLaunchInput,
 } from './CompoundInputs';
-import { VOTER_TIERS } from '../../data/v4/voterTiers';
+import { VOTER_TIERS, DEFAULT_VOTER_TIER } from '../../data/v4/voterTiers';
 import { readSetup, formatWindowDuration } from '../../utils/v4Brief';
 
 const SEGMENT_ICONS = {
@@ -540,25 +540,42 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
 // Three chips; returns the numeric voter count (15 | 30 | 60). Price is
 // shown inline but derived from VOTER_TIERS so it stays one source.
 function VoterTierInput({ question, onSubmit }) {
-  // Price cards, not pills: this is the one question that IS a purchase, so
-  // the options are shaped like what you're buying — amount first, capacity
-  // under it — and the answer bubble echoes the same card.
+  // Price cards, not pills: this is the one question that IS a purchase.
+  // Each tier wears its own NC pastel (sunny small -> warm middle ->
+  // periwinkle big) and the default tier carries the "Most popular" tag.
+  const TIER_TONES = {
+    10: { bg: '#fceebc', fg: '#8a6a14' },
+    30: { bg: '#fadecc', fg: '#9c4818' },
+    90: { bg: '#c4cff5', fg: '#283b78' },
+  };
   return (
-    <div className="v4-tier-cards" role="radiogroup" aria-label={question.label}>
-      {VOTER_TIERS.map((t) => (
-        <button
-          key={t.voters}
-          type="button"
-          role="radio"
-          aria-checked={false}
-          className="v4-tier-card"
-          onClick={() => onSubmit(t.voters)}
-        >
-          <span className="v4-tier-card-price">${t.price}</span>
-          <span className="v4-tier-card-cap">Up to {t.voters}<br />participants</span>
-        </button>
-      ))}
-      <span className="v4-tier-cards-note">One payment per contest · no subscription</span>
+    <div className="v4-tier-block">
+      <div className="v4-tier-cards" role="radiogroup" aria-label={question.label}>
+        {VOTER_TIERS.map((t) => {
+          const tone = TIER_TONES[t.voters] || TIER_TONES[30];
+          const popular = t.voters === DEFAULT_VOTER_TIER;
+          return (
+            <button
+              key={t.voters}
+              type="button"
+              role="radio"
+              aria-checked={false}
+              className={`v4-tier-card ${popular ? 'is-popular' : ''}`}
+              onClick={() => onSubmit(t.voters)}
+            >
+              {popular && <span className="v4-tier-card-tag">Most popular</span>}
+              <span className="v4-tier-card-price" style={{ background: tone.bg, color: tone.fg }}>
+                ${t.price}
+              </span>
+              <span className="v4-tier-card-cap">
+                <b>Up to {t.voters}</b>
+                <span>participants</span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+      <div className="v4-tier-note">One payment per contest · no subscription</div>
     </div>
   );
 }

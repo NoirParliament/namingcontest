@@ -11202,25 +11202,26 @@ select.v4-pvote-sort-select:hover {
 }
 
 /* ── Voter-tier price cards ──────────────────────────────────────────
-   The only question that is literally a purchase, so the options read
-   as price cards (amount over capacity) and match the receipt-style
-   answer bubble they produce. */
+   The only question that is literally a purchase. Each tier wears its
+   own NC pastel on the price medallion; the default tier carries the
+   "Most popular" tag. The terms note aligns with the chat's text flow. */
 .v4-tier-cards {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 .v4-tier-card {
+  position: relative;
   flex: 1 1 0;
-  min-width: 104px;
+  min-width: 110px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 14px 12px;
+  gap: 8px;
+  padding: 18px 12px 14px;
   background: #ffffff;
   border: 1.5px solid var(--v4-faint);
-  border-radius: 14px;
+  border-radius: 16px;
   cursor: pointer;
   font-family: var(--font-text);
   transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
@@ -11230,25 +11231,53 @@ select.v4-pvote-sort-select:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 22px -12px rgba(3, 3, 2, 0.4);
 }
+.v4-tier-card.is-popular {
+  border-color: rgba(3, 3, 2, 0.45);
+}
+.v4-tier-card-tag {
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--v4-fg);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
 .v4-tier-card-price {
   font-family: var(--font-display, Fraunces, Georgia, serif);
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 700;
   line-height: 1;
-  color: var(--v4-fg);
+  padding: 8px 16px;
+  border-radius: 999px;
 }
 .v4-tier-card-cap {
-  font-size: 12px;
-  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
   line-height: 1.3;
-  color: var(--v4-muted);
   text-align: center;
 }
-.v4-tier-cards-note {
-  flex: 1 0 100%;
-  font-family: var(--font-text);
+.v4-tier-card-cap b {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--v4-fg);
+}
+.v4-tier-card-cap span {
   font-size: 11.5px;
+  font-weight: 500;
   color: var(--v4-muted);
-  text-align: center;
-  margin-top: 2px;
+}
+.v4-tier-note {
+  margin-top: 10px;
+  font-family: var(--font-text);
+  font-size: 12px;
+  color: var(--v4-muted);
 }
