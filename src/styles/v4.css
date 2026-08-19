@@ -58,6 +58,11 @@
    (or any other right-edge actions). Without this, the wrapper lands
    at the START of the right grid column, not pinned to the edge. */
 .v4-nav .v4-nav-right { justify-self: end;    }
+/* Destination headers (Namespace, contest management) have no center
+   breadcrumb — they aren't multi-step flows — so they run logo left /
+   account cluster right. Two-class selector beats the base 1fr-auto-1fr
+   (and the mobile auto-1fr-auto) on every width. */
+.v4-nav.v4-nav--ends { grid-template-columns: 1fr auto; }
 .v4-nav.is-scrolled {
   background: rgba(252, 249, 247, 0.78);
 }
@@ -139,6 +144,31 @@
   font-variant-numeric: tabular-nums;
   opacity: 0.7;
 }
+
+/* ── Unified app header bottom bar (creator setup + participant) ─────
+   Desktop is unchanged (centered dots/counter for setup, phase label for
+   participant). On phones only, both headers drop the center stage text
+   and show a slim progress bar flush along the bottom edge, keeping the
+   top row to logo + Exit + avatar so it never stacks or crowds. The bar
+   is hidden on desktop; the mobile block below turns it on. */
+.v4-nav-progressbar {
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(3, 3, 2, 0.07);
+  overflow: hidden;
+}
+.v4-nav-progressbar-fill {
+  display: block;
+  height: 100%;
+  background: var(--v4-fg);
+  border-radius: 0 3px 3px 0;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 
 
 
@@ -1127,10 +1157,45 @@ body.is-exiting {
   .v4-nav {
     padding: 16px 20px;
   }
-  .v4-progress {
-    justify-content: flex-start;
+  /* App headers (setup + participant) on phones: drop the center stage
+     text, go two-column (logo | Exit+avatar cluster), and show the slim
+     progress bar flush along the bottom edge. Desktop is untouched. */
+  .v4-nav--app {
+    grid-template-columns: 1fr auto;
   }
-  .v4-progress .v4-step-label {
+  .v4-nav--app .v4-progress {
+    display: none;
+  }
+  .v4-nav--app .v4-nav-progressbar {
+    display: block;
+  }
+  /* Once content scrolls under the clear header on phones, lay in a warm
+     translucent fill so dark chat bubbles passing beneath don't swallow
+     the dark logo / Exit. Mobile only — desktop keeps the pure glass
+     (transparent + blur) the design intends. Three-class selector beats
+     .v4-nav-clear's transparent (defined later at equal specificity). */
+  .v4-nav.v4-nav-clear.is-scrolled {
+    background: rgba(252, 249, 247, 0.82);
+  }
+  /* The participant nav lives inside .v4-review, which insets it 16px —
+     cancel that so it sits full-bleed with the same 20px content inset as
+     the setup nav (in .v4-chat, which has no inset). Now the logo and the
+     Exit/avatar cluster align identically on both headers. */
+  .v4-review > .v4-nav {
+    margin-left: -16px;
+    margin-right: -16px;
+  }
+  /* Hide the chat/review scrollbar on phones. The sticky header lives
+     inside this scroll container, so a classic scrollbar gutter shrinks
+     it (and its frosted fill) ~6px shy of the right edge. Mobile chat
+     UIs hide scrollbars anyway, and real phones use overlay bars — so
+     this removes the gutter and lets the header span edge to edge. */
+  .v4-chat,
+  .v4-review {
+    scrollbar-width: none;
+  }
+  .v4-chat::-webkit-scrollbar,
+  .v4-review::-webkit-scrollbar {
     display: none;
   }
   .v4-chat-inner {
@@ -1184,7 +1249,13 @@ body.is-exiting {
    ask for short free-text answers (Screen 2 etc.)
    ============================================ */
 .v4-hint {
-  margin-top: 18px;
+  /* Equal gap above and below, for every question type. The chat is a flex
+     column (margins add, don't collapse): the prompt bubble above always
+     carries a 12px bottom margin, so a 2px top here makes the gap above
+     14px — matching the 14px below. The small top margins some following
+     elements carry (guide chip, chips row) are zeroed just below so the
+     below gap is a clean 14px everywhere. Same on PC and mobile. */
+  margin-top: 2px;
   margin-bottom: 14px;
   font-size: 14px;
   line-height: 1.55;
@@ -1193,6 +1264,14 @@ body.is-exiting {
   letter-spacing: -0.005em;
   animation: v4-bubble-in 0.5s ease-out forwards;
   opacity: 0;
+}
+/* When a hint is immediately followed by the guide chip or a chips row,
+   zero their own top margin so the gap below the hint is a clean 14px
+   (matching the gap above) rather than 14 + their 4–6px. Keeps every
+   example-text block evenly centered between its neighbours. */
+.v4-hint + .v4-guide,
+.v4-hint + .v4-chips-row {
+  margin-top: 0;
 }
 .v4-hint-eg {
   display: inline-block;
@@ -2526,8 +2605,12 @@ input.v4-launch-email-input::placeholder {
 
 /* Brief recap collapser */
 .v4-manage-recap {
-  background: #ffffff;
-  border: 1px solid var(--v4-faint);
+  /* Locked-at-launch reference material — wears the review page's
+     "private" treatment (page-tinted bg + dashed outline) instead of a
+     white card, collapsed and expanded alike, so it reads as an aside
+     you consult rather than a surface you edit. */
+  background: var(--v4-bg);
+  border: 1.5px dashed rgba(3, 3, 2, 0.24);
   border-radius: 18px;
   margin-bottom: 24px;
   overflow: hidden;
@@ -2855,6 +2938,18 @@ input.v4-launch-email-input::placeholder {
   color: var(--v4-muted);
   font-weight: 500;
   letter-spacing: -0.005em;
+}
+/* The creator's intro — a paragraph, not a label/value pair, so it gets
+   the row-value typography at full width (aligned with the row padding). */
+.v4-manage-recap-intro {
+  margin: 0;
+  padding: 4px 12px 6px;
+  font-size: 14px;
+  color: var(--v4-fg);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  line-height: 1.55;
+  white-space: pre-wrap;
 }
 .v4-manage-recap-row-value {
   font-size: 14px;
@@ -4359,6 +4454,10 @@ input.v4-results-search-input::placeholder {
 
 .v4-review-list {
   margin: 0;
+  /* Own reset — this list also renders outside the review page (the manage
+     recap mirrors its design), where no page-level ul reset applies. */
+  list-style: none;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -4369,6 +4468,24 @@ input.v4-results-search-input::placeholder {
   gap: 16px;
   padding: 10px 0;
   border-top: 1px solid var(--v4-faint);
+}
+/* Row typography on the BASE class, so read-only rows (manage recap) and
+   editable button rows render identically. The .v4-review-row-edit scoped
+   copies below remain for the button variant; values match. */
+.v4-review-row .v4-review-row-label {
+  font-size: 13px;
+  color: var(--v4-muted);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+.v4-review-row .v4-review-row-value {
+  font-size: 14px;
+  color: var(--v4-fg);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  line-height: 1.5;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 .v4-review-row:first-child {
   border-top: none;

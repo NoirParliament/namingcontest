@@ -209,7 +209,7 @@ export default function ParticipantVoteThanks() {
                 {votedCount === 1 ? 'Vote locked in.' : 'Votes locked in.'}
               </h1>
               <p className="v4-pthanks-sub">
-                Your {votedCount === 1 ? 'pick is in' : `${votedCount} picks are in`} —
+                Your {votedCount === 1 ? 'pick is in' : `${votedCount} picks are in`};
                 {' '}we’ll email you the moment {creatorName} picks the winner.
               </p>
             </section>

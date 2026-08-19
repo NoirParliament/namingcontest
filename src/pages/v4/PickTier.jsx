@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { X } from '@phosphor-icons/react';
 import ExitLink from '../../components/v4/ExitLink';
@@ -7,6 +7,11 @@ import teamPlayers from '../../assets/team-players.png';
 import businessWoman from '../../assets/business-woman.png';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
+import AvatarMenu from '../../components/v4/AvatarMenu';
+import { useAuth } from '../../lib/AuthContext';
+import { supabase } from '../../lib/supabaseClient';
+import { getSegmentTone } from '../../data/v4/segmentTheme';
+import { readSetup } from '../../utils/v4Brief';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -47,6 +52,20 @@ const URL_TIER = { personal: 'personal', team: 'group', business: 'business' };
 export default function PickTier() {
   const navigate = useNavigate();
   const [picked, setPicked] = useState(null);
+  // Signed-in host → their avatar sits in the header, same as the chat and
+  // review steps, so the account picture is continuous across the whole
+  // creator flow (guests just see Exit).
+  const { user } = useAuth();
+  const [profile, setProfile] = useState(null);
+  useEffect(() => {
+    if (!user?.id) return;
+    let active = true;
+    supabase.from('profiles').select('*').eq('id', user.id).single()
+      .then(({ data }) => { if (active && data) setProfile(data); });
+    return () => { active = false; };
+  }, [user?.id]);
+  const navSetup = readSetup();
+  const navTone = navSetup.subSegmentId ? getSegmentTone(navSetup.subSegmentId) : null;
 
   const handlePick = (tierKey) => {
     if (picked) return; // ignore repeat clicks during the confirmation hold
@@ -79,7 +98,7 @@ export default function PickTier() {
       <span className="v4-blob v4-blob-4" aria-hidden="true"></span>
 
       {/* Slim v4-style nav — matches the chat screens */}
-      <header className="v4-nav">
+      <header className="v4-nav v4-nav--app">
         <BrandLink />
         <div className="v4-progress">
           <span className="v4-step-dot is-active"></span>
@@ -89,7 +108,18 @@ export default function PickTier() {
             Setup<span className="v4-step-counter"> · 1/16</span>
           </span>
         </div>
-        <ExitLink to="/" aria-label="Exit" />
+        <div className="v4-nav-right">
+          <ExitLink to="/" aria-label="Exit" />
+          {user && (
+            <AvatarMenu
+              email={user?.email || navSetup.userEmail}
+              name={profile?.display_name || navSetup.userName}
+              photo={profile?.avatar_url || navSetup.userPhoto || null}
+              seed={user?.id}
+              tone={navTone}
+            />
+          )}
+        </div>
       </header>
 
       <div className="frame">

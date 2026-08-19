@@ -160,7 +160,7 @@ export function ToggleNameDescInput({ question, onSubmit, currentAnswer }) {
         className="v4-input-skip-link"
         onClick={() => onSubmit({ enabled: false, name: '' })}
       >
-        Skip — no prize
+        Skip, no prize
       </button>
     </>
   );
@@ -327,7 +327,7 @@ export function BrandingFullInput({ question, onSubmit }) {
         className="v4-input-skip-link"
         onClick={() => onSubmit({ enabled: false })}
       >
-        Skip — use defaults
+        Skip, use defaults
       </button>
     </div>
   );

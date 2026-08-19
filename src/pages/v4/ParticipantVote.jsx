@@ -454,7 +454,7 @@ export default function ParticipantVote() {
             {introStage >= 1 && (
               <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
                 <span>
-                  {iSubmitted ? 'You’re back — voting’s open for ' : 'Voting’s open for '}
+                  {iSubmitted ? 'You’re back, voting’s open for ' : 'Voting’s open for '}
                   <em>{contest.workingName || contest.name}</em>.{' '}
                   {alreadyVoted
                     ? 'You can update your picks any time before voting closes.'
@@ -547,7 +547,7 @@ export default function ParticipantVote() {
               <>
                 <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
                   <span>
-                    One quick thing before the names — what should we save as
+                    One quick thing before the names, what should we save as
                     your profile name? Every vote is private, so this is only
                     how you show up in your own Namespace, never next to your votes.
                   </span>
@@ -565,7 +565,7 @@ export default function ParticipantVote() {
                   className="v4-credit-decline"
                   onClick={() => setCreditStep('done')}
                 >
-                  Skip — I’d rather not
+                  Skip, I’d rather not
                 </button>
               </>
             )}

@@ -16,7 +16,7 @@ import {
   PaperPlaneTilt, Eye, Trophy, Lightbulb, Confetti,
   Gift, FilePdf, Quotes, LinkSimple,
   LinkedinLogo,
-  Palette, CaretDown, UploadSimple,
+  Palette, CaretDown, UploadSimple, LockSimple,
 } from '@phosphor-icons/react';
 import Avatar from 'boring-avatars';
 import UserAvatar from '../../components/v4/UserAvatar';
@@ -486,7 +486,7 @@ export default function ContestManage() {
   // printing "0 votes" under a winner the creator picked directly.
   const winnerVotes = winnerName?.voteCount ?? 0;
   const shareText = [
-    `Meet “${winnerName?.text ?? ''}” — the new name for ${setup.workingName || 'our project'}.`,
+    `Meet “${winnerName?.text ?? ''}”, the new name for ${setup.workingName || 'our project'}.`,
     winnerVotes > 0
       ? `Chosen by ${winnerVotes} vote${winnerVotes === 1 ? '' : 's'} in a naming contest. 🏆`
       : 'Picked from a naming contest. 🏆',
@@ -592,14 +592,8 @@ export default function ContestManage() {
 
         <main className="v4-review" role="main">
           {/* Glass nav — same as other v4 surfaces */}
-          <header className="v4-nav v4-nav-clear">
+          <header className="v4-nav v4-nav-clear v4-nav--ends">
             <BrandLink />
-            <div className="v4-progress">
-              <span className="v4-step-dot is-done"></span>
-              <span className="v4-step-dot is-done"></span>
-              <span className="v4-step-dot is-done"></span>
-              <span className="v4-step-label">Live</span>
-            </div>
             <div className="v4-nav-right">
               <AvatarMenu
                 email={user?.email || setup.userEmail}
@@ -935,7 +929,7 @@ export default function ContestManage() {
                       {winnerName.anonymous ? (
                         <div className="v4-winner-prize-line">
                           <em>“{liveSettingsAnswers.submitterPrize.name || 'The prize'}”</em>{' '}
-                          forfeited — the winner chose to stay anonymous.
+                          forfeited, the winner chose to stay anonymous.
                         </div>
                       ) : (
                         <div className="v4-winner-prize-line">
@@ -1104,8 +1098,8 @@ export default function ContestManage() {
                     <div className="v4-manage-share-foot">
                       <span className="v4-manage-share-meta-bold">
                         {phase === 'submission'
-                          ? 'No one’s joined yet — share the link to get your first names in.'
-                          : 'No one’s joined yet — share the link to gather votes.'}
+                          ? 'No one’s joined yet. Share the link to get your first names in.'
+                          : 'No one’s joined yet. Share the link to gather votes.'}
                       </span>
                     </div>
                   );
@@ -1211,7 +1205,7 @@ export default function ContestManage() {
                     <p>
                       {phase === 'submission'
                         ? 'Share your link and watch the names roll in. The more people you invite, the richer the shortlist.'
-                        : 'Submissions are closed — every name that came in is now up for the vote.'}
+                        : 'Submissions are closed. Every name that came in is now up for the vote.'}
                     </p>
                   </div>
                 </div>
@@ -1246,10 +1240,10 @@ export default function ContestManage() {
                     <h3>Voting</h3>
                     <p>
                       {phase === 'voting'
-                        ? 'Voting is live. Picks roll in as they happen — no need to refresh or keep watching.'
+                        ? 'Voting is live. Picks roll in as they happen. No need to refresh or keep watching.'
                         : phase === 'submission'
                         ? 'Once submissions close, your people vote on the names. You’ll watch the leaderboard fill in live.'
-                        : 'Voting is closed and the leaderboard is final — the top names are locked in.'}
+                        : 'Voting is closed and the leaderboard is final. The top names are locked in.'}
                     </p>
                   </div>
                 </div>
@@ -1283,11 +1277,11 @@ export default function ContestManage() {
                     <p>
                       {phase === 'winner' && !isWinnerPicked
                         ? (hasNamesToCrown
-                            ? 'Voting is closed. Time to crown the winner — the top vote, or any name that won your heart.'
+                            ? 'Voting is closed. Time to crown the winner: the top vote, or any name that won your heart.'
                             : 'Voting is closed, but no names were submitted, so there’s nothing to crown.')
                         : isWinnerPicked
                         ? 'You crowned the winner. Export the full report below, or share the result straight out.'
-                        : 'When voting wraps, the leaderboard is yours. You make the final call — the top vote, or any name that won your heart.'}
+                        : 'When voting wraps, the leaderboard is yours. You make the final call: the top vote, or any name that won your heart.'}
                     </p>
                     {/* Only offer the pick when there's actually something to
                         pick from. A contest can close empty (nobody entered a
@@ -1318,9 +1312,6 @@ export default function ContestManage() {
                 filledSettings={filledSettings}
                 briefAnswers={liveBriefAnswers}
                 settingsAnswers={liveSettingsAnswers}
-                editable={briefEditable}
-                onEditBrief={(q) => setEditingQuestion({ question: q, section: 'brief' })}
-                onEditSettings={(q) => setEditingQuestion({ question: q, section: 'settings' })}
               />
             )}
 
@@ -1332,7 +1323,7 @@ export default function ContestManage() {
             {isWinnerPicked ? (
               <CatchwordConsultBlock
                 headline="Still hunting for the perfect name?"
-                body={<>The crowd voted, but if it’s not <em>quite</em> there — Catchword is the naming agency NamingContest is built on top of. Book a session for a deeper look.</>}
+                body={<>The crowd voted, but if it’s not <em>quite</em> there, Catchword can help. It’s the naming agency NamingContest is built on top of; book a session for a deeper look.</>}
               />
             ) : (
               <div className="v4-manage-actions">
@@ -1499,31 +1490,28 @@ export default function ContestManage() {
   );
 }
 
-// ── Brief recap collapser — each row is clickable, opens edit modal ──
+// ── Brief recap collapser — the unified single-card design: one white
+// card, quiet group titles (A NOTE FROM YOU / BRIEF / SETTINGS), flat
+// label/value rows. The whole document locks at launch: the trigger says
+// so with a lock glyph, and every row is a plain read-only reference line
+// (no pencils, no hover, no edit paths).
 function BriefRecapCollapser({
   filledBrief, filledSettings, briefAnswers, settingsAnswers,
-  onEditBrief, onEditSettings, editable = true,
 }) {
   const [open, setOpen] = useState(false);
-  const totalAnswered = filledBrief.length + filledSettings.length;
 
-  // Once editing is locked (a real contest with submissions in), rows are
-  // plain read-only lines — no pencil, no click — so the creator can still
-  // review the brief but can't change it under the participants.
   const fmtRow = (q, value) =>
     q.type === 'contestSchedule' ? formatScheduleSummary(settingsAnswers) : formatAnswer(value);
-  const Row = ({ q, value, onEdit }) => editable ? (
-    <button type="button" className="v4-manage-recap-row" onClick={() => onEdit?.(q)}>
-      <span className="v4-manage-recap-row-label">{q.label}</span>
-      <span className="v4-manage-recap-row-value">{fmtRow(q, value)}</span>
-      <PencilSimple weight="regular" size={12} className="v4-manage-recap-row-edit" />
-    </button>
-  ) : (
+  const Row = ({ q, value }) => (
     <div className="v4-manage-recap-row is-readonly">
       <span className="v4-manage-recap-row-label">{q.label}</span>
       <span className="v4-manage-recap-row-value">{fmtRow(q, value)}</span>
     </div>
   );
+
+  // The intro leads as its own group; everything else stays in the flat
+  // Brief / Settings groups (schedule renders as a row within Settings).
+  const briefRows = filledBrief.filter((q) => q.id !== 'intro');
 
   return (
     <section className={`v4-manage-recap ${open ? 'is-open' : ''}`}>
@@ -1533,10 +1521,10 @@ function BriefRecapCollapser({
         onClick={() => setOpen((v) => !v)}
       >
         <span className="v4-manage-recap-icon" aria-hidden="true">
-          <CalendarBlank weight="duotone" size={16} />
+          <LockSimple weight="duotone" size={16} />
         </span>
         <span className="v4-manage-recap-text">
-          Your brief · {totalAnswered} answered{editable ? ' · click any to edit' : ' · locked at launch'}
+          Your brief · can’t be edited after launch
         </span>
         <span className="v4-manage-recap-meta">
           {open ? 'Hide' : 'Show'}
@@ -1545,13 +1533,19 @@ function BriefRecapCollapser({
 
       {open && (
         <div className="v4-manage-recap-body">
-          {filledBrief.length > 0 && (
+          {briefAnswers.intro && (
+            <div className="v4-manage-recap-group">
+              <h3 className="v4-manage-recap-group-title">A note from you</h3>
+              <p className="v4-manage-recap-intro">{briefAnswers.intro}</p>
+            </div>
+          )}
+          {briefRows.length > 0 && (
             <div className="v4-manage-recap-group">
               <h3 className="v4-manage-recap-group-title">Brief</h3>
               <ul className="v4-manage-recap-list">
-                {filledBrief.map((q) => (
+                {briefRows.map((q) => (
                   <li key={q.id}>
-                    <Row q={q} value={briefAnswers[q.id]} onEdit={onEditBrief} />
+                    <Row q={q} value={briefAnswers[q.id]} />
                   </li>
                 ))}
               </ul>
@@ -1563,7 +1557,7 @@ function BriefRecapCollapser({
               <ul className="v4-manage-recap-list">
                 {filledSettings.map((q) => (
                   <li key={q.id}>
-                    <Row q={q} value={settingsAnswers[q.id]} onEdit={onEditSettings} />
+                    <Row q={q} value={settingsAnswers[q.id]} />
                   </li>
                 ))}
               </ul>

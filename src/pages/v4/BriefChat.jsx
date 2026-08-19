@@ -27,7 +27,10 @@ import {
   // Used only inside the section-break divider badge
   Confetti,
 } from '@phosphor-icons/react';
-import { SegmentThemeBackdrop } from '../../data/v4/segmentTheme';
+import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
+import { useAuth } from '../../lib/AuthContext';
+import { supabase } from '../../lib/supabaseClient';
+import AvatarMenu from '../../components/v4/AvatarMenu';
 
 
 import namingContestLogo from "../../assets/namingcontestlogo-cropped.svg";
@@ -168,7 +171,7 @@ function answerToDisplay(value) {
       }
       if (value.text) return value.text;
       if (value.name) return value.name;
-      if (value.configureAfterLaunch) return 'Yes — set up after launch';
+      if (value.configureAfterLaunch) return 'Yes, set up after launch';
       return 'Yes';
     }
   }
@@ -227,6 +230,21 @@ export default function BriefChat() {
   const initial = useMemo(() => readSetup(), []);
   const [subId, setSubId] = useState(initial.subSegmentId || null);
   const segmentLabel = subId ? getSegmentLabel(subId) : null;
+
+  // Signed-in host → their avatar sits in the setup header (a returning
+  // creator starting a new contest). Guests (the common first-run case,
+  // since payment/sign-up happens at launch) see just the Exit control.
+  const { user } = useAuth();
+  const [profile, setProfile] = useState(null);
+  useEffect(() => {
+    if (!user?.id) return;
+    let active = true;
+    supabase.from('profiles').select('*').eq('id', user.id).single()
+      .then(({ data }) => { if (active && data) setProfile(data); });
+    return () => { active = false; };
+  }, [user?.id]);
+  const navTone = subId ? getSegmentTone(subId) : null;
+  const navSetup = readSetup();
 
   // Build the unified question list. Sub-segment pick is always index 0.
   // When subId is null, that's the only entry. Once a sub-segment is picked,
@@ -572,7 +590,7 @@ export default function BriefChat() {
         <main className="v4-chat" role="main" ref={chatRef}>
           {/* Glass nav — sticky inside the chat scroll container so
               chat content slides UNDER it as user scrolls. */}
-          <header className={`v4-nav v4-nav-clear ${isScrolled ? 'is-scrolled' : ''}`}>
+          <header className={`v4-nav v4-nav-clear v4-nav--app ${isScrolled ? 'is-scrolled' : ''}`}>
           <BrandLink />
           {(() => {
             // Phase (Setup vs Settings) is decided by position relative to
@@ -595,17 +613,36 @@ export default function BriefChat() {
               </div>
             );
           })()}
-          {/* Exit asks first (client hit this trying to close a guide) and
-              reassures that nothing is lost — resume picks up right here. */}
-          <button
-            type="button"
-            className="v4-exit"
-            aria-label="Exit"
-            onClick={() => setConfirmReq({ type: 'exit' })}
-          >
-            <X weight="regular" size={14} />
-            <span>Exit</span>
-          </button>
+          {/* Right cluster: Exit (asks first — a client hit this trying to
+              close a guide) plus, for a signed-in host, their avatar. */}
+          <div className="v4-nav-right">
+            <button
+              type="button"
+              className="v4-exit"
+              aria-label="Exit"
+              onClick={() => setConfirmReq({ type: 'exit' })}
+            >
+              <X weight="regular" size={14} />
+              <span>Exit</span>
+            </button>
+            {user && (
+              <AvatarMenu
+                email={user?.email || navSetup.userEmail}
+                name={profile?.display_name || navSetup.userName}
+                photo={profile?.avatar_url || navSetup.userPhoto || null}
+                seed={user?.id}
+                tone={navTone}
+              />
+            )}
+          </div>
+          {/* Phones only (CSS-gated): the center dots + counter give way to
+              this slim fill bar along the header's bottom edge. */}
+          <div className="v4-nav-progressbar" aria-hidden="true">
+            <span
+              className="v4-nav-progressbar-fill"
+              style={{ width: `${Math.min(100, Math.max(4, Math.round((realCurrent / realTotal) * 100)))}%` }}
+            />
+          </div>
         </header>
 
           <div className="v4-chat-inner">
@@ -637,7 +674,7 @@ export default function BriefChat() {
             {/* All-done wrapping bubble */}
             {isDone && !isEditing && (
               <div className="v4-bubble">
-                Almost there — taking you to review&hellip;
+                Almost there, taking you to review&hellip;
               </div>
             )}
           </div>

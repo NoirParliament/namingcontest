@@ -37,7 +37,7 @@ function answerToDisplay(value) {
       if (!value.enabled) return 'No, skip';
       if (value.text) return value.text;
       if (value.name) return value.name;
-      if (value.configureAfterLaunch) return 'Yes — set up after launch';
+      if (value.configureAfterLaunch) return 'Yes, set up after launch';
       return 'Yes';
     }
   }
@@ -135,7 +135,7 @@ export default function SettingsChat() {
           {isDone && (
             <div className="v4-bubble">
               <span className="v4-bubble-icon" aria-hidden="true">🚀</span>
-              <span>Almost there — let’s review and launch.</span>
+              <span>Almost there, let’s review and launch.</span>
             </div>
           )}
         </main>

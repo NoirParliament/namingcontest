@@ -302,8 +302,8 @@ export default function ParticipantWinner() {
               <p className="v4-pthanks-sub">
                 {iWon ? (
                   prizeForfeited
-                    ? <>Your name took the crown — {voteLine} in. You entered anonymously, so the prize isn’t awarded.</>
-                    : <>Your name took the crown — {voteLine} in.</>
+                    ? <>Your name took the crown, {voteLine} in. You entered anonymously, so the prize isn’t awarded.</>
+                    : <>Your name took the crown, {voteLine} in.</>
                 ) : (
                   <>
                     {winner.anonymous || !winner.submitterName

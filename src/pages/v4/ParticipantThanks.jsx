@@ -183,7 +183,7 @@ export default function ParticipantThanks() {
                 {submittedCount === 1 ? 'Name locked in.' : 'Names locked in.'}
               </h1>
               <p className="v4-pthanks-sub">
-                We saved your {submittedCount === 1 ? 'suggestion' : 'suggestions'} —
+                We saved your {submittedCount === 1 ? 'suggestion' : 'suggestions'};
                 you’ll get an email the moment voting opens.
               </p>
             </section>

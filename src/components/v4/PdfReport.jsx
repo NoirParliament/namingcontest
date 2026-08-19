@@ -117,7 +117,7 @@ const PdfReport = forwardRef(function PdfReport({
             <Gift weight="duotone" size={16} />
             <span>
               {winner.anonymous
-                ? <><em>“{prize.name || 'The prize'}”</em> forfeited — winner stayed anonymous</>
+                ? <><em>“{prize.name || 'The prize'}”</em> forfeited, winner stayed anonymous</>
                 : <><strong>{submitter?.name}</strong> wins <em>“{prize.name || 'the prize'}”</em></>}
             </span>
           </div>

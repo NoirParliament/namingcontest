@@ -200,7 +200,7 @@ export default function PickWinnerModal({
                 <Gift weight="duotone" size={14} />
                 <span>
                   {selectedName.anonymous
-                    ? <>{prize.name ? <em>“{prize.name}”</em> : 'The prize'} forfeited — winner is anonymous</>
+                    ? <>{prize.name ? <em>“{prize.name}”</em> : 'The prize'} forfeited, winner is anonymous</>
                     : <><strong>{submitter?.name}</strong> wins{prize.name ? <> &nbsp;<em>“{prize.name}”</em></> : <> &nbsp;the prize</>}</>}
                 </span>
               </div>

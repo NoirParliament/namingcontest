@@ -544,7 +544,7 @@ export default function JoinContest() {
                   <span className="v4-join-form-shape v4-join-form-shape-4" aria-hidden="true" />
                   <span className="v4-join-form-shape v4-join-form-shape-5" aria-hidden="true" />
                   <div className="v4-join-form-head">
-                    Quick — what’s your email?
+                    Quick, what’s your email?
                   </div>
                   <p className="v4-join-form-why">{formWhy}</p>
                   <div className="v4-join-form-row">
@@ -596,7 +596,7 @@ export default function JoinContest() {
                   />
                   <h3 className="v4-join-sent-title">Magic link sent</h3>
                   <p className="v4-join-sent-sub">
-                    Check <strong>{email}</strong> — open the link to{' '}
+                    Check <strong>{email}</strong>, open the link to{' '}
                     {stage === 'voting'
                       ? 'jump in and vote on the names.'
                       : 'jump into the brief and start suggesting names.'}

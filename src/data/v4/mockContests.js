@@ -79,6 +79,9 @@ export const MOCK_CONTESTS = {
     // schema so the BriefRecapCollapser shows realistic content rather
     // than an empty list.
     brief: {
+      // The creator's own hello — opens the invitation and leads the brief
+      // recap ("A note from you"), same as a real contest.
+      intro: 'Our Sunday soccer team needs a real name before the season starts! We’re scrappy, loud, and more serious than we look. Give us something we can chant from the sideline!',
       projectSummary: 'A Sunday-league 7-a-side football team in the Brookside Adult Rec League Division B. Mostly mates from work who took it more seriously than expected.',
       sportLeague: 'Sunday-league 7-a-side football, Brookside Adult Rec League Division B',
       ageGroup: 'Adult Amateur',
@@ -151,6 +154,9 @@ export const MOCK_CONTESTS = {
       { id: 'vsub_15', text: 'Division B Royals',    whyItFits: 'Owns the actual league position (Division B) with a wink. Hard to mistake for anyone else.', submitterName: 'Jas Bhatia' },
     ],
     brief: {
+      // The creator's own hello — opens the invitation and leads the brief
+      // recap ("A note from you"), same as a real contest.
+      intro: 'Our Sunday soccer team needs a real name before the season starts! We’re scrappy, loud, and more serious than we look. Give us something we can chant from the sideline!',
       projectSummary: 'A Sunday-league 7-a-side football team in the Brookside Adult Rec League Division B. Mostly mates from work who took it more seriously than expected.',
       sportLeague: 'Sunday-league 7-a-side football, Brookside Adult Rec League Division B',
       ageGroup: 'Adult Amateur',

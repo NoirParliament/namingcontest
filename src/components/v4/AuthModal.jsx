@@ -61,7 +61,7 @@ export default function AuthModal({
   if (!open) return null;
 
   const title = mode === 'launch'
-    ? 'Almost there — confirm your email'
+    ? 'Almost there, confirm your email'
     : 'Save your progress';
 
   const blurb = mode === 'launch'
@@ -130,7 +130,7 @@ export default function AuthModal({
             </span>
             <h2 className="v4-auth-title">Magic link sent</h2>
             <p className="v4-auth-blurb">
-              Check <strong>{email.trim()}</strong> — your login link is on the way.
+              Check <strong>{email.trim()}</strong>, your login link is on the way.
             </p>
           </div>
         )}

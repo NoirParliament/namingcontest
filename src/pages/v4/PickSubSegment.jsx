@@ -57,7 +57,7 @@ const SUB_SEGMENTS = {
       // with data/v4/subSegments.js, the live source of truth.
       { id: 'b1', Icon: Buildings,    tone: TONES.periwinkle, title: 'A company',      body: 'Brand-new venture or established entity.' },
       { id: 'b2', Icon: Package,      tone: TONES.butter,     title: 'A product',      body: 'Software, physical good, or service offering.' },
-      { id: 'b5', Icon: PencilSimple, tone: TONES.sky,        title: 'Something else', body: 'Initiatives, off-sites, meeting rooms — anything that needs a name.' },
+      { id: 'b5', Icon: PencilSimple, tone: TONES.sky,        title: 'Something else', body: 'Initiatives, off-sites, meeting rooms, anything that needs a name.' },
     ],
   },
 };

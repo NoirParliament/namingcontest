@@ -132,15 +132,21 @@ export function Nav() {
   // transition (a returning demo user with an in-progress contest).
   const { user } = useAuth();
   const setup = readSetup();
+  // The user's profile row — so the homepage account menu shows the same
+  // uploaded avatar + name as the Namespace. Without this the homepage fell
+  // back to localStorage (setup.userPhoto), which a real uploaded photo
+  // (stored in profiles.avatar_url) never populates.
+  const [profile, setProfile] = useState(null);
   const isAuthed = !!user || !!(setup.userEmail || setup.contestId);
   const authEmail = user?.email || setup.userEmail;
-  const authName = user?.user_metadata?.display_name || setup.userName || user?.email?.split('@')[0];
+  const authName = profile?.display_name || user?.user_metadata?.display_name || setup.userName || user?.email?.split('@')[0];
+  const authPhoto = profile?.avatar_url || setup.userPhoto || null;
 
   // A real user's latest contest, loaded from the DB, so the account menu can
   // show it (and jump into it) from the homepage.
   const [latestContest, setLatestContest] = useState(null);
   useEffect(() => {
-    if (!user?.id) { setLatestContest(null); return; }
+    if (!user?.id) { setLatestContest(null); setProfile(null); return; }
     let active = true;
     supabase
       .from('contests')
@@ -156,6 +162,8 @@ export function Nav() {
           try { localStorage.setItem('v4_last_sub', data.sub_segment_id); } catch { /* ignore */ }
         }
       });
+    supabase.from('profiles').select('*').eq('id', user.id).single()
+      .then(({ data }) => { if (active && data) setProfile(data); });
     return () => { active = false; };
   }, [user?.id]);
   const segmentTone = getSegmentTone(setup.subSegmentId || 'b1');
@@ -201,7 +209,7 @@ export function Nav() {
               <AvatarMenu
                 email={authEmail}
                 name={authName}
-                photo={setup.userPhoto || null}
+                photo={authPhoto}
                 seed={user?.id}
                 tone={segmentTone}
                 activeContest={activeContest}

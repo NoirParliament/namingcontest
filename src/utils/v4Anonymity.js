@@ -65,7 +65,7 @@ export function prizeEligible(contest, submission) {
 // Short human-readable summary of the mode — for review / settings rows.
 export function anonymityLabel(contest) {
   const mode = anonymityMode(contest);
-  if (mode === 'public') return 'Public — names shown';
+  if (mode === 'public') return 'Public: names shown';
   if (mode === 'anonymous') return 'Anonymous';
   return 'Participants choose';
 }

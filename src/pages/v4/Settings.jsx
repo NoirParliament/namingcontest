@@ -541,11 +541,8 @@ export default function Settings() {
 
         <main className="v4-review" role="main">
           {/* Glass nav — matches ContestManage pattern */}
-          <header className="v4-nav v4-nav-clear">
+          <header className="v4-nav v4-nav-clear v4-nav--ends">
             <BrandLink />
-            <div className="v4-progress">
-              <span className="v4-step-label">Home</span>
-            </div>
             <div className="v4-nav-right">
               <AvatarMenu
                 email={email}
@@ -612,7 +609,7 @@ export default function Settings() {
                   ? 'Your contests, billing, and account in one place.'
                   : (joinedRows.length > 0 || activeJoined.length > 0 || activeContests.length > 0)
                     ? 'Your contests and account, in one place.'
-                    : 'Your account — and the home for any contest you run or join.'}
+                    : 'Your account, and the home for any contest you run or join.'}
               </p>
             </div>
 
@@ -907,7 +904,7 @@ export default function Settings() {
                     ))}
                     <CatchwordConsultBlock
                       headline="Couldn't find the right name?"
-                      body={<>Naming is hard. Catchword — the agency NamingContest is built on top of — runs deeper, one-on-one sessions when the crowd doesn’t crack it.</>}
+                      body={<>Naming is hard. Catchword (the agency NamingContest is built on top of) runs deeper, one-on-one sessions when the crowd doesn’t crack it.</>}
                     />
                   </>
                 )}
@@ -956,7 +953,7 @@ export default function Settings() {
                 ))}
                 <CatchwordConsultBlock
                   headline="Couldn't find the right name?"
-                  body={<>Naming is hard. Catchword — the agency NamingContest is built on top of — runs deeper, one-on-one sessions when the crowd doesn’t crack it.</>}
+                  body={<>Naming is hard. Catchword (the agency NamingContest is built on top of) runs deeper, one-on-one sessions when the crowd doesn’t crack it.</>}
                 />
               </section>
             ) : null /* Quiet "Start a contest" nudge lives at the
@@ -1020,7 +1017,7 @@ export default function Settings() {
                     </div>
                     {billing.length === 0 ? (
                       <div className="v4-settings-billing-empty">
-                        No purchases yet — your first contest launch will appear here.
+                        No purchases yet. Your first contest launch will appear here.
                       </div>
                     ) : (
                       <ul className="v4-settings-billing-list">
@@ -1292,7 +1289,7 @@ export default function Settings() {
                 <h2 className="v4-settings-empty-title">Nothing here yet</h2>
                 <p className="v4-settings-empty-body">
                   Two ways to change that: start a contest of your own, or join
-                  someone else’s — they’ll send you an invitation link.
+                  someone else’s; they’ll send you an invitation link.
                 </p>
                 <button
                   type="button"
@@ -1471,7 +1468,7 @@ function JoinedContestRow({ participation, contest, row, navigate }) {
           {contest.name}
         </div>
         <div className="v4-settings-contest-row-desc">
-          {isConcluded ? 'Winner revealed — see who took it' : row.description}
+          {isConcluded ? 'Winner revealed: see who took it' : row.description}
         </div>
       </div>
       {actionUI}

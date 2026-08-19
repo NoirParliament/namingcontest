@@ -16,7 +16,7 @@
 
 import { useState, useMemo, useEffect, useRef, Fragment } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
-import { PaperPlaneTilt, PencilSimple, CheckCircle } from '@phosphor-icons/react';
+import { PaperPlaneTilt, PencilSimple, CheckCircle, X } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 // Default participant avatar — used if the user hasn't uploaded a
 // photo from Settings. Pick profile-3 (Marcus is profile-4, so this
@@ -41,6 +41,7 @@ import GuideExpandable from '../../components/v4/GuideExpandable';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import CreditNameEntry from '../../components/v4/CreditNameEntry';
 import { useFadeNav } from '../../components/v4/useFadeNav';
+import ConfirmModal from '../../components/v4/ConfirmModal';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -143,10 +144,10 @@ const SUBMIT_BUBBLE_DELAY = 600;  // pacing between user-bubble and the next pro
 // process, not the segment. Rotates by submission number so each card
 // has its own little nudge without repeating the fun facts above.
 const SUBMISSION_TIPS = [
-  `Your first instinct is usually your most obvious — submit it anyway, it sets the baseline.`,
-  `Try a different angle from #1 — change the tone, archetype, or length.`,
+  `Your first instinct is usually your most obvious. Submit it anyway; it sets the baseline.`,
+  `Try a different angle from #1: change the tone, archetype, or length.`,
   `The third one is usually the boldest. Don’t censor it.`,
-  `You’ve covered the obvious territory — try something the room would push back on.`,
+  `You’ve covered the obvious territory. Try something the room would push back on.`,
   `Diminishing returns from here. Make this one weird or call it.`,
 ];
 const TIPPED_LIMIT = 5; // submissions 1–5 get a tip; 6+ go rapid-fire
@@ -158,14 +159,14 @@ function getSubmissionTip(n) {
 // First-turn prompt — only used when there are no drafts yet.
 // Subsequent prompts are baked into the system response that follows
 // each user-bubble (one bubble per turn, never two in a row).
-const INITIAL_PROMPT = `OK — what’s the first name that comes to mind?`;
+const INITIAL_PROMPT = `OK, what’s the first name that comes to mind?`;
 
 // 20 ack phrases + 20 prompt phrases. Combined per turn so the bot
 // never sounds identical twice. Early turns (#1–5) use hand-picked
 // best matches; later turns rotate through the full pool. Indexing by
 // submission count keeps phrasing deterministic across re-renders.
 const ACK_PHRASES = [
-  'Got it — added.', 'Nice one.', 'Solid.', 'Cool, locked in.',
+  'Got it, added.', 'Nice one.', 'Solid.', 'Cool, locked in.',
   'Got that.', 'Logged.', 'Niiice.', 'Heard.',
   'OK, in the pile.', 'Decent.', 'That works.', 'Saved.',
   'Like it.', 'Cool.', 'OK.', 'Right on.',
@@ -197,18 +198,18 @@ const PROMPT_PHRASES = [
 // reads naturally early; falls back to mod-cycling for 6+.
 const TURN_RESPONSE_OVERRIDES = [
   null, // 1 (handled separately as INITIAL_PROMPT before any drafts)
-  `Got it — first one’s in. What’s another?`,           // after #1
-  `Nice — that’s two. One more, or call it?`,           // after #2
+  `Got it, first one’s in. What’s another?`,           // after #1
+  `Nice! That’s two. One more, or call it?`,           // after #2
   `Three solid ones. Anything else, or wrap?`,          // after #3
-  `Four in. You’ve covered a lot — want a fifth?`,      // after #4
-  `Five — diminishing returns from here. Last one?`,    // after #5
+  `Four in. You’ve covered a lot, want a fifth?`,      // after #4
+  `Five. Diminishing returns from here. Last one?`,    // after #5
 ];
 function getSystemResponse(submittedCount, isFinalTurn) {
   // Hitting the creator-set limit lands on a "thank you + next move"
   // bubble. Two doors: tap any name above to edit it inline, or hit
   // submit. No "add another" since they've used their last slot.
   if (isFinalTurn) {
-    return `That’s your last one — thanks! Tap any name above to edit, or send them when you’re ready.`;
+    return `That’s your last one, thanks! Tap any name above to edit, or send them when you’re ready.`;
   }
   const override = TURN_RESPONSE_OVERRIDES[submittedCount];
   if (override) return override;
@@ -359,6 +360,9 @@ export default function ParticipantChat() {
   // Public (mandatory-credit) mode: the participant can decline sharing
   // their name, which means they can't take part — we say so gracefully.
   const [declinedPublic, setDeclinedPublic] = useState(false);
+  // Exit confirm — same platform dialog + leave-to-landing flow the creator
+  // setup uses, so both headers behave identically on desktop and mobile.
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
 
   // Local accumulated submissions for this session. These are NOT
   // persisted until the user hits the final submit button.
@@ -650,9 +654,9 @@ export default function ParticipantChat() {
   // The persistent user-reply bubble for the credit step (stage ≥ 5).
   const creditReply =
     anonMode === 'participant'
-      ? (creditMe ? `Credit me — ${confirmedName || userName}` : 'Keep me anonymous')
+      ? (creditMe ? `Credit me, ${confirmedName || userName}` : 'Keep me anonymous')
       : anonMode === 'public'
-        ? `Share my name — ${confirmedName || userName}`
+        ? `Share my name, ${confirmedName || userName}`
         : 'Yes, let’s go';
 
   // Both submit paths ("that's enough" + the checklist submit) record with
@@ -672,7 +676,7 @@ export default function ParticipantChat() {
       <div className="v4-screen v4-screen--chat">
         <SegmentThemeBackdrop subId={contest.subSegmentId} minimal />
         <main className="v4-review" role="main" ref={chatRef}>
-          <header className="v4-nav v4-nav-clear">
+          <header className="v4-nav v4-nav-clear v4-nav--app">
             {/* Click logo → scroll the chat container to top (mimics
                 the "go to top of this page" expectation; we don't
                 navigate away since the user is mid-flow). */}
@@ -688,6 +692,17 @@ export default function ParticipantChat() {
               <span className="v4-step-label">Suggest names</span>
             </div>
             <div className="v4-nav-right">
+              {/* Exit → landing, guarded by the same confirm the creator
+                  setup uses. Drafts are saved, so it's a soft leave. */}
+              <button
+                type="button"
+                className="v4-exit"
+                aria-label="Exit"
+                onClick={() => setShowExitConfirm(true)}
+              >
+                <X weight="regular" size={14} />
+                <span>Exit</span>
+              </button>
               <AvatarMenu
                 email={user?.email || userEmail}
                 name={profile?.display_name || userName}
@@ -707,6 +722,15 @@ export default function ParticipantChat() {
                 }}
               />
             </div>
+            {/* Phones only (CSS-gated): slim fill bar along the bottom edge,
+                in place of the "Suggest names" label. Fills as names are
+                added toward this participant's remaining slots. */}
+            <div className="v4-nav-progressbar" aria-hidden="true">
+              <span
+                className="v4-nav-progressbar-fill"
+                style={{ width: `${Math.min(100, Math.max(8, Math.round((drafts.length / Math.max(1, remainingSlots)) * 100)))}%` }}
+              />
+            </div>
           </header>
 
           <div className="v4-chat-inner v4-pchat-inner">
@@ -721,7 +745,7 @@ export default function ParticipantChat() {
             {introStage >= 1 && (
               <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
                 <span>
-                  Welcome — {creatorName} invited you to
+                  Welcome! {creatorName} invited you to
                   suggest names for{' '}
                   <em>{contest.workingName || contest.name}</em>.
                   {prizeLine && <> {prizeLine}</>} You’ll add up to{' '}
@@ -787,12 +811,12 @@ export default function ParticipantChat() {
                   <>
                     <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
                       <span>
-                        First — should your name show on the names you suggest?
+                        First, should your name show on the names you suggest?
                       </span>
                     </div>
                     {prize?.name && (
                       <div className="v4-hint">
-                        Heads up — anonymous names aren’t eligible for{' '}
+                        Heads up, anonymous names aren’t eligible for{' '}
                         {prize.name}.
                       </div>
                     )}
@@ -831,7 +855,7 @@ export default function ParticipantChat() {
                     </div>
                     <div className="v4-bubble" style={{ animationDelay: '0.12s' }}>
                       <span>
-                        Great — what name should show on your suggestions?
+                        Great, what name should show on your suggestions?
                       </span>
                     </div>
                     <CreditNameEntry
@@ -851,7 +875,7 @@ export default function ParticipantChat() {
                   <>
                     <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
                       <span>
-                        Quick heads up — {contest.creator?.name || 'the host'} set
+                        Quick heads up, {contest.creator?.name || 'the host'} set
                         this contest to public, so every name shows who
                         suggested it. Sharing your name is required to take part here.
                       </span>
@@ -917,7 +941,7 @@ export default function ParticipantChat() {
                   <>
                     <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
                       <span>
-                        This contest is anonymous — no names are shown to anyone,
+                        This contest is anonymous: no names are shown to anyone,
                         the host included. Ready to start suggesting?
                       </span>
                     </div>
@@ -1086,7 +1110,7 @@ export default function ParticipantChat() {
                               setShowForm(true);
                             }}
                           >
-                            Wait — let me add one more
+                            Wait, let me add one more
                           </button>
                         )}
                       </div>
@@ -1100,6 +1124,18 @@ export default function ParticipantChat() {
           </div>
         </main>
       </div>
+
+      {/* Exit confirm — mirrors the creator setup: platform dialog, then
+          leave to the landing page. Same on desktop and mobile. */}
+      <ConfirmModal
+        open={showExitConfirm}
+        title="Leave this contest?"
+        body="Your name suggestions are saved. You can pick up right where you left off."
+        confirmLabel="Leave"
+        cancelLabel="Keep going"
+        onConfirm={(e) => { setShowExitConfirm(false); fadeNav('/#top')(e); }}
+        onCancel={() => setShowExitConfirm(false)}
+      />
     </div>
   );
 }
@@ -1170,7 +1206,7 @@ function SubmissionCard({
         <span className="v4-pchat-card-label">
           What it means + why it fits
           <em className="v4-pchat-card-hint">
-            — start with the meaning, then why it lands for this brief
+            · start with the meaning, then why it lands for this brief
           </em>
         </span>
         <textarea
@@ -1203,7 +1239,7 @@ function SubmissionCard({
             className="btn btn-secondary btn-sm"
             onClick={onSkip}
           >
-            That’s enough — submit what I have
+            That’s enough, submit what I have
           </button>
           <p className="v4-pchat-finalize-note">
             You can still tap any name above to edit it before sending.

@@ -155,7 +155,7 @@ function mountDesktopExportClone(source) {
 export async function downloadFullReport(reportElement, contestName = 'contest') {
   if (!reportElement) {
     console.warn('downloadFullReport: no element provided');
-    window.alert('Report not ready yet — try again in a moment.');
+    window.alert('Report not ready yet. Try again in a moment.');
     return;
   }
   // The report lives off-screen with opacity:0 so the user never sees

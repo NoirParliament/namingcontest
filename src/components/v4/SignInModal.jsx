@@ -109,7 +109,7 @@ export default function SignInModal({ open, onClose, redirectPath }) {
             />
             <h2 id="v4-signin-title" className="v4-signin-title">Let’s get you in</h2>
             <p className="v4-signin-subtitle">
-              Whether you run contests or take part in them — drop your email
+              Whether you run contests or take part in them, drop your email
               and we’ll send a magic link.
             </p>
 
@@ -167,7 +167,7 @@ export default function SignInModal({ open, onClose, redirectPath }) {
             />
             <h2 className="v4-signin-title">Check your email</h2>
             <p className="v4-signin-subtitle">
-              We sent a link to <strong>{email}</strong>. Open it to continue —
+              We sent a link to <strong>{email}</strong>. Open it to continue;
               it works for 60 minutes.
             </p>
             {/* No "use a different email" button here: it competed with the

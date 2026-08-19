@@ -16,6 +16,7 @@ import { SegmentThemeBackdrop, getSegmentTone, getSegmentIcon, getSegmentPalette
 import LaunchModal from '../../components/v4/LaunchModal';
 import { priceForVoters, VOTER_TIER_QUESTION } from '../../data/v4/voterTiers';
 import { useAuth } from '../../lib/AuthContext';
+import AvatarMenu from '../../components/v4/AvatarMenu';
 import { supabase } from '../../lib/supabaseClient';
 import EditQuestionModal from '../../components/v4/EditQuestionModal';
 import { ContestScheduleInput } from '../../components/v4/QuestionInput';
@@ -114,6 +115,16 @@ export default function ReviewLaunch() {
     el.addEventListener('scroll', handler, { passive: true });
     return () => el.removeEventListener('scroll', handler);
   }, []);
+  // Signed-in host → their avatar in the header, continuous with the chat
+  // and pick steps (guests just see Exit).
+  const [profile, setProfile] = useState(null);
+  useEffect(() => {
+    if (!user?.id) return;
+    let active = true;
+    supabase.from('profiles').select('*').eq('id', user.id).single()
+      .then(({ data }) => { if (active && data) setProfile(data); });
+    return () => { active = false; };
+  }, [user?.id]);
   const subId = setup.subSegmentId || 'b1';
   // Review is the final step of the setup flow — show it as N/N so the
   // progress counter that ran through the chat lands here.
@@ -275,7 +286,7 @@ export default function ReviewLaunch() {
       window.alert(
         'Your payment went through, but we hit a snag activating the contest:\n\n' +
         (data?.error || error?.message || 'unknown error') +
-        '\n\nIt will still appear once finalized — please refresh in a moment.'
+        '\n\nIt will still appear once finalized. Please refresh in a moment.'
       );
     }
     setLaunchOpen(false);
@@ -346,7 +357,7 @@ export default function ReviewLaunch() {
 
         <main className="v4-review" role="main" ref={scrollRef}>
           {/* Glass nav — sticky inside review scroll */}
-          <header className={`v4-nav v4-nav-clear ${isScrolled ? 'is-scrolled' : ''}`}>
+          <header className={`v4-nav v4-nav-clear v4-nav--app ${isScrolled ? 'is-scrolled' : ''}`}>
             <BrandLink />
             <div className="v4-progress">
               <span className="v4-step-dot is-done"></span>
@@ -354,7 +365,18 @@ export default function ReviewLaunch() {
               <span className="v4-step-dot is-active"></span>
               <span className="v4-step-label">Review<span className="v4-step-counter"> · {reviewTotal}/{reviewTotal}</span></span>
             </div>
-            <ExitLink to="/" aria-label="Exit" />
+            <div className="v4-nav-right">
+              <ExitLink to="/" aria-label="Exit" />
+              {user && (
+                <AvatarMenu
+                  email={user?.email || setup.userEmail}
+                  name={profile?.display_name || setup.userName}
+                  photo={profile?.avatar_url || setup.userPhoto || null}
+                  seed={user?.id}
+                  tone={segmentTone}
+                />
+              )}
+            </div>
           </header>
 
           <div className="v4-review-inner">
@@ -439,7 +461,7 @@ export default function ReviewLaunch() {
             )}
             {introNudge && (
               <span className="v4-settings-field-hint" style={{ color: '#a8321f' }} role="alert">
-                Write a quick hello before launching — it’s the first thing your participants read.
+                Write a quick hello before launching; it’s the first thing your participants read.
               </span>
             )}
           </section>
