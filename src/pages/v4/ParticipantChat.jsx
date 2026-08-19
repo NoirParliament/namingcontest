@@ -110,6 +110,31 @@ function buildBriefRows(contest) {
   return { rows, settingsRows };
 }
 
+// ── Unsent-draft stash ──────────────────────────────────────────────
+// Drafted names live only in React state until "Send", so a reload, a
+// back-button, or a wander through the avatar menu used to lose every
+// drafted name. Stash them per contest in localStorage (browser only —
+// nothing reaches the database until the participant hits Send) and
+// restore on return. Cleared on send; the logged-out exit sweep also
+// catches the key (it clears everything starting with v4_).
+const draftStashKey = (contestId) => `v4_pchat_drafts_${contestId}`;
+function readDraftStash(contestId) {
+  try {
+    const raw = localStorage.getItem(draftStashKey(contestId));
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+function writeDraftStash(contestId, stash) {
+  try {
+    localStorage.setItem(draftStashKey(contestId), JSON.stringify(stash));
+  } catch { /* storage full/blocked — worst case we're back to session-only */ }
+}
+function clearDraftStash(contestId) {
+  try { localStorage.removeItem(draftStashKey(contestId)); } catch {}
+}
+
 const SUBMIT_BUBBLE_DELAY = 600;  // pacing between user-bubble and the next prompt
 
 // Per-submission tips. Generic on purpose — about the creative
@@ -407,6 +432,66 @@ export default function ParticipantChat() {
     return () => clearTimeout(t);
   }, [introStage]);
 
+  // ── Draft stash: restore ─────────────────────────────────────────────
+  // Runs once the contest is known (mock = immediately, real = after the
+  // DB row loads, so remainingSlots is correct). If the stash holds any
+  // work — drafted names or half-typed text — put it all back and land
+  // the participant at the naming step, credit choice included, instead
+  // of replaying the welcome. `draftsHydrated` gates the persist effect
+  // below so an initial empty render can't clobber a saved stash.
+  const [draftsHydrated, setDraftsHydrated] = useState(false);
+  useEffect(() => {
+    if (draftsHydrated || !contest) return;
+    const saved = readDraftStash(contestId);
+    if (saved) {
+      const savedDrafts = Array.isArray(saved.drafts) ? saved.drafts : [];
+      const savedActive =
+        saved.activeDraft && typeof saved.activeDraft === 'object'
+          ? {
+              text: saved.activeDraft.text || '',
+              whyItFits: saved.activeDraft.whyItFits || '',
+            }
+          : { text: '', whyItFits: '' };
+      if (savedDrafts.length > 0 || savedActive.text || savedActive.whyItFits) {
+        setDrafts(savedDrafts);
+        setActiveDraft(savedActive);
+        if (typeof saved.creditMe === 'boolean') setCreditMe(saved.creditMe);
+        if (saved.creditChosen) setCreditChosen(true);
+        if (saved.confirmedName) setConfirmedName(saved.confirmedName);
+        setIntroStage(6);
+        if (savedDrafts.length >= remainingSlots) {
+          setSubmittedDone(true);
+          setShowForm(false);
+        }
+      }
+    }
+    setDraftsHydrated(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draftsHydrated, contestId, !!contest]);
+
+  // ── Draft stash: persist ─────────────────────────────────────────────
+  // Every change to the drafted names, the in-progress text, or the
+  // credit choice lands in localStorage. When everything is empty the
+  // key is removed, so abandoning cleanly leaves nothing behind.
+  useEffect(() => {
+    if (!draftsHydrated || !contest) return;
+    const hasContent =
+      drafts.length > 0 || activeDraft.text || activeDraft.whyItFits;
+    if (hasContent) {
+      writeDraftStash(contestId, {
+        drafts,
+        activeDraft,
+        creditMe,
+        creditChosen,
+        confirmedName,
+        savedAt: Date.now(),
+      });
+    } else {
+      clearDraftStash(contestId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draftsHydrated, drafts, activeDraft, creditMe, creditChosen, confirmedName, contestId]);
+
   // Real contest still loading — hold, don't bounce to settings.
   if (!mockContest && dbLoading) {
     return (
@@ -501,6 +586,7 @@ export default function ParticipantChat() {
           return;
         }
       }
+      clearDraftStash(contestId);
       navigate(`/v4/contest/${contestId}/thanks`, { replace: true });
       return;
     }
@@ -515,6 +601,7 @@ export default function ParticipantChat() {
       })
     );
     if (anonymous) writeParticipation(contestId, { anonymous: true });
+    clearDraftStash(contestId);
     navigate(`/v4/contest/${contestId}/thanks`, { replace: true });
   };
 
