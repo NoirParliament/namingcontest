@@ -277,12 +277,18 @@ function MultiChipsInput({ question, onSubmit, currentAnswer }) {
     onSubmit(selected);
   };
 
-  const chips = [...opts.map(norm), ...extra];
+  // Options may be plain strings or { label, eg } — `eg` carries the
+  // examples that radioCards used to show as sublabels ("Lions, Hawks").
+  // The stored value is always the label, so existing answers still match.
+  const chips = [
+    ...opts.map((o) => ({ value: norm(o), eg: (o && typeof o === 'object') ? o.eg : null })),
+    ...extra.map((v) => ({ value: v, eg: null })),
+  ];
 
   return (
     <form className="v4-multichips-block" onSubmit={handleSubmit}>
       <div className="v4-chips-row" role="group" aria-label={question.label}>
-        {chips.map((value) => {
+        {chips.map(({ value, eg }) => {
           const isOn = selected.includes(value);
           return (
             <button
@@ -294,6 +300,7 @@ function MultiChipsInput({ question, onSubmit, currentAnswer }) {
               onClick={() => toggle(value)}
             >
               {value}
+              {eg && <span className="v4-chip-eg">{eg}</span>}
             </button>
           );
         })}

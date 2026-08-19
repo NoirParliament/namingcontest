@@ -11156,3 +11156,13 @@ select.v4-pvote-sort-select:hover {
   text-decoration: underline;
 }
 .v4-sched-rec-link:hover { color: var(--v4-fg); }
+
+/* Inline example inside a multi-select chip — restores the examples that
+   radioCards showed as sublabels ("Animal / Mascot · Lions, Hawks"). */
+.v4-chip-eg {
+  margin-left: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.55;
+}
+.v4-chip.is-checked .v4-chip-eg { opacity: 0.7; }
