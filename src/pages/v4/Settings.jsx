@@ -25,6 +25,7 @@ import { getMockContestById, MOCK_CONTESTS } from '../../data/v4/mockContests';
 import { SegmentThemeBackdrop, getSegmentTone, getSegmentIcon } from '../../data/v4/segmentTheme';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import CatchwordConsultBlock from '../../components/v4/CatchwordConsultBlock';
+import ResumeDraftPill from '../../components/v4/ResumeDraftPill';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -1327,6 +1328,9 @@ export default function Settings() {
           </div>
         </main>
       </div>
+      {/* Pending draft (creator brief or unsent participant names) →
+          floating "continue where you left off" pill. Browser-local. */}
+      <ResumeDraftPill />
     </div>
   );
 }

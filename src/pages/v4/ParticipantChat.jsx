@@ -486,6 +486,9 @@ export default function ParticipantChat() {
         creditMe,
         creditChosen,
         confirmedName,
+        // Label + tone for the resume pill on the landing/Namespace pages.
+        contestName: contest.workingName || contest.name || '',
+        subId: contest.subSegmentId || null,
         savedAt: Date.now(),
       });
     } else {

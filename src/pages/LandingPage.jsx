@@ -23,6 +23,7 @@ import '../styles/v4.css';
 import { readSetup, getQuestionsFor } from '../utils/v4Brief';
 import { getSegmentTone } from '../data/v4/segmentTheme';
 import AvatarMenu from '../components/v4/AvatarMenu';
+import ResumeDraftPill from '../components/v4/ResumeDraftPill';
 import UserAvatar from '../components/v4/UserAvatar';
 import SignInModal from '../components/v4/SignInModal';
 import { useAuth } from '../lib/AuthContext';
@@ -1543,6 +1544,9 @@ export default function LandingPage() {
         </div>
         <Footer />
       </div>
+      {/* Pending draft (creator brief or unsent participant names) →
+          floating "continue where you left off" pill. Browser-local. */}
+      <ResumeDraftPill />
     </div>
   );
 }

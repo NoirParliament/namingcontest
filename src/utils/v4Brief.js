@@ -25,7 +25,9 @@ export function readSetup() {
 
 export function writeSetup(patch) {
   const current = readSetup();
-  const next = { ...current, ...patch };
+  // Stamp the last-write time so the draft-resume pill can rank a creator
+  // draft against a participant draft by recency ("the last you touched").
+  const next = { ...current, ...patch, savedAt: Date.now() };
   try {
     localStorage.setItem(SETUP_KEY, JSON.stringify(next));
   } catch {
@@ -114,7 +116,7 @@ export function formatWindowDuration(days) {
 
 // Format a stored date answer ("YYYY-MM-DD", as the date picker saves it)
 // into a human date ("March 15, 2026") for the review + participant recap
-// rows. Parts are read manually so the date isn't shifted by a timezone
+// rows (used by the brief recap, the creator review, and the edit modal). Parts are read manually so the date isn't shifted by a timezone
 // offset (new Date('2026-03-15') would parse as UTC midnight). Anything
 // that isn't exactly a date-shaped string passes through untouched, so
 // it's safe to run over any textual answer in the shared formatters.

@@ -1,14 +1,13 @@
-// V4 confirm dialog — on-brand replacement for window.confirm().
-// Reusable: pass title/body/labels + onConfirm/onClose. Set `danger`
-// for destructive actions (red confirm button + warning icon).
+// V4 confirm modal — the platform's own dialog, used in place of the native
+// window.confirm() for the setup flow (exit, and the destructive segment
+// change). Same backdrop + card family as the sign-in / edit modals so a
+// yes/no question looks like it belongs to the product, not the browser.
 //
-// Renders on the shared dimmed backdrop (.v4-auth-backdrop) so it
-// centers and matches the sign-in / edit modals. Closes on Escape,
-// backdrop click, or Cancel.
+// Controlled: render it with open=true when a decision is pending; it calls
+// onConfirm / onCancel and the parent closes it. Escape and backdrop click
+// both cancel (the safe choice).
 
 import { useEffect } from 'react';
-import { X, Warning } from '@phosphor-icons/react';
-import '../../styles/landing-v3.css';
 
 export default function ConfirmModal({
   open,
@@ -16,57 +15,49 @@ export default function ConfirmModal({
   body,
   confirmLabel = 'Confirm',
   cancelLabel = 'Cancel',
-  danger = false,
+  // 'default' → dark ink confirm button; 'danger' → the confirm carries the
+  // weight of a destructive action (used for the segment change that wipes
+  // brief answers).
+  tone = 'default',
   onConfirm,
-  onClose,
+  onCancel,
 }) {
+  // Escape cancels — the modal shouldn't trap someone who opened it by
+  // accident (which is exactly how the exit confirm gets hit).
   useEffect(() => {
     if (!open) return;
-    const onKey = (e) => { if (e.key === 'Escape') onClose?.(); };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [open, onClose]);
+    const onKey = (e) => { if (e.key === 'Escape') onCancel?.(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, onCancel]);
 
   if (!open) return null;
 
   return (
-    <div className="v4 lp-v3 v4-auth-backdrop v4-confirm-backdrop" onClick={onClose}>
+    <div className="v4 lp-v3 v4-auth-backdrop" onClick={onCancel}>
+      <span className="v4-confirm-halo" aria-hidden="true" />
       <div
         className="v4-confirm-modal"
         onClick={(e) => e.stopPropagation()}
         role="alertdialog"
         aria-modal="true"
         aria-labelledby="v4-confirm-title"
+        aria-describedby={body ? 'v4-confirm-body' : undefined}
       >
-        <button
-          type="button"
-          className="v4-auth-close"
-          onClick={onClose}
-          aria-label="Close"
-        >
-          <X weight="regular" size={16} />
-        </button>
-
-        {danger && (
-          <span className="v4-confirm-icon v4-confirm-icon-danger" aria-hidden="true">
-            <Warning weight="duotone" size={24} />
-          </span>
-        )}
-
         <h2 id="v4-confirm-title" className="v4-confirm-title">{title}</h2>
-        {body && <p className="v4-confirm-body">{body}</p>}
-
+        {body && <p id="v4-confirm-body" className="v4-confirm-body">{body}</p>}
         <div className="v4-confirm-actions">
           <button
             type="button"
-            className="btn btn-secondary btn-sm"
-            onClick={onClose}
+            className="v4-confirm-cancel"
+            onClick={onCancel}
+            autoFocus
           >
             {cancelLabel}
           </button>
           <button
             type="button"
-            className={`btn btn-sm ${danger ? 'v4-confirm-danger-btn' : 'btn-primary'}`}
+            className={`v4-confirm-confirm${tone === 'danger' ? ' is-danger' : ''}`}
             onClick={onConfirm}
           >
             {confirmLabel}

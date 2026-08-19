@@ -19,7 +19,6 @@ import BrandLink from '../../components/v4/BrandLink';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import ExitLink from '../../components/v4/ExitLink';
 import {
   X, PencilSimple,
   // Segment user-reply icons (mirrors the picked card)
@@ -57,6 +56,7 @@ import GuideExpandable from '../../components/v4/GuideExpandable';
 import QuestionInput from '../../components/v4/QuestionInput';
 import AuthModal from '../../components/v4/AuthModal';
 import EditQuestionModal from '../../components/v4/EditQuestionModal';
+import ConfirmModal from '../../components/v4/ConfirmModal';
 import '../../styles/v4.css';
 
 // Per-question reveal timings (ms from when this question becomes current)
@@ -497,27 +497,8 @@ export default function BriefChat() {
         setEditingIndex(null);
         return;
       }
-      const ok = window.confirm(
-        "Changing the naming type will clear your brief answers (you’ll need to answer them again). Continue?"
-      );
-      if (!ok) {
-        setEditingIndex(null);
-        return;
-      }
-      // Persist new segment + clear downstream answers in localStorage
-      persistAnswer(turn.question, value);
-      const cur = readSetup();
-      writeSetup({ ...cur, brief: {}, settings: {}, workingName: '' });
-      // Truncate history to just the (updated) segment turn
-      setHistory([{
-        ...turn,
-        answer: value,
-        display: value.title || value.id || 'Selected',
-      }]);
-      // Rebuild downstream by re-setting subId; idx jumps to first post-pick Q
-      setSubId(newId);
-      setIdx(1);
-      setEditingIndex(null);
+      // Destructive cascade — ask first, in the platform's own dialog.
+      setConfirmReq({ type: 'segment', turnIndex: i, value });
       return;
     }
 
@@ -545,6 +526,28 @@ export default function BriefChat() {
   };
 
   const cancelEditing = () => setEditingIndex(null);
+
+  // Platform-language confirm dialog (replaces window.confirm):
+  //   { type: 'exit' }                         — leaving setup via the X
+  //   { type: 'segment', turnIndex, value }    — naming-type change cascade
+  const [confirmReq, setConfirmReq] = useState(null);
+
+  // The segment change the confirm guards: persist the new pick, wipe the
+  // now-mismatched downstream answers, and restart the chat after the pick.
+  const applySegmentChange = (turnIndex, value) => {
+    const turn = history[turnIndex];
+    persistAnswer(turn.question, value);
+    const cur = readSetup();
+    writeSetup({ ...cur, brief: {}, settings: {}, workingName: '' });
+    setHistory([{
+      ...turn,
+      answer: value,
+      display: value.title || value.id || 'Selected',
+    }]);
+    setSubId(value?.id);
+    setIdx(1);
+    setEditingIndex(null);
+  };
 
   // After every question answered, head to review
   useEffect(() => {
@@ -598,11 +601,7 @@ export default function BriefChat() {
             type="button"
             className="v4-exit"
             aria-label="Exit"
-            onClick={() => {
-              if (window.confirm('Your answers are saved. You can pick up right where you left off. Leave setup?')) {
-                navigate('/');
-              }
-            }}
+            onClick={() => setConfirmReq({ type: 'exit' })}
           >
             <X weight="regular" size={14} />
             <span>Exit</span>
@@ -656,6 +655,32 @@ export default function BriefChat() {
         currentAnswer={isEditing ? history[editingIndex]?.answer : undefined}
         onClose={cancelEditing}
         onSave={handleEditSubmit}
+      />
+
+      {/* Platform-language confirm — exit reassurance + the destructive
+          naming-type change. Replaces the browser's window.confirm. */}
+      <ConfirmModal
+        open={confirmReq?.type === 'exit'}
+        title="Leave setup?"
+        body="Your answers are saved. You can pick up right where you left off."
+        confirmLabel="Leave"
+        cancelLabel="Keep going"
+        onConfirm={() => { setConfirmReq(null); navigate('/'); }}
+        onCancel={() => setConfirmReq(null)}
+      />
+      <ConfirmModal
+        open={confirmReq?.type === 'segment'}
+        title="Change the naming type?"
+        body="Your brief answers so far will be cleared, and you'll answer the new type's questions instead."
+        confirmLabel="Change type"
+        cancelLabel="Keep my answers"
+        tone="danger"
+        onConfirm={() => {
+          const { turnIndex, value } = confirmReq;
+          setConfirmReq(null);
+          applySegmentChange(turnIndex, value);
+        }}
+        onCancel={() => { setConfirmReq(null); setEditingIndex(null); }}
       />
     </div>
   );
