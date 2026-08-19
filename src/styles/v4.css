@@ -11483,6 +11483,11 @@ button.v4-exit {
   color: var(--v4-fg);
 }
 @media (max-width: 560px) {
-  .v4-resume-pill { bottom: 16px; right: 16px; max-width: calc(100vw - 32px); }
-  .v4-resume-pill-title { max-width: 130px; }
+  /* Phones: the corner pill becomes a full-width bar with equal side
+     margins (snackbar convention) — a right-anchored pill reads as
+     misplaced when it nearly spans the screen anyway. The text block
+     grows so Continue + trash sit flush right. */
+  .v4-resume-pill { bottom: 16px; right: 16px; left: 16px; }
+  .v4-resume-pill-text { flex: 1; min-width: 0; }
+  .v4-resume-pill-title { max-width: 100%; }
 }
