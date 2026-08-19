@@ -33,6 +33,7 @@ import AvatarMenu from '../../components/v4/AvatarMenu';
 import CreditNameEntry from '../../components/v4/CreditNameEntry';
 import { useAuth } from '../../lib/AuthContext';
 import { readProfileCache } from '../../lib/useProfile';
+import BriefRowValue from '../../components/v4/BriefRowValue';
 import { supabase } from '../../lib/supabaseClient';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
@@ -707,7 +708,9 @@ function ParticipantBriefCard({ contest, tone, briefRows, settingsRows }) {
         {briefRows.map((r) => (
           <li key={r.id} className="v4-pchat-brief-row">
             <span className="v4-pchat-brief-row-label">{r.label}</span>
-            <span className="v4-pchat-brief-row-value">{formatAnswer(r.value)}</span>
+            <span className="v4-pchat-brief-row-value">
+              <BriefRowValue id={r.id} value={r.value} fallback={formatAnswer} subId={contest.subSegmentId} />
+            </span>
           </li>
         ))}
         {settingsRows.map((r) => (

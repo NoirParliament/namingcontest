@@ -41,6 +41,7 @@ import { SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
 import GuideExpandable from '../../components/v4/GuideExpandable';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import CreditNameEntry from '../../components/v4/CreditNameEntry';
+import BriefRowValue from '../../components/v4/BriefRowValue';
 import { useFadeNav } from '../../components/v4/useFadeNav';
 import ConfirmModal from '../../components/v4/ConfirmModal';
 import '../../styles/landing-v3.css';
@@ -1158,7 +1159,9 @@ function ParticipantBriefCard({ contest, tone, briefRows, settingsRows }) {
         {briefRows.map((r) => (
           <li key={r.id} className="v4-pchat-brief-row">
             <span className="v4-pchat-brief-row-label">{r.label}</span>
-            <span className="v4-pchat-brief-row-value">{formatAnswer(r.value)}</span>
+            <span className="v4-pchat-brief-row-value">
+              <BriefRowValue id={r.id} value={r.value} fallback={formatAnswer} subId={contest.subSegmentId} />
+            </span>
           </li>
         ))}
         {settingsRows.map((r) => (

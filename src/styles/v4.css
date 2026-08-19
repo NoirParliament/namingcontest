@@ -11608,3 +11608,23 @@ button.v4-exit {
   .v4-resume-pill-text { flex: 1; min-width: 0; }
   .v4-resume-pill-title { max-width: 100%; }
 }
+
+/* ── Brief expansions (Stage 2 of the beefier brief) ────────────────
+   Picked territories/styles/vibes render one per line: bold label,
+   then a muted one-line meaning with the picker's examples folded in.
+   Rows without expansions keep the plain joined value. */
+.v4-brief-expand {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.v4-brief-expand-item {
+  line-height: 1.5;
+}
+.v4-brief-expand-label {
+  font-weight: 600;
+  color: var(--v4-fg);
+}
+.v4-brief-expand-text {
+  color: var(--v4-muted);
+}
