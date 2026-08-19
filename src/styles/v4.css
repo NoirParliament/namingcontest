@@ -11251,11 +11251,11 @@ select.v4-pvote-sort-select:hover {
 }
 .v4-tier-card-price {
   font-family: var(--font-display, Fraunces, Georgia, serif);
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 700;
   line-height: 1;
-  padding: 8px 16px;
-  border-radius: 999px;
+  color: var(--v4-fg);
+  letter-spacing: -0.01em;
 }
 .v4-tier-card-cap {
   display: flex;
