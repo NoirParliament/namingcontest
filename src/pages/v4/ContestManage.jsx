@@ -25,7 +25,7 @@ import BrandLink from '../../components/v4/BrandLink';
 import creatorProfile from '../../assets/creator-profile.png';
 import {
   readSetup, writeSetup, getSegmentLabel, getContestDescriptor, getQuestionsFor,
-  formatWindowDuration, formatScheduleSummary,
+  formatWindowDuration, formatScheduleSummary, formatDateAnswer,
 } from '../../utils/v4Brief';
 import { buildLiveData, buildLiveDataFromReal } from '../../utils/v4LiveData';
 import { getMockContestById } from '../../data/v4/mockContests';
@@ -77,6 +77,9 @@ function formatAnswer(value) {
       return 'Yes';
     }
   }
+  // Date-shaped answers (e.g. the baby due date) → "March 15, 2026",
+  // matching the review page and participant recap.
+  if (typeof value === 'string') return formatDateAnswer(value);
   return String(value);
 }
 

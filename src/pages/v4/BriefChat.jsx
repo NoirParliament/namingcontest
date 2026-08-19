@@ -51,6 +51,7 @@ import {
   getSegmentLabel,
   getSetupStepTotal,
   formatScheduleSummary,
+  formatDateAnswer,
 } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS, getIntroQuestionFor } from '../../data/v4/briefQuestions';
 import { VOTER_TIER_QUESTION, priceForVoters } from '../../data/v4/voterTiers';
@@ -175,6 +176,9 @@ function answerToDisplay(value) {
       return 'Yes';
     }
   }
+  // Date-shaped answers (e.g. the baby due date) → "March 15, 2026",
+  // matching the review page and participant recap.
+  if (typeof value === 'string') return formatDateAnswer(value);
   return String(value);
 }
 
