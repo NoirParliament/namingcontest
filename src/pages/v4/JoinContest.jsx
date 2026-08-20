@@ -679,10 +679,9 @@ export default function JoinContest() {
                 {
                   title: 'See who won',
                   em: currentStep === 2 ? 'You’re here · results are in'
-                    // "Results", not "Crowned": voting_ends_at only guarantees
-                    // voting closes then. The host may crown later; results
-                    // (top-voted until crowned) are what's visible that day.
-                    : (contest.votingEndsAt ? `Results ${shortDate(contest.votingEndsAt)}` : 'Shoutout if it’s yours'),
+                    // voting_ends_at only guarantees voting closes then; the
+                    // host may crown later, so the date carries a soft caveat.
+                    : (contest.votingEndsAt ? `Crowned ${shortDate(contest.votingEndsAt)} (or soon after)` : 'Shoutout if it’s yours'),
                 },
               ];
               return (
