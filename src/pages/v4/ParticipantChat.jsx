@@ -610,41 +610,63 @@ export default function ParticipantChat() {
 
   // Record all drafts (with the chosen credit visibility) then head to
   // the thanks page. `anonymous` only matters in participant-choose mode.
+  // Single-flight + idempotent: a double tap used to run the insert loop
+  // twice, stacking duplicate rows until the DB cap fired mid-batch ("You
+  // can submit at most 10 names." after typing six).
+  const submittingAllRef = useRef(false);
   const recordAndGo = async (anonymous) => {
-    if (isRealContest && user?.id) {
-      // Real contest → write each name to the submissions table (the DB
-      // trigger enforces membership + the max-3 cap).
-      for (const entry of drafts) {
-        const { error } = await supabase.from('submissions').insert({
-          contest_id: contestId,
-          user_id: user.id,
-          text: entry.text,
-          rationale: entry.whyItFits || null,
-          credited: !anonymous,
-        });
-        if (error) {
-          console.error('[submit] failed:', error);
-          window.alert('Could not submit your name: ' + (error.message || error));
-          return;
+    if (submittingAllRef.current) return;
+    submittingAllRef.current = true;
+    try {
+      if (isRealContest && user?.id) {
+        // Skip anything this account already submitted to this contest — a
+        // retry after a mid-batch failure (or a race that slipped past the
+        // guard) then heals instead of duplicating.
+        const { data: existing } = await supabase
+          .from('submissions')
+          .select('text')
+          .eq('contest_id', contestId)
+          .eq('user_id', user.id);
+        const already = new Set(
+          (existing || []).map((r) => (r.text || '').trim().toLowerCase())
+        );
+        // Real contest → write each name to the submissions table (the DB
+        // trigger enforces membership + the creator's cap).
+        for (const entry of drafts) {
+          if (already.has((entry.text || '').trim().toLowerCase())) continue;
+          const { error } = await supabase.from('submissions').insert({
+            contest_id: contestId,
+            user_id: user.id,
+            text: entry.text,
+            rationale: entry.whyItFits || null,
+            credited: !anonymous,
+          });
+          if (error) {
+            console.error('[submit] failed:', error);
+            window.alert('Could not submit your name: ' + (error.message || error));
+            return;
+          }
         }
+        clearDraftStash(contestId);
+        navigate(`/v4/contest/${contestId}/thanks`, { replace: true });
+        return;
       }
+      // Mock demo path.
+      drafts.forEach((entry) =>
+        recordSubmission(contestId, {
+          text: entry.text,
+          whyItFits: entry.whyItFits,
+          tagline: '',
+          inspiration: '',
+          anonymous,
+        })
+      );
+      if (anonymous) writeParticipation(contestId, { anonymous: true });
       clearDraftStash(contestId);
       navigate(`/v4/contest/${contestId}/thanks`, { replace: true });
-      return;
+    } finally {
+      submittingAllRef.current = false;
     }
-    // Mock demo path.
-    drafts.forEach((entry) =>
-      recordSubmission(contestId, {
-        text: entry.text,
-        whyItFits: entry.whyItFits,
-        tagline: '',
-        inspiration: '',
-        anonymous,
-      })
-    );
-    if (anonymous) writeParticipation(contestId, { anonymous: true });
-    clearDraftStash(contestId);
-    navigate(`/v4/contest/${contestId}/thanks`, { replace: true });
   };
 
   // Confirm the credited name → save it as the account/profile name (so it
