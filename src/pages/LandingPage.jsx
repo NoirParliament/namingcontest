@@ -152,6 +152,12 @@ export function Nav() {
       .from('contests')
       .select('*')
       .eq('creator_id', user.id)
+      // Only surface a launched, still-relevant contest in the account menu.
+      // A cancelled contest was mislabeled "LIVE" (its status fell through the
+      // phase ternary to the default), and a draft isn't launched at all — so
+      // fetch the latest contest that is neither. Matches Settings' active list.
+      .neq('status', 'cancelled')
+      .neq('status', 'draft')
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle()
