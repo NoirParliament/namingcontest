@@ -355,6 +355,9 @@ export default function ParticipantChat() {
   // entry; in public mode the name entry shows straight away (crediting is
   // mandatory). The entered name is saved as the account/profile name.
   const [creditChosen, setCreditChosen] = useState(false);
+  // Anonymous is a considered choice, not a one-way door: like the public
+  // mode's decline, it shows a confirm with a way back to being credited.
+  const [anonChosen, setAnonChosen] = useState(false);
   // Two separate fields. Empty by default, BUT if the account already has a
   // real name on file (not the email-prefix default), prefill it once so a
   // returning creditor just confirms "share as <name>" instead of retyping.
@@ -824,7 +827,7 @@ export default function ParticipantChat() {
             {introStage === 4 && (
               <>
                 {/* ── Participant-choose mode: credit or stay anonymous ── */}
-                {anonMode === 'participant' && !creditChosen && (
+                {anonMode === 'participant' && !creditChosen && !anonChosen && (
                   <>
                     <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
                       <span>
@@ -861,7 +864,7 @@ export default function ParticipantChat() {
                         role="radio"
                         aria-checked="false"
                         className="v4-chip"
-                        onClick={() => { setCreditMe(false); setIntroStage(5); }}
+                        onClick={() => setAnonChosen(true)}
                       >
                         Keep me anonymous
                       </button>
@@ -900,6 +903,37 @@ export default function ParticipantChat() {
                     >
                       Actually, keep me anonymous
                     </button>
+                  </>
+                )}
+
+                {/* Participant chose anonymous → confirm, reversibly (mirrors
+                    the public-mode decline: a way back to being credited). */}
+                {anonMode === 'participant' && anonChosen && (
+                  <>
+                    <div className="v4-bubble v4-bubble-user" style={{ animationDelay: '0.05s' }}>
+                      <span>Keep me anonymous</span>
+                    </div>
+                    <div className="v4-bubble" style={{ animationDelay: '0.12s' }}>
+                      <span>
+                        Done, your suggestions stay anonymous. Ready to start?
+                      </span>
+                    </div>
+                    <div className="v4-chips-row" role="group">
+                      <button
+                        type="button"
+                        className="v4-chip"
+                        onClick={() => { setCreditMe(false); setIntroStage(5); }}
+                      >
+                        Yes, let’s go
+                      </button>
+                      <button
+                        type="button"
+                        className="v4-chip"
+                        onClick={() => { setAnonChosen(false); setCreditChosen(true); }}
+                      >
+                        Actually, credit me
+                      </button>
+                    </div>
                   </>
                 )}
 
