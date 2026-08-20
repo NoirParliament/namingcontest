@@ -21,7 +21,7 @@ import AvatarMenu from '../../components/v4/AvatarMenu';
 import { supabase } from '../../lib/supabaseClient';
 import EditQuestionModal from '../../components/v4/EditQuestionModal';
 import BriefRowValue from '../../components/v4/BriefRowValue';
-import { getBriefNote, getBriefLabel, getBriefSections } from '../../data/v4/briefExpansions';
+import { getBriefLabel, getBriefSections } from '../../data/v4/briefExpansions';
 import GuideExpandable from '../../components/v4/GuideExpandable';
 import BriefSectionHead from '../../components/v4/BriefSectionHead';
 import { ContestScheduleInput } from '../../components/v4/QuestionInput';
@@ -169,7 +169,6 @@ export default function ReviewLaunch() {
   const renderBriefRow = (q) => {
     const val = briefAnswers[q.id];
     const skipped = !isAnswered(val);
-    const note = getBriefNote(q.id, subId);
     return (
       <li key={q.id}>
         <button
@@ -177,10 +176,7 @@ export default function ReviewLaunch() {
           className={`v4-review-row v4-review-row-edit${skipped ? ' is-skipped' : ''}`}
           onClick={() => setEditingQuestion({ question: q, section: 'brief' })}
         >
-          <span className="v4-review-row-label">
-            {getBriefLabel(q)}
-            {note && <span className="v4-brief-row-note">{note}</span>}
-          </span>
+          <span className="v4-review-row-label">{getBriefLabel(q)}</span>
           <span className={`v4-review-row-value${skipped ? ' v4-review-row-skipped' : ''}`}>
             {skipped
               ? 'Skipped'

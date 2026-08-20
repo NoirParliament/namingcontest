@@ -42,7 +42,7 @@ import HostNote from '../../components/v4/HostNote';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import CreditNameEntry from '../../components/v4/CreditNameEntry';
 import BriefRowValue from '../../components/v4/BriefRowValue';
-import { getParticipantNote, getBriefLabel, getBriefSections, getParticipantLabel } from '../../data/v4/briefExpansions';
+import { getBriefLabel, getBriefSections, getParticipantLabel } from '../../data/v4/briefExpansions';
 import { useFadeNav } from '../../components/v4/useFadeNav';
 import ConfirmModal from '../../components/v4/ConfirmModal';
 import '../../styles/landing-v3.css';
@@ -1225,12 +1225,10 @@ function ParticipantBriefCard({ contest, tone, briefRows, settingsRows, articles
         // on the left rail so the right column stays pure answer. Rich picks
         // carry their expansion instead. See BRIEF_PARTICIPANT_NOTES.
         const renderRow = (r) => {
-          const note = getParticipantNote(r.id, contest.subSegmentId);
           return (
             <li key={r.id} className="v4-pchat-brief-row">
               <span className="v4-pchat-brief-row-label">
                 {r.label}
-                {note && <span className="v4-brief-row-note">{note}</span>}
               </span>
               <span className="v4-pchat-brief-row-value">
                 <BriefRowValue id={r.id} value={r.value} fallback={formatAnswer} subId={contest.subSegmentId} />

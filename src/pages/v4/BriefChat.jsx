@@ -31,6 +31,7 @@ import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme
 import { useAuth } from '../../lib/AuthContext';
 import { useProfile } from '../../lib/useProfile';
 import AvatarMenu from '../../components/v4/AvatarMenu';
+import UserAvatar from '../../components/v4/UserAvatar';
 
 
 import namingContestLogo from "../../assets/namingcontestlogo-cropped.svg";
@@ -807,12 +808,59 @@ function VoterReply({ voters, editable, onEdit, ariaLabel }) {
   return <div className="v4-bubble v4-bubble-user v4-bubble-tier">{inner}</div>;
 }
 
+// ── Creator-identity reply — the opening step captures who's hosting AND
+// the contest name, so its bubble shows both: the avatar + contest name,
+// with the host line (or "anonymously") beneath. Reads the identity from
+// the setup blob, where the step just wrote it. ─────────────────────
+function CreatorIdentityReply({ contestName, editable, onEdit, ariaLabel }) {
+  const s = readSetup();
+  const anon = !!s.userAnonymous;
+  const name = (s.userName || '').trim();
+  const photo = s.userAvatarUrl || s.userAvatarData || null;
+  const host = anon
+    ? 'Hosting anonymously'
+    : name
+      ? `Hosted by ${name}`
+      : 'Hosting';
+  const inner = (
+    <>
+      <span className="v4-bubble-id-avatar">
+        {/* When anonymous the photo is withheld — participants see a generic
+            avatar, so the creator's own bubble mirrors that. */}
+        <UserAvatar seed={s.userAvatarSeed || 'creator'} photoUrl={anon ? null : photo} size={34} />
+      </span>
+      <span className="v4-bubble-id-meta">
+        <span className="v4-bubble-id-name">{contestName}</span>
+        <span className="v4-bubble-id-host">{host}</span>
+      </span>
+    </>
+  );
+  if (editable) {
+    return (
+      <button
+        type="button"
+        className="v4-bubble-user v4-bubble-editable v4-bubble-identity"
+        onClick={onEdit}
+        aria-label={ariaLabel}
+      >
+        {inner}
+        <span className="v4-bubble-edit-hint" aria-hidden="true">
+          <PencilSimple weight="bold" size={12} />
+          Edit
+        </span>
+      </button>
+    );
+  }
+  return <div className="v4-bubble v4-bubble-user v4-bubble-identity">{inner}</div>;
+}
+
 // ── Single completed turn in history ────────────────────────────────
 function HistoryTurn({ turn, tone, isEditing, onStartEdit, onEditSubmit, onCancelEdit, onSaveProgress, alreadySaved }) {
   const { question, answer, display, article } = turn;
   const isNarrator = question.type === 'narrator';
   const isSegment = question.section === 'segment';
   const isVoter = question.section === 'voter';
+  const isIdentity = question.type === 'creatorIdentity';
 
   // Narrator — not editable. Bubble variant (pre-brief intro) stays a plain
   // bot bubble in history; section break keeps the badge divider.
@@ -862,7 +910,16 @@ function HistoryTurn({ turn, tone, isEditing, onStartEdit, onEditSubmit, onCance
         />
       )}
 
-      {!isSegment && !isVoter && (
+      {isIdentity && (
+        <CreatorIdentityReply
+          contestName={display}
+          editable
+          onEdit={onStartEdit}
+          ariaLabel={`Edit host and contest name (currently: ${display})`}
+        />
+      )}
+
+      {!isSegment && !isVoter && !isIdentity && (
         <button
           type="button"
           className={`v4-bubble-user v4-bubble-editable${answer === '' ? ' v4-bubble-skipped' : ''}`}
@@ -925,7 +982,11 @@ function CurrentQuestion({ question, article, tone, phase, userReply, onSubmit }
         <VoterReply voters={userReply} />
       )}
 
-      {userReply !== null && question.section !== 'segment' && question.section !== 'voter' && (
+      {userReply !== null && question.type === 'creatorIdentity' && (
+        <CreatorIdentityReply contestName={typeof userReply === 'string' ? userReply : ''} />
+      )}
+
+      {userReply !== null && question.section !== 'segment' && question.section !== 'voter' && question.type !== 'creatorIdentity' && (
         <div className={`v4-bubble v4-bubble-user${userReply === '' ? ' v4-bubble-skipped' : ''}`}>
           <span>{typeof userReply === 'string' ? (userReply === '' ? 'Skipped' : userReply) : answerToDisplay(userReply)}</span>
         </div>

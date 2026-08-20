@@ -34,6 +34,16 @@ export default function CreatorIdentityInput({ question, onSubmit, currentAnswer
   const [contestName, setContestName] = useState(currentAnswer || setup.workingName || '');
   const [anonymous, setAnonymous] = useState(!!setup.userAnonymous);
   const [photo, setPhoto] = useState(setup.userAvatarUrl || setup.userAvatarData || profile?.avatar_url || null);
+  // Stable seed for the generated placeholder avatar. Seeding on the typed
+  // name reshuffles the avatar on every keystroke; instead we mint one seed,
+  // persist it, and reuse it in the reply bubble so preview and bubble match.
+  const [avatarSeed] = useState(() => {
+    const s = readSetup();
+    if (s.userAvatarSeed) return s.userAvatarSeed;
+    const seed = 'id-' + Math.random().toString(36).slice(2, 10);
+    writeSetup({ userAvatarSeed: seed });
+    return seed;
+  });
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
   const fileRef = useRef(null);
@@ -93,7 +103,7 @@ export default function CreatorIdentityInput({ question, onSubmit, currentAnswer
       <div className="v4-creator-id-you">
         <div className="v4-creator-id-avatar-col">
           <span className="v4-creator-id-avatar">
-            <UserAvatar seed={user?.id || fullName || 'creator'} photoUrl={photo} size={64} />
+            <UserAvatar seed={user?.id || avatarSeed} photoUrl={photo} size={64} />
           </span>
           <button
             type="button"

@@ -32,6 +32,7 @@ export const BRIEF_QUESTIONS = {
     questions: [
       {
         id: 'namingTarget',
+        briefLabel: 'What’s being named',
         label: 'What are you naming?',
         prompt: 'What are you naming?',
         type: 'textarea',
@@ -43,6 +44,7 @@ export const BRIEF_QUESTIONS = {
       },
       {
         id: 'projectSummary',
+        briefLabel: 'In short',
         label: 'About the company',
         prompt: 'What does the company do, who is it for, and what sets it apart?',
         type: 'textarea',
@@ -150,6 +152,7 @@ export const BRIEF_QUESTIONS = {
     questions: [
       {
         id: 'projectSummary',
+        briefLabel: 'In short',
         label: 'About the product',
         prompt: 'What exactly is the product?',
         type: 'textarea',
@@ -448,6 +451,7 @@ export const BRIEF_QUESTIONS = {
     questions: [
       {
         id: 'projectSummary',
+        briefLabel: 'In short',
         label: 'What are we naming?',
         prompt: 'What are we naming?',
         type: 'textarea',
@@ -547,6 +551,7 @@ export const BRIEF_QUESTIONS = {
     questions: [
       {
         id: 'projectSummary',
+        briefLabel: 'In short',
         label: 'About this',
         prompt: 'Tell us about the team.',
         type: 'textarea',
@@ -573,6 +578,7 @@ export const BRIEF_QUESTIONS = {
       },
       {
         id: 'personality',
+        briefLabel: 'Team personality',
         label: 'Team Personality',
         prompt: `What’s the team’s personality? Pick any that apply.`,
         type: 'multiChips',
@@ -634,6 +640,7 @@ export const BRIEF_QUESTIONS = {
       },
       {
         id: 'avoidNames',
+        briefLabel: 'Any names to avoid?',
         label: 'Names to avoid',
         prompt: 'Any names to steer clear of? Rivals, existing clubs, or names already taken in your league.',
         type: 'textarea',
@@ -657,6 +664,7 @@ export const BRIEF_QUESTIONS = {
     questions: [
       {
         id: 'projectSummary',
+        briefLabel: 'In short',
         label: 'About this',
         prompt: 'Tell us about the band.',
         type: 'textarea',
@@ -704,6 +712,7 @@ export const BRIEF_QUESTIONS = {
       },
       {
         id: 'admiredNames',
+        briefLabel: 'Which band names do you admire?',
         label: 'Band names you admire',
         prompt: 'Which band or artist names do you love? They don’t need to match your genre.',
         type: 'textarea',
@@ -714,6 +723,7 @@ export const BRIEF_QUESTIONS = {
       },
       {
         id: 'avoidNames',
+        briefLabel: 'Any names to avoid?',
         label: 'Names to avoid',
         prompt: 'Any names or directions to avoid? Similar-sounding acts count.',
         type: 'textarea',
@@ -732,6 +742,7 @@ export const BRIEF_QUESTIONS = {
     questions: [
       {
         id: 'projectSummary',
+        briefLabel: 'In short',
         label: 'About this',
         prompt: `Tell us about the show or concept. Who is it for, and where will they find it?`,
         type: 'textarea',
@@ -816,6 +827,7 @@ export const BRIEF_QUESTIONS = {
     questions: [
       {
         id: 'projectSummary',
+        briefLabel: 'In short',
         label: 'About this',
         prompt: 'What is this club or group, and what do you do together?',
         type: 'textarea',
@@ -1000,6 +1012,7 @@ export const BRIEF_QUESTIONS = {
     questions: [
       {
         id: 'projectSummary',
+        briefLabel: 'In short',
         label: 'About this',
         prompt: 'What is this group, and what do you do together?',
         type: 'textarea',
@@ -1076,6 +1089,7 @@ export const BRIEF_QUESTIONS = {
 
       {
         id: 'dueDate',
+        briefLabel: 'Due date',
         label: 'Due date',
         prompt: 'What is your baby’s due date?',
         type: 'date',
@@ -1083,6 +1097,7 @@ export const BRIEF_QUESTIONS = {
       },
       {
         id: 'gender',
+        briefLabel: 'Gender',
         label: 'Do you know the gender?',
         prompt: 'Do you know the gender — or is it a surprise?',
         type: 'chips',
@@ -1111,6 +1126,7 @@ export const BRIEF_QUESTIONS = {
       },
       {
         id: 'lengthPref',
+        briefLabel: 'Name length',
         label: 'Name length preference',
         prompt: 'Do you prefer short names, longer names (which may have more nickname options), or something in between?',
         type: 'chips',
@@ -1189,6 +1205,7 @@ export const BRIEF_QUESTIONS = {
       },
       {
         id: 'petType',
+        briefLabel: 'Kind of pet',
         label: 'What kind of pet?',
         prompt: `What kind of pet are you naming?`,
         type: 'chips',
@@ -1273,6 +1290,7 @@ export const BRIEF_QUESTIONS = {
       },
       {
         id: 'namingTarget',
+        briefLabel: 'What’s being named',
         label: 'What are you naming?',
         prompt: 'What are you naming?',
         type: 'chips',
@@ -1283,6 +1301,7 @@ export const BRIEF_QUESTIONS = {
       },
       {
         id: 'propDesc',
+        briefLabel: 'What makes it special?',
         label: 'Tell people about it',
         prompt: 'Tell people about it — what makes it special?',
         type: 'textarea',
@@ -1356,6 +1375,7 @@ export const BRIEF_QUESTIONS = {
     questions: [
       {
         id: 'projectSummary',
+        briefLabel: 'In short',
         label: 'About this',
         prompt: 'What are you naming, and what makes it special?',
         type: 'textarea',
@@ -1377,6 +1397,7 @@ export const BRIEF_QUESTIONS = {
       },
       {
         id: 'vibe',
+        briefLabel: 'Tone',
         label: 'Vibe / personality',
         prompt: 'What vibe should the name carry? Pick any that apply.',
         type: 'multiChips',

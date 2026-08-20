@@ -34,7 +34,7 @@ import CreditNameEntry from '../../components/v4/CreditNameEntry';
 import { useAuth } from '../../lib/AuthContext';
 import { readProfileCache } from '../../lib/useProfile';
 import BriefRowValue from '../../components/v4/BriefRowValue';
-import { getParticipantNote, getBriefLabel, getBriefSections, getParticipantLabel } from '../../data/v4/briefExpansions';
+import { getBriefLabel, getBriefSections, getParticipantLabel } from '../../data/v4/briefExpansions';
 import GuideExpandable from '../../components/v4/GuideExpandable';
 import BriefSectionHead from '../../components/v4/BriefSectionHead';
 import HostNote from '../../components/v4/HostNote';
@@ -732,12 +732,10 @@ function ParticipantBriefCard({ contest, tone, briefRows, settingsRows, articles
       />
       {(() => {
         const renderRow = (r) => {
-          const note = getParticipantNote(r.id, contest.subSegmentId);
           return (
             <li key={r.id} className="v4-pchat-brief-row">
               <span className="v4-pchat-brief-row-label">
                 {r.label}
-                {note && <span className="v4-brief-row-note">{note}</span>}
               </span>
               <span className="v4-pchat-brief-row-value">
                 <BriefRowValue id={r.id} value={r.value} fallback={formatAnswer} subId={contest.subSegmentId} />

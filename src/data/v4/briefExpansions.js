@@ -285,53 +285,33 @@ export const BRIEF_NOTES_BY_SUB = {
 // host's answer. For those rare cases only, a participant sees a neutral
 // noun-phrase instead. Everything not listed here keeps the full question.
 export const PARTICIPANT_LABELS = {
-  namingTarget:       'What’s being named',
-  otherLanguages:     'Names from other languages',
-  includeAvoid:       'Words and ideas to explore or avoid',
-  admiredNames:       'Names the host admires',
-  namesConsidered:    'Names the host has already considered',
-  customRequirements: 'Anything else from the host',
-  exploreDirections:  'Directions the host wants explored',
-  avoidDirections:    'Directions the host wants avoided',
+  otherLanguages:     'Is the host open to names from other languages?',
+  includeAvoid:       'Any words or ideas to explore or avoid?',
+  admiredNames:       'What existing names is the host drawn to?',
+  namesConsidered:    'Any names the host has already considered?',
+  customRequirements: 'Anything else from the host?',
+  exploreDirections:  'Anything to specifically explore?',
+  avoidDirections:    'Anything to specifically avoid?',
 };
 export const PARTICIPANT_LABELS_BY_SUB = {
-  p4: {
-    projectSummary: 'What it is, and what makes it special',
-  },
-  p3: {
-    propDesc: 'What makes it special',
-  },
-  p2: {
-    petType: 'Kind of pet',
-  },
-  p1: {
-    dueDate:    'Due date',
-    gender:     'Gender',
-    lengthPref: 'Name length',
-  },
-  t6: {
-    projectSummary: 'What it is, and what it does',
-  },
   t4: {
-    projectSummary: 'What it is, and what it does',
-    admiredNames:   'Organization names the host admires',
+    admiredNames:   'Which organization or group names does the host admire?',
   },
   t3: {
-    projectSummary: 'The concept',
-    compShows:      'Shows the host admires',
+    compShows:      'Any show or project names the host admires?',
   },
   t2: {
-    genre:        'Genre and sound',
+    genre:        'What’s the band’s genre and sound?',
     nameStyle:    'Naming territory',
-    admiredNames: 'Band names the host admires',
+    admiredNames: 'Which band names does the host admire?',
   },
   t1: {
-    admiredNames: 'Team names the host admires',
+    admiredNames: 'Which team names does the host like?',
     teamColors:   'Team colors',
-    avoidNames:   'Names to avoid',
   },
   b5: {
-    nameConnection: 'Connection to other names',
+    nameConnection: 'Should the name connect to the company or other names?',
+    admiredNames:   'Any names the host has in mind, or admires?',
   },
   b4: {
     currentName: 'Current name',

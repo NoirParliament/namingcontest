@@ -18,6 +18,10 @@ export default function CreditNameEntry({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
   const fileRef = useRef(null);
+  // Stable placeholder-avatar seed for guests (no user id, no explicit seed).
+  // Seeding on the typed name reshuffles the avatar on every keystroke, so we
+  // mint one seed per mount and keep it steady while they type.
+  const [fallbackSeed] = useState(() => 'you-' + Math.random().toString(36).slice(2, 10));
 
   const canConfirm = firstName.trim().length > 0;
   const submitOnEnter = (e) => { if (e.key === 'Enter' && canConfirm) onConfirm(); };
@@ -46,7 +50,7 @@ export default function CreditNameEntry({
     <div className="v4-credit">
       <div className="v4-credit-identity">
         <span className="v4-credit-avatar">
-          <UserAvatar seed={seed || user?.id || firstName || 'you'} photoUrl={photo} size={52} />
+          <UserAvatar seed={seed || user?.id || fallbackSeed} photoUrl={photo} size={52} />
         </span>
         <button
           type="button"
