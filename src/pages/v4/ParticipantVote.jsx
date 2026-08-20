@@ -122,7 +122,7 @@ function shuffleStable(arr, seed) {
 export default function ParticipantVote() {
   const { id: contestId } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const mockContest = getMockContestById(contestId);
   const chatRef = useRef(null);
   const didFirstAutoscrollRef = useRef(false);
@@ -343,6 +343,12 @@ export default function ParticipantVote() {
 
   // Guards
   if (!mockContest) {
+    // Signed-out visitor: the DB fetch effect only runs once user?.id exists,
+    // so redirect to /join to authenticate rather than holding the loader
+    // forever. Wait for authLoading so a hydrating session isn't bounced.
+    if (!authLoading && !user?.id) {
+      return <Navigate to={`/v4/join/${contestId}`} replace />;
+    }
     // Real contest: wait for the load, then only allow voting in the voting
     // phase. Otherwise send the participant to the right place for the stage.
     if (dbLoading) {

@@ -170,7 +170,16 @@ export const MOCK_CONTESTS = {
   },
 };
 
+// Demo/mock contests resolve in dev + explicit-demo builds only. In a normal
+// production build they must NOT resolve — a guessable mock id (mock_ongoing_1)
+// would otherwise serve a fake-but-real-looking contest on the live site.
+// import.meta.env.DEV covers localhost; set VITE_ENABLE_DEMO=true to force them
+// on in a prod preview (e.g. a client walkthrough behind the beta gate).
+const DEMO_ENABLED =
+  import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEMO === 'true';
+
 export function getMockContestById(id) {
+  if (!DEMO_ENABLED) return null;
   const base = MOCK_CONTESTS[id] || SIM_CONTESTS[id] || null;
   if (!base) return null;
   // Optional per-contest stage override (written by the Platform Map to
@@ -191,5 +200,5 @@ export function getMockContestById(id) {
 }
 
 export function isMockContestId(id) {
-  return !!MOCK_CONTESTS[id];
+  return DEMO_ENABLED && !!MOCK_CONTESTS[id];
 }

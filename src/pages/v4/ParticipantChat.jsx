@@ -235,7 +235,7 @@ export default function ParticipantChat() {
   const { id: contestId } = useParams();
   const navigate = useNavigate();
   const fadeNav = useFadeNav();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   // Mock demo contest, or a real one loaded from the DB (a participant can
   // read the full contest — brief + settings — via RLS once they've joined).
@@ -519,6 +519,15 @@ export default function ParticipantChat() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [draftsHydrated, drafts, activeDraft, creditMe, creditChosen, confirmedName, contestId]);
+
+  // Signed-out visitor on a real contest link: the DB fetch effect only runs
+  // once user?.id exists, so without this they'd hold the loading spinner
+  // forever. Once auth has settled with no user, send them through /join to
+  // authenticate (which handles bad links too). Wait for authLoading so we
+  // never bounce a user whose session is still hydrating.
+  if (!mockContest && !authLoading && !user?.id) {
+    return <Navigate to={`/v4/join/${contestId}`} replace />;
+  }
 
   // Real contest still loading — hold, don't bounce to settings.
   if (!mockContest && dbLoading) {
