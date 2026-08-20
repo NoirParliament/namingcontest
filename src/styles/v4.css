@@ -9473,65 +9473,6 @@ button.v4-pchat-draft.v4-pchat-draft-editable:focus-visible .v4-pchat-draft-edit
      vertical position relative to the nav and the card list below. */
   margin: 14px 0 32px;
 }
-
-/* ── Winner story — the reveal's opening beat, above the crowned name.
-   Host line + the creator's intro as a quiet quote, so the name below
-   reads as the ANSWER to a real ask. Same fade-up family as the hero. */
-.v4-pwinner-story {
-  max-width: 480px;
-  margin: 18px auto 6px;
-  text-align: center;
-  animation: v4-join-fade-up 0.7s ease-out 0.02s both;
-}
-.v4-pwinner-story-host {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-.v4-pwinner-story-avatar {
-  display: inline-flex;
-  flex: none;
-  border-radius: 50%;
-  overflow: hidden;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.75), 0 2px 8px rgba(3, 3, 2, 0.12);
-}
-.v4-pwinner-story-avatar img,
-.v4-pwinner-story-avatar svg {
-  display: block;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-.v4-pwinner-story-line {
-  font-size: 14.5px;
-  font-weight: 500;
-  color: var(--v4-muted);
-  letter-spacing: -0.005em;
-  text-align: left;
-  line-height: 1.4;
-}
-.v4-pwinner-story-line strong {
-  color: var(--v4-fg);
-  font-weight: 650;
-}
-.v4-pwinner-story-quote {
-  margin: 12px auto 0;
-  max-width: 440px;
-  font-size: 15px;
-  line-height: 1.55;
-  font-weight: 450;
-  font-style: italic;
-  color: rgba(3, 3, 2, 0.68);
-  letter-spacing: -0.005em;
-  /* Long intros stay a teaser, not an essay — the reveal is the point. */
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.v4-pwinner-story-quote::before { content: '\201C'; }
-.v4-pwinner-story-quote::after  { content: '\201D'; }
 /* Headline (eyebrow + title) fades in together — same timing as
    .v4-join-hero-headline on the invitation page (0.7s @ 0.08s).
    Sub paragraph fades in slightly later, matching the join's
