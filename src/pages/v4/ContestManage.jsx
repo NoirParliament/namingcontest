@@ -1302,16 +1302,16 @@ export default function ContestManage() {
             </section>
             )}
 
-            {/* ── Brief recap — reference material, hidden once the
-                winner is picked (contest is concluded, brief is moot). */}
-            {!isWinnerPicked && (
-              <BriefRecapCollapser
-                filledBrief={filledBrief}
-                filledSettings={filledSettings}
-                briefAnswers={liveBriefAnswers}
-                settingsAnswers={liveSettingsAnswers}
-              />
-            )}
+            {/* ── Brief recap — reference material in EVERY stage, the
+                winner stage included: the brief is the contest's record,
+                and creators come back to compare the ask with the answer.
+                (Was hidden post-crown; client asked for it back.) */}
+            <BriefRecapCollapser
+              filledBrief={filledBrief}
+              filledSettings={filledSettings}
+              briefAnswers={liveBriefAnswers}
+              settingsAnswers={liveSettingsAnswers}
+            />
 
             {/* ── Footer actions ────────────────────────────────────
                 Winner phase shows the Catchword consult block instead
