@@ -20,7 +20,7 @@ const TIERS = [
   {
     tier: 'personal',
     title: 'Personal',
-    tagline: 'Babies, pets, holiday homes, the family Wi-Fi.',
+    tagline: 'Babies, pets, homes, Wi-Fi networks, and more.',
     cta: 'Start a personal contest',
     img: personalDog,
     pillA: { text: 'Olly', meta: '8 votes', color: '#b25620', icon: <path d="M8 14s-5-3.2-5-7a3 3 0 0 1 5-2 3 3 0 0 1 5 2c0 3.8-5 7-5 7z" /> },
@@ -38,7 +38,7 @@ const TIERS = [
   {
     tier: 'business',
     title: 'Business',
-    tagline: 'Company names, product launches, rebrands, internal projects.',
+    tagline: 'Company names, product names, internal projects, and more.',
     cta: 'Start a business contest',
     img: businessWoman,
     pillA: { text: 'EvoPay', meta: '31 votes', color: '#3f8850', icon: <path d="M8 14s-5-3.2-5-7a3 3 0 0 1 5-2 3 3 0 0 1 5 2c0 3.8-5 7-5 7z" /> },
