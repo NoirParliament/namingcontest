@@ -84,8 +84,6 @@ export default function PublicWinnerReveal() {
 
   const creatorName = mockContest ? (mockContest.creator?.name || 'the organizer') : (real?.creator_name || 'the organizer');
   const contestName = mockContest ? (mockContest.workingName || mockContest.name || 'the contest') : (real?.working_name || 'the contest');
-  // The creator's intro note (same source as the invitation's hero summary).
-  const introNote = mockContest ? (mockContest.brief?.intro || null) : (real?.intro || null);
 
   const winner = mockContest
     ? (live.names.find((n) => n.id === mockContest.winnerSubId)
@@ -217,11 +215,6 @@ export default function PublicWinnerReveal() {
                   : <><strong>{winner.submitterName}</strong> suggested the winning name</>}
                 {' · '}{voteLine}
               </p>
-              {/* The creator's intro, the same quiet paragraph the invitation
-                  opened with — the contest closes on the words it opened on.
-                  (brief.intro via get_winner_info; nothing shows if the
-                  creator never wrote one.) */}
-              {introNote && <p className="v4-join-hero-summary">{introNote}</p>}
             </section>
 
             {/* ── Champion card — identical to ParticipantWinner. */}
