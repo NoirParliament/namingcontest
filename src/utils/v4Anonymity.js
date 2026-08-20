@@ -69,3 +69,32 @@ export function anonymityLabel(contest) {
   if (mode === 'anonymous') return 'Anonymous';
   return 'Participants choose';
 }
+
+// ── Host identity ────────────────────────────────────────────────────────
+// One resolver for "who is the host, as participants may see them". The
+// creator can choose to stay anonymous in the brief's opening step
+// (settings.creatorAnonymous); then every participant surface shows
+// "the organizer" with a neutral generated avatar seeded by the contest
+// (never the real name, id, or photo). Public hosts show their display
+// name and uploaded photo, with the generated avatar as fallback.
+export function hostIdentity(contest) {
+  const anonymous = contest?.settings?.creatorAnonymous === true;
+  if (anonymous) {
+    return {
+      name: 'the organizer',
+      anonymous: true,
+      seed: `host_${contest?.id || 'contest'}`,
+      photoUrl: null,
+    };
+  }
+  const name =
+    contest?.creator?.name ||
+    contest?.settings?.creatorDisplayName ||
+    'the organizer';
+  return {
+    name,
+    anonymous: false,
+    seed: contest?.creator?.id || contest?.creatorId || name,
+    photoUrl: contest?.creator?.avatar_url || null,
+  };
+}

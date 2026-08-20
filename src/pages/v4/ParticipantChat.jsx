@@ -32,16 +32,17 @@ import { useProfile } from '../../lib/useProfile';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
 import { readSetup, writeSetup, formatDateAnswer } from '../../utils/v4Brief';
 import { readParticipation, recordSubmission, writeParticipation } from '../../utils/v4Participant';
-import { anonymityMode } from '../../utils/v4Anonymity';
-import {
-  getParticipantArticles, getChecklist,
-} from '../../data/v4/participantArticles';
-import { getQuestionsFor } from '../../utils/v4Brief';
+import { anonymityMode, hostIdentity } from '../../utils/v4Anonymity';
+import { getChecklist } from '../../data/v4/participantArticles';
+import { getQuestionsFor, getArticleFor } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
 import GuideExpandable from '../../components/v4/GuideExpandable';
+import BriefSectionHead from '../../components/v4/BriefSectionHead';
+import HostNote from '../../components/v4/HostNote';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import CreditNameEntry from '../../components/v4/CreditNameEntry';
 import BriefRowValue from '../../components/v4/BriefRowValue';
+import { getParticipantNote, getBriefLabel, getBriefSections, getParticipantLabel } from '../../data/v4/briefExpansions';
 import { useFadeNav } from '../../components/v4/useFadeNav';
 import ConfirmModal from '../../components/v4/ConfirmModal';
 import '../../styles/landing-v3.css';
@@ -80,11 +81,6 @@ function buildBriefRows(contest) {
   }
 
   const rows = briefQs
-    // The header quote shows the creator's intro when they wrote one, and
-    // falls back to projectSummary when they didn't. Whichever is quoted
-    // stays out of the rows; when the intro is the quote, the background
-    // summary belongs back IN the rows.
-    .filter((q) => (briefAnswers.intro ? true : q.id !== 'projectSummary'))
     .filter((q) => {
       const v = briefAnswers[q.id];
       if (v === undefined || v === null || v === '') return false;
@@ -93,7 +89,7 @@ function buildBriefRows(contest) {
       if (v && typeof v === 'object' && 'enabled' in v && !v.enabled) return false;
       return true;
     })
-    .map((q) => ({ id: q.id, label: q.label, value: briefAnswers[q.id] }));
+    .map((q) => ({ id: q.id, label: getParticipantLabel(q, contest.subSegmentId), value: briefAnswers[q.id] }));
 
   // Slim the settings rows shown on the brief card. Drop:
   //  - submissionDays / votingDays (logistics, not naming context)
@@ -301,7 +297,8 @@ export default function ParticipantChat() {
     MAX_SUBMISSIONS,
   );
   const tone = contest ? getSegmentTone(contest.subSegmentId) : null;
-  const creatorName = contest?.creator?.name || 'the organizer';
+  const host = contest ? hostIdentity(contest) : { name: 'the organizer' };
+  const creatorName = host.name;
 
   // Authenticated user (the participant) — read from setup blob,
   // populated either by the join flow or the SignInModal participant
@@ -314,15 +311,23 @@ export default function ParticipantChat() {
   // mock participant photo). Cached hook = no placeholder flash; the setter
   // also updates the cache when the credit step saves a display name.
   const [profile, setProfile] = useProfile(user);
-  const articles = useMemo(
-    () => (contest ? getParticipantArticles(contest.subSegmentId) : []),
-    [contest]
-  );
+  // Guides shown to participants are the SAME ones on the creator's brief:
+  // derived from this segment's question guideIds, in question order,
+  // deduped. One reading list per contest, wherever the brief is read.
+  const articles = useMemo(() => {
+    if (!contest) return [];
+    const sub = contest.subSegmentId;
+    const seen = new Set();
+    return getQuestionsFor(sub)
+      .map((q) => q.guideId)
+      .filter((id) => id && !seen.has(id) && seen.add(id))
+      .map((id) => getArticleFor(sub, id))
+      .filter(Boolean);
+  }, [contest]);
   const checklist = useMemo(
     () => (contest ? getChecklist(contest.subSegmentId) : []),
     [contest]
   );
-  const featuredArticle = articles[0] || null;
   const { rows: briefRows, settingsRows } = useMemo(
     () => buildBriefRows(contest),
     [contest]
@@ -797,6 +802,8 @@ export default function ParticipantChat() {
                   <span>Show me the brief</span>
                 </div>
                 <ParticipantBriefCard
+                  creatorName={creatorName}
+                  articles={articles}
                   contest={contest}
                   tone={tone}
                   briefRows={briefRows}
@@ -880,7 +887,19 @@ export default function ParticipantChat() {
                       onLastChange={setLastName}
                       onConfirm={confirmName}
                       confirmLabel="Use this name"
+                      user={user}
+                      seed={user?.id}
+                      photoUrl={profile?.avatar_url}
                     />
+                    {/* Reversible: drop back to the credit/anonymous choice so
+                        a participant who changes their mind can still opt out. */}
+                    <button
+                      type="button"
+                      className="v4-credit-decline"
+                      onClick={() => setCreditChosen(false)}
+                    >
+                      Actually, keep me anonymous
+                    </button>
                   </>
                 )}
 
@@ -890,7 +909,7 @@ export default function ParticipantChat() {
                   <>
                     <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
                       <span>
-                        Quick heads up, {contest.creator?.name || 'the host'} set
+                        Quick heads up, {host.name} set
                         this contest to public, so every name shows who
                         suggested it. Sharing your name is required to take part here.
                       </span>
@@ -907,6 +926,9 @@ export default function ParticipantChat() {
                       onLastChange={setLastName}
                       onConfirm={confirmName}
                       confirmLabel="Yes, share my name"
+                      user={user}
+                      seed={user?.id}
+                      photoUrl={profile?.avatar_url}
                     />
                     <button
                       type="button"
@@ -1056,9 +1078,7 @@ export default function ParticipantChat() {
                         <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
                           <span>{INITIAL_PROMPT}</span>
                         </div>
-                        {featuredArticle && (
-                          <GuideExpandable article={featuredArticle} compact tone={tone} />
-                        )}
+
                       </>
                     )}
                     {/* Form. Stage gating only matters on the first
@@ -1142,8 +1162,10 @@ export default function ParticipantChat() {
 }
 
 // ── Brief card (full creator answers as label/value rows) ──────────
-function ParticipantBriefCard({ contest, tone, briefRows, settingsRows }) {
-  const projectSummary = contest.brief?.intro || contest.brief?.projectSummary;
+function ParticipantBriefCard({ contest, tone, briefRows, settingsRows, articles = [], creatorName = 'the organizer' }) {
+  // Resolve the host as participants may see them (anonymity respected).
+  const cardHost = hostIdentity(contest);
+
   return (
     <section className="v4-pchat-brief">
       <header className="v4-pchat-brief-head">
@@ -1156,26 +1178,80 @@ function ParticipantBriefCard({ contest, tone, briefRows, settingsRows }) {
         <h2 className="v4-pchat-brief-name">
           {contest.workingName || contest.name}
         </h2>
-        {projectSummary && (
-          <p className="v4-pchat-brief-summary">“{projectSummary}”</p>
-        )}
       </header>
-      <ul className="v4-pchat-brief-list">
-        {briefRows.map((r) => (
-          <li key={r.id} className="v4-pchat-brief-row">
-            <span className="v4-pchat-brief-row-label">{r.label}</span>
-            <span className="v4-pchat-brief-row-value">
-              <BriefRowValue id={r.id} value={r.value} fallback={formatAnswer} subId={contest.subSegmentId} />
-            </span>
-          </li>
-        ))}
-        {settingsRows.map((r) => (
-          <li key={r.id} className="v4-pchat-brief-row v4-pchat-brief-row-settings">
-            <span className="v4-pchat-brief-row-label">{r.label}</span>
-            <span className="v4-pchat-brief-row-value">{formatAnswer(r.value)}</span>
-          </li>
-        ))}
-      </ul>
+      <HostNote
+        intro={contest.brief?.intro}
+        name={creatorName}
+        seed={cardHost.seed}
+        photoUrl={cardHost.photoUrl}
+        tone={tone}
+      />
+      {(() => {
+        // Participant-facing note: the naming implication, under the question
+        // on the left rail so the right column stays pure answer. Rich picks
+        // carry their expansion instead. See BRIEF_PARTICIPANT_NOTES.
+        const renderRow = (r) => {
+          const note = getParticipantNote(r.id, contest.subSegmentId);
+          return (
+            <li key={r.id} className="v4-pchat-brief-row">
+              <span className="v4-pchat-brief-row-label">
+                {r.label}
+                {note && <span className="v4-brief-row-note">{note}</span>}
+              </span>
+              <span className="v4-pchat-brief-row-value">
+                <BriefRowValue id={r.id} value={r.value} fallback={formatAnswer} subId={contest.subSegmentId} />
+              </span>
+            </li>
+          );
+        };
+        // Same document sections as the creator's review; a section with no
+        // answered rows simply doesn't render. Unmapped segments keep the
+        // flat list.
+        const groups = getBriefSections(contest.subSegmentId, briefRows);
+        return groups ? (
+          groups.map((group) => (
+            <div key={group.title} className="v4-brief-group">
+              <BriefSectionHead
+                title={group.title}
+                sub={group.sub}
+                icon={group.icon}
+                tone={tone}
+              />
+              <ul className="v4-pchat-brief-list">{group.items.map(renderRow)}</ul>
+            </div>
+          ))
+        ) : (
+          <ul className="v4-pchat-brief-list">{briefRows.map(renderRow)}</ul>
+        );
+      })()}
+      {settingsRows.length > 0 && (
+        <ul className="v4-pchat-brief-list">
+          {settingsRows.map((r) => (
+            <li key={r.id} className="v4-pchat-brief-row v4-pchat-brief-row-settings">
+              <span className="v4-pchat-brief-row-label">{r.label}</span>
+              <span className="v4-pchat-brief-row-value">{formatAnswer(r.value)}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {/* Same guides, same place as the creator's brief: one reading list per
+          contest, at the foot of the brief rather than floating in the chat. */}
+      {articles.length > 0 && (
+        <div className="v4-brief-guides">
+          <BriefSectionHead
+            title="Naming guides"
+            sub="Short reads that come with this brief"
+            icon="BookOpen"
+            tone={tone}
+          />
+          <div className="v4-brief-guides-list">
+            {articles.map((a) => (
+              <GuideExpandable key={a.id} article={a} compact tone={tone} />
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

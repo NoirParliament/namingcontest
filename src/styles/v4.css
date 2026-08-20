@@ -1447,6 +1447,59 @@ textarea.v4-input::placeholder {
 }
 /* Credit name entry — input + confirm, shown when a participant opts into
    (or the host mandates) crediting. */
+/* Credit avatar block above the name fields — generated beam avatar until a
+   real photo is uploaded, matching the creator identity step. */
+.v4-credit {
+  max-width: 560px;
+  animation: v4-bubble-in 0.5s ease-out forwards;
+  opacity: 0;
+}
+.v4-credit-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.v4-credit-avatar {
+  display: inline-flex;
+  flex: none;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px #fff, 0 2px 8px -2px rgba(0, 0, 0, 0.16);
+}
+.v4-credit-avatar > * { border-radius: 50%; }
+.v4-credit-upload {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--v4-faint);
+  background: #fff;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.v4-credit-upload:hover:not(:disabled) {
+  border-color: rgba(3, 3, 2, 0.3);
+  background: var(--v4-bubble-bg);
+}
+.v4-credit-upload:disabled { opacity: 0.6; cursor: default; }
+.v4-credit-error {
+  font-size: 12px;
+  color: #a8321f;
+  margin-top: 8px;
+  max-width: 560px;
+}
+/* The name row keeps its own layout; drop its top margin since the avatar
+   block now sits above it inside .v4-credit. */
+.v4-credit .v4-credit-name {
+  margin-top: 0;
+  animation: none;
+  opacity: 1;
+}
 .v4-credit-name {
   display: flex;
   flex-wrap: wrap;
@@ -4524,7 +4577,12 @@ input.v4-results-search-input::placeholder {
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
-.v4-review-row:first-child {
+/* Only the FIRST row of a list loses its rule and top padding. Scoped away
+   from list items: every row button is the sole child of its <li>, so a bare
+   :first-child matched all of them and flattened their top padding, leaving
+   text jammed against the divider above with a gap below. */
+:not(li) > .v4-review-row:first-child,
+.v4-review-list > li:first-child > .v4-review-row {
   border-top: none;
   padding-top: 0;
 }
@@ -4557,16 +4615,20 @@ input.v4-results-search-input::placeholder {
   padding: 0;
   margin: 0;
 }
+/* Two-column, wider label rail: the brief shows the client's FULL question
+   on the left (wrapping over two lines when long), answer + note on the
+   right. The label rail is what keeps the card scannable — questions stay
+   muted in one column, answers line up in the other. */
 .v4-review-row-edit {
   display: grid;
-  grid-template-columns: 200px 1fr auto;
-  gap: 16px;
-  align-items: center;
+  grid-template-columns: 250px 1fr auto;
+  gap: 4px 28px;
+  align-items: start;
   width: 100%;
   background: transparent;
   border: none;
   border-top: 1px solid var(--v4-faint);
-  padding: 12px 10px;
+  padding: 14px 10px;
   border-radius: 0;
   font-family: 'Inter', system-ui, sans-serif;
   text-align: left;
@@ -4585,11 +4647,18 @@ input.v4-results-search-input::placeholder {
   box-shadow: 0 0 0 3px var(--v4-ring);
   border-radius: 8px;
 }
+/* Three clear levels so the rail doesn't turn to mush: answer is full ink,
+   the question sits a step back, the note a step behind that. */
 .v4-review-row-edit .v4-review-row-label {
+  display: block;
   font-size: 13px;
-  color: var(--v4-muted);
-  font-weight: 500;
+  color: rgba(3, 3, 2, 0.74);
+  font-weight: 600;
   letter-spacing: -0.005em;
+  line-height: 1.4;
+}
+.v4-review-row-edit .v4-review-row-edit-icon {
+  align-self: center;
 }
 .v4-review-row-edit .v4-review-row-value {
   font-size: 14px;
@@ -8628,9 +8697,7 @@ input.v4-settings-input:-webkit-autofill:active {
   animation: v4-bubble-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;
 }
 .v4-pchat-brief-head {
-  margin-bottom: 14px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--v4-faint);
+  margin-bottom: 6px;
 }
 .v4-pchat-brief-eyebrow {
   font-size: 11px;
@@ -8649,11 +8716,49 @@ input.v4-settings-input:-webkit-autofill:active {
   margin: 0 0 6px;
   line-height: 1.15;
 }
-.v4-pchat-brief-summary {
-  font-size: 14px;
-  line-height: 1.55;
-  color: var(--v4-muted);
+/* Host note — the brief's warm cover note. A soft panel in the segment tone,
+   the host's avatar + name, message set in the display serif so it reads as a
+   personal note, not another data row. Carries the masthead-to-body break, so
+   no hairline dividers are needed above or below it. */
+.v4-hostnote {
+  --note-tint: var(--v4-bubble-bg);
+  --note-accent: var(--v4-fg);
+  margin: 14px 0 22px;
+  padding: 15px 18px 16px;
+  background: color-mix(in srgb, var(--note-tint) 30%, #fff);
+  border-radius: 14px;
+}
+.v4-hostnote-by {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 9px;
+}
+/* UserAvatar sets its own circle + size; we only add a soft ring so the
+   avatar sits cleanly on the tinted panel. Works for both a real photo and
+   the generated beam avatar. */
+.v4-hostnote-avatar {
+  flex: none;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px #fff, 0 1px 4px -1px rgba(0, 0, 0, 0.14);
+}
+.v4-hostnote-name {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--note-accent);
+}
+.v4-hostnote-text {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 16.5px;
+  line-height: 1.5;
+  font-weight: 400;
   font-style: italic;
+  letter-spacing: -0.01em;
+  color: var(--v4-fg);
+  opacity: 0.9;
+  white-space: pre-wrap;
   margin: 0;
 }
 .v4-pchat-brief-list {
@@ -8664,23 +8769,37 @@ input.v4-settings-input:-webkit-autofill:active {
   grid-template-columns: 1fr;
   gap: 8px;
 }
+/* Two-column with a wider rail for the full authored questions; they wrap
+   in the label column while answers stay aligned on the right. */
+/* Mirrors the creator review rows: same divider color, same 14px vertical
+   rhythm, same type scale, so the brief looks identical wherever it's read.
+   Only the rail is narrower (the chat card is a narrower column). */
 .v4-pchat-brief-row {
   display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: 16px;
-  padding: 6px 0;
-  align-items: baseline;
+  grid-template-columns: 200px 1fr;
+  gap: 4px 20px;
+  padding: 14px 0;
+  align-items: start;
+  border-top: 1px solid rgba(3, 3, 2, 0.1);
+}
+.v4-pchat-brief-list > li:first-child.v4-pchat-brief-row {
+  border-top: none;
 }
 .v4-pchat-brief-row-label {
-  font-size: 12px;
+  display: block;
+  font-size: 13px;
   font-weight: 600;
-  color: var(--v4-muted);
-  letter-spacing: 0.01em;
+  color: rgba(3, 3, 2, 0.74);
+  letter-spacing: -0.005em;
+  line-height: 1.4;
 }
 .v4-pchat-brief-row-value {
   font-size: 14px;
+  font-weight: 500;
   color: var(--v4-fg);
+  letter-spacing: -0.005em;
   line-height: 1.5;
+  overflow-wrap: break-word;
 }
 .v4-pchat-brief-row-settings .v4-pchat-brief-row-label {
   color: var(--v4-muted);
@@ -11685,6 +11804,130 @@ button.v4-exit {
   color: var(--v4-muted);
 }
 
+/* ── Brief row note (beefier brief: chat context carried onto the card) ──
+   A short, muted, italic caption under a row's answer saying what the
+   section is FOR — the explanation the brief chat gives beside each
+   question. Deliberately a different tier from the answer (smaller,
+   italic, muted) so it reads as guidance, never as the answer itself. */
+/* Not italic: at 11px, italic small text is what made this unreadable.
+   Plain, lighter, and a size down from the question is enough separation. */
+.v4-brief-row-note {
+  display: block;
+  margin-top: 5px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--v4-muted);
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+/* ── Brief sections (the client's document parts) ────────────────
+   The brief groups its questions under headings (what it is, what the name
+   should do, explore/avoid, practical) instead of running as one flat list,
+   with that section's guide attached beneath it in the tinted callout. */
+.v4-brief-group {
+  margin-bottom: 26px;
+}
+.v4-brief-group:last-child {
+  margin-bottom: 0;
+}
+.v4-brief-group-title {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--v4-fg);
+  margin: 0 0 2px;
+}
+/* The section blurb has to read as a header, not as another row note: it is
+   a step darker and larger than the notes, and the whole header block is
+   closed with a rule so the section reads as a header then its questions. */
+.v4-brief-group-sub {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: rgba(3, 3, 2, 0.68);
+  line-height: 1.5;
+  margin: 0;
+}
+.v4-brief-group-head {
+  --sec-tint: var(--v4-bubble-bg);
+  --sec-accent: var(--v4-fg);
+  margin-bottom: 12px;
+}
+.v4-brief-group-headline {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 5px;
+}
+/* Icon tile in the segment's own tone, matching the guide callout badge. */
+.v4-brief-group-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--sec-accent) 14%, #fff);
+  color: var(--sec-accent);
+}
+/* Visible rules between questions: they tie a question on the left to its
+   answer across the gutter, which whitespace alone cannot do when row
+   heights are ragged. --v4-faint (0.1) disappeared against the warm page. */
+.v4-brief-group .v4-review-row-edit,
+.v4-review-list-editable > li + li .v4-review-row-edit {
+  border-top: 1px solid rgba(3, 3, 2, 0.1);
+}
+.v4-brief-group .v4-review-list-editable > li:first-child .v4-review-row-edit {
+  border-top: none;
+  /* Same top padding as every other row: the gap under the header rule must
+     equal the gap across the rules between rows (~28px rhythm). */
+  padding-top: 14px;
+}
+/* Guides collected in one standardized block at the foot of the brief. */
+.v4-brief-guides {
+  margin-top: 26px;
+}
+.v4-brief-guides-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--v4-fg);
+  margin: 0 0 3px;
+}
+.v4-brief-guides-sub {
+  font-size: 12px;
+  color: var(--v4-muted);
+  margin: 0 0 14px;
+  line-height: 1.5;
+}
+.v4-brief-guides-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+.v4-brief-guides-list .v4-guide {
+  margin: 0;
+  max-width: 100%;
+  opacity: 1;
+  animation: none;
+}
+/* First row sits directly under the heading, so it needs no rule above. */
+.v4-review-list-editable > li:first-child .v4-review-row-edit {
+  border-top: none;
+}
+/* Unanswered rows step back so answered content leads the page. */
+.v4-review-row-edit.is-skipped .v4-review-row-label {
+  color: rgba(3, 3, 2, 0.5);
+  font-weight: 500;
+}
+.v4-review-row-edit.is-skipped .v4-brief-row-note {
+  opacity: 0.6;
+}
+
 /* ── Stacked multi-select (options with examples) ───────────────────
    Chips whose options carry examples render as uniform cards in a
    two-column grid (one column on phones), so an 8-option set is 4 rows
@@ -11722,4 +11965,133 @@ button.v4-exit {
   .v4-chips-row--stacked {
     grid-template-columns: 1fr;
   }
+}
+
+/* ============================================
+   Creator identity step (brief opener) — name + avatar + anonymity + the
+   contest name. One white card in the app's card language (faint border,
+   18px radius, uppercase eyebrow labels, faint divider between groups),
+   mirroring the participant credit flow.
+   ============================================ */
+.v4-creator-id {
+  --id-tint: var(--v4-bubble-bg);
+  --id-accent: var(--v4-fg);
+  width: 100%;
+  max-width: 560px;
+  background: #ffffff;
+  border: 1px solid var(--v4-faint);
+  border-radius: 18px;
+  padding: 20px 22px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  animation: v4-bubble-in 0.4s ease-out both;
+}
+.v4-creator-id-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+  margin-bottom: 10px;
+}
+.v4-creator-id-you {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--v4-faint);
+  margin-bottom: 18px;
+}
+.v4-creator-id-avatar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  flex: none;
+}
+.v4-creator-id-avatar {
+  display: inline-flex;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px #fff, 0 0 0 4px var(--v4-faint), 0 4px 12px -4px rgba(0, 0, 0, 0.12);
+}
+.v4-creator-id-avatar > * { border-radius: 50%; }
+.v4-creator-id-upload {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--v4-faint);
+  background: #fff;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.v4-creator-id-upload:hover:not(:disabled) {
+  border-color: rgba(3, 3, 2, 0.3);
+  background: var(--v4-bubble-bg);
+}
+.v4-creator-id-upload:disabled { opacity: 0.6; cursor: default; }
+.v4-creator-id-fields {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.v4-creator-id-names {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.v4-creator-id-anon {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  align-self: flex-start;
+  padding: 7px 13px 7px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--v4-faint);
+  background: #fff;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--v4-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.v4-creator-id-anon:hover {
+  border-color: rgba(3, 3, 2, 0.3);
+  color: var(--v4-fg);
+}
+.v4-creator-id-anon.is-on {
+  border-color: color-mix(in srgb, var(--id-accent) 40%, transparent);
+  background: color-mix(in srgb, var(--id-tint) 34%, #fff);
+  color: var(--id-accent);
+  font-weight: 600;
+}
+.v4-creator-id-contest {
+  display: flex;
+  flex-direction: column;
+}
+.v4-creator-id-error {
+  font-size: 12px;
+  color: #a8321f;
+  margin-top: 8px;
+}
+.v4-creator-id-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+@media (max-width: 560px) {
+  .v4-creator-id { padding: 18px 16px 16px; }
+  .v4-creator-id-you { flex-direction: column; align-items: stretch; gap: 14px; }
+  .v4-creator-id-avatar-col { flex-direction: row; justify-content: flex-start; gap: 12px; }
 }

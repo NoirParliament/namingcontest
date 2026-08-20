@@ -10,7 +10,7 @@ import {
 } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
-import { readSetup, writeSetup, getQuestionsFor, getSetupStepTotal, formatScheduleSummary, formatWindowDuration, formatDateAnswer } from '../../utils/v4Brief';
+import { readSetup, writeSetup, getQuestionsFor, getSetupStepTotal, formatScheduleSummary, formatWindowDuration, formatDateAnswer, getArticleFor } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS, INTRO_QUESTION, getIntroQuestionFor } from '../../data/v4/briefQuestions';
 import { SegmentThemeBackdrop, getSegmentTone, getSegmentIcon, getSegmentPalette } from '../../data/v4/segmentTheme';
 import LaunchModal from '../../components/v4/LaunchModal';
@@ -20,6 +20,10 @@ import { useProfile } from '../../lib/useProfile';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import { supabase } from '../../lib/supabaseClient';
 import EditQuestionModal from '../../components/v4/EditQuestionModal';
+import BriefRowValue from '../../components/v4/BriefRowValue';
+import { getBriefNote, getBriefLabel, getBriefSections } from '../../data/v4/briefExpansions';
+import GuideExpandable from '../../components/v4/GuideExpandable';
+import BriefSectionHead from '../../components/v4/BriefSectionHead';
 import { ContestScheduleInput } from '../../components/v4/QuestionInput';
 import ExitLink from '../../components/v4/ExitLink';
 import '../../styles/landing-v3.css';
@@ -142,6 +146,52 @@ export default function ReviewLaunch() {
   const briefAnswers = setup.brief || {};
   const settingsAnswers = setup.settings || {};
 
+  // Grouped into the client's document sections (with each section's guide
+  // attached); null for segments without a section map yet, which keep the
+  // flat list.
+  const briefGroups = getBriefSections(subId, briefQuestions);
+  // Guides shown on the brief are exactly the ones this segment's questions
+  // carry, in question order, deduped — so the brief's reading list always
+  // matches what the creator met in the chat. (ARTICLES holds extra pieces
+  // that were never attached to a question; those are not part of this
+  // segment's flow and must not appear here.)
+  const briefArticles = (() => {
+    const seen = new Set();
+    return briefQuestions
+      .map((q) => q.guideId)
+      .filter((id) => id && !seen.has(id) && seen.add(id))
+      .map((id) => getArticleFor(subId, id))
+      .filter(Boolean);
+  })();
+
+  // One brief row. Question on the left rail with the note that says what it
+  // covers; answer on the right; pencil opens the same edit modal as before.
+  const renderBriefRow = (q) => {
+    const val = briefAnswers[q.id];
+    const skipped = !isAnswered(val);
+    const note = getBriefNote(q.id, subId);
+    return (
+      <li key={q.id}>
+        <button
+          type="button"
+          className={`v4-review-row v4-review-row-edit${skipped ? ' is-skipped' : ''}`}
+          onClick={() => setEditingQuestion({ question: q, section: 'brief' })}
+        >
+          <span className="v4-review-row-label">
+            {getBriefLabel(q)}
+            {note && <span className="v4-brief-row-note">{note}</span>}
+          </span>
+          <span className={`v4-review-row-value${skipped ? ' v4-review-row-skipped' : ''}`}>
+            {skipped
+              ? 'Skipped'
+              : <BriefRowValue id={q.id} value={val} fallback={formatAnswer} subId={subId} />}
+          </span>
+          <PencilSimple size={12} weight="bold" className="v4-review-row-edit-icon" />
+        </button>
+      </li>
+    );
+  };
+
   const handleEditSave = (newValue) => {
     if (!editingQuestion) return;
     const { question, section } = editingQuestion;
@@ -217,7 +267,14 @@ export default function ReviewLaunch() {
       sub_segment_id: cur.subSegmentId || null,
       sub_segment_title: cur.subSegmentTitle || null,
       brief: cur.brief || {},
-      settings: cur.settings || {},
+      // Creator identity from the opening step rides in settings (jsonb, no
+      // migration): the anonymity choice participants must respect, and the
+      // display name so it survives the guest path to launch.
+      settings: {
+        ...(cur.settings || {}),
+        ...(cur.userAnonymous != null ? { creatorAnonymous: !!cur.userAnonymous } : {}),
+        ...(cur.userName ? { creatorDisplayName: cur.userName } : {}),
+      },
       voter_tier: cur.voterTier || null,
       price: cur.voterTier ? priceForVoters(cur.voterTier) : null,
       status: 'draft',
@@ -260,7 +317,15 @@ export default function ReviewLaunch() {
       if (error) throw new Error(error.message || 'Could not create your contest.');
       contestId = data.id;
     } else {
-      const { data, error } = await supabase.functions.invoke('launch-contest', { body: { email, row } });
+      // Carry the guest's chosen identity so their brand-new account gets
+      // their name + photo on creation (they have no session to do it
+      // client-side). launch-contest applies these to the profile.
+      const idraft = readSetup();
+      const identity = {
+        displayName: idraft.userName || null,
+        avatarData: idraft.userAvatarData || null,
+      };
+      const { data, error } = await supabase.functions.invoke('launch-contest', { body: { email, row, identity } });
       if (error) throw new Error(error.message || 'Could not start your contest.');
       if (data?.error) throw new Error(data.error);
       contestId = data.contestId;
@@ -469,26 +534,45 @@ export default function ReviewLaunch() {
                 <h2>Your brief</h2>
                 <span className="v4-review-section-hint">Participants see this · click to edit</span>
               </header>
-              <ul className="v4-review-list v4-review-list-editable">
-                {briefQuestions.map((q) => {
-                  const skipped = !isAnswered(briefAnswers[q.id]);
-                  return (
-                    <li key={q.id}>
-                      <button
-                        type="button"
-                        className="v4-review-row v4-review-row-edit"
-                        onClick={() => setEditingQuestion({ question: q, section: 'brief' })}
-                      >
-                        <span className="v4-review-row-label">{q.label}</span>
-                        <span className={`v4-review-row-value${skipped ? ' v4-review-row-skipped' : ''}`}>
-                          {skipped ? 'Skipped' : formatAnswer(briefAnswers[q.id])}
-                        </span>
-                        <PencilSimple size={12} weight="bold" className="v4-review-row-edit-icon" />
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
+              {briefGroups ? (
+                briefGroups.map((group) => (
+                  <div key={group.title} className="v4-brief-group">
+                    <BriefSectionHead
+                      title={group.title}
+                      sub={group.sub}
+                      icon={group.icon}
+                      tone={segmentTone}
+                    />
+                    <ul className="v4-review-list v4-review-list-editable">
+                      {group.items.map(renderBriefRow)}
+                    </ul>
+                  </div>
+                ))
+              ) : (
+                <ul className="v4-review-list v4-review-list-editable">
+                  {briefQuestions.map(renderBriefRow)}
+                </ul>
+              )}
+
+              {/* Guides in ONE standardized place rather than scattered per
+                  section: on a finished brief they are reference reading for
+                  whoever names, not help for answering. Uneven guide counts
+                  per segment also make per-section placement look patchy. */}
+              {briefArticles.length > 0 && (
+                <div className="v4-brief-guides">
+                  <BriefSectionHead
+                    title="Naming guides"
+                    sub="Short reads on naming craft, shared with your participants"
+                    icon="BookOpen"
+                    tone={segmentTone}
+                  />
+                  <div className="v4-brief-guides-list">
+                    {briefArticles.map((a) => (
+                      <GuideExpandable key={a.id} article={a} compact tone={segmentTone} />
+                    ))}
+                  </div>
+                </div>
+              )}
             </section>
           )}
 

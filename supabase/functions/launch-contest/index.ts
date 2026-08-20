@@ -32,7 +32,7 @@ function json(body: unknown, status = 200) {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   try {
-    const { email, row, redirectTo } = await req.json();
+    const { email, row, redirectTo, identity } = await req.json();
     if (!email || !row) return json({ error: 'Missing email or contest data.' }, 400);
 
     const admin = createClient(
@@ -80,6 +80,45 @@ Deno.serve(async (req) => {
       userId = created.user.id;
     }
     if (!userId) throw new Error('Could not resolve a user for this email.');
+
+    // Apply the creator's chosen identity to their brand-new profile. Only for
+    // freshly created accounts (never overwrite a returning user who is just
+    // launching another contest). The guest had no session during the brief,
+    // so their name rode in `identity.displayName` and their photo as a
+    // compact base64 avatar in `identity.avatarData` — uploaded here with the
+    // service role, since only now does the account (and its storage folder)
+    // exist.
+    if (!existingId && identity && typeof identity === 'object') {
+      const patch: Record<string, unknown> = {};
+      if (identity.displayName) patch.display_name = String(identity.displayName).slice(0, 80);
+      if (typeof identity.avatarData === 'string' && identity.avatarData.startsWith('data:image/')) {
+        try {
+          const comma = identity.avatarData.indexOf(',');
+          const meta = identity.avatarData.slice(5, comma); // e.g. "image/jpeg;base64"
+          const contentType = meta.split(';')[0] || 'image/jpeg';
+          const ext = contentType.includes('png') ? 'png' : 'jpg';
+          const b64 = identity.avatarData.slice(comma + 1);
+          const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+          // Cap at ~1.5 MB decoded so a hostile payload can't be abused.
+          if (bytes.length <= 1_500_000) {
+            const path = `${userId}/avatar/${Date.now()}.${ext}`;
+            const { error: upErr } = await admin.storage.from('uploads').upload(path, bytes, {
+              contentType, upsert: true,
+            });
+            if (!upErr) {
+              const { data: pub } = admin.storage.from('uploads').getPublicUrl(path);
+              if (pub?.publicUrl) patch.avatar_url = pub.publicUrl;
+            }
+          }
+        } catch (_e) {
+          // A bad image must never block the launch — the name still applies.
+        }
+      }
+      if (Object.keys(patch).length) {
+        // The signup trigger has already created the profiles row.
+        await admin.from('profiles').update(patch).eq('id', userId);
+      }
+    }
 
     // Create the contest under that user as an UNPAID DRAFT (service_role
     // bypasses RLS). confirm-launch flips it live once payment succeeds — so

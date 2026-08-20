@@ -25,15 +25,19 @@ import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import participantProfile from '../../assets/participant-profile.png';
 import { getMockContestById } from '../../data/v4/mockContests';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
-import { readSetup, writeSetup, getQuestionsFor } from '../../utils/v4Brief';
+import { readSetup, writeSetup, getQuestionsFor, getArticleFor } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
 import { readParticipation, recordVotes } from '../../utils/v4Participant';
-import { showSubmitter, anonymityMode } from '../../utils/v4Anonymity';
+import { showSubmitter, anonymityMode, hostIdentity } from '../../utils/v4Anonymity';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import CreditNameEntry from '../../components/v4/CreditNameEntry';
 import { useAuth } from '../../lib/AuthContext';
 import { readProfileCache } from '../../lib/useProfile';
 import BriefRowValue from '../../components/v4/BriefRowValue';
+import { getParticipantNote, getBriefLabel, getBriefSections, getParticipantLabel } from '../../data/v4/briefExpansions';
+import GuideExpandable from '../../components/v4/GuideExpandable';
+import BriefSectionHead from '../../components/v4/BriefSectionHead';
+import HostNote from '../../components/v4/HostNote';
 import { supabase } from '../../lib/supabaseClient';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
@@ -80,9 +84,6 @@ function buildBriefRows(contest) {
   }
 
   const rows = briefQs
-    // Header quote = intro when present (projectSummary as fallback); the
-    // quoted field stays out of the rows, the other one stays in.
-    .filter((q) => (briefAnswers.intro ? true : q.id !== 'projectSummary'))
     .filter((q) => {
       const v = briefAnswers[q.id];
       if (v === undefined || v === null || v === '') return false;
@@ -91,7 +92,7 @@ function buildBriefRows(contest) {
       if (v && typeof v === 'object' && 'enabled' in v && !v.enabled) return false;
       return true;
     })
-    .map((q) => ({ id: q.id, label: q.label, value: briefAnswers[q.id] }));
+    .map((q) => ({ id: q.id, label: getParticipantLabel(q, contest.subSegmentId), value: briefAnswers[q.id] }));
 
   const settingsRows = SHARED_SETTINGS_QUESTIONS
     .filter((q) => q.id === 'customRequirements')
@@ -186,7 +187,8 @@ export default function ParticipantVote() {
     ? (profile?.display_name || user?.email?.split('@')[0] || 'You')
     : (setup.userName || (userEmail.split('@')[0] || 'You'));
   const userPhoto = isRealContest ? (profile?.avatar_url || null) : (setup.userPhoto || null);
-  const creatorName = contest?.creator?.name || 'the organizer';
+  const host = contest ? hostIdentity(contest) : { name: 'the organizer' };
+  const creatorName = host.name;
   // The DB trigger hard-caps at 3 picks, so clamp the real cap there even if a
   // creator's settings say otherwise (avoids a confusing DB rejection).
   const rawVotingLimit = contest?.settings?.votingLimit || 3;
@@ -220,6 +222,19 @@ export default function ParticipantVote() {
     () => buildBriefRows(contest),
     [contest]
   );
+
+  // Same reading list as the submit chat and the creator's brief: this
+  // segment's question guides, in question order, deduped.
+  const briefArticles = useMemo(() => {
+    if (!contest) return [];
+    const sub = contest.subSegmentId;
+    const seen = new Set();
+    return getQuestionsFor(sub)
+      .map((q) => q.guideId)
+      .filter((id) => id && !seen.has(id) && seen.add(id))
+      .map((id) => getArticleFor(sub, id))
+      .filter(Boolean);
+  }, [contest]);
 
   // ── Intro reveal stages (mirrors ParticipantChat's brief gate) ───
   //   0 → typing for welcome
@@ -499,10 +514,12 @@ export default function ParticipantVote() {
                   <span>Show me the brief</span>
                 </div>
                 <ParticipantBriefCard
+                  creatorName={creatorName}
                   contest={contest}
                   tone={tone}
                   briefRows={briefRows}
                   settingsRows={settingsRows}
+                  articles={briefArticles}
                 />
               </>
             )}
@@ -563,6 +580,9 @@ export default function ParticipantVote() {
                   onLastChange={setLastName}
                   onConfirm={confirmVoterName}
                   confirmLabel="Save name"
+                  user={user}
+                  seed={user?.id}
+                  photoUrl={profile?.avatar_url}
                 />
                 <button
                   type="button"
@@ -686,8 +706,10 @@ export default function ParticipantVote() {
 
 // ── Brief card — same exact classes as ParticipantChat's brief
 //    card so the layout reads identically across the two pages.
-function ParticipantBriefCard({ contest, tone, briefRows, settingsRows }) {
-  const projectSummary = contest.brief?.intro || contest.brief?.projectSummary;
+function ParticipantBriefCard({ contest, tone, briefRows, settingsRows, articles = [], creatorName = 'the organizer' }) {
+  // Resolve the host as participants may see them (anonymity respected).
+  const cardHost = hostIdentity(contest);
+
   return (
     <section className="v4-pchat-brief">
       <header className="v4-pchat-brief-head">
@@ -700,26 +722,74 @@ function ParticipantBriefCard({ contest, tone, briefRows, settingsRows }) {
         <h2 className="v4-pchat-brief-name">
           {contest.workingName || contest.name}
         </h2>
-        {projectSummary && (
-          <p className="v4-pchat-brief-summary">“{projectSummary}”</p>
-        )}
       </header>
-      <ul className="v4-pchat-brief-list">
-        {briefRows.map((r) => (
-          <li key={r.id} className="v4-pchat-brief-row">
-            <span className="v4-pchat-brief-row-label">{r.label}</span>
-            <span className="v4-pchat-brief-row-value">
-              <BriefRowValue id={r.id} value={r.value} fallback={formatAnswer} subId={contest.subSegmentId} />
-            </span>
-          </li>
-        ))}
-        {settingsRows.map((r) => (
-          <li key={r.id} className="v4-pchat-brief-row v4-pchat-brief-row-settings">
-            <span className="v4-pchat-brief-row-label">{r.label}</span>
-            <span className="v4-pchat-brief-row-value">{formatAnswer(r.value)}</span>
-          </li>
-        ))}
-      </ul>
+      <HostNote
+        intro={contest.brief?.intro}
+        name={creatorName}
+        seed={cardHost.seed}
+        photoUrl={cardHost.photoUrl}
+        tone={tone}
+      />
+      {(() => {
+        const renderRow = (r) => {
+          const note = getParticipantNote(r.id, contest.subSegmentId);
+          return (
+            <li key={r.id} className="v4-pchat-brief-row">
+              <span className="v4-pchat-brief-row-label">
+                {r.label}
+                {note && <span className="v4-brief-row-note">{note}</span>}
+              </span>
+              <span className="v4-pchat-brief-row-value">
+                <BriefRowValue id={r.id} value={r.value} fallback={formatAnswer} subId={contest.subSegmentId} />
+              </span>
+            </li>
+          );
+        };
+        const groups = getBriefSections(contest.subSegmentId, briefRows);
+        return groups ? (
+          groups.map((group) => (
+            <div key={group.title} className="v4-brief-group">
+              <BriefSectionHead
+                title={group.title}
+                sub={group.sub}
+                icon={group.icon}
+                tone={tone}
+              />
+              <ul className="v4-pchat-brief-list">{group.items.map(renderRow)}</ul>
+            </div>
+          ))
+        ) : (
+          <ul className="v4-pchat-brief-list">{briefRows.map(renderRow)}</ul>
+        );
+      })()}
+      {settingsRows.length > 0 && (
+        <ul className="v4-pchat-brief-list">
+          {settingsRows.map((r) => (
+            <li key={r.id} className="v4-pchat-brief-row v4-pchat-brief-row-settings">
+              <span className="v4-pchat-brief-row-label">{r.label}</span>
+              <span className="v4-pchat-brief-row-value">{formatAnswer(r.value)}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {/* Same guides, same foot-of-brief spot as the submit chat: voters
+          judge names against the brief, so the reading rides along. */}
+      {articles.length > 0 && (
+        <div className="v4-brief-guides">
+          <BriefSectionHead
+            title="Naming guides"
+            sub="Short reads that come with this brief"
+            icon="BookOpen"
+            tone={tone}
+          />
+          <div className="v4-brief-guides-list">
+            {articles.map((a) => (
+              <GuideExpandable key={a.id} article={a} compact tone={tone} />
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

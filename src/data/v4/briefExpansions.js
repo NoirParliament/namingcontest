@@ -33,7 +33,7 @@ export const BRIEF_EXPANSIONS = {
 
   // b1 / b2 / b5 radio (label variants per segment)
   descriptiveEvocative: {
-    'Descriptive': 'gives a sense of what you do or offer, like PayPal or QuickBooks.', // [sublabel]
+    'Descriptive': 'points straight at what’s on offer, like PayPal or QuickBooks.', // [sublabel]
     'Suggestive': 'hints at an idea, feeling, or benefit without spelling it out, like Amazon or Kindle.', // [sublabel]
     'Direct and clear': 'says plainly what it is.', // [sublabel]
     'Evocative and suggestive': 'hints at an idea or feeling without spelling it out.', // [sublabel]
@@ -70,7 +70,7 @@ export const BRIEF_EXPANSIONS = {
   namingDirection: {
     'Animal / Mascot': 'a creature to rally behind, like Lions, Hawks, or Seattle’s Kraken.', // [eg + hint]
     'Force of Nature': 'names that evoke a powerful force of nature, like Thunder or Blaze.', // [hint + eg]
-    'Place / Geographic': 'names that connect to your region or home turf, like Riverside or Northern.', // [hint + eg]
+    'Place / Geographic': 'names that connect to the team’s region or home turf, like Riverside or Northern.', // [hint + eg]
     'Elite / Best': 'names that plant a flag at the top, like Apex or Vanguard.', // [eg]
     'Tough / Fierce': 'hard-edged names, like Renegades or Predators.', // [eg]
     'Open to anything': 'no set territory: the door is open for an unexpected idea.', // [hint]
@@ -84,7 +84,7 @@ export const BRIEF_EXPANSIONS = {
   // t2 band — the authored examples, each grounded in its documented origin
   // story (the same principle-then-story logic the hints use)
   nameStyle: {
-    'Pop culture': 'lifted from a reference you love, the way Radiohead came from a Talking Heads track.', // [eg + lore]
+    'Pop culture': 'lifted from a beloved reference, the way Radiohead came from a Talking Heads track.', // [eg + lore]
     'Inside jokes': 'an in-joke made public, the way Green Day grew out of the band’s own slang.', // [eg + lore]
     'Places': 'named for a real or imagined place, the way Cypress Hill took theirs from an LA street.', // [eg + lore]
     'Food': 'edible and memorable, like The Cranberries, who began as a pun on cranberry sauce.', // [eg + lore]
@@ -147,6 +147,218 @@ export const BRIEF_EXPANSIONS_BY_SUB = {
     },
   },
 };
+
+// ── Brief notes ─────────────────────────────────────────────────────────
+// The brief CHAT shows an explanation beside every question; the brief CARD
+// (creator review + participant side) used to show only the bare answer, so it
+// read thin. These are the short, audience-neutral captions that carry that
+// context onto the card — one muted line under each row saying what the section
+// is FOR. Condensed from the client's authored hints where they exist ("took
+// from Maria"), written fresh where a question had none. Keyed by question id
+// (ids repeat across segments), with per-segment overrides where the meaning
+// shifts. Return null → the row renders answer-only, exactly as before.
+// Notes appear ONLY where they add a naming implication the answer doesn't
+// already carry — what the answer MEANS for the name, in Maria's own vivid
+// example lines wherever she wrote one. Since the brief now shows the full
+// authored question as the row label, anything self-evident (question +
+// answer say it all) gets NO note; coaching lines about how to answer
+// ("Tell us…", "the clearer the picture…") never appear on the brief at
+// all. Picks carry their expansions instead and never take a note.
+export const BRIEF_NOTES = {
+  // Cross-segment, shared free-text questions
+  admiredNames:      'The pattern in these is the thing to aim for.', // [hint]
+  avoidNames:        'Already ruled out, including anything that sounds too close.', // [hint]
+  namesConsidered:   'The shortlist so far, plus the near-misses that show what fits.', // [hint]
+  keepOrLeave:       'What to carry over from the current name, and what to drop.', // [hint]
+
+  // Group free-text (t2 band + shared)
+  genre:             'Metal goes powerful (Slayer, Pantera); indie goes literary (Fleet Foxes, Bon Iver); pop stays easy to say.', // [hint]
+  originStory:       'Lynyrd Skynyrd came from a gym teacher, Radiohead from a Talking Heads song. A good origin can hand you the name.', // [hint]
+
+  // Personal · baby (p1) free-text
+  lastName:          'First and last name have to flow together; long surnames often pair best with short first names.', // [hint]
+  heritage:          'Names that honor these roots, or work across them.', // [hint]
+
+  // Personal · pet (p2) free-text
+  breed:             'A Chihuahua named “Bruno” is funny; a Great Dane named “Peanut” is funnier.', // [hint]
+  petPersonality:    '“Chaos” fits a hyperactive dog; “Professor” fits a dignified cat.', // [hint]
+};
+
+// Per-segment overrides where the same id means something different in context.
+export const BRIEF_NOTES_BY_SUB = {
+  p2: { projectSummary: 'A quick picture of the pet: who they are and how they act.' },
+  p3: { projectSummary: 'A quick picture of what’s being named and how it’s used.' },
+  p1: { projectSummary: 'A quick picture of the baby and any hopes for the name.' },
+
+  // b2 product — each line sits UNDER its question on the brief's left rail
+  // and adds what the question itself doesn't say: scope, or a real example.
+  // RULE: never restate the question's own words (a note under "What exactly
+  // is the product?" may not open "What it is…"). Adapted from the client's
+  // hints, with the "Tell us…" instruction dropped.
+  b2: {
+    projectSummary:   'A physical product, an app, a service, or a feature, and who it’s for.', // [hint]
+    brandFamily:      'The parent brand, and any siblings the new name will sit alongside.', // [hint]
+    productLine:      'If more are coming, the name may need to work as a pattern, like Kindle, Kindle Paperwhite, Kindle Oasis.', // [hint]
+    namingConventions:'A shared theme, a structure, a length, a starting letter.', // [hint]
+    pairedWithCompany:'Google Maps almost always appears with Google in front; Tide never mentions P&G.', // [hint]
+    featuresBenefits: 'Calm names the app’s exact benefit; Post-it describes the product in two syllables.', // [hint]
+    nameUsage:        'A label on a shelf, an app-store listing, a URL, a menu, a sales call.', // [hint]
+    nameStyles:       'Real words, invented words, or two words fused together.', // [eg]
+    descriptiveEvocative: 'QuickBooks tells you what it’s for; Kindle doesn’t describe an e-reader, but it kindles the right idea.', // [hint]
+    otherLanguages:   'Words drawn or adapted from Latin, Greek, Italian, or anywhere else.', // [hint]
+    includeAvoid:     'Words loved, words overused in the category, anything off-limits.', // [hint]
+    admiredNames:     'Reference names from any industry, and what appeals about them: sound, style, meaning, originality.', // [hint]
+    practicalReqs:    'A letter or syllable limit, easy to spell, the exact dot-com, trademark friendly, works internationally.', // [hint]
+    customRequirements: 'Anything the brief hasn’t already covered.', // [proposed]
+  },
+};
+
+// ── Participant labels ──────────────────────────────────────────────────
+// The brief shows the client's full authored QUESTION as each row's label.
+// On the creator's review that's right (they're answering). But a handful of
+// questions address the creator as "you" ("What existing names are YOU drawn
+// to?"), which reads wrong on the participant brief, where the row shows the
+// host's answer. For those rare cases only, a participant sees a neutral
+// noun-phrase instead. Everything not listed here keeps the full question.
+export const PARTICIPANT_LABELS = {
+  otherLanguages:     'Names from other languages',
+  includeAvoid:       'Words and ideas to explore or avoid',
+  admiredNames:       'Names the host is drawn to',
+  namesConsidered:    'Names the host has already considered',
+  customRequirements: 'Anything else from the host',
+  exploreDirections:  'Directions the host wants explored',
+  avoidDirections:    'Directions the host wants avoided',
+};
+export const PARTICIPANT_LABELS_BY_SUB = {};
+
+// Row label for the PARTICIPANT brief: a neutral rewrite where the question
+// addresses the creator, otherwise the same full question the creator sees.
+export function getParticipantLabel(question, subId) {
+  if (!question) return '';
+  return (
+    PARTICIPANT_LABELS_BY_SUB[subId]?.[question.id] ||
+    PARTICIPANT_LABELS[question.id] ||
+    getBriefLabel(question)
+  );
+}
+
+// ── Participant notes ───────────────────────────────────────────────────
+// The two brief surfaces need different halves of the same authored hint.
+// The creator is filling a form and can see EMPTY rows, so their note gives
+// scope ("what goes here"). The participant only ever sees ANSWERED rows, so
+// scope is redundant; what helps them is the naming implication ("what this
+// means for the names you suggest") — which is the half of Maria's hints
+// carrying her real examples. Same source sentence, split by audience.
+//
+// Rows deliberately absent: ones whose answer explains itself (a plain
+// yes/no, "Prefer English") and ones where the answer IS the context (the
+// opening summary). Rich picks get their expansion instead, never a note.
+export const BRIEF_PARTICIPANT_NOTES = {
+  admiredNames:   'The pattern in these is the thing to aim for.', // [hint]
+  avoidNames:     'Anything close to these is out, however good it sounds.', // [hint]
+  namesConsidered:'The near-misses show what the right name feels like.', // [hint]
+  originStory:    'Lynyrd Skynyrd came from a gym teacher, Radiohead from a Talking Heads song. A good origin can hand you the name.', // [hint]
+  genre:          'Metal goes powerful (Slayer, Pantera); indie goes literary (Fleet Foxes, Bon Iver); pop stays easy to say.', // [hint]
+  breed:          'A Chihuahua named “Bruno” is funny; a Great Dane named “Peanut” is funnier.', // [hint]
+  petPersonality: '“Chaos” fits a hyperactive dog; “Professor” fits a dignified cat.', // [hint]
+  lastName:       'First and last name have to flow together; long surnames often pair best with short first names.', // [hint]
+};
+
+export const BRIEF_PARTICIPANT_NOTES_BY_SUB = {
+  b2: {
+    brandFamily:      'A name that has to live in a family plays differently than one standing alone.', // [hint]
+    productLine:      'If more are coming, the name may need to work as a pattern, like Kindle, Kindle Paperwhite, Kindle Oasis.', // [hint]
+    namingConventions:'A new name that has to fit an established system plays by its rules.', // [hint]
+    pairedWithCompany:'Google Maps almost always appears with Google in front; Tide never mentions P&G.', // [hint]
+    featuresBenefits: 'Calm names the app’s exact benefit; Post-it describes the product in two syllables.', // [hint]
+    nameUsage:        'Where the name shows up shapes what works: a shelf label reads differently than an app-store listing.', // [hint]
+    includeAvoid:     'Lean toward what’s listed here, and clear of the rest.', // [hint]
+    practicalReqs:    'A name that fails these is out, however good it sounds.', // [hint]
+  },
+};
+
+// The participant-facing note for a question, or null. No fallback to the
+// creator note on purpose: those are scope lines written for someone filling
+// a blank row, and they read as noise next to a finished answer.
+export function getParticipantNote(questionId, subId) {
+  return (
+    BRIEF_PARTICIPANT_NOTES_BY_SUB[subId]?.[questionId] ||
+    BRIEF_PARTICIPANT_NOTES[questionId] ||
+    null
+  );
+}
+
+// ── Brief sections ─────────────────────────────────────────────
+// The client describes a brief as a document with parts (what it is, what the
+// name should do, explore/avoid, practical), not a flat run of questions in
+// whatever order they were asked. These maps group a segment's question ids
+// under those parts, so the brief reads as sections instead of one long run.
+// Guides are NOT hung per section: the finished brief collects them in one
+// standardized block (uneven counts per segment make scattering look patchy).
+//
+// Any question missing from the map falls into a trailing group, so adding a
+// question to a segment can never silently drop it from the brief.
+export const BRIEF_SECTIONS = {
+  b2: [
+    { title: 'About the product', icon: 'Package',
+      sub: 'What it is, who it’s for, and the family it joins',
+      ids: ['projectSummary', 'brandFamily', 'productLine', 'namingConventions', 'pairedWithCompany'] },
+    { title: 'What the name should do', icon: 'Target',
+      sub: 'The message it should carry, and the places it has to work',
+      ids: ['featuresBenefits', 'nameUsage', 'nameStyles', 'descriptiveEvocative', 'otherLanguages'] },
+    { title: 'Directions to explore and avoid', icon: 'Compass',
+      sub: 'The taste to match, and what’s off the table',
+      ids: ['includeAvoid', 'admiredNames'] },
+    { title: 'Practical requirements', icon: 'ListChecks',
+      sub: 'Length, spelling, domains, and anything non-negotiable',
+      ids: ['practicalReqs', 'customRequirements'] },
+  ],
+};
+
+// Group a segment's questions into the authored sections. Returns null when a
+// segment has no map yet, so callers fall back to the flat list unchanged.
+export function getBriefSections(subId, questions) {
+  const map = BRIEF_SECTIONS[subId];
+  if (!map || !questions || !questions.length) return null;
+  const byId = new Map(questions.map((q) => [q.id, q]));
+  const used = new Set();
+  const groups = map
+    .map((sec) => {
+      const items = sec.ids.map((id) => byId.get(id)).filter(Boolean);
+      items.forEach((q) => used.add(q.id));
+      return { title: sec.title, sub: sec.sub, icon: sec.icon, items };
+    })
+    .filter((sec) => sec.items.length);
+  const rest = questions.filter((q) => !used.has(q.id));
+  if (rest.length) groups.push({ title: 'Anything else', sub: null, icon: 'Sparkle', items: rest });
+  return groups;
+}
+
+// Brief-card heading for a question. The chat ASKS ("Will there be other
+// products in this line?") while the brief used to reuse a truncated label
+// ("Other products in this line?"), which read as an interrogation transcript
+// and lost the question's own clarity. The brief now shows the client's full
+// authored prompt — her exact words, nothing invented — falling back to the
+// short label for prompts that are instructions rather than questions
+// ("Tell us about the band."). `briefLabel` on a question overrides both,
+// for the handful of prompts whose second person would confuse a reader.
+export function getBriefLabel(question) {
+  if (!question) return '';
+  if (question.briefLabel) return question.briefLabel;
+  const p = typeof question.prompt === 'string' ? question.prompt.trim() : '';
+  if (p.endsWith('?')) return p;
+  return question.label;
+}
+
+// One-line brief-card note for a question, or null. subId lets a segment
+// override the shared note where context changes the meaning.
+export function getBriefNote(questionId, subId) {
+  return (
+    BRIEF_NOTES_BY_SUB[subId]?.[questionId] ||
+    BRIEF_NOTES[questionId] ||
+    null
+  );
+}
 
 // One-line expansion for a question's picked option, or null. subId lets a
 // segment override the shared map where context changes the meaning.

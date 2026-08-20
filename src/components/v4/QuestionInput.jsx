@@ -33,6 +33,8 @@ const SEGMENT_ICONS = {
 // recap, manage recap, chat edit). Without it every edit opened blank: text
 // had to be retyped, and multi-select selections were silently dropped when
 // the creator re-picked only one chip.
+import CreatorIdentityInput from './CreatorIdentityInput';
+
 export default function QuestionInput({ question, onSubmit, autoFocus = true, currentAnswer }) {
   const { type } = question;
 
@@ -68,6 +70,7 @@ export default function QuestionInput({ question, onSubmit, autoFocus = true, cu
   if (type === 'brandingBlock')  return <BrandingBlockInput question={question} onSubmit={onSubmit} />;
   if (type === 'brandingFull')   return <BrandingFullInput question={question} onSubmit={onSubmit} />;
   if (type === 'segmentCards')   return <SegmentCardsInput question={question} onSubmit={onSubmit} />;
+  if (type === 'creatorIdentity') return <CreatorIdentityInput question={question} onSubmit={onSubmit} currentAnswer={currentAnswer} />;
 
   // Heavy types not yet built — colorPicker, fileUpload, repeater
   return <DeferLaunchInput question={question} onSubmit={onSubmit} />;
