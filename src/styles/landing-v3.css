@@ -777,7 +777,7 @@
 
 /* === FAQ === */
 .lp-v3 .faq{max-width:880px;margin:0 auto}
-.lp-v3 .faq-item{border-top:1px solid var(--border);padding:28px 0}
+.lp-v3 .faq-item{border-top:1px solid var(--border);padding:28px 0;scroll-margin-top:120px}
 .lp-v3 .faq-item:last-child{border-bottom:1px solid var(--border)}
 .lp-v3 .faq-q{display:flex;justify-content:space-between;align-items:center;width:100%;background:none;border:0;text-align:left;font-family:var(--font-display);font-weight:400;font-size:26px;letter-spacing:-0.02em;color:var(--fg);cursor:pointer;padding:0;gap:24px;line-height:1.2}
 .lp-v3 .faq-q .toggle{flex:none;width:36px;height:36px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--font-text);font-size:18px;color:var(--fg);transition:transform .2s ease,background .2s ease;background:#fff}
@@ -837,3 +837,6 @@
   .lp-v3 .why-item .why-art{padding:0;justify-content:flex-start}
   .lp-v3 .artifact{transform:none!important;width:100%;max-width:360px}
 }
+
+.lp-v3 .price-note-link{color:inherit;text-decoration:underline;text-underline-offset:2px;text-decoration-color:rgba(3,3,2,.3);transition:color .2s ease,text-decoration-color .2s ease}
+.lp-v3 .price-note-link:hover{color:var(--fg);text-decoration-color:currentColor}

@@ -1077,6 +1077,11 @@ function Offerings({ onStart }) {
         ))}
       </div>
       <div className="price-band">
+        {/* Same strip, same footprint. Tiers aren't clickable (nothing
+            useful to click into from here) — hovering one just inks its
+            price chip, the same ink-fill emphasis the buttons use, as a
+            reading highlight. The note carries the spot rule + a link to
+            the FAQ's full pricing explanation. */}
         <div className="price-tiers">
           <span className="price-tier"><strong>$9</strong> up to 10 participants</span>
           <span className="price-sep" aria-hidden="true">·</span>
@@ -1084,7 +1089,26 @@ function Offerings({ onStart }) {
           <span className="price-sep" aria-hidden="true">·</span>
           <span className="price-tier"><strong>$39</strong> up to 90</span>
         </div>
-        <p className="price-note">One-time, per contest. No subscription, no per-name fees.</p>
+        <p className="price-note">
+          One payment per contest, no subscription. A spot counts only when someone joins.{' '}
+          <a
+            href="/#faq"
+            className="price-note-link"
+            onClick={(e) => {
+              e.preventDefault();
+              // Open the cost question, scroll to IT (not the section top),
+              // then settle once more after the accordion transition (450ms):
+              // the default-open first item collapses above it, which shifts
+              // the target mid-scroll and made a single scroll land too low.
+              window.dispatchEvent(new Event('nc:open-faq-pricing'));
+              const go = () => document.getElementById('faq-cost')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              requestAnimationFrame(go);
+              setTimeout(go, 550);
+            }}
+          >
+            More in the FAQ
+          </a>
+        </p>
       </div>
     </section>
   );
@@ -1341,6 +1365,14 @@ function FAQ() {
       a: <p className="faq-a">{PRICING_EXPLANATION}</p>
     },
   ];
+  // The pricing strip's "More in the FAQ" link opens the cost question as it
+  // scrolls here, so the answer is already expanded on arrival.
+  useEffect(() => {
+    const open = () => setOpenIdx(items.findIndex((it) => it.q === 'What does it cost?'));
+    window.addEventListener('nc:open-faq-pricing', open);
+    return () => window.removeEventListener('nc:open-faq-pricing', open);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <section className="section" id="faq">
       <div className="section-head">
@@ -1349,7 +1381,11 @@ function FAQ() {
       </div>
       <div className="faq">
         {items.map((it, i) => (
-          <div key={i} className={`faq-item${openIdx === i ? ' is-open' : ''}`}>
+          <div
+            key={i}
+            id={it.q === 'What does it cost?' ? 'faq-cost' : undefined}
+            className={`faq-item${openIdx === i ? ' is-open' : ''}`}
+          >
             <button
               type="button"
               className="faq-q"
