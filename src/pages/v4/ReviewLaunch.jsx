@@ -474,6 +474,7 @@ export default function ReviewLaunch() {
                   photo={profile?.avatar_url || null}
                   seed={user?.id}
                   tone={segmentTone}
+                  userId={user?.id}
                 />
               )}
             </div>

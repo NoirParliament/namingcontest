@@ -54,6 +54,21 @@ export function useProfile(user) {
     return () => { active = false; };
   }, [userId]);
 
+  // Cross-window sync: when ANY other tab updates the profile cache (an avatar
+  // upload, a display-name change), the `storage` event fires here so this
+  // window repaints the new identity live instead of holding a stale avatar
+  // (often the generated placeholder) until it happens to reload.
+  useEffect(() => {
+    if (!userId) return;
+    const onStorage = (e) => {
+      if (e.key && e.key !== KEY) return;
+      const next = readProfileCache(userId);
+      if (next) setProfileState(next);
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, [userId]);
+
   const setProfile = useCallback((next) => {
     setProfileState((prev) => {
       const value = typeof next === 'function' ? next(prev) : next;

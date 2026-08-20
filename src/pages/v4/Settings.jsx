@@ -26,7 +26,7 @@ import { SegmentThemeBackdrop, getSegmentTone, getSegmentIcon } from '../../data
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import CatchwordConsultBlock from '../../components/v4/CatchwordConsultBlock';
 import ResumeDraftPill from '../../components/v4/ResumeDraftPill';
-import { writeProfileCache } from '../../lib/useProfile';
+import { writeProfileCache, readProfileCache } from '../../lib/useProfile';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -183,9 +183,14 @@ export default function Settings() {
     try { return Object.keys(localStorage).some((k) => /^sb-.*-auth-token$/.test(k)); }
     catch { return false; }
   })();
-  const [photo, setPhoto] = useState(hasStoredSession ? null : (setup.userPhoto || null));
+  // Seed from the SHARED profile cache for signed-in users so the namespace
+  // header first-paints the same avatar/name as every other page, instead of
+  // flashing a placeholder (or a stale demo photo) until its own fetch lands.
+  // Guests, who have no profile row, still read the setup blob.
+  const cachedProfile = user?.id ? readProfileCache(user.id) : null;
+  const [photo, setPhoto] = useState(user?.id ? (cachedProfile?.avatar_url ?? null) : (setup.userPhoto || null));
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
-  const [name, setName] = useState(hasStoredSession ? '' : (setup.userName || ''));
+  const [name, setName] = useState(user?.id ? (cachedProfile?.display_name ?? '') : (setup.userName || ''));
   const [savedFlash, setSavedFlash] = useState(false);
   // Until the profile fetch settles we don't know the real name/email, so we
   // hold off the "Add your name" / "no email saved" empty-state text to avoid

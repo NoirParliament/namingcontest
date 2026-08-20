@@ -871,10 +871,16 @@ body.is-exiting {
 .lp-v3-pick-tier .v4-blob {
   z-index: 0;
 }
-.lp-v3-pick-tier .v4-nav,
 .lp-v3-pick-tier .frame {
   position: relative;
   z-index: 1;
+}
+/* Nav ABOVE the frame — same z-index left the account dropdown paintable but
+   not clickable, because the later-in-DOM .frame won the tie and swallowed the
+   clicks over the open menu. */
+.lp-v3-pick-tier .v4-nav {
+  position: relative;
+  z-index: 30;
 }
 .lp-v3-pick-tier .section {
   margin-top: 40px;
@@ -6131,6 +6137,9 @@ input.v4-results-search-input::placeholder {
 }
 .v4-avatar-menu {
   position: relative;
+  /* Keep the trigger + its dropdown above page content within the nav's
+     stacking context, so the open menu is always clickable. */
+  z-index: 50;
 }
 .v4-avatar-btn {
   /* Pill trigger — matches the dropdown's surface (white + faint border)
@@ -6209,6 +6218,7 @@ input.v4-results-search-input::placeholder {
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
+  z-index: 50;
   min-width: 260px;
   background: #ffffff;
   /* Border-radius matches the modal family. Border removed in favor

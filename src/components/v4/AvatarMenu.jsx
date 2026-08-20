@@ -8,9 +8,16 @@ import { Gear, SignOut, ArrowRight, CaretDown } from '@phosphor-icons/react';
 import heroProfile1 from '../../assets/hero-profile-1.png';
 import { readAllParticipations } from '../../utils/v4Participant';
 import { supabase } from '../../lib/supabaseClient';
+import { useLatestContest } from '../../lib/useLatestContest';
 import UserAvatar from './UserAvatar';
 
-export default function AvatarMenu({ email, name, photo, defaultPhoto, seed, tone, activeContest }) {
+export default function AvatarMenu({ email, name, photo, defaultPhoto, seed, tone, activeContest, userId }) {
+  // When a page doesn't hand us a contest, resolve the signed-in creator's
+  // latest one ourselves — so the "active contest" card shows on EVERY screen
+  // (chat, tier pick, review…), not just the two that fetched it inline. A
+  // page that passes activeContest (even null) keeps full control.
+  const fetchedContest = useLatestContest(activeContest === undefined ? userId : null);
+  const resolvedContest = activeContest !== undefined ? activeContest : fetchedContest;
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
   const navigate = useNavigate();
@@ -128,8 +135,8 @@ export default function AvatarMenu({ email, name, photo, defaultPhoto, seed, ton
           {/* Active-contest card — uses the CONTEST'S own tone (not the
               user's segment tone), so it matches how that specific
               contest is colored throughout the rest of the app. */}
-          {activeContest?.id && (() => {
-            const ct = activeContest.tone || t;
+          {resolvedContest?.id && (() => {
+            const ct = resolvedContest.tone || t;
             return (
             <>
               <div className="v4-avatar-dropdown-divider" aria-hidden="true"></div>
@@ -137,8 +144,8 @@ export default function AvatarMenu({ email, name, photo, defaultPhoto, seed, ton
                 /* Pages can pass `to` on activeContest to override the
                    default route. Used by participant pages to send the
                    user to /status instead of the creator's manage page. */
-                to={activeContest.to || `/v4/contest/${activeContest.id}`}
-                state={activeContest.contest ? { contest: activeContest.contest } : undefined}
+                to={resolvedContest.to || `/v4/contest/${resolvedContest.id}`}
+                state={resolvedContest.contest ? { contest: resolvedContest.contest } : undefined}
                 className="v4-avatar-dropdown-contest"
                 role="menuitem"
                 onClick={() => setOpen(false)}
@@ -147,20 +154,20 @@ export default function AvatarMenu({ email, name, photo, defaultPhoto, seed, ton
                 <div className="v4-avatar-dropdown-contest-text">
                   <div className="v4-avatar-dropdown-contest-eyebrow" style={{ color: ct.fg }}>
                     <span className="v4-manage-live-dot" aria-hidden="true" style={{ background: ct.fg }}></span>
-                    <span>{(activeContest.phase || 'LIVE').toUpperCase()}</span>
-                    {activeContest.daysLeft != null && (
+                    <span>{(resolvedContest.phase || 'LIVE').toUpperCase()}</span>
+                    {resolvedContest.daysLeft != null && (
                       <>
                         <span className="v4-avatar-dropdown-contest-sep">·</span>
                         <span>
-                          {activeContest.daysLeft === 0 ? 'Closes today'
-                            : activeContest.daysLeft === 1 ? '1 day left'
-                            : `${activeContest.daysLeft}d left`}
+                          {resolvedContest.daysLeft === 0 ? 'Closes today'
+                            : resolvedContest.daysLeft === 1 ? '1 day left'
+                            : `${resolvedContest.daysLeft}d left`}
                         </span>
                       </>
                     )}
                   </div>
                   <div className="v4-avatar-dropdown-contest-name" style={{ color: ct.fg }}>
-                    {activeContest.name}
+                    {resolvedContest.name}
                   </div>
                 </div>
                 <ArrowRight weight="bold" size={14} className="v4-avatar-dropdown-contest-arrow" style={{ color: ct.fg }} />

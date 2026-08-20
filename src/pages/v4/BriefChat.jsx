@@ -627,7 +627,8 @@ export default function BriefChat() {
               <AvatarMenu
                 email={user?.email || navSetup.userEmail}
                 name={profile?.display_name || navSetup.userName}
-                photo={profile?.avatar_url || navSetup.userPhoto || null}
+                photo={profile?.avatar_url || (user?.id ? null : (navSetup.userPhoto || null))}
+                userId={user?.id}
                 seed={user?.id}
                 tone={navTone}
               />
