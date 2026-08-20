@@ -155,7 +155,7 @@ export default function PickTier() {
                           {t.pillA.icon}
                         </svg>
                       </span>
-                      {t.pillA.text} {t.pillA.meta && <span className="v">{t.pillA.meta}</span>}
+                      <span className="pill-label">{t.pillA.text}{t.pillA.meta && <span className="v">{t.pillA.meta}</span>}</span>
                     </div>
                     <div className="float-pill pill-b">
                       <span className="ic">
@@ -163,7 +163,7 @@ export default function PickTier() {
                           {t.pillB.icon}
                         </svg>
                       </span>
-                      {t.pillB.text} {t.pillB.meta && <span className="v">{t.pillB.meta}</span>}
+                      <span className="pill-label">{t.pillB.text}{t.pillB.meta && <span className="v">{t.pillB.meta}</span>}</span>
                     </div>
                   </div>
                 </article>
