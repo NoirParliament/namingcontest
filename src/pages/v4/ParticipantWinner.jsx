@@ -118,8 +118,11 @@ export default function ParticipantWinner() {
     workingName: dbContest.working_name,
     subSegmentId: dbContest.sub_segment_id,
     settings: dbContest.settings || {},
+    brief: dbContest.brief || {},
     creator: { name: dbCreatorName },
   } : null);
+  // The creator's intro note (same source as the invitation's hero summary).
+  const introNote = contest?.brief?.intro || null;
   const participation = mockContest ? readParticipation(contestId) : null;
   const subId = contest?.subSegmentId;
   const tone = subId ? getSegmentTone(subId) : null;
@@ -310,12 +313,15 @@ export default function ParticipantWinner() {
                 ) : (
                   <>
                     {winner.anonymous || !winner.submitterName
-                      ? 'Crowned the winner'
-                      : <><strong>{winner.submitterName}</strong> suggested it</>}
+                      ? 'Suggested anonymously'
+                      : <><strong>{winner.submitterName}</strong> suggested the winning name</>}
                     {' · '}{voteLine}
                   </>
                 )}
               </p>
+              {/* The creator's intro, the same quiet paragraph the invitation
+                  opened with — the contest closes on the words it opened on. */}
+              {introNote && <p className="v4-join-hero-summary">{introNote}</p>}
             </section>
 
             {/* ── Champion card — gold ticket-stub with the trophy band. */}
