@@ -118,7 +118,7 @@ function makeWorkingNameQuestion(subSegmentTitle, subId) {
     section: 'working',
     type: 'creatorIdentity',
     label: 'Working name',
-    prompt: `Just answer a few questions so we can prepare the creative brief for your participants. To start with, how should we call you, and this contest?`,
+    prompt: `To start with, what should we call you, and this contest?`,
     placeholder: `A short working title (e.g. “${example}”)`,
     required: true,
     maxLength: 60,
