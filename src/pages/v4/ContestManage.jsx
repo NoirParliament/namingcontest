@@ -599,7 +599,7 @@ export default function ContestManage() {
                    account that has never set a display name would otherwise
                    render a nameless avatar, which reads as "not signed in"
                    rather than "no name yet". */
-                name={profile?.display_name || setup.userName
+                name={profile?.display_name || (mockContest ? setup.userName : null)
                   || user?.email?.split('@')[0] || 'You'}
                 photo={profile?.avatar_url || (mockContest ? creatorProfile : null)}
                 seed={user?.id}

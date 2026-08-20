@@ -139,8 +139,15 @@ export function Nav() {
   const [profile] = useProfile(user);
   const isAuthed = !!user || !!(setup.userEmail || setup.contestId);
   const authEmail = user?.email || setup.userEmail;
-  const authName = profile?.display_name || user?.user_metadata?.display_name || setup.userName || user?.email?.split('@')[0];
-  const authPhoto = profile?.avatar_url || setup.userPhoto || null;
+  // For a REAL signed-in user the profile row is the only identity source —
+  // the setup blob can still hold a demo persona (mock participant photo,
+  // typed guest name) from earlier local flows, and falling back to it put a
+  // stranger's stock photo on a real account's menu. Guests (no session)
+  // still read the blob, which is all they have.
+  const authName = user
+    ? (profile?.display_name || user.user_metadata?.display_name || user.email?.split('@')[0])
+    : (setup.userName || setup.userEmail?.split('@')[0]);
+  const authPhoto = user ? (profile?.avatar_url || null) : (setup.userPhoto || null);
 
   // A real user's latest contest, loaded from the DB, so the account menu can
   // show it (and jump into it) from the homepage.

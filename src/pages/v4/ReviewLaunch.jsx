@@ -16,7 +16,8 @@ import { SegmentThemeBackdrop, getSegmentTone, getSegmentIcon, getSegmentPalette
 import LaunchModal from '../../components/v4/LaunchModal';
 import { priceForVoters, VOTER_TIER_QUESTION } from '../../data/v4/voterTiers';
 import { useAuth } from '../../lib/AuthContext';
-import { useProfile } from '../../lib/useProfile';
+import { useProfile, writeProfileCache } from '../../lib/useProfile';
+import { uploadUserFile } from '../../lib/uploads';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import { supabase } from '../../lib/supabaseClient';
 import EditQuestionModal from '../../components/v4/EditQuestionModal';
@@ -66,6 +67,35 @@ function formatAnswer(value) {
   // Date-shaped answers (e.g. the baby due date) → "March 15, 2026".
   if (typeof value === 'string') return formatDateAnswer(value);
   return String(value);
+}
+
+// Push the identity the creator chose during the brief (name + photo) onto
+// their profile, using the session established by the instant sign-in. Covers
+// the returning-email guest, whose identity launch-contest deliberately does
+// NOT apply server-side (an unauthenticated call must never rewrite an
+// existing account). The photo rides the setup blob as a compact data URL
+// (userAvatarData); here it becomes a real storage upload. Best-effort.
+async function applyIdentityToProfile() {
+  try {
+    const s = readSetup();
+    const { data: { user: u } } = await supabase.auth.getUser();
+    if (!u) return;
+    const patch = {};
+    const name = (s.userName || '').trim();
+    if (name) patch.display_name = name;
+    if (typeof s.userAvatarData === 'string' && s.userAvatarData.startsWith('data:image/')) {
+      const blob = await (await fetch(s.userAvatarData)).blob();
+      const ext = blob.type.includes('png') ? 'png' : 'jpg';
+      const file = new File([blob], `avatar.${ext}`, { type: blob.type || 'image/jpeg' });
+      patch.avatar_url = await uploadUserFile({ file, folder: 'avatar' });
+    }
+    if (Object.keys(patch).length) {
+      await supabase.from('profiles').update(patch).eq('id', u.id);
+      writeProfileCache(u.id, patch);
+    }
+  } catch (e) {
+    console.error('[launch] applying identity to profile failed:', e?.message || e);
+  }
 }
 
 export default function ReviewLaunch() {
@@ -363,6 +393,13 @@ export default function ReviewLaunch() {
       }
       writeSetup({ contestId, launchedAt: Date.now() });
       if (signedIn) {
+        // Apply the identity chosen during the brief (name + uploaded photo)
+        // to the account. launch-contest only does this for freshly created
+        // accounts — applying it to an EXISTING account from an unauthenticated
+        // call would let anyone deface a profile by typing its email. Here the
+        // browser holds a real session for that account, so the same write is
+        // authorized. Best-effort: never blocks the handoff to the contest.
+        await applyIdentityToProfile();
         setTimeout(() => navigate(`/v4/contest/${contestId}`), 400);
       } else {
         // Fallback: paid and live, but the instant sign-in didn't complete.
@@ -430,8 +467,11 @@ export default function ReviewLaunch() {
               {user && (
                 <AvatarMenu
                   email={user?.email || setup.userEmail}
-                  name={profile?.display_name || setup.userName}
-                  photo={profile?.avatar_url || setup.userPhoto || null}
+                  /* Signed-in only (see the guard above), so the profile row is
+                     the identity source — the setup blob can still hold a demo
+                     persona from earlier local flows. */
+                  name={profile?.display_name || user?.email?.split('@')[0]}
+                  photo={profile?.avatar_url || null}
                   seed={user?.id}
                   tone={segmentTone}
                 />
