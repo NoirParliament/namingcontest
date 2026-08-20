@@ -22,6 +22,7 @@ import AvatarMenu from '../../components/v4/AvatarMenu';
 import { getMockContestById } from '../../data/v4/mockContests';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../../lib/AuthContext';
+import { useProfile } from '../../lib/useProfile';
 import { getSegmentTone, SEGMENT_THEME, SegmentThemeBackdrop } from '../../data/v4/segmentTheme';
 import { readSetup } from '../../utils/v4Brief';
 import { readParticipation } from '../../utils/v4Participant';
@@ -44,6 +45,10 @@ export default function ParticipantThanks() {
   const { id: contestId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  // Real signed-in identity for the account menu (cached → no placeholder
+  // flash). Without it this page showed the generated avatar even when the
+  // participant had uploaded a photo.
+  const [profile] = useProfile(user);
 
   const mockContest = getMockContestById(contestId);
   const [dbContest, setDbContest] = useState(null);
@@ -154,8 +159,8 @@ export default function ParticipantThanks() {
             <div className="v4-nav-right">
               <AvatarMenu
                 email={user?.email || userEmail}
-                name={userName}
-                photo={isRealContest ? null : participantProfile}
+                name={profile?.display_name || userName}
+                photo={profile?.avatar_url || (isRealContest ? null : participantProfile)}
                 seed={user?.id}
                 tone={tone}
                 activeContest={{

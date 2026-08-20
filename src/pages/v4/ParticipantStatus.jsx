@@ -25,6 +25,8 @@ import { SegmentThemeBackdrop, getSegmentTone, SEGMENT_THEME } from '../../data/
 import { readSetup } from '../../utils/v4Brief';
 import { readParticipation } from '../../utils/v4Participant';
 import AvatarMenu from '../../components/v4/AvatarMenu';
+import { useAuth } from '../../lib/AuthContext';
+import { useProfile } from '../../lib/useProfile';
 import useCountdown, { pad2 } from '../../utils/useCountdown';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
@@ -39,8 +41,13 @@ export default function ParticipantStatus() {
   const segmentBg = subId ? SEGMENT_THEME[subId]?.blobs?.[0] : null;
   const submittedCount = participation?.submittedNames?.length || 0;
   const setup = readSetup();
-  const userEmail = setup.userEmail || '';
-  const userName = setup.userName || (userEmail.split('@')[0] || 'You');
+  // Signed-in users get their real account identity (cached profile → no
+  // placeholder flash); the guest blob is the source only when signed out.
+  // This page previously hardcoded the mock stock photo for everyone.
+  const { user } = useAuth();
+  const [profile] = useProfile(user);
+  const userEmail = user?.email || setup.userEmail || '';
+  const userName = profile?.display_name || setup.userName || (userEmail.split('@')[0] || 'You');
   const userPhoto = setup.userPhoto || null;
   const ContestIcon = contest?.Icon;
   const scrollRef = useRef(null);
@@ -98,7 +105,8 @@ export default function ParticipantStatus() {
               <AvatarMenu
                 email={userEmail}
                 name={userName}
-                photo={participantProfile}
+                photo={profile?.avatar_url || (user ? null : participantProfile)}
+                seed={user?.id}
                 tone={tone}
                 activeContest={{
                   id: contest.id,
