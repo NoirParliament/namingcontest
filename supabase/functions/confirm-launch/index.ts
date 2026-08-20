@@ -42,7 +42,13 @@ Deno.serve(async (req) => {
       .eq('id', contestId)
       .single();
     if (error || !contest) return json({ error: 'Contest not found.' }, 404);
-    if (contest.paid) return json({ ok: true, already: true });
+    // NOT an early return: the Stripe webhook also drives confirm-launch and
+    // usually wins the race against the paying browser (which holds a
+    // celebration beat before calling). The second, already-paid call must
+    // still reach the sign-in token minting below — bailing here left the
+    // paying guest with no session. Only the live-flip + receipt email are
+    // first-call-only; the Stripe verification below runs for every caller.
+    const alreadyPaid = !!contest.paid;
 
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, {
       httpClient: Stripe.createFetchHttpClient(),
@@ -53,23 +59,25 @@ Deno.serve(async (req) => {
     if (pi.metadata?.contestId !== contestId) return json({ error: 'Payment does not match this contest.' }, 400);
     if (pi.amount !== Math.round((contest.price || 0) * 100)) return json({ error: 'Paid amount does not match the price.' }, 400);
 
-    const settings = (contest.settings ?? {}) as { submissionDays?: number; votingDays?: number };
-    const subDays = settings.submissionDays || 7;
-    const voteDays = settings.votingDays || 3;
-    const now = Date.now();
+    if (!alreadyPaid) {
+      const settings = (contest.settings ?? {}) as { submissionDays?: number; votingDays?: number };
+      const subDays = settings.submissionDays || 7;
+      const voteDays = settings.votingDays || 3;
+      const now = Date.now();
 
-    const { error: upErr } = await admin
-      .from('contests')
-      .update({
-        paid: true,
-        status: 'submission',
-        stripe_session_id: pi.id,
-        launched_at: new Date(now).toISOString(),
-        submission_ends_at: new Date(now + subDays * DAY).toISOString(),
-        voting_ends_at: new Date(now + (subDays + voteDays) * DAY).toISOString(),
-      })
-      .eq('id', contestId);
-    if (upErr) throw upErr;
+      const { error: upErr } = await admin
+        .from('contests')
+        .update({
+          paid: true,
+          status: 'submission',
+          stripe_session_id: pi.id,
+          launched_at: new Date(now).toISOString(),
+          submission_ends_at: new Date(now + subDays * DAY).toISOString(),
+          voting_ends_at: new Date(now + (subDays + voteDays) * DAY).toISOString(),
+        })
+        .eq('id', contestId);
+      if (upErr) throw upErr;
+    }
 
     // Resolve the payer's email once — used by the instant sign-in below and
     // by the receipt email.
@@ -100,11 +108,12 @@ Deno.serve(async (req) => {
     // Send the branded launch receipt (best-effort — never fail the launch if
     // the email hiccups). Links to Stripe's official hosted receipt. This is
     // the ONLY email a launch sends: sign-in happens in-browser via the token
-    // above, so there is no separate login email.
+    // above, so there is no separate login email. First-call-only, so the
+    // webhook/browser race can't send it twice.
     try {
       const receiptUrl = (pi.latest_charge as { receipt_url?: string } | null)?.receipt_url || null;
       const apiKey = Deno.env.get('RESEND_API_KEY');
-      if (email && apiKey) {
+      if (!alreadyPaid && email && apiKey) {
         const site = typeof origin === 'string' ? origin : 'https://namingcontest.com';
         const workingName = contest.working_name || 'your contest';
         const dollars = (pi.amount / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
@@ -135,7 +144,7 @@ Deno.serve(async (req) => {
       console.error('[confirm-launch] receipt email failed:', (mailErr as Error)?.message);
     }
 
-    return json({ ok: true, authTokenHash, authEmail: authTokenHash ? email : null });
+    return json({ ok: true, already: alreadyPaid, authTokenHash, authEmail: authTokenHash ? email : null });
   } catch (e) {
     return json({ error: (e as Error)?.message ?? String(e) }, 500);
   }
