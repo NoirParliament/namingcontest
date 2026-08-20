@@ -16,7 +16,7 @@
 
 import { useState, useMemo, useEffect, useRef, Fragment } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
-import { PaperPlaneTilt, PencilSimple, CheckCircle, X } from '@phosphor-icons/react';
+import { PaperPlaneTilt, PencilSimple, CheckCircle, X, Gift } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 // Default participant avatar — used if the user hasn't uploaded a
 // photo from Settings. Pick profile-3 (Marcus is profile-4, so this
@@ -267,6 +267,11 @@ export default function ParticipantChat() {
   const isRealContest = !mockContest && !!dbContest;
   const contest = mockContest || (dbContest ? {
     id: dbContest.id,
+    // Without these the welcome bubble read "suggest names for ." — the
+    // real-contest mapping simply never carried the name through (the vote
+    // page mapped it, this one didn't).
+    name: dbContest.working_name,
+    workingName: dbContest.working_name,
     subSegmentId: dbContest.sub_segment_id,
     subSegmentTitle: dbContest.sub_segment_title,
     group: dbContest.tier,
@@ -340,9 +345,10 @@ export default function ParticipantChat() {
   const prize = contest?.settings?.submitterPrize?.enabled
     ? contest?.settings?.submitterPrize
     : null;
-  const prizeLine = prize?.name
-    ? `Winning name gets ${prize.name}.`
-    : null;
+  // Prize is rendered as its own set-off pill in the welcome (a gift icon +
+  // the reward), not inline in the sentence — a long reward used to run into
+  // the surrounding text and read as one garbled run-on.
+  const prizeName = prize?.name || null;
 
   // "Let participants choose" mode — the credit question is asked up front
   // (intro stage 4) so people suggest names already knowing their choice.
@@ -770,15 +776,20 @@ export default function ParticipantChat() {
 
             {/* ── Stage 1+ → welcome bubble appears ───────────────── */}
             {introStage >= 1 && (
-              <div className="v4-bubble" style={{ animationDelay: '0.05s' }}>
+              <div className="v4-bubble v4-bubble-welcome" style={{ animationDelay: '0.05s' }}>
                 <span>
                   Welcome! {creatorName} invited you to
                   suggest names for{' '}
-                  <em>{contest.workingName || contest.name}</em>.
-                  {prizeLine && <> {prizeLine}</>} You’ll add up to{' '}
+                  <em>{contest.workingName || contest.name}</em>. You’ll add up to{' '}
                   {remainingSlots}{' '}
                   {remainingSlots === 1 ? 'suggestion' : 'suggestions'}.
                 </span>
+                {prizeName && (
+                  <span className="v4-welcome-prize">
+                    <Gift weight="fill" size={14} aria-hidden="true" />
+                    <span>Winner gets <strong>{prizeName}</strong></span>
+                  </span>
+                )}
               </div>
             )}
 

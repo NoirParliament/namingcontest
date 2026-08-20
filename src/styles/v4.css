@@ -596,6 +596,28 @@ body.is-exiting {
   line-height: 1.2;
   flex: none;
 }
+/* Welcome bubble that carries a prize: stack the greeting above a set-off
+   reward pill (a gift icon + the reward), so a long reward can't run into
+   the sentence and read as one garbled line. */
+.v4-bubble-welcome {
+  flex-direction: column;
+  align-items: flex-start;
+}
+.v4-welcome-prize {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px 5px 10px;
+  border-radius: 999px;
+  background: rgba(176, 111, 31, 0.12);
+  color: var(--v4-fg);
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.003em;
+}
+.v4-welcome-prize svg { color: #b06f1f; flex: none; }
+.v4-welcome-prize strong { font-weight: 700; }
 @keyframes v4-bubble-in {
   from {
     opacity: 0;
