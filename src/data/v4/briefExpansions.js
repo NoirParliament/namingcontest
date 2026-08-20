@@ -479,12 +479,11 @@ export const BRIEF_SECTIONS = {
     { title: 'About the group', icon: 'UsersThree',
       sub: 'What the group is, and the story behind it',
       ids: ['projectSummary', 'history'] },
-    { title: 'What the name should do', icon: 'Target',
-      sub: 'The vibe the name should carry',
-      ids: ['vibe'] },
+    // Tone leads Directions rather than sitting alone under its own heading,
+    // mirroring p4 (this segment's twin): a one-row section reads as broken.
     { title: 'Directions to explore and avoid', icon: 'Compass',
-      sub: 'Names already floated, and what to steer clear of',
-      ids: ['namesConsidered', 'avoidNames', 'customRequirements'] },
+      sub: 'The vibe, names already floated, and what to steer clear of',
+      ids: ['vibe', 'namesConsidered', 'avoidNames', 'customRequirements'] },
   ],
   t4: [
     { title: 'About the group', icon: 'UsersThree',
@@ -495,12 +494,14 @@ export const BRIEF_SECTIONS = {
       ids: ['vibe', 'admiredNames', 'avoidNames', 'customRequirements'] },
   ],
   t3: [
+    // compShows sits with the concept as taste context so neither section
+    // is a lone row (a one-row section reads as broken).
     { title: 'About the show', icon: 'Microphone',
-      sub: 'The show, in short',
-      ids: ['projectSummary'] },
+      sub: 'The concept, and the show names the host admires',
+      ids: ['projectSummary', 'compShows'] },
     { title: 'Directions to explore and avoid', icon: 'Compass',
-      sub: 'The naming territory, the shows to match, and what to steer clear of',
-      ids: ['namingDirection', 'compShows', 'avoidNames', 'customRequirements'] },
+      sub: 'The naming territory, and what to steer clear of',
+      ids: ['namingDirection', 'avoidNames', 'customRequirements'] },
   ],
   t2: [
     { title: 'About the band', icon: 'MusicNote',
