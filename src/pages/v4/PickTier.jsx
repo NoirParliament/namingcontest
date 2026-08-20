@@ -24,7 +24,7 @@ const TIERS = [
     cta: 'Start a personal contest',
     img: personalDog,
     pillA: { text: 'Olly', meta: '8 votes', color: '#b25620', icon: <path d="M8 14s-5-3.2-5-7a3 3 0 0 1 5-2 3 3 0 0 1 5 2c0 3.8-5 7-5 7z" /> },
-    pillB: { text: 'Closes Sunday', color: '#b25620', icon: <><circle cx="8" cy="8" r="6" /><path d="M8 4v4l2.5 1.5" /></> },
+    pillB: { text: 'Closes', meta: 'Sunday', color: '#b25620', icon: <><circle cx="8" cy="8" r="6" /><path d="M8 4v4l2.5 1.5" /></> },
   },
   {
     tier: 'team',
@@ -32,8 +32,8 @@ const TIERS = [
     tagline: 'Sports teams, bands, podcasts, clubs, and more.',
     cta: 'Start a group contest',
     img: teamPlayers,
-    pillA: { text: '23 names in', color: '#4b68c3', icon: <><path d="M3 4h10M3 8h10M3 12h6" /></> },
-    pillB: { text: 'Riverside FC', meta: '49 voted', color: '#4b68c3', icon: <><path d="M3 12V5l5-2 5 2v7" /><path d="M3 12h10" /></> },
+    pillA: { text: 'Riverside FC', meta: '24 votes', color: '#4b68c3', icon: <path d="M8 14s-5-3.2-5-7a3 3 0 0 1 5-2 3 3 0 0 1 5 2c0 3.8-5 7-5 7z" /> },
+    pillB: { text: 'Closes', meta: 'Friday', color: '#4b68c3', icon: <><circle cx="8" cy="8" r="6" /><path d="M8 4v4l2.5 1.5" /></> },
   },
   {
     tier: 'business',
@@ -41,8 +41,8 @@ const TIERS = [
     tagline: 'Company names, product launches, rebrands, internal projects.',
     cta: 'Start a business contest',
     img: businessWoman,
-    pillA: { text: 'Quality', meta: '92/100', color: '#3f8850', icon: <><circle cx="8" cy="8" r="6" /><path d="M5 8l2 2 4-4" /></> },
-    pillB: { text: 'Winner', meta: 'EvoPay', color: '#3f8850', icon: <><path d="M5 3h6v3a3 3 0 0 1-6 0V3z" /><path d="M3 4v1a2 2 0 0 0 2 2M13 4v1a2 2 0 0 1-2 2" /><path d="M8 9v3M5 12h6" /></> },
+    pillA: { text: 'EvoPay', meta: '31 votes', color: '#3f8850', icon: <path d="M8 14s-5-3.2-5-7a3 3 0 0 1 5-2 3 3 0 0 1 5 2c0 3.8-5 7-5 7z" /> },
+    pillB: { text: 'Closes', meta: 'Tuesday', color: '#3f8850', icon: <><circle cx="8" cy="8" r="6" /><path d="M8 4v4l2.5 1.5" /></> },
   },
 ];
 
