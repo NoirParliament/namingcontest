@@ -836,6 +836,7 @@ export const BRIEF_QUESTIONS = {
       {
         id: 'vibe',
         label: 'Group vibe',
+        briefLabel: 'Tone',
         prompt: `What’s the group’s vibe? Pick any that apply.`,
         type: 'multiChips',
         options: ['Welcoming / Inclusive', 'Fun / Social', 'Serious / Civic', 'Local / Grassroots', 'Spirited / Passionate'],
@@ -955,6 +956,7 @@ export const BRIEF_QUESTIONS = {
       {
         id: 'vibe',
         label: 'Vibe',
+        briefLabel: 'Tone',
         prompt: `What’s the squad vibe? Pick any that apply.`,
         type: 'multiChips',
         options: ['Intimidating / Feared', 'Meme-worthy / Ironic', 'Clean / Professional', 'Fun / Casual'],
@@ -1019,6 +1021,7 @@ export const BRIEF_QUESTIONS = {
       {
         id: 'vibe',
         label: 'Group vibe / personality',
+        briefLabel: 'Tone',
         prompt: `What’s the group’s vibe? Pick any that apply.`,
         type: 'multiChips',
         options: ['Serious / Professional', 'Fun / Casual', 'Aspirational', 'Irreverent / Playful'],
@@ -1196,12 +1199,13 @@ export const BRIEF_QUESTIONS = {
       },
       {
         id: 'breed',
-        label: 'Breed or description',
-        prompt: 'Describe their breed and appearance',
-        type: 'text',
+        label: 'Breed, looks, and personality',
+        prompt: 'Describe their breed, appearance, and personality',
+        type: 'textarea',
+        rows: 2,
         required: false,
-        placeholder: 'e.g. Golden retriever, tabby',
-        hint: `Breed and appearance can spark great naming ideas. A Chihuahua named “Bruno” is funny; a Great Dane named “Peanut” is funnier. Participants who know the breed or look can suggest names that match the vibe.`,
+        placeholder: 'e.g. Golden retriever puppy, goofy and permanently mid-zoomie',
+        hint: `Breed, looks, and personality all spark names. A Chihuahua named “Bruno” is funny; a Great Dane named “Peanut” is funnier. And the name should fit the animal: “Chaos” for a hyperactive dog, “Professor” for a dignified cat.`,
         guideId: 'p2-personality',
       },
       {
@@ -1225,6 +1229,7 @@ export const BRIEF_QUESTIONS = {
       {
         id: 'nameTone',
         label: 'Tone / naming style',
+        briefLabel: 'Tone',
         prompt: 'What naming tone fits them? Pick any that apply.',
         type: 'multiChips',
         options: ['Dignified / Regal', 'Playful / Funny', 'Cute / Sweet', 'Tough / Strong', 'No preference'],
@@ -1299,6 +1304,8 @@ export const BRIEF_QUESTIONS = {
       {
         id: 'vibe',
         label: 'Vibe / personality',
+    briefLabel: 'Tone',
+        briefLabel: 'Tone',
         prompt: `What is the general tone of the name you’re looking for? Pick any that apply.`,
         type: 'multiChips',
         options: ['Cozy / Warm', 'Adventurous / Outdoorsy', 'Elegant / Sophisticated', 'Funny / Playful', 'Intellectual / Scientific', 'Not sure'],

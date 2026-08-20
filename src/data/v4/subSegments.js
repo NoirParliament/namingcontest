@@ -19,8 +19,8 @@ export const SUB_SEGMENTS = {
   personal: {
     label: 'personal',
     options: [
-      { id: 'p1', icon: 'Baby',          tone: TONES.pink,       title: 'A new baby',                       body: "The most exciting naming you’ll ever do." },
-      { id: 'p2', icon: 'PawPrint',      tone: TONES.butter,     title: 'A pet',                            body: 'Dogs, cats, horses, the lot.' },
+      { id: 'p1', icon: 'Baby',          tone: TONES.pink,       title: 'New baby',                       body: "The most exciting naming you’ll ever do." },
+      { id: 'p2', icon: 'PawPrint',      tone: TONES.butter,     title: 'Pet',                            body: 'Dogs, cats, horses, the lot.' },
       { id: 'p3', icon: 'House',         tone: TONES.mint,       title: 'Home, WiFi network, boat, and more', body: 'Holiday cottage, boat, or anything in between.' },
       { id: 'p4', icon: 'PencilSimple',  tone: TONES.periwinkle, title: 'Something else',                   body: 'A group chat, a girls’ weekend, a friend group, anything that needs a name.' },
     ],
@@ -28,10 +28,10 @@ export const SUB_SEGMENTS = {
   group: {
     label: 'group',
     options: [
-      { id: 't1', icon: 'SoccerBall',    tone: TONES.mint,       title: 'A sports team',                            body: 'Local league, school squad, recreational team.' },
-      { id: 't2', icon: 'MusicNote',     tone: TONES.lavender,   title: 'A band or music group',                    body: 'Whatever the genre.' },
-      { id: 't3', icon: 'Microphone',    tone: TONES.sky,        title: 'A podcast, channel, or creative project',  body: 'Audio, video, or anything in between.' },
-      { id: 't4', icon: 'GraduationCap', tone: TONES.blush,      title: 'A club or civic group',                    body: 'A chess club, a neighborhood group, a civic cause.' },
+      { id: 't1', icon: 'SoccerBall',    tone: TONES.mint,       title: 'Sports team',                            body: 'Local league, school squad, recreational team.' },
+      { id: 't2', icon: 'MusicNote',     tone: TONES.lavender,   title: 'Band or music group',                    body: 'Whatever the genre.' },
+      { id: 't3', icon: 'Microphone',    tone: TONES.sky,        title: 'Podcast, channel, or creative project',  body: 'Audio, video, or anything in between.' },
+      { id: 't4', icon: 'GraduationCap', tone: TONES.blush,      title: 'Club or civic group',                    body: 'A chess club, a neighborhood group, a civic cause.' },
       // 2026-08-17 client decision (Maria/Mark): drop the Gaming Group
       // category — "too many Groups; roll it into Sports Team or Club.
       // We can always add this later." Card commented out (reversible);
