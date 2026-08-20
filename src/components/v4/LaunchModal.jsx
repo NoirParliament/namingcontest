@@ -291,7 +291,12 @@ function LaunchModalInner({ onClose, onCreateIntent, onPaid, contextLabel, tier,
                         },
                         invalid: { color: '#bb433a' },
                       },
-                      hidePostalCode: false,
+                      // The combined element must fit number + expiry + CVC
+                      // on one line. On phones the ZIP field pushed it past
+                      // the available width and the inline fields overlapped
+                      // while typing, so narrow screens drop postal entry
+                      // (desktop keeps it for Radar).
+                      hidePostalCode: typeof window !== 'undefined' && window.innerWidth < 480,
                     }}
                     onChange={(event) => {
                       setCardComplete(event.complete);

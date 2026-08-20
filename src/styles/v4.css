@@ -1976,6 +1976,16 @@ input.v4-branding-color-input:hover {
   animation: v4-modal-card-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   opacity: 0;
 }
+/* Phones: slim the backdrop + modal side padding so the Stripe combined
+   card element gets enough width for number + expiry + CVC on one line.
+   At the desktop paddings the element got 225px and its inline fields
+   overlapped while typing. */
+@media (max-width: 480px) {
+  .v4-auth-backdrop { padding: 12px; }
+  /* .v4-launch-modal repeats the base padding at equal specificity further
+     down the sheet, so the phone override must name both. */
+  .v4-auth-modal, .v4-auth-modal.v4-launch-modal { padding: 28px 20px 22px; }
+}
 .v4-auth-close {
   position: absolute;
   top: 14px;
