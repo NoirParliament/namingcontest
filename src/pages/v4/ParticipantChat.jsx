@@ -434,6 +434,11 @@ export default function ParticipantChat() {
   // welcome bubble + brief card before they've read anything.
   const chatRef = useRef(null);
   const didFirstAutoscrollRef = useRef(false);
+  // Single-flight guard for recordAndGo. MUST live up here with the other
+  // hooks: it briefly sat below the early-return guards, which changed the
+  // hook count between the loading render and the loaded render and crashed
+  // every real-contest /submit with React #310 (blank page).
+  const submittingAllRef = useRef(false);
 
   // Guards moved to AFTER the hooks (React rule). See `if (...) return
   // <Navigate>` below — render-time redirect is more reliable than
@@ -613,7 +618,6 @@ export default function ParticipantChat() {
   // Single-flight + idempotent: a double tap used to run the insert loop
   // twice, stacking duplicate rows until the DB cap fired mid-batch ("You
   // can submit at most 10 names." after typing six).
-  const submittingAllRef = useRef(false);
   const recordAndGo = async (anonymous) => {
     if (submittingAllRef.current) return;
     submittingAllRef.current = true;
