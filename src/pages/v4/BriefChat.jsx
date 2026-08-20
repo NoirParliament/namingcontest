@@ -814,10 +814,17 @@ function VoterReply({ voters, editable, onEdit, ariaLabel }) {
 // with the host line (or "anonymously") beneath. Reads the identity from
 // the setup blob, where the step just wrote it. ─────────────────────
 function CreatorIdentityReply({ contestName, editable, onEdit, ariaLabel }) {
+  // Resolve identity the same way CreatorIdentityInput does, or the bubble
+  // won't match what the step just showed: a signed-in creator's photo often
+  // lives only on their PROFILE (the input previews profile.avatar_url without
+  // writing it to the setup blob), and their placeholder seed is user.id, not
+  // the guest seed. Blob values still win where present (a fresh upload).
+  const { user } = useAuth();
+  const [profile] = useProfile(user);
   const s = readSetup();
   const anon = !!s.userAnonymous;
-  const name = (s.userName || '').trim();
-  const photo = s.userAvatarUrl || s.userAvatarData || null;
+  const name = (s.userName || '').trim() || (user ? (profile?.display_name || '').trim() : '');
+  const photo = s.userAvatarUrl || s.userAvatarData || (user ? profile?.avatar_url : null) || null;
   const host = anon
     ? 'Hosting anonymously'
     : name
@@ -828,7 +835,7 @@ function CreatorIdentityReply({ contestName, editable, onEdit, ariaLabel }) {
       <span className="v4-bubble-id-avatar">
         {/* When anonymous the photo is withheld — participants see a generic
             avatar, so the creator's own bubble mirrors that. */}
-        <UserAvatar seed={s.userAvatarSeed || 'creator'} photoUrl={anon ? null : photo} size={34} />
+        <UserAvatar seed={user?.id || s.userAvatarSeed || 'creator'} photoUrl={anon ? null : photo} size={34} />
       </span>
       <span className="v4-bubble-id-meta">
         <span className="v4-bubble-id-name">{contestName}</span>
