@@ -8,7 +8,7 @@
 // Future: dashboard list links here per contest
 
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { useParams, useNavigate, useSearchParams, useLocation, Link } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, useLocation, Link, Navigate } from 'react-router-dom';
 import {
   X, Heart, UsersThree, Briefcase,
   Copy, Check, EnvelopeSimple, ShareNetwork,
@@ -230,15 +230,23 @@ export default function ContestManage() {
     const cid = dbContest.id;
     let active = true;
     const load = async () => {
-      const [subsRes, partRes] = await Promise.all([
+      // vote_count is no longer selectable from the table (column privilege
+      // revoked in migration 0027, so a participant can't peek at their own
+      // live tally either). Counts come from get_ballot, whose creator branch
+      // always returns them; the direct select keeps user_id for the
+      // credited-submitter profile join, which the RPC doesn't expose.
+      const [subsRes, partRes, ballotRes] = await Promise.all([
         supabase.from('submissions')
-          .select('id, text, rationale, credited, user_id, vote_count, created_at')
+          .select('id, text, rationale, credited, user_id, created_at')
           .eq('contest_id', cid)
           .order('created_at', { ascending: true }),
         supabase.from('participants').select('id', { count: 'exact', head: true }).eq('contest_id', cid),
+        supabase.rpc('get_ballot', { cid }),
       ]);
       if (!active) return;
-      const subs = subsRes.data || [];
+      const countsById = {};
+      (ballotRes.data || []).forEach((b) => { countsById[b.id] = b.vote_count || 0; });
+      const subs = (subsRes.data || []).map((s) => ({ ...s, vote_count: countsById[s.id] ?? 0 }));
       // Resolve names + avatars for credited submitters (profiles_read is open)
       // so the dashboard shows the same face each participant sees for itself.
       const ids = [...new Set(subs.filter((s) => s.credited).map((s) => s.user_id))];
@@ -558,6 +566,14 @@ export default function ContestManage() {
         </div>
       </div>
     );
+  }
+
+  // A signed-in NON-creator who pastes the creator's manage URL (a curious
+  // participant, usually) gets routed through /join, which sends them to
+  // their own stage page, instead of a half-empty manage shell. RLS already
+  // keeps the data locked down; this is navigation hygiene, not security.
+  if (!mockContest && dbContest && user?.id && dbContest.creator_id !== user.id) {
+    return <Navigate to={`/v4/join/${id}`} replace />;
   }
 
   // While a real contest is still loading, show a calm loading state rather
