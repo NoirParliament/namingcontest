@@ -27,6 +27,7 @@ import ExitLink from '../../components/v4/ExitLink';
 import confetti from 'canvas-confetti';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
+import WinnerStory from '../../components/v4/WinnerStory';
 import { getMockContestById } from '../../data/v4/mockContests';
 import { getSegmentTone, SEGMENT_THEME, SegmentThemeBackdrop } from '../../data/v4/segmentTheme';
 import { buildLiveData } from '../../utils/v4LiveData';
@@ -84,6 +85,16 @@ export default function PublicWinnerReveal() {
 
   const creatorName = mockContest ? (mockContest.creator?.name || 'the organizer') : (real?.creator_name || 'the organizer');
   const contestName = mockContest ? (mockContest.workingName || mockContest.name || 'the contest') : (real?.working_name || 'the contest');
+
+  // Story block inputs — the host (via hostIdentity's contest shape) and the
+  // creator's intro. The RPC returns anonymity-guarded creator fields, so an
+  // anonymous host arrives as nulls + the flag and resolves to "the organizer".
+  const storyContest = mockContest || (real ? {
+    id: contestId,
+    settings: { creatorAnonymous: real.creator_anonymous === true },
+    creator: { name: real.creator_name, avatar_url: real.creator_avatar_url },
+  } : null);
+  const storyIntro = mockContest ? mockContest.brief?.intro : real?.intro;
 
   const winner = mockContest
     ? (live.names.find((n) => n.id === mockContest.winnerSubId)
@@ -203,9 +214,19 @@ export default function PublicWinnerReveal() {
           </header>
 
           <div className="v4-review-inner v4-pthanks-inner">
+            {/* ── STORY — who asked, in their own words. The name below then
+                reads as the answer, not a word floating with no context. */}
+            {storyContest && (
+              <WinnerStory contest={storyContest} contestName={contestName} intro={storyIntro} />
+            )}
+
             {/* ── HERO — neutral framing, no "you" pronouns. */}
             <section className="v4-pthanks-hero">
-              <div className="v4-pthanks-eyebrow">{contestName}</div>
+              <div className="v4-pthanks-eyebrow">
+                {totalNames > 0 && totalVotes > 0
+                  ? `${totalNames} names and ${totalVotes} votes later, it's named`
+                  : 'The winner is in'}
+              </div>
               <h1 className="v4-pthanks-title v4-pwinner-title">
                 {winner.text}
               </h1>

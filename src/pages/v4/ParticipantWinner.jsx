@@ -22,6 +22,7 @@ import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
 import participantProfile from '../../assets/participant-profile.png';
 import AvatarMenu from '../../components/v4/AvatarMenu';
+import WinnerStory from '../../components/v4/WinnerStory';
 import { getMockContestById } from '../../data/v4/mockContests';
 import { getSegmentTone, SEGMENT_THEME, SegmentThemeBackdrop } from '../../data/v4/segmentTheme';
 import { readSetup } from '../../utils/v4Brief';
@@ -69,7 +70,9 @@ export default function ParticipantWinner() {
   const [dbContest, setDbContest] = useState(null);
   const [winnerSub, setWinnerSub] = useState(null);
   const [dbCreatorName, setDbCreatorName] = useState('the organizer');
+  const [dbCreatorAvatar, setDbCreatorAvatar] = useState(null);
   const [dbTotalVotes, setDbTotalVotes] = useState(0);
+  const [dbTotalNames, setDbTotalNames] = useState(0);
   const [dbMySubCount, setDbMySubCount] = useState(0);
   const [dbIWon, setDbIWon] = useState(false);
   // Seed from the shared cache so the header avatar paints right on the
@@ -102,7 +105,9 @@ export default function ParticipantWinner() {
       setDbContest(row);
       setWinnerSub(win ? { ...win, submitterName: win.submitter_name } : null);
       setDbCreatorName(profs[row.creator_id]?.display_name || 'the organizer');
+      setDbCreatorAvatar(profs[row.creator_id]?.avatar_url || null);
       setDbTotalVotes(subs.reduce((sum, s) => sum + (s.vote_count || 0), 0));
+      setDbTotalNames(subs.length);
       setDbMySubCount(subs.filter((s) => s.is_mine).length);
       setDbIWon(!!win && !!win.is_mine);
       setProfile(profs[user.id] || null);
@@ -118,7 +123,8 @@ export default function ParticipantWinner() {
     workingName: dbContest.working_name,
     subSegmentId: dbContest.sub_segment_id,
     settings: dbContest.settings || {},
-    creator: { name: dbCreatorName },
+    brief: dbContest.brief || {},
+    creator: { name: dbCreatorName, avatar_url: dbCreatorAvatar },
   } : null);
   const participation = mockContest ? readParticipation(contestId) : null;
   const subId = contest?.subSegmentId;
@@ -152,6 +158,8 @@ export default function ParticipantWinner() {
         voteCount: winnerSub.vote_count || 0,
       } : null);
   const totalVotes = mockContest ? live.stats.votes : dbTotalVotes;
+  const totalNames = mockContest ? live.names.length : dbTotalNames;
+  const storyIntro = contest?.brief?.intro;
   const submittedCount = mockContest ? (participation?.submittedNames?.length || 0) : dbMySubCount;
   const iWon = mockContest
     ? (!!winner && (participation?.submittedNames || []).some((s) => s.text === winner.text))
@@ -287,6 +295,12 @@ export default function ParticipantWinner() {
           </header>
 
           <div className="v4-review-inner v4-pthanks-inner">
+            {/* ── STORY — the ask this contest answered, in the host's own
+                words, so the crowned name below reads as its resolution. */}
+            {contest && (
+              <WinnerStory contest={contest} contestName={contestName} intro={storyIntro} />
+            )}
+
             {/* ── HERO — same shape as the other participant pages. */}
             <section className="v4-pthanks-hero">
               {iWon ? (
@@ -297,7 +311,11 @@ export default function ParticipantWinner() {
                   )}
                 </div>
               ) : (
-                <div className="v4-pthanks-eyebrow">{contestName}</div>
+                <div className="v4-pthanks-eyebrow">
+                  {totalNames > 0 && totalVotes > 0
+                    ? `${totalNames} names and ${totalVotes} votes later, it's named`
+                    : contestName}
+                </div>
               )}
               <h1 className="v4-pthanks-title v4-pwinner-title">
                 {winner.text}
