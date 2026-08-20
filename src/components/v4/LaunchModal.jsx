@@ -24,6 +24,7 @@ import {
 } from '@phosphor-icons/react';
 import rocketImg from '../../assets/rocket.png';
 import { priceForVoters, DEFAULT_VOTER_TIER } from '../../data/v4/voterTiers';
+import { useAuth } from '../../lib/AuthContext';
 import '../../styles/landing-v3.css';
 
 const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
@@ -115,6 +116,12 @@ function LaunchModalInner({ onClose, onCreateIntent, onPaid, contextLabel, tier,
   const elements = useElements();
   const emailRef = useRef(null);
 
+  // Signed-in creators launch under their account email — launch-contest
+  // creates the contest under whatever email is submitted, so a signed-in
+  // user typing a DIFFERENT address would pay for a contest owned by another
+  // account and then hit the sign-in wall on their own purchase. Prefill AND
+  // lock the field for them; guests type freely.
+  const { user } = useAuth();
   const [email, setEmail] = useState('');
   const [cardComplete, setCardComplete] = useState(false);
   const [cardError, setCardError] = useState('');
@@ -132,14 +139,19 @@ function LaunchModalInner({ onClose, onCreateIntent, onPaid, contextLabel, tier,
   const price = priceForVoters(voterTier);
 
   useEffect(() => {
-    // Pre-fill email if already saved
+    // Pre-fill: account email for signed-in creators (locked below), else
+    // whatever a previous guest run saved to the setup blob.
+    if (user?.email) {
+      setEmail(user.email);
+      return; // field is locked — nothing to focus
+    }
     try {
       const raw = localStorage.getItem('v4_contest_setup');
       const cur = raw ? JSON.parse(raw) : {};
       if (cur.userEmail) setEmail(cur.userEmail);
     } catch {}
     setTimeout(() => emailRef.current?.focus(), 100);
-  }, []);
+  }, [user?.email]);
 
   const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   const canSubmit = isValidEmail && cardComplete && !submitting && stripe && elements;
@@ -257,7 +269,8 @@ function LaunchModalInner({ onClose, onCreateIntent, onPaid, contextLabel, tier,
                     onChange={(e) => setEmail(e.target.value)}
                     autoComplete="email"
                     required
-                    disabled={submitting}
+                    disabled={submitting || !!user?.email}
+                    title={user?.email ? 'Launching under your signed-in account' : undefined}
                   />
                 </div>
               </div>
