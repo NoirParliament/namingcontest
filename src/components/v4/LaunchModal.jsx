@@ -234,7 +234,7 @@ function LaunchModalInner({ onClose, onCreateIntent, onPaid, contextLabel, tier,
             </h2>
             <p className="v4-auth-blurb">
               One charge of <strong>${price}</strong> for up to <strong>{voterTier}</strong> participants.
-              We’ll email you a magic link to manage results.
+              We’ll send your receipt here; it’s also your sign-in email.
             </p>
 
             <form onSubmit={handleSubmit} className="v4-launch-form">

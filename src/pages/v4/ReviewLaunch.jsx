@@ -72,13 +72,11 @@ export default function ReviewLaunch() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [launching, setLaunching] = useState(false);
-  // Set after a GUEST launch — shows the "check your email" screen while the
-  // Edge Function has created their account + contest and emailed the link.
+  // FALLBACK ONLY: set after a guest launch when the instant sign-in token
+  // couldn't be redeemed. The normal guest path signs in on the spot and
+  // navigates straight to the contest, same as a returning creator.
   const [pendingEmail, setPendingEmail] = useState(null);
-  // Why the receipt couldn't carry a sign-in link, when it couldn't. Shown on
-  // the confirmation screen so a failure is visible rather than silently
-  // costing the guest a second email.
-  const [signInLinkError, setSignInLinkError] = useState(null);
+  const [pendingContestId, setPendingContestId] = useState(null);
   // Per-row edit modal state — same pattern as ContestManage's
   // brief recap, so editing happens in-place instead of bouncing
   // the user back to the full chat.
@@ -349,30 +347,38 @@ export default function ReviewLaunch() {
       writeSetup({ contestId, launchedAt: Date.now() });
       setTimeout(() => navigate(`/v4/contest/${contestId}`), 400);
     } else {
-      // The receipt's own button now signs a guest in and lands them on their
-      // contest, so there's no second email to send: one message, one click.
-      // This only runs if confirm-launch couldn't attach a link, which would
-      // otherwise leave someone who has just paid with no way into the
-      // account that was created for them.
-      if (data?.signInLinkError) setSignInLinkError(data.signInLinkError);
-      if (!data?.signInLinkSent) {
-        const redirectTo = `${window.location.origin}/v4/settings`;
-        const { error: otpError } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo } });
-        if (otpError) {
-          console.error('[launch] login link failed:', otpError.message);
-          window.alert(
-            'Your contest is paid and live, but we could not send the login email:\n\n' +
-            otpError.message +
-            '\n\nYou can sign in from the homepage with the same email to reach it.'
-          );
-        }
+      // Guest just paid. Their account was created server-side at launch, so
+      // this browser has no session — confirm-launch minted a one-time token
+      // for exactly this situation. Redeem it here and the guest is signed in
+      // on the spot, same as a returning creator: no login email at all (the
+      // only email is the receipt).
+      let signedIn = false;
+      if (data?.authTokenHash) {
+        const { error: verifyError } = await supabase.auth.verifyOtp({
+          type: 'email',
+          token_hash: data.authTokenHash,
+        });
+        if (verifyError) console.error('[launch] instant sign-in failed:', verifyError.message);
+        signedIn = !verifyError;
       }
-      setPendingEmail(email);
+      writeSetup({ contestId, launchedAt: Date.now() });
+      if (signedIn) {
+        setTimeout(() => navigate(`/v4/contest/${contestId}`), 400);
+      } else {
+        // Fallback: paid and live, but the instant sign-in didn't complete.
+        // Show the "receipt is on its way" screen; its button leads to the
+        // contest, whose signed-out state offers a sign-in link on demand
+        // (email prefilled from the setup blob LaunchModal already wrote).
+        setPendingContestId(contestId);
+        setPendingEmail(email);
+      }
     }
   };
 
-  // Guest launch → paid, live, and the receipt in their inbox is also the way
-  // in. One email doing both jobs, so the copy points at that one thing.
+  // FALLBACK screen: guest paid, contest is live, but the instant sign-in
+  // could not complete in this browser. The one email they get is the
+  // receipt; signing in happens on demand from the contest page (which
+  // offers a sign-in link with their email prefilled).
   if (pendingEmail) {
     return (
       <div className="v4 lp-v3">
@@ -381,20 +387,19 @@ export default function ReviewLaunch() {
           <main className="v4-review" role="main">
             <div className="v4-review-inner" style={{ textAlign: 'center', paddingTop: 72 }}>
               <h1 className="v4-review-title">Your contest is live 🎉</h1>
-              <p className="v4-review-subtitle" style={{ maxWidth: 440, margin: '14px auto 0' }}>
-                {signInLinkError ? (
-                  <>
-                    We sent your receipt and a separate sign-in link to{' '}
-                    <strong>{pendingEmail}</strong>. Open the sign-in link first.
-                  </>
-                ) : (
-                  <>
-                    We sent your receipt to <strong>{pendingEmail}</strong>. Its
-                    &ldquo;Go to your contest&rdquo; button signs you in and takes
-                    you straight there.
-                  </>
-                )}
+              <p className="v4-review-subtitle" style={{ maxWidth: 440, margin: '14px auto 26px' }}>
+                Your receipt is on its way to <strong>{pendingEmail}</strong>.
+                To manage the contest, sign in with that same email.
               </p>
+              {pendingContestId && (
+                <button
+                  type="button"
+                  className="btn btn-primary btn-lg"
+                  onClick={() => navigate(`/v4/contest/${pendingContestId}`)}
+                >
+                  Go to your contest
+                </button>
+              )}
             </div>
           </main>
         </div>
