@@ -657,6 +657,12 @@ export default function JoinContest() {
                 voting open → vote; closed → see who won). */}
             {(() => {
               const currentStep = stage === 'voting' ? 1 : stage === 'closed' ? 2 : 0;
+              // Real contests carry actual deadlines (get_join_info), so the
+              // upcoming steps show their real dates; mocks fall back to the
+              // relative phrasing.
+              const shortDate = (t) => new Date(t).toLocaleDateString('en-US', {
+                weekday: 'short', month: 'short', day: 'numeric',
+              });
               const steps = [
                 {
                   title: 'Suggest names',
@@ -666,13 +672,14 @@ export default function JoinContest() {
                 {
                   title: 'Vote on the names',
                   em: currentStep === 1 ? 'You’re here · pick your favorites'
-                    : currentStep < 1 ? 'When names close'
+                    : currentStep < 1
+                      ? (contest.submissionEndsAt ? `Opens ${shortDate(contest.submissionEndsAt)}` : 'Once all names are in')
                     : 'Voting done',
                 },
                 {
                   title: 'See who won',
                   em: currentStep === 2 ? 'You’re here · results are in'
-                    : 'Shoutout if it’s yours',
+                    : (contest.votingEndsAt ? `Crowned ${shortDate(contest.votingEndsAt)}` : 'Shoutout if it’s yours'),
                 },
               ];
               return (
