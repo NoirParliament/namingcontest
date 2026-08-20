@@ -139,7 +139,7 @@ export function ToggleNameDescInput({ question, onSubmit, currentAnswer }) {
           ref={inputRef}
           type="text"
           className="v4-input"
-          placeholder="What’s the prize? e.g. $50 gift card, lifetime bragging rights..."
+          placeholder={question.namePlaceholder || 'Prize name (e.g. $50 gift card)'}
           value={name}
           onChange={(e) => setName(e.target.value)}
           maxLength={120}
