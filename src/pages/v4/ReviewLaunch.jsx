@@ -618,6 +618,7 @@ export default function ReviewLaunch() {
             <section className="v4-review-section v4-review-section--private">
               <header className="v4-review-section-head">
                 <h2>Schedule</h2>
+                <span className="v4-review-section-hint">Click to edit</span>
               </header>
               <ContestScheduleInput
                 question={scheduleQuestion}
