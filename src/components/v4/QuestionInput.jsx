@@ -60,6 +60,7 @@ export default function QuestionInput({ question, onSubmit, autoFocus = true, cu
   if (type === 'chips')          return <ChipsInput question={question} onSubmit={onSubmit} currentAnswer={currentAnswer} />;
   if (type === 'multiChips')     return <MultiChipsInput question={question} onSubmit={onSubmit} currentAnswer={currentAnswer} />;
   if (type === 'radioCards')     return <RadioCardsInput question={question} onSubmit={onSubmit} />;
+  if (type === 'scale')          return <ScaleInput question={question} onSubmit={onSubmit} currentAnswer={currentAnswer} />;
   if (type === 'numberChips')    return <NumberChipsInput question={question} onSubmit={onSubmit} currentAnswer={currentAnswer} />;
   if (type === 'contestSchedule') return <ContestScheduleInput question={question} onSubmit={onSubmit} />;
   if (type === 'voterTier')      return <VoterTierInput question={question} onSubmit={onSubmit} />;
@@ -385,6 +386,50 @@ function RadioCardsInput({ question, onSubmit }) {
           </button>
         );
       })}
+    </div>
+  );
+}
+
+// ── scale (1–5 between two named ends) ──────────────────────────────
+// Five steps in one row with the two ends named under it (e.g. "Titans"
+// … "Ball Busters"); the picked step's label shows below, then Continue.
+// Saves the step's label (options[i]), so the brief reads it as text.
+function ScaleInput({ question, onSubmit, currentAnswer }) {
+  const opts = question.options || [];
+  const [picked, setPicked] = useState(() => {
+    const i = opts.indexOf(currentAnswer);
+    return i >= 0 ? i : null;
+  });
+  const [left, right] = question.scaleEnds || ['', ''];
+  return (
+    <div className="v4-scale-block">
+      <div className="v4-scale-row" role="radiogroup" aria-label={question.label}>
+        {opts.map((label, i) => (
+          <button
+            key={label}
+            type="button"
+            role="radio"
+            aria-checked={picked === i}
+            aria-label={`${i + 1}: ${label}`}
+            className={`v4-scale-step${picked === i ? ' is-picked' : ''}`}
+            onClick={() => setPicked(i)}
+          >
+            {i + 1}
+          </button>
+        ))}
+      </div>
+      <div className="v4-scale-ends" aria-hidden="true">
+        <span>{left}</span>
+        <span>{right}</span>
+      </div>
+      <div className="v4-multichips-footer">
+        <span className="v4-multichips-count">
+          {picked === null ? 'Pick a number' : <b>{opts[picked]}</b>}
+        </span>
+        <button type="button" className="v4-multichips-submit" disabled={picked === null} onClick={() => picked !== null && onSubmit(opts[picked])}>
+          Continue <ArrowRight weight="bold" size={14} />
+        </button>
+      </div>
     </div>
   );
 }

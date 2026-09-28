@@ -728,16 +728,15 @@ export const BRIEF_QUESTIONS = {
         briefLabel: 'Intimidating or playful',
         label: 'Intimidating or playful',
         prompt: 'How intimidating vs. playful should it feel? Where on the spectrum from “Titans” to “Ball Busters”?',
-        type: 'radioCards',
-        options: [
-          { id: 'intimidating',   label: 'Intimidating',         sublabel: 'Titans, Predators, Raptors' },
-          { id: 'mostly-serious', label: 'Mostly serious',       sublabel: 'A real name with an edge to it' },
-          { id: 'in-between',     label: 'Somewhere in between', sublabel: '' },
-          { id: 'mostly-playful', label: 'Mostly playful',       sublabel: 'Fun first, still a team name' },
-          { id: 'full-joke',      label: 'Full joke',            sublabel: 'Ball Busters territory' },
-        ],
-        // No hint (Matt): the question and the options say it all.
-        guideId: 't1-chant',
+        // 1–5 scale between Mark's two ends (his "spectrum" wording). Each
+        // step saves its label, so the brief still reads "Mostly playful"
+        // and the expansions keep working.
+        type: 'scale',
+        scaleEnds: ['Titans', 'Ball Busters'],
+        options: ['Intimidating', 'Mostly serious', 'Somewhere in between', 'Mostly playful', 'Full joke'],
+        // No hint (Matt): the question and the scale say it all. The
+        // chantability guide moved to "three great team names" (it's a test
+        // for judging names, not about tone).
       },
       {
         id: 'leagueNames',
@@ -768,6 +767,7 @@ export const BRIEF_QUESTIONS = {
         required: false,
         placeholder: 'e.g. Athletic Club (history in it), Kraken (unexpected), Heat (chants itself)',
         hint: `A few reference names tell participants more than a paragraph of description. Say what you like about each one, and participants will read the pattern and aim for it.`,
+        guideId: 't1-chant',
       },
       {
         id: 'terribleNames',

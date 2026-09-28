@@ -12408,3 +12408,46 @@ button.v4-exit {
   .v4-cal-num { width: 36px; height: 36px; }
   .v4-cal-summary { flex-direction: column; gap: 4px; }
 }
+
+
+/* ── Scale (1–5 between two named ends) ──────────────────────────────── */
+.v4-scale-block {
+  align-self: stretch;
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: v4-bubble-in 0.5s ease-out forwards;
+  opacity: 0;
+}
+.v4-scale-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.v4-scale-step {
+  height: 48px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1.5px solid rgba(3, 3, 2, 0.14);
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--v4-fg);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+.v4-scale-step:hover { border-color: rgba(3, 3, 2, 0.35); }
+.v4-scale-step.is-picked { background: var(--v4-fg); border-color: var(--v4-fg); color: #ffffff; }
+.v4-scale-step:focus-visible { outline: 2px solid var(--v4-fg); outline-offset: 2px; }
+.v4-scale-ends {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 4px 4px;
+  font-family: var(--font-text);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--v4-muted);
+}
+.v4-scale-block .v4-multichips-count b { color: var(--v4-fg); font-weight: 700; font-size: 13px; }
