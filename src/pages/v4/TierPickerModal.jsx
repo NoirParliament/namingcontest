@@ -15,7 +15,7 @@ const TIERS = [
     Icon: Heart,
     tone: TONES.blush,
     title: 'Personal',
-    body: 'Babies, pets, homes, boats, cars, and more.',
+    body: 'Babies, pets, homes, boats, cars, gardens, and more.',
   },
   {
     id: 'group',
