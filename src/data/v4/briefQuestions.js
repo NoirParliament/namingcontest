@@ -175,10 +175,8 @@ const SOMETHING_ELSE_TIERS = {
       dislikedNames:  'e.g. Anything ending in “Society”, names that sound like a corporate offsite',
       avoidNames:     'e.g. Another crew at work already goes by The Regulars.',
     },
-    // The client dropped the old group guides (t6-identity, t6-future) on
-    // 2026-08-17; group borrows personal's two guides instead (Maria's copy,
-    // about naming something together). See ARTICLES.t6 below.
-    guides: { projectSummary: 'p4-generic', reflect: 'p4-collective' },
+    // No guides: the client dropped the group guides on 2026-08-17.
+    guides: {},
   },
   b5: {
     placeholders: {
@@ -193,10 +191,8 @@ const SOMETHING_ELSE_TIERS = {
       dislikedNames:  'e.g. Innovation Lab, Project X, anything with “Hub”',
       avoidNames:     'e.g. Nothing close to “Innovation Lab”, the last program burned that word out.',
     },
-    // Borrows Company's most general guide (see ARTICLES.b5) so no category
-    // ships with an empty guide block; swap for a dedicated one when Maria
-    // writes it.
-    guides: { projectSummary: 'b1-origins' },
+    // No guides: Maria's business "Something else" set came without any.
+    guides: {},
   },
 };
 
@@ -2535,17 +2531,6 @@ export const ARTICLES = {
   ],
 };
 
-// 2026-09-28: business "Something else" borrows Company's most general
-// guide (origin stories: Häagen-Dazs, Amazon, Google) so it isn't the only
-// category with an empty guide block. Same object, not a copy; guides
-// resolve per segment, so it has to be listed here to show up. Replace
-// with a dedicated guide when Maria writes one.
-ARTICLES.b5 = ARTICLES.b1.filter((a) => a.id === 'b1-origins');
-
-// Group "Something else" borrows personal's two guides (Maria's copy). The
-// old t6 guides stay in the list for reference but no question uses them
-// (the client dropped them on 2026-08-17), so they never show.
-ARTICLES.t6 = [...ARTICLES.t6, ...ARTICLES.p4];
 
 // 2026-08-18: b2 uses its own guides (defined above): b2-vs-company plus the
 // legacy product guides. The 2026-07-13 "mirror b1's guides" override was removed.
