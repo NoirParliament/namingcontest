@@ -16,11 +16,197 @@
 //   b1 company-name · b2 product-name · b3 project-name · b4 rebrand · b5 other-business
 //   t1 sports-team · t2 band-music · t3 podcast-channel · t4 civic-school-nonprofit · t5 gaming-group · t6 other-team
 //   p1 baby-name · p2 pet-name · p3 home-property-fun · p4 other-personal
+//
+// 2026-09-28 (client doc, Mark): three cards per tier. Live: b1 b2 b5 ·
+//   t1 t2 t6 · p1 p2 p4. Retired from the picker (data kept so old contests
+//   render): p3 → p4, t3 → t6, t4 → t2 ("Band or club"), plus t5/b3/b4 from
+//   earlier. p4 / t6 / b5 share one question set (SOMETHING_ELSE_BASE).
 // ════════════════════════════════════════════════════════════════
 
 // ────────────────────────────────────────────────────────────────
 // 1. BRIEF_QUESTIONS — per sub-segment
 // ────────────────────────────────────────────────────────────────
+// ────────────────────────────────────────────────────────────────
+// 0. SOMETHING_ELSE — one standard set for every tier's "Something else"
+// ────────────────────────────────────────────────────────────────
+// 2026-09-28 client doc (Mark): the three "Something else" categories
+// (p4 personal, t6 group, b5 business) share ONE repeatable question set
+// so the questionnaires stop needing per-category customization. Prompts
+// are Mark's wording. somethingElseQuestions(subId) layers the tier's
+// placeholders and the guides that tier already carried on top of the
+// shared base, so each tier still reads like itself.
+// Hints marked [proposed] are ours and await Maria's sign-off.
+const SOMETHING_ELSE_BASE = [
+  {
+    id: 'projectSummary',
+    briefLabel: 'In short',
+    label: 'What are you naming?',
+    prompt: 'What are you naming? Describe it in a sentence or two.',
+    type: 'textarea',
+    rows: 3,
+    required: true,
+    hint: `Whatever it is, tell us what it is and what it’s for. The clearer the picture participants have, the more relevant their name ideas can be.`, // [hint, from b5]
+  },
+  {
+    id: 'purpose',
+    label: 'What it does, or is for',
+    prompt: 'What does it do, or what is it for?',
+    type: 'textarea',
+    rows: 2,
+    required: false,
+  },
+  {
+    id: 'newOrReplacing',
+    label: 'New, or replacing a name?',
+    prompt: 'Is it new, or does it already have a name you’re replacing? If replacing, what’s the current name and why doesn’t it work?',
+    type: 'textarea',
+    rows: 2,
+    required: false,
+  },
+  {
+    id: 'audience',
+    label: 'Who the name is for',
+    prompt: 'Who will see, say, or use this name most often, and who do you most want it to land with?',
+    type: 'textarea',
+    rows: 2,
+    required: false,
+    hint: `The more participants understand the audience, the better they can pitch the tone and style.`, // [hint, from b5]
+  },
+  {
+    id: 'reflect',
+    label: 'Something the name should reflect',
+    prompt: 'Is there anything about you (or anyone else) the name should reflect, like a hobby, heritage, sense of humor, or profession?',
+    type: 'textarea',
+    rows: 2,
+    required: false,
+  },
+  {
+    id: 'vibe',
+    briefLabel: 'Tone',
+    label: 'Tone',
+    prompt: 'Should the name be funny, serious, elegant, clever, warm, edgy, friendly? Pick any that apply.',
+    type: 'multiChips',
+    options: ['Funny', 'Serious', 'Elegant', 'Clever', 'Warm', 'Edgy', 'Friendly'],
+    allowCustom: true,
+  },
+  {
+    id: 'feeling',
+    label: 'Feeling it should give',
+    prompt: 'What feeling should someone get when they hear it?',
+    type: 'text',
+    required: false,
+  },
+  {
+    id: 'descriptiveEvocative',
+    label: 'Direct or abstract?',
+    prompt: 'Should the name describe and explain directly or be more abstract or metaphoric?',
+    type: 'radioCards',
+    options: [
+      { id: 'descriptive', label: 'Describes directly', sublabel: 'Says plainly what it is' },
+      { id: 'abstract', label: 'Abstract or metaphoric', sublabel: 'Hints at an idea or feeling without spelling it out' },
+      { id: 'either', label: 'Either works', sublabel: '' },
+    ],
+  },
+  {
+    id: 'nameTypes',
+    label: 'Types of names you like or want to avoid',
+    prompt: 'Are there any types of names you especially like or want to avoid? For example, real words, invented words, names of people or places, puns, initials, or words from other languages.',
+    type: 'textarea',
+    rows: 2,
+    required: false,
+  },
+  {
+    id: 'admiredNames',
+    label: 'Three names you like',
+    prompt: 'Provide three names of similar things that you like, and explain why you like them.',
+    type: 'textarea',
+    rows: 3,
+    required: false,
+    hint: `A few reference names tell participants more than a paragraph of description. Participants will read the pattern and aim for it.`, // [hint]
+  },
+  {
+    id: 'dislikedNames',
+    label: 'Three names you don’t like',
+    prompt: 'Provide three names of similar things that you don’t like and explain why.',
+    type: 'textarea',
+    rows: 3,
+    required: false,
+  },
+  {
+    id: 'avoidNames',
+    briefLabel: 'Anything off-limits?',
+    label: 'Off-limits',
+    prompt: 'Anything off-limits? Words, themes, references, or names you’ve already rejected (and why).',
+    type: 'textarea',
+    rows: 2,
+    required: false,
+    hint: `If a name is claimed elsewhere in your orbit, worn out, or simply banned by popular vote, say so here. Participants can’t avoid what they don’t know about.`, // [hint]
+  },
+];
+
+// Per-tier layer: example placeholders that match the tier, plus the guides
+// each tier already had (p4 and t6 keep theirs; b5 never had any).
+const SOMETHING_ELSE_TIERS = {
+  p4: {
+    placeholders: {
+      projectSummary: 'e.g. Our weekly Saturday brunch crew, 6 friends, 4 years, still unnamed. Or: the lake cabin we just inherited from my grandmother.',
+      purpose:        'e.g. An excuse to see each other every week, and to argue about pancakes',
+      newOrReplacing: 'e.g. New. Well, the group chat is called “brunch??” and it has to go',
+      audience:       'e.g. The six of us, mostly in the group chat and on a custom mug',
+      reflect:        'e.g. Three of us are nurses, and we’re all a bit obsessed with true crime',
+      feeling:        'e.g. Like an in-joke you want to be part of',
+      nameTypes:      'e.g. Puns welcome. Nothing in Latin.',
+      admiredNames:   'e.g. The Breakfast Club (obvious but perfect), Sunday Service, The Regulars',
+      dislikedNames:  'e.g. Anything with “squad” or “tribe”. Brunch Bunch, too cute.',
+      avoidNames:     'e.g. We tried The Brunch Bunch for a week. Too cute. Nothing with “squad” in it.',
+    },
+    guides: { projectSummary: 'p4-generic', reflect: 'p4-collective' },
+  },
+  t6: {
+    placeholders: {
+      projectSummary: 'e.g. A monthly potluck club of 8 friends who’ve been meeting since college. Or: a weekly podcast where first-time founders tell the truth about year one.',
+      purpose:        'e.g. Dinner, mostly. And a standing excuse to see each other',
+      newOrReplacing: 'e.g. We’ve been “the potluck thing” for a decade. It needs a real name.',
+      audience:       'e.g. The eight of us, plus whoever we invite. For a podcast: listeners finding it in an app',
+      reflect:        'e.g. Half of us are Italian-American and everyone competes over the sauce',
+      feeling:        'e.g. Warm, a little competitive',
+      nameTypes:      'e.g. Real words over invented ones. Puns are fine if they’re good.',
+      admiredNames:   'e.g. Radiolab (curious, not stuffy), The Thursday Table (says when and what), Between the Wines',
+      dislikedNames:  'e.g. Anything ending in “Society”, names that sound like a corporate offsite',
+      avoidNames:     'e.g. Another crew at work already goes by The Regulars.',
+    },
+    guides: { projectSummary: 't6-identity', purpose: 't6-future' },
+  },
+  b5: {
+    placeholders: {
+      projectSummary: 'e.g. An internal innovation program that runs company-wide hackathons twice a year',
+      purpose:        'e.g. Gives engineers two weeks a year to build whatever they want, then ships the best of it',
+      newOrReplacing: 'e.g. Replacing “Innovation Lab”. Nobody could say it without rolling their eyes.',
+      audience:       'e.g. Employees across every department, plus a few external partners',
+      reflect:        'e.g. The company started in a garage and still likes to remind people',
+      feeling:        'e.g. Energy, momentum, a bit of mischief',
+      nameTypes:      'e.g. One or two real words. No acronyms, we have enough.',
+      admiredNames:   'e.g. Basecamp (grounded), Ignite (energy), Skunk Works (mischief with history)',
+      dislikedNames:  'e.g. Innovation Lab, Project X, anything with “Hub”',
+      avoidNames:     'e.g. Nothing close to “Innovation Lab”, the last program burned that word out.',
+    },
+    guides: {},
+  },
+};
+
+function somethingElseQuestions(subId) {
+  const tier = SOMETHING_ELSE_TIERS[subId] || {};
+  return SOMETHING_ELSE_BASE.map((q) => ({
+    ...q,
+    ...(tier.placeholders?.[q.id] ? { placeholder: tier.placeholders[q.id] } : {}),
+    ...(tier.guides?.[q.id] ? { guideId: tier.guides[q.id] } : {}),
+  }));
+}
+
+// Exported so the audit script and any future AI-brief work can see the
+// shared shape without re-deriving it from a tier.
+export const SOMETHING_ELSE_QUESTION_IDS = SOMETHING_ELSE_BASE.map((q) => q.id);
+
 export const BRIEF_QUESTIONS = {
   // ── b1 · Company / startup ──
   // 2026-07-10: replaced with the client-authored (Maria) 10-question guide.
@@ -136,7 +322,18 @@ export const BRIEF_QUESTIONS = {
         rows: 3,
         required: false,
         placeholder: 'e.g. Short, easy to spell, .com available',
-        hint: `For example: a maximum number of letters or syllables, easy to pronounce or spell, a preference for the exact dot-com domain, works well internationally, no initials or acronyms — or anything else the name must, or ideally should, do.`,
+        hint: `For example: a maximum number of letters or syllables, easy to pronounce or spell, a preference for the exact dot-com domain, works well internationally, no initials or acronyms, or anything else the name must, or ideally should, do.`,
+      },
+      // 2026-09-28: added per the client's Company list (Mark's doc).
+      {
+        id: 'namesConsidered',
+        label: 'Names considered and rejected',
+        prompt: 'What names have you considered and rejected, and why?',
+        type: 'textarea',
+        rows: 3,
+        required: false,
+        placeholder: 'e.g. We liked Northwind until we found a roaster with the same name. Ember felt too generic.',
+        hint: `The names you’ve circled and the ones you’ve rejected are both signals. Share your shortlist so far and what stopped each one; participants will aim closer on the first try.`,
       },
     ],
   },
@@ -275,7 +472,18 @@ export const BRIEF_QUESTIONS = {
         rows: 3,
         required: false,
         placeholder: 'e.g. I like Calm and Sharpie — each name is the product’s promise in one word.',
-        hint: `Share a few product, company, or brand names that represent the kind of name you’d like for this product. They can come from any industry. Tell us what you like about them — whether it’s their sound, style, meaning, originality, or something else.`,
+        hint: `Share a few product, company, or brand names that represent the kind of name you’d like for this product. They can come from any industry. Tell us what you like about them, whether it’s their sound, style, meaning, originality, or something else.`,
+      },
+      // 2026-09-28: added per the client's Product list (Mark's doc).
+      {
+        id: 'namesConsidered',
+        label: 'Names considered and rejected',
+        prompt: 'What names have you considered and rejected, and why?',
+        type: 'textarea',
+        rows: 3,
+        required: false,
+        placeholder: 'e.g. Scorch was taken by a rival sauce. Harvest Heat felt like a farm stand.',
+        hint: `The names you’ve circled and the ones you’ve rejected are both signals. Share your shortlist so far and what stopped each one; participants will aim closer on the first try.`,
       },
       {
         id: 'practicalReqs',
@@ -443,294 +651,250 @@ export const BRIEF_QUESTIONS = {
     ],
   },
 
-  // ── b5 · Something else (business) — no legacy content, t6-style fallback ──
-  // 2026-08-18: client-authored (Maria) business "something else" question set.
+  // ── b5 · Something else (business) ──
+  // 2026-09-28: uses the shared "Something else" set (SOMETHING_ELSE_BASE)
+  // with business placeholders. The 2026-08-18 business-specific set was
+  // retired by the client's standardization (Mark's doc).
   b5: {
     label: 'Something else (business)',
     suggestedDeadlineDays: 10,
-    questions: [
-      {
-        id: 'projectSummary',
-        briefLabel: 'In short',
-        label: 'What are we naming?',
-        prompt: 'What are we naming?',
-        type: 'textarea',
-        rows: 3,
-        required: true,
-        placeholder: 'e.g. An internal innovation program that runs company-wide hackathons twice a year',
-        hint: `An initiative, a program, an event, an internal tool, a space — whatever it is, tell us what it is and what it’s for.`,
-      },
-      {
-        id: 'nameUsage',
-        label: 'How will the name be used?',
-        prompt: 'How will the name be used?',
-        type: 'textarea',
-        rows: 2,
-        required: false,
-        placeholder: 'e.g. On an internal site, in emails, on event signage and swag',
-        hint: `Where will people see or say this name? On a website, in conversation, on signage, in a logo? How it’s used shapes what kind of name works.`,
-      },
-      {
-        id: 'audience',
-        label: 'Who is the audience?',
-        prompt: 'Who is the audience for the name?',
-        type: 'textarea',
-        rows: 2,
-        required: false,
-        placeholder: 'e.g. Employees across every department, plus a few external partners',
-        hint: `Who is this name for? The more participants understand the audience, the better they can pitch the tone and style.`,
-      },
-      {
-        id: 'nameCommunicate',
-        label: 'What should the name communicate?',
-        prompt: 'What should the name communicate? Are there specific themes or ideas to explore?',
-        type: 'textarea',
-        rows: 3,
-        required: false,
-        placeholder: 'e.g. Energy, creativity, and momentum. Maybe play on building, launching, or sparks.',
-        hint: `Share the ideas, feelings, or themes the name should carry, and any creative territories worth exploring.`,
-      },
-      {
-        id: 'descriptiveEvocative',
-        label: 'Direct or evocative?',
-        prompt: 'Should the name be direct and clear, or more evocative and suggestive?',
-        type: 'radioCards',
-        options: [
-          { id: 'descriptive', label: 'Direct and clear', sublabel: 'Says plainly what it is' },
-          { id: 'suggestive', label: 'Evocative and suggestive', sublabel: 'Hints at an idea or feeling without spelling it out' },
-          { id: 'either', label: 'Either works', sublabel: '' },
-        ],
-      },
-      {
-        id: 'nameConnection',
-        label: 'Connection to other names?',
-        prompt: 'Should the name connect to your company name or any other names?',
-        type: 'textarea',
-        rows: 2,
-        required: false,
-        placeholder: 'e.g. It should feel like part of the Acme family, or nod to our “Summit” event series.',
-        hint: `Should it echo your company name, fit alongside existing names, or stand entirely on its own?`,
-      },
-      {
-        id: 'admiredNames',
-        label: 'Names you’ve considered or admire',
-        prompt: 'Have you thought of any names for this, or names you admire, that you could share?',
-        type: 'textarea',
-        rows: 3,
-        required: false,
-        placeholder: 'e.g. We’ve floated “Ignite” and “Launchpad.” I also like how “Basecamp” feels.',
-        hint: `Share anything you’ve considered, or names elsewhere you like, and what you respond to about them. It helps participants understand the direction you’re drawn to.`,
-      },
-      {
-        id: 'practicalReqs',
-        label: 'Practical restrictions',
-        prompt: 'Are there any practical restrictions on the name, such as length, spelling, or words to avoid?',
-        type: 'textarea',
-        rows: 3,
-        required: false,
-        placeholder: 'e.g. One or two words, easy to say aloud, avoid anything too corporate',
-        hint: `For example: a maximum length, easy to pronounce or spell, words to avoid, or anything else the name must, or ideally should, do.`,
-      },
-      {
-        id: 'avoidNames',
-        label: 'Names to avoid',
-        prompt: 'Any names or words to steer clear of?',
-        type: 'textarea',
-        rows: 2,
-        required: false,
-        placeholder: 'e.g. Nothing close to “Innovation Lab”, the last program burned that word out.',
-        hint: `If a name is already taken nearby, attached to a past effort, or simply worn out in your world, say so. Participants can’t avoid what they don’t know about.`,
-      },
-    ],
+    questions: somethingElseQuestions('b5'),
   },
 
-  // ── t1 · Sports team ──
+  // ── t1 · Team ──
+  // 2026-09-28: rebuilt to the client's 11-question set (Mark's doc). The
+  // sport/league question is now the required opener (id projectSummary,
+  // so the participant pages that quote the opener keep working) and
+  // carries the anatomy guide. Personality is a 5-step spectrum, his
+  // "Titans" to "Ball Busters" framing. Hints carry over where the
+  // question survived; new ones are marked [proposed].
   t1: {
-    label: 'Sports team',
+    label: 'Team',
     suggestedDeadlineDays: 7,
     questions: [
       {
         id: 'projectSummary',
         briefLabel: 'In short',
-        label: 'About this',
-        prompt: 'Tell us about the team.',
+        label: 'About the team',
+        prompt: 'What sport, league, or level is this team part of? Tell us a bit about the nature of this team.',
         type: 'textarea',
         rows: 3,
         required: true,
         placeholder: 'e.g. A Sunday-league 7-a-side football team in the Brookside Adult Rec League Division B. Mostly mates from work who took it more seriously than expected.',
-      },
-      {
-        id: 'sportLeague',
-        label: 'Sport and league / competition',
-        prompt: 'What sport, league, or level is this team part of?',
-        type: 'text',
-        required: false,
-        placeholder: 'e.g. Adult rec soccer league',
-        hint: `Different sports and leagues have their own naming traditions. Soccer teams might draw on places, animals, colors, or local references. Hockey names often lean into toughness, nature, or weather, while recreational teams can be much more playful. Tell participants what kind of team they’re naming, and they can draw on the conventions that fit — or take the name in a completely different direction.`,
+        hint: `Different sports and leagues have their own naming traditions. Soccer teams might draw on places, animals, colors, or local references. Hockey names often lean into toughness, nature, or weather, while recreational teams can be much more playful. Tell participants what kind of team they’re naming, and they can draw on the conventions that fit, or take the name in a completely different direction.`,
         guideId: 't1-anatomy',
       },
       {
-        id: 'ageGroup',
-        label: 'Age group / competitive level',
-        prompt: 'Who plays on the team?',
-        type: 'chips',
-        options: ['Youth (under 14)', 'High School (14-18)', 'College / University', 'Intramural', 'Adult Amateur', 'Semi-Pro / Pro'],
+        id: 'based',
+        label: 'Where you’re based',
+        prompt: 'Where are you based? Provide the city, neighborhood, school, workplace, or region the team represents.',
+        type: 'text',
+        required: false,
+        placeholder: 'e.g. Riverside, on the east side of town',
+      },
+      {
+        id: 'audience',
+        label: 'Audience for the name',
+        prompt: 'Who’s the audience for the name: just the players, parents and fans, a whole league, sponsors? Pick any that apply.',
+        type: 'multiChips',
+        options: ['Just the players', 'Parents and fans', 'The whole league', 'Sponsors'],
+        allowCustom: true,
+      },
+      {
+        id: 'localInspiration',
+        label: 'Local inspiration',
+        prompt: 'Anything local (history, landmarks, industries, wildlife, slang) worth drawing on?',
+        type: 'textarea',
+        rows: 2,
+        required: false,
+        placeholder: 'e.g. The old steel mill, the river herons, everyone calls the hill “the Knob”',
+        hint: `A strong connection to place can give a team name instant identity and local meaning. Local landmarks, landscapes, weather, history, cultural references, and slang can all inspire names that feel connected to where the team plays.`,
+      },
+      {
+        id: 'teamColors',
+        label: 'Colors or mascot',
+        prompt: 'Have the team colors or mascot already been decided? Any visual you’re locked into?',
+        type: 'text',
+        required: false,
+        placeholder: 'e.g. Navy and gold, no mascot yet',
       },
       {
         id: 'personality',
-        briefLabel: 'Team personality',
-        label: 'Team Personality',
-        prompt: `What’s the team’s personality? Pick any that apply.`,
-        type: 'multiChips',
-        options: ['Intimidating', 'Pride-Based', 'Fun / Playful', 'Underdog / Gritty', 'Not sure'],
+        briefLabel: 'Intimidating or playful',
+        label: 'Intimidating or playful',
+        prompt: 'How intimidating vs. playful should it feel? Where on the spectrum from “Titans” to “Ball Busters”?',
+        type: 'radioCards',
+        options: [
+          { id: 'intimidating',   label: 'Intimidating',         sublabel: 'Titans, Predators, Raptors' },
+          { id: 'mostly-serious', label: 'Mostly serious',       sublabel: 'A real name with an edge to it' },
+          { id: 'in-between',     label: 'Somewhere in between', sublabel: '' },
+          { id: 'mostly-playful', label: 'Mostly playful',       sublabel: 'Fun first, still a team name' },
+          { id: 'full-joke',      label: 'Full joke',            sublabel: 'Ball Busters territory' },
+        ],
         hint: `Personality sets the tone. A team name signals what kind of team you are. An intimidating name like Predators or Raptors projects power and aggression; a name rooted in place, community, or identity can create a different kind of pride and belonging. Playful names can be perfect for youth or rec teams, while a highly competitive team may want more edge. Let your names reflect your team’s personality, audience, and ambitions.`,
         guideId: 't1-chant',
       },
       {
-        id: 'namingDirection',
-        label: 'Naming territories',
-        prompt: 'Which naming territories should participants explore? Pick any that apply.',
-        type: 'multiChips',
-        options: [
-          { label: 'Animal / Mascot',    eg: 'Lions, Hawks' },
-          { label: 'Force of Nature',    eg: 'Thunder, Blaze' },
-          { label: 'Place / Geographic', eg: 'Riverside, Northern' },
-          { label: 'Elite / Best',       eg: 'Apex, Vanguard' },
-          { label: 'Tough / Fierce',     eg: 'Renegades, Predators' },
-          { label: 'Open to anything',   eg: null },
-        ],
-        allowCustom: true,
-        hint: `Oklahoma City’s Thunder was chosen through a fan vote from an ownership-selected shortlist that included Barons, Bison, Energy, and Wind. The name connects to the region while evoking a powerful force of nature. Seattle’s Kraken took a very different route, embracing a mythical creature with no obvious connection to the city. When briefing participants, you can point them toward a particular naming territory—or leave the door open for an unexpected idea.`,
-      },
-      {
-        id: 'geography',
-        label: 'Local connection & colors',
-        prompt: 'Any city, region, landmark, or team colors that should inspire the name?',
+        id: 'leagueNames',
+        label: 'Other teams in your league',
+        prompt: 'What are other teams in your league called? Which do you like, which do you want to avoid sounding like?',
         type: 'textarea',
-        rows: 2,
+        rows: 3,
         required: false,
-        placeholder: 'Share city name, regional landmarks, notable weather patterns, interesting local history, team colors, etc.',
-        hint: `A strong connection to place — or a signature color — can give a team name instant identity and local meaning. If your team represents a city, neighborhood, or region, share that context with participants. Local landmarks, landscapes, weather, history, cultural references, and team colors can all inspire names that feel connected to where the team plays.`,
-      },
-      {
-        id: 'chantable',
-        label: 'Chantability — will fans chant it?',
-        prompt: 'Will fans actually chant this name on game day?',
-        type: 'chips',
-        options: ['Yes — fans will chant it', 'Not important for us', 'Not sure'],
-        hint: `A chantable name changes the game-day experience. “Let’s go Thunder!” works because “Thunder” is punchy and single-syllable. “Let’s go Riverside Athletic United!” doesn’t chant. If this name will be chanted, it needs to be 1-2 syllables and end with energy.`,
-      },
-      {
-        id: 'teamColors',
-        label: 'Team colors',
-        prompt: `What are your team colors?`,
-        type: 'text',
-        required: false,
-        placeholder: 'e.g. Navy and gold, all black, red and white',
-      },
-      {
-        id: 'admiredNames',
-        label: 'Team names you like',
-        prompt: 'Which team names do you like, at any level of sport?',
-        type: 'textarea',
-        rows: 2,
-        required: false,
-        placeholder: 'e.g. We like names like Athletic Club and St. Pauli, names with history in them.',
-        hint: `A few reference names tell participants more than a paragraph of description. Share team names you admire, from any sport or league, and say what you like about them. Participants will read the pattern and aim for it.`,
+        placeholder: 'e.g. Riverside Rovers (our rivals, avoid), Northside Kings (like it), FC United (too generic)',
       },
       {
         id: 'avoidNames',
-        briefLabel: 'Any names to avoid?',
-        label: 'Names to avoid',
-        prompt: 'Any names to steer clear of? Rivals, existing clubs, or names already taken in your league.',
+        briefLabel: 'Off-limits words or themes',
+        label: 'Off-limits',
+        prompt: 'Are any words or themes off-limits (league rules, sponsor sensitivities, school policy, keep-it-clean for kids)?',
         type: 'textarea',
         rows: 2,
         required: false,
-        placeholder: 'e.g. Anything close to Riverside Rovers, they’re our rivals. And there’s already an FC United in our division.',
-        hint: `Every league has its landmines: a rival’s name, a folded club everyone still remembers, a name already on the fixture list. Telling participants what’s off the table saves them from suggesting a name the room will instantly veto.`,
+        placeholder: 'e.g. Nothing violent, it’s a youth league. And no animals, the school already has a mascot.',
+        hint: `Every league has its landmines: a rival’s name, a folded club everyone still remembers, a word the sponsor won’t print. Telling participants what’s off the table saves them from suggesting a name the room will instantly veto.`,
+      },
+      {
+        id: 'admiredNames',
+        label: 'Three great team names',
+        prompt: 'Provide three team names from any sport that you think are great, and why.',
+        type: 'textarea',
+        rows: 3,
+        required: false,
+        placeholder: 'e.g. Athletic Club (history in it), Kraken (unexpected), Heat (chants itself)',
+        hint: `A few reference names tell participants more than a paragraph of description. Say what you like about each one, and participants will read the pattern and aim for it.`,
+      },
+      {
+        id: 'terribleNames',
+        label: 'Three terrible team names',
+        prompt: 'Now give three you think are terrible, and why.',
+        type: 'textarea',
+        rows: 3,
+        required: false,
+        placeholder: 'e.g. Anything with “United” tacked on, names you can’t chant, mascots that mean nothing here',
+      },
+      {
+        id: 'namesConsidered',
+        label: 'Names proposed and rejected',
+        prompt: 'Tell us any names already proposed and rejected by the team, and why.',
+        type: 'textarea',
+        rows: 2,
+        required: false,
+        placeholder: 'e.g. Half the team wanted Thunder, the other half said everyone’s called Thunder.',
       },
     ],
   },
 
-  // ── t2 · Band / music ──
-  // 2026-08-17: keep "Tell us about the band" as the required description
-  // opener, then genre. (The client suggested leading with genre, but the
-  // brief needs a real description anchor first — genre alone is too thin.)
-  // Legal-name and searchability questions dropped entirely —
-  // "I'd like us not to address any legal stuff."
+  // ── t2 · Band or club ──
+  // 2026-09-28: Band (t2) and Club (t4) combined into one category on the
+  // client's 10-question set (Mark's doc). Keeps the t2 id so existing band
+  // contests still resolve; the t4 card is retired and its usable guides
+  // (t4-belonging) and hints move here. Genre folds into the opener per
+  // his wording. Hints adapted from the band/club originals are marked
+  // [adapted]; new ones [proposed].
   t2: {
-    label: 'Band / music project',
+    label: 'Band or club',
     suggestedDeadlineDays: 10,
     questions: [
       {
         id: 'projectSummary',
         briefLabel: 'In short',
-        label: 'About this',
-        prompt: 'Tell us about the band.',
+        label: 'About the band or club',
+        prompt: 'Tell us about your band or club. In a sentence or two, describe either the style of music or purpose of the club.',
         type: 'textarea',
         rows: 3,
         required: true,
-        placeholder: 'e.g. A 4-piece dream-pop band from Bristol with one EP out. Booked for a small US tour in the fall and need a name we can grow into.',
+        placeholder: 'e.g. A 4-piece dream-pop band from Bristol with one EP out. Or: a neighborhood chess club that meets Thursday nights at the library.',
       },
       {
-        id: 'genre',
-        label: 'Genre / Sound',
-        prompt: `What’s your genre and sound?`,
+        id: 'personalityWords',
+        briefLabel: 'Personality',
+        label: 'Personality in a few words',
+        prompt: 'What does your band or club feel like? Describe its personality in 3 to 5 words, for example, playful, laid-back, bold, or welcoming.',
         type: 'text',
         required: false,
-        placeholder: 'e.g. Indie rock, hip-hop',
-        hint: `Genres often have their own naming conventions. Metal favors names that feel powerful or intense: Slayer, Pantera, Megadeth. Indie bands often go literary, evocative, or unexpected: Fleet Foxes, Beach House, Bon Iver. Pop names tend to be broadly accessible and easy to say: The Weeknd, Maroon 5, Lady Gaga, 5 Seconds of Summer. Share the genre so participants know where to start, or what conventions they might break.`,
+        placeholder: 'e.g. Loud, warm, a little chaotic',
+        hint: `The personality steers the whole feel of a name. A welcoming book club and a loud punk band want very different names, even in the same town. Tell participants the tone so the ideas match who you are.`, // [adapted]
+        guideId: 't4-belonging',
       },
       {
         id: 'originStory',
-        label: 'Band origin story',
-        prompt: `How did the band form? Any inside references or stories worth naming around?`,
+        label: 'Origin story',
+        prompt: 'How did the band or club form? Any origin story, inside joke, or shared obsession among members that a name could come from?',
         type: 'textarea',
         rows: 3,
         required: false,
         placeholder: 'e.g. All the band members have kids at the same school. We all love bad science fiction movies.',
-        hint: `Fans inevitably ask, “How did you get your name?” A name with a good story gives people something to remember and talk about. Lynyrd Skynyrd took its name from a gym teacher, Radiohead from a Talking Heads song, and Foo Fighters from a World War II term for mysterious aerial sightings. Give participants some of the band's story or shared context, and they may find a name with meaning built in.`,
+        hint: `People inevitably ask, “How did you get your name?” A name with a good story gives them something to remember and talk about. Lynyrd Skynyrd took its name from a gym teacher, Radiohead from a Talking Heads song, and Foo Fighters from a World War II term for mysterious aerial sightings. Give participants some of the band or club’s story or shared context, and they may find a name with meaning built in.`, // [adapted]
         guideId: 't2-firstsong',
       },
       {
-        id: 'nameStyle',
-        label: 'Naming territory',
-        prompt: 'What naming territory fits your band? Pick any that apply.',
-        type: 'multiChips',
-        options: [
-          { label: 'Pop culture',         eg: 'Radiohead' },
-          { label: 'Inside jokes',        eg: 'Green Day, Garbage' },
-          { label: 'Places',              eg: 'Cypress Hill' },
-          { label: 'Food',                eg: 'The Cranberries' },
-          { label: 'Names',               eg: 'Fleetwood Mac, Phish' },
-          { label: 'Interesting words',   eg: 'Outkast, Ride' },
-          { label: 'Meaningful phrases',  eg: 'AC/DC' },
-          { label: 'Random combinations', eg: 'Arctic Monkeys' },
-        ],
-        hint: `Great band names can come from almost anywhere. These eight overlapping territories provide different ways into the creative process, from personal connections and pop-culture references to places, names, interesting words, and unexpected combinations. Explore several rather than locking into one. The goal is to give participants enough structure to spark ideas while leaving plenty of room for surprise.`,
-        guideId: 't2-archetypes',
+        id: 'localConnection',
+        label: 'Local connection',
+        prompt: 'Is the band or club tied to a particular place or community?',
+        type: 'text',
+        required: false,
+        placeholder: 'e.g. The Oak Park area',
+        hint: `Many bands and clubs are rooted in a place, and that place can anchor a name. Share the neighborhood, town, campus, or scene if it matters, or leave it blank if you aren’t tied to one.`, // [adapted]
       },
       {
-        id: 'admiredNames',
-        briefLabel: 'Which band names do you admire?',
-        label: 'Band names you admire',
-        prompt: 'Which band or artist names do you love? They don’t need to match your genre.',
+        id: 'similarAdmired',
+        label: 'Similar bands or clubs you admire',
+        prompt: 'What are similar bands or clubs you admire, and what do their names do well?',
         type: 'textarea',
         rows: 2,
         required: false,
-        placeholder: 'e.g. Fleetwood Mac, The National, Turnstile. Names that feel like a world you want to step into.',
-        hint: `A few reference names tell participants more than a paragraph of description. Share the band names you find yourself admiring and say what you like about them: the sound, the imagery, the attitude. Participants will read the pattern and aim for it.`,
+        placeholder: 'e.g. Beach House. Two plain words that feel like a whole mood.',
       },
       {
-        id: 'avoidNames',
-        briefLabel: 'Any names to avoid?',
-        label: 'Names to avoid',
-        prompt: 'Any names or directions to avoid? Similar-sounding acts count.',
+        id: 'confusedWith',
+        label: 'Don’t want to be confused with',
+        prompt: 'Bands or clubs you don’t want to be confused with or lumped in with.',
         type: 'textarea',
         rows: 2,
         required: false,
         placeholder: 'e.g. Nothing too close to Velvet Nation, we gig with them.',
-        hint: `The music world punishes name collisions: two similar acts split searches, playlists, and posters. If there’s a local band you share bills with or a direction you’ve grown out of, say so up front.`,
+        hint: `Name collisions hurt: two similar acts split searches, playlists, and posters, and two similar clubs confuse newcomers. If there’s a local act you share bills with, or a group down the road with a similar purpose, say so up front.`, // [adapted]
+      },
+      {
+        id: 'references',
+        label: 'References that feel true to you',
+        prompt: 'Any references (literary, cultural, historical, local) that feel true to who you are?',
+        type: 'textarea',
+        rows: 2,
+        required: false,
+        placeholder: 'e.g. Bad sci-fi movies, the Brontës, the old docks',
+        guideId: 't2-archetypes',
+      },
+      {
+        id: 'avoidNames',
+        briefLabel: 'Anything off-limits?',
+        label: 'Off-limits',
+        prompt: 'Anything off-limits? Themes, words, or existing names you’re steering clear of.',
+        type: 'textarea',
+        rows: 2,
+        required: false,
+        placeholder: 'e.g. No “The” names, and nothing with “club” in it',
+      },
+      {
+        id: 'admiredNames',
+        label: 'Three names you love',
+        prompt: 'Give three band or club names you love, and why.',
+        type: 'textarea',
+        rows: 3,
+        required: false,
+        placeholder: 'e.g. Fleetwood Mac, The National, Turnstile. Names that feel like a world you want to step into.',
+        hint: `A few reference names tell participants more than a paragraph of description. Share the band or club names you find yourself admiring and say what you like about them: the sound, the imagery, the attitude. Participants will read the pattern and aim for it.`, // [adapted]
+      },
+      {
+        id: 'namesConsidered',
+        label: 'Considered and rejected',
+        prompt: 'What are names you’ve already considered and rejected, and why?',
+        type: 'textarea',
+        rows: 2,
+        required: false,
+        placeholder: 'e.g. We almost went with The Committee, too stiff. Half of us still like Thursday Club.',
+        hint: `Most groups arrive with a few half-names already in the air. Share them, including the rejects and why they missed. It gives participants a head start on your taste and stops them re-suggesting what you’ve already ruled out.`,
       },
     ],
   },
@@ -1005,88 +1169,26 @@ export const BRIEF_QUESTIONS = {
     ],
   },
 
-  // ── t6 · Other team / group ──
+  // ── t6 · Something else (group) ──
+  // 2026-09-28: uses the shared "Something else" set with group
+  // placeholders. Podcasts, channels, and civic groups land here now that
+  // the t3 / t4 cards are retired (their question sets stay in this file so
+  // old contests keep rendering).
   t6: {
-    label: 'Other team / group',
+    label: 'Something else (group)',
     suggestedDeadlineDays: 10,
-    questions: [
-      {
-        id: 'projectSummary',
-        briefLabel: 'In short',
-        label: 'About this',
-        prompt: 'What is this group, and what do you do together?',
-        type: 'textarea',
-        rows: 3,
-        required: true,
-        placeholder: `e.g. A monthly potluck club of 8 friends who’ve been meeting since college. Almost a decade in and someone finally said “we should name this.”`,
-      },
-      {
-        id: 'groupDesc',
-        label: 'Describe your group',
-        prompt: 'What kind of group is this, and what do you do together?',
-        type: 'textarea',
-        rows: 4,
-        required: false,
-        placeholder: 'What kind of group is this? What do you do together? What makes your group unique?',
-        hint: `The more context participants have, the better the names. What does your group do? Who’s in it? What makes you unique?`,
-        guideId: 't6-identity',
-      },
-      {
-        id: 'vibe',
-        label: 'Group vibe / personality',
-        briefLabel: 'Tone',
-        prompt: `What’s the group’s vibe? Pick any that apply.`,
-        type: 'multiChips',
-        options: ['Serious / Professional', 'Fun / Casual', 'Aspirational', 'Irreverent / Playful'],
-        allowCustom: true,
-      },
-      {
-        id: 'history',
-        label: 'Any shared history or inside references?',
-        prompt: 'Any shared story, inside reference, or place that means something to the group?',
-        type: 'text',
-        required: false,
-        placeholder: 'e.g. We all met in Berlin',
-        hint: `Group names with personal meaning create stronger belonging. If there’s a shared joke, a founding story, or a place that matters — share it. Participants who know the group well might suggest something that hits differently.`,
-      },
-      {
-        id: 'namesConsidered',
-        label: 'Names you’ve floated',
-        prompt: 'Any names the group has already tried on, kept or rejected?',
-        type: 'textarea',
-        rows: 2,
-        required: false,
-        placeholder: 'e.g. We almost went with The Committee, too stiff. Half of us still like Thursday Club.',
-        hint: `Most groups arrive with a few half-names already in the air. Share them, including the rejects and why they missed. It gives participants a head start on your taste and stops them re-suggesting what you’ve already ruled out.`,
-      },
-      {
-        id: 'avoidNames',
-        label: 'Names to avoid',
-        prompt: 'Any names that are off-limits or already taken?',
-        type: 'textarea',
-        rows: 2,
-        required: false,
-        placeholder: 'e.g. Another crew at work already goes by The Regulars.',
-        hint: `If a name is claimed by another group in your orbit, or just banned by popular vote, say so here.`,
-      },
-    ],
+    questions: somethingElseQuestions('t6'),
   },
 
   // ── p1 · Baby name ──
+  // 2026-09-28: rebuilt to the client's 12-question set (Mark's doc).
+  // Prompts are his wording. Hints carry over where the question survived;
+  // new ones are marked [proposed] for Maria's sign-off. No required
+  // opener here, same as before (the due date leads).
   p1: {
     label: 'Baby name',
     suggestedDeadlineDays: 7,
     questions: [
-      {
-        id: 'projectSummary',
-        label: 'About this',
-        prompt: 'Tell us about the baby — anything that might help shape the name.',
-        type: 'textarea',
-        rows: 3,
-        required: true,
-        placeholder: `e.g. First baby, a girl, due in March. We want something timeless but not in this year’s top 100, and ideally something that travels well across our two families’ languages.`,
-      },
-
       {
         id: 'dueDate',
         briefLabel: 'Due date',
@@ -1099,21 +1201,28 @@ export const BRIEF_QUESTIONS = {
         id: 'gender',
         briefLabel: 'Gender',
         label: 'Do you know the gender?',
-        prompt: 'Do you know the gender — or is it a surprise?',
+        prompt: 'Do you know the gender, or is it a surprise?',
         type: 'chips',
         options: ['Boy', 'Girl', 'Surprise', 'Prefer not to say'],
         hint: `If surprise, people can suggest both boy and girl names. You pick after baby arrives. We’ll keep all submissions organized.`,
       },
-
       {
         id: 'lastName',
-        label: 'Last name (optional — helps test name flow)',
-        prompt: 'What will be the baby’s last name?',
+        label: 'Last name (and middle name, if decided)',
+        prompt: 'Last name it needs to work with (and any middle name already decided)?',
         type: 'text',
         required: false,
-        placeholder: 'e.g. Johnson, Park, Martinez',
+        placeholder: 'e.g. Johnson. Or: Rose Martinez, if the middle name is set',
         hint: `A proposed baby name should always be considered with the last name to make sure it flows naturally and doesn’t create unintended initials, associations, or unfortunate combinations. Also, long last names often pair better with short first names and vice-versa.`,
         guideId: 'p1-science',
+      },
+      {
+        id: 'siblingNames',
+        label: 'Sibling names',
+        prompt: 'What are the sibling names, if any, so entries fit as a set without being matchy?',
+        type: 'text',
+        required: false,
+        placeholder: 'e.g. Big sister is Clara, big brother is Theo',
       },
       {
         id: 'heritage',
@@ -1122,7 +1231,7 @@ export const BRIEF_QUESTIONS = {
         type: 'text',
         required: false,
         placeholder: 'e.g. Irish and Japanese',
-        hint: `Names carry cultural weight. Sharing heritage helps participants suggest names that honor your roots — or names that work across cultures if that’s important to you. It also helps avoid names that mean something unfortunate in languages you’re connected to.`,
+        hint: `Names carry cultural weight. Sharing heritage helps participants suggest names that honor your roots, or names that work across cultures if that’s important to you. It also helps avoid names that mean something unfortunate in languages you’re connected to.`,
       },
       {
         id: 'lengthPref',
@@ -1131,33 +1240,26 @@ export const BRIEF_QUESTIONS = {
         prompt: 'Do you prefer short names, longer names (which may have more nickname options), or something in between?',
         type: 'chips',
         options: ['Short (1-2 syllables)', 'Medium (2-3 syllables)', 'Long (3+ syllables)', 'No preference'],
-        hint: `Short names (Ava, Max, Zoe) are easy to say and remember, while longer names (Alexander, Genevieve) can offer more nickname possibilities. Think about how the name might be used at school, at work, and later in life—and whether you like having different versions to choose from.`,
+        hint: `Short names (Ava, Max, Zoe) are easy to say and remember, while longer names (Alexander, Genevieve) can offer more nickname possibilities. Think about how the name might be used at school, at work, and later in life, and whether you like having different versions to choose from.`,
         guideId: 'p1-lifetime',
       },
       {
-        id: 'nicknamePreference',
-        label: 'Nickname-friendly?',
-        prompt: 'Do you want a name with a built-in nickname, or one used in full?',
+        id: 'familiarity',
+        label: 'How familiar should the name be?',
+        prompt: 'How familiar should the name be?',
         type: 'chips',
-        options: ['Yes — should have a natural nickname', 'No — use the full name only', 'Flexible either way'],
-        hint: `Some parents want only the full name used (no “Rob” for Robert, no “Liz” for Elizabeth). Others want a formal name with a built-in nickname. A few want something that can’t be shortened. This shapes which names participants should suggest.`,
+        options: ['Popular', 'Familiar but uncommon', 'Rare', 'No preference'],
+        hint: `Popular: a name many people know and use. Familiar but uncommon: recognizable but not heard every day. Rare: a name few people are likely to share.`, // [Mark's definitions]
       },
       {
-        id: 'avoidInitials',
-        label: 'Initials to avoid',
-        prompt: 'Any initial combinations to avoid?',
-        type: 'text',
+        id: 'personalityPath',
+        briefLabel: 'Personality or path the name should suggest',
+        label: 'Personality or path',
+        prompt: 'Should the name suggest a particular personality or path, creative, adventurous, ambitious, or feel open to whoever your child becomes? If the former, please state the type of personality or profession that comes to mind.',
+        type: 'textarea',
+        rows: 2,
         required: false,
-        placeholder: `e.g. Avoid initials “E.D.” or anything that spells something unfortunate`,
-        hint: `The initials test. “ASS”, “DIE”, “FAT” — people have been caught off guard. Participants who know the last name can avoid unfortunate combinations. Share if there are initial sequences to avoid.`,
-      },
-      {
-        id: 'traditions',
-        label: 'Family naming traditions',
-        prompt: 'Any family naming traditions to honor?',
-        type: 'text',
-        required: false,
-        placeholder: `e.g. First child always has the father’s name as middle name, names starting with “M” for tradition...`,
+        placeholder: 'e.g. Something with a creative, artistic feel. Or: open, we don’t want to steer it.',
       },
       {
         id: 'exploreDirections',
@@ -1170,7 +1272,7 @@ export const BRIEF_QUESTIONS = {
       {
         id: 'avoidDirections',
         label: 'Anything to avoid?',
-        prompt: 'Is there anything folks should specifically avoid, like names that start with a certain letter to avoid awkward initials, relatives’ names, or anything off the table?',
+        prompt: 'Are there any names, letters, or ideas that you’d like people to avoid? For example, certain initials, names already used in your family, or anything else that’s off the table.',
         type: 'text',
         required: false,
         placeholder: `e.g. Avoid the letter “K”`,
@@ -1179,7 +1281,7 @@ export const BRIEF_QUESTIONS = {
       {
         id: 'namesConsidered',
         label: 'Names you’ve considered',
-        prompt: 'Any names already on your shortlist, or ones you had to rule out?',
+        prompt: 'Any names already on your shortlist, or ones you’ve had to rule out?',
         type: 'textarea',
         rows: 2,
         required: false,
@@ -1190,86 +1292,111 @@ export const BRIEF_QUESTIONS = {
   },
 
   // ── p2 · Pet name ──
+  // 2026-09-28: rebuilt to the client's 10-question set (Mark's doc).
+  // Kind + breed is one free-text answer (his wording); the naming-style
+  // question keeps chips so the brief can expand each pick. petType stays
+  // the required opener. Hints marked [proposed] await Maria's sign-off.
   p2: {
     label: 'Pet name',
     suggestedDeadlineDays: 5,
     questions: [
       {
-        id: 'projectSummary',
-        label: 'About this',
-        prompt: 'Tell us about the pet — personality, looks, anything fun.',
-        type: 'textarea',
-        rows: 3,
-        required: true,
-        placeholder: 'e.g. A 10-week-old female golden retriever puppy. Goofy, sleeps in weird positions, and has a permanent zoomies mode. Will be our first dog.',
-      },
-      {
         id: 'petType',
         briefLabel: 'Kind of pet',
-        label: 'What kind of pet?',
-        prompt: `What kind of pet are you naming?`,
-        type: 'chips',
-        options: ['Dog', 'Cat', 'Bird', 'Reptile', 'Rabbit / Small Animal', 'Fish / Aquatic', 'Other'],
-        describeOption: 'Other',
-        describePlaceholder: 'e.g. Ferret, horse, tortoise',
+        label: 'Kind of animal and breed',
+        prompt: 'What kind of animal is your pet, and what breed or mix?',
+        type: 'text',
         required: true,
+        placeholder: 'e.g. Dog, golden retriever. Or: cat, tabby mix',
       },
       {
-        id: 'breed',
-        label: 'Breed, looks, and personality',
-        prompt: 'Describe their breed, appearance, and personality',
+        id: 'origin',
+        label: 'How they came to you',
+        prompt: 'How did they come to you? Rescue story, breeder, found on the street?',
         type: 'textarea',
         rows: 2,
         required: false,
-        placeholder: 'e.g. Golden retriever puppy, goofy and permanently mid-zoomie',
-        hint: `Breed, looks, and personality all spark names. A Chihuahua named “Bruno” is funny; a Great Dane named “Peanut” is funnier. And the name should fit the animal: “Chaos” for a hyperactive dog, “Professor” for a dignified cat.`,
-        guideId: 'p2-personality',
+        placeholder: 'e.g. Adopted from the county shelter after she followed my sister home',
+      },
+      {
+        id: 'sexAge',
+        briefLabel: 'Sex and age',
+        label: 'Sex and age',
+        prompt: 'Male or female? Age?',
+        type: 'text',
+        required: false,
+        placeholder: 'e.g. Female, 10 weeks',
+      },
+      {
+        id: 'breed',
+        briefLabel: 'Their look',
+        label: 'Their look',
+        prompt: 'Describe their look: color, markings, size, anything distinctive.',
+        type: 'textarea',
+        rows: 2,
+        required: false,
+        placeholder: 'e.g. Small, all black except one white sock, ears too big for her head',
       },
       {
         id: 'petPersonality',
-        label: 'Describe their personality',
-        prompt: `Describe their personality in a sentence or two.`,
+        briefLabel: 'Personality',
+        label: 'Personality',
+        prompt: 'In a sentence or two, describe the pet’s personality.',
         type: 'textarea',
         rows: 2,
         required: false,
         placeholder: `“Chaotic gremlin energy” or “Regal and aloof” or “Timid but playful once comfortable”`,
-        hint: `The name should fit the animal. “Chaos” works for a hyperactive dog. “Professor” works for a dignified cat. Share what you’ve noticed — their quirks, habits, or early personality signals — and let participants match the name to the animal.`,
+        hint: `The name should fit the animal. “Chaos” works for a hyperactive dog. “Professor” works for a dignified cat. Share what you’ve noticed, their quirks, habits, or early personality signals, and let participants match the name to the animal.`,
+        guideId: 'p2-personality',
       },
       {
-        id: 'callNamePref',
-        label: 'Call name preference',
-        prompt: 'How short does the call name need to be?',
-        type: 'chips',
-        options: ['Short call name (1-2 syllables)', 'Medium (2-3 syllables)', 'Longer / regal name', 'No preference'],
-        hint: `The call name principle: dogs especially respond best to names ending in a vowel sound (Bella, Benny, Luna) because they’re acoustically distinct. Short names are easier to shout across a park. Longer names work when you mostly use them at home.`,
-      },
-      {
-        id: 'nameTone',
-        label: 'Tone / naming style',
-        briefLabel: 'Tone',
-        prompt: 'What naming tone fits them? Pick any that apply.',
-        type: 'multiChips',
-        options: ['Dignified / Regal', 'Playful / Funny', 'Cute / Sweet', 'Tough / Strong', 'No preference'],
-        allowCustom: true,
-        guideId: 'p2-callname',
-      },
-      {
-        id: 'avoidNames',
-        label: 'Any names to avoid?',
-        prompt: 'Any names already taken or off-limits?',
-        type: 'text',
-        required: false,
-        placeholder: `e.g. Names already taken`,
-      },
-      {
-        id: 'namesConsidered',
-        label: 'Names you’ve considered',
-        prompt: 'Any names you’ve already considered or almost used?',
+        id: 'otherPets',
+        briefLabel: 'Other pets in the house',
+        label: 'Other pets',
+        prompt: 'Give the names of other pets in the house, past or present, and say whether you want something similar or different.',
         type: 'textarea',
         rows: 2,
         required: false,
-        placeholder: 'e.g. We keep coming back to Miso but it doesn’t feel quite right. Rejected Rex, too common.',
-        hint: `The names you’ve circled and the ones you’ve rejected are both signals. Share your shortlist so far and what stopped each one; participants will aim closer on the first try.`,
+        placeholder: 'e.g. Our old dog was Biscuit. Something in the same food-name spirit would be nice.',
+      },
+      {
+        id: 'nameTone',
+        briefLabel: 'Kind of name that would suit them',
+        label: 'Kind of name',
+        prompt: 'What kind of name would suit your pet? Pick any that apply.',
+        type: 'multiChips',
+        options: ['A human name', 'A classic pet name', 'Food or an object', 'A pop culture reference', 'Regal', 'Silly'],
+        allowCustom: true,
+        hint: `Think about the style you’re drawn to: a human name, a classic pet name, something inspired by food or an object, a pop culture reference, a name that feels regal or silly, and so forth.`, // [Mark's wording]
+        guideId: 'p2-callname',
+      },
+      {
+        id: 'quirks',
+        label: 'Quirks and habits',
+        prompt: 'Any quirks, habits, or funny things they do that a name could riff on?',
+        type: 'textarea',
+        rows: 2,
+        required: false,
+        placeholder: 'e.g. Sleeps upside down. Steals exactly one sock a day.',
+      },
+      {
+        id: 'interests',
+        label: 'Household interests and inside jokes',
+        prompt: 'Any interests, or inside jokes in the household the name could draw on?',
+        type: 'textarea',
+        rows: 2,
+        required: false,
+        placeholder: 'e.g. We’re big Star Wars people, and everyone in the house plays chess',
+      },
+      {
+        id: 'admiredNames',
+        label: 'Pet names you’ve loved',
+        prompt: 'What are a few pet names you’ve loved (yours or anyone’s), and why?',
+        type: 'textarea',
+        rows: 2,
+        required: false,
+        placeholder: 'e.g. A friend’s cat called Admiral. Grand, and funny on a tiny animal.',
+        hint: `A few reference names tell participants more than a paragraph of description. Say what you like about each one and participants will read the pattern and aim for it.`, // [hint]
       },
     ],
   },
@@ -1368,71 +1495,15 @@ export const BRIEF_QUESTIONS = {
     ],
   },
 
-  // ── p4 · Other personal — no legacy content, t6-style fallback ──
+  // ── p4 · Something else (personal) ──
+  // 2026-09-28: uses the shared "Something else" set with personal
+  // placeholders. Homes, boats, and the rest of the old p3 grab-bag land
+  // here now that the p3 card is retired (its data stays above for old
+  // contests).
   p4: {
     label: 'Something else (personal)',
     suggestedDeadlineDays: 10,
-    questions: [
-      {
-        id: 'projectSummary',
-        briefLabel: 'In short',
-        label: 'About this',
-        prompt: 'What are you naming, and what makes it special?',
-        type: 'textarea',
-        rows: 3,
-        required: true,
-        placeholder: `e.g. Our weekly Saturday brunch crew — 6 friends, 4 years, still unnamed`,
-        guideId: 'p4-generic',
-      },
-      {
-        id: 'groupDesc',
-        label: 'Describe what you are naming',
-        prompt: `In a few sentences, tell people what you’re naming and what makes it special.`,
-        type: 'textarea',
-        rows: 4,
-        required: false,
-        placeholder: `What is this? Who is it for? What makes it special?`,
-        hint: `The more context participants have, the better the names.`,
-        guideId: 'p4-generic',
-      },
-      {
-        id: 'vibe',
-        briefLabel: 'Tone',
-        label: 'Vibe / personality',
-        prompt: 'What vibe should the name carry? Pick any that apply.',
-        type: 'multiChips',
-        options: ['Cozy / Warm', 'Elegant / Sophisticated', 'Funny / Playful', 'Aspirational', 'Not sure'],
-      },
-      {
-        id: 'history',
-        label: 'Any shared story or context?',
-        prompt: 'Any shared story or moment worth naming around?',
-        type: 'text',
-        required: false,
-        placeholder: 'e.g. An old inside joke',
-        guideId: 'p4-collective',
-      },
-      {
-        id: 'namesConsidered',
-        label: 'Names you’ve floated',
-        prompt: 'Any names you’ve already tried on, kept or rejected?',
-        type: 'textarea',
-        rows: 2,
-        required: false,
-        placeholder: 'e.g. We tried The Brunch Bunch for a week. Too cute. Somebody keeps pushing Sunday Service.',
-        hint: `Most groups arrive with a few half-names already in the air. Share them, including the rejects and why they missed. It gives participants a head start on your taste and stops them re-suggesting what you’ve already ruled out.`,
-      },
-      {
-        id: 'avoidNames',
-        label: 'Names to avoid',
-        prompt: 'Any names that are off-limits or already taken?',
-        type: 'textarea',
-        rows: 2,
-        required: false,
-        placeholder: 'e.g. Please, nothing with “squad” in it.',
-        hint: `If a name is claimed elsewhere in your orbit, or just banned by popular vote, say so here.`,
-      },
-    ],
+    questions: somethingElseQuestions('p4'),
   },
 };
 
@@ -1541,7 +1612,8 @@ export const SHARED_SETTINGS_QUESTIONS = [
 export const INTRO_QUESTION = {
   id: 'intro',
   label: 'Intro to participants',
-  prompt: 'One last thing: write a short intro for your participants. It opens your invitation, so it’s the first thing they read.',
+  // 2026-09-28: wording from the client's settings list (Mark's doc).
+  prompt: 'One last thing: write a short welcome message for your participants. It will appear at the top of their invitation, so it’s your chance to tell them what you’re naming and get them excited to join in.',
   type: 'textarea',
   rows: 4,
   required: true,
@@ -2046,7 +2118,29 @@ export const ARTICLES = {
       ],
       callout: {
         type: 'insight',
-        text: `Don’t wait for one perfect naming idea to appear. Explore different territories first. A great name might come from your music, your story, a shared joke, a place, a favorite food — or two completely unrelated words that simply sound right together.`,
+        text: `Don’t wait for one perfect naming idea to appear. Explore different territories first. A great name might come from your music, your story, a shared joke, a place, a favorite food, or two completely unrelated words that simply sound right together.`,
+      },
+    },
+    // Moved here from ARTICLES.t4 on 2026-09-28 (club folded into "Band or
+    // club"); hangs on the personality question.
+    {
+      id: 't4-belonging',
+      title: 'A Name Is a Membership Signal',
+      readTime: '2 min',
+      icon: 'UsersThree',
+      sections: [
+        {
+          heading: 'Names tell people whether they belong',
+          body: `A group’s name is the first thing a newcomer reads, and it quietly answers “is this for me?” A warm, plain name like “Neighborhood Coffee Club” feels open to anyone; “Voters for Fair Maps” signals a clear cause and the people it’s rallying. Decide who you want to feel invited, and let the name do that work.`,
+        },
+        {
+          heading: 'Inside meaning and outside meaning',
+          body: `The best group names often work on two levels: they mean something to the people already in the group, and they still make sense to someone hearing it for the first time. “The Thursday Table” means a specific weekly dinner to its members, and reads as friendly and low-key to everyone else. An inside reference is great, as long as it doesn’t lock newcomers out.`,
+        },
+      ],
+      callout: {
+        type: 'insight',
+        text: `Say the name out loud as if you’re inviting someone to join. If it sounds welcoming and easy to repeat, it will do a lot of quiet recruiting for you.`,
       },
     },
   ],
@@ -2149,26 +2243,8 @@ export const ARTICLES = {
         text: `A group name doesn’t have to last forever. If what you do changes, the name can change with it. Aim for something that feels right for the people in the room today.`,
       },
     },
-    {
-      id: 't4-belonging',
-      title: 'A Name Is a Membership Signal',
-      readTime: '2 min',
-      icon: 'UsersThree',
-      sections: [
-        {
-          heading: 'Names tell people whether they belong',
-          body: `A group’s name is the first thing a newcomer reads, and it quietly answers “is this for me?” A warm, plain name like “Neighborhood Coffee Club” feels open to anyone; “Voters for Fair Maps” signals a clear cause and the people it’s rallying. Decide who you want to feel invited, and let the name do that work.`,
-        },
-        {
-          heading: 'Inside meaning and outside meaning',
-          body: `The best group names often work on two levels: they mean something to the people already in the group, and they still make sense to someone hearing it for the first time. “The Thursday Table” means a specific weekly dinner to its members, and reads as friendly and low-key to everyone else. An inside reference is great, as long as it doesn’t lock newcomers out.`,
-        },
-      ],
-      callout: {
-        type: 'insight',
-        text: `Say the name out loud as if you’re inviting someone to join. If it sounds welcoming and easy to repeat, it will do a lot of quiet recruiting for you.`,
-      },
-    },
+    // t4-belonging moved to ARTICLES.t2 on 2026-09-28: the club category
+    // folded into "Band or club" and guides resolve strictly per segment.
   ],
 
   // ── t5 · Gaming group ──
@@ -2665,15 +2741,15 @@ export const CUT_QUESTIONS = {
   b3: [],
   b4: [],
   b5: [],
-  t1: ['teamColors', 'chantable'], // 2026-08-17: chantable stays cut (its guide covers it via the personality Q); teamColors folded into the geography question's prompt/hint
-  t2: [], // 2026-08-17: nameType + searchability removed from the band set (client: no legal / searchability)
-  t3: ['platform', 'tone'], // 2026-08-17 client: fold "where it lives" into the concept Q; drop tone/format + its duplicate guide
-  t4: ['acronymPref', 'mission', 'community', 'longevity'], // 2026-08-17 rescope to club/civic — no mission / served / 50-year longevity
+  t1: [], // 2026-09-28: rebuilt to the client's 11-question set; nothing left to cut
+  t2: [], // 2026-09-28: rebuilt as Band or club; nothing left to cut
+  t3: ['platform', 'tone'], // 2026-08-17 client: fold "where it lives" into the concept Q; drop tone/format + its duplicate guide (card retired 2026-09-28)
+  t4: ['acronymPref', 'mission', 'community', 'longevity'], // 2026-08-17 rescope to club/civic (card retired 2026-09-28, folded into t2)
   t5: ['platform'],
   t6: [],
-  p1: ['traditions', 'avoidInitials', 'projectSummary'],
-  p2: ['callNamePref', 'projectSummary', 'petPersonality'],
-  p3: ['projectSummary'],
+  p1: [], // 2026-09-28: rebuilt to the client's 12-question set; nothing left to cut
+  p2: [], // 2026-09-28: rebuilt to the client's 10-question set; nothing left to cut
+  p3: ['projectSummary'], // card retired 2026-09-28 (folded into p4)
   p4: [],
 };
 
@@ -2695,20 +2771,15 @@ export const MERGE_QUESTIONS = {
   b4: [{ keepId: 'projectSummary', merged: ['companyDesc'] }],
   // b5 rewritten 2026-08-18 (client business set) — no groupDesc to merge.
   t3: [{ keepId: 'projectSummary', merged: ['showDesc'] }],
-  t6: [{ keepId: 'projectSummary', merged: ['groupDesc'] }],
-  p4: [{ keepId: 'projectSummary', merged: ['groupDesc'] }],
+  // t6 / p4 groupDesc merges removed 2026-09-28: both segments now use the
+  // shared "Something else" set, which has no groupDesc.
 
   // b2 mirrors b1 since 2026-07-13 — its old prodDesc/differentiator merge
   // no longer applies (those ids don't exist in the mirrored set).
   // t2's old nameType/searchability merge removed 2026-08-17 — both questions
   // were dropped from the band set (client: no legal / searchability questions).
-  p1: [
-    {
-      keepId: 'lengthPref',
-      merged: ['nicknamePreference'],
-      newPrompt: 'Do you prefer short names, longer names (which may have more nickname options), or something in between?',
-    },
-  ],
+  // p1's lengthPref/nicknamePreference merge removed 2026-09-28: the merged
+  // wording is now lengthPref's own prompt and nicknamePreference is gone.
 };
 
 // ────────────────────────────────────────────────────────────────

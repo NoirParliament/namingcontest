@@ -37,6 +37,9 @@ export const BRIEF_EXPANSIONS = {
     'Suggestive': 'hints at an idea, feeling, or benefit without spelling it out, like Amazon or Kindle.', // [sublabel]
     'Direct and clear': 'says plainly what it is.', // [sublabel]
     'Evocative and suggestive': 'hints at an idea or feeling without spelling it out.', // [sublabel]
+    // Shared "Something else" set (2026-09-28)
+    'Describes directly': 'says plainly what it is.', // [sublabel]
+    'Abstract or metaphoric': 'hints at an idea or feeling without spelling it out.', // [sublabel]
   },
 
   // b3 project
@@ -62,6 +65,12 @@ export const BRIEF_EXPANSIONS = {
     'Pride-Based': 'names rooted in place, community, or identity that create pride and belonging.', // [hint]
     'Fun / Playful': 'playful names, a natural fit for youth and rec teams.', // [hint]
     'Underdog / Gritty': 'names that make gritty a badge of honor, in the Mighty Ducks tradition.', // [lore]
+    // 2026-09-28: the question is now a spectrum, "Titans" to "Ball Busters"
+    // (client wording). The old labels above stay for contests that picked them.
+    'Mostly serious': 'a real team name with an edge to it, more Titans than joke.', // [proposed]
+    'Somewhere in between': 'a name that can be chanted straight or with a grin.', // [proposed]
+    'Mostly playful': 'fun first, but still a name that works on a jersey.', // [proposed]
+    'Full joke': 'Ball Busters territory: the laugh is the point.', // [client example]
   },
 
   // t1 sports territories (grounded in the OKC Thunder / Seattle Kraken
@@ -113,6 +122,14 @@ export const BRIEF_EXPANSIONS = {
     'Cozy / Warm': 'warm, familiar names that feel like home.', // [proposed]
     'Elegant / Sophisticated': 'polished names with a bit of occasion to them.', // [proposed]
     'Funny / Playful': 'names that get a laugh on the first read.', // [proposed]
+    // Shared "Something else" tone chips (2026-09-28, client wording)
+    'Funny': 'names that get a laugh on the first read.', // [proposed]
+    'Serious': 'names with weight, the kind that hold up in any room.', // [proposed]
+    'Elegant': 'polished names with a bit of occasion to them.', // [proposed]
+    'Clever': 'names with a twist you notice on the second read.', // [proposed]
+    'Warm': 'warm, familiar names that feel like home.', // [proposed]
+    'Edgy': 'names with attitude, a little sharper than expected.', // [proposed]
+    'Friendly': 'easygoing names that make people feel invited.', // [proposed]
   },
 
   // p2 pet — grounded in the pet hints ("'Professor' works for a dignified
@@ -123,6 +140,14 @@ export const BRIEF_EXPANSIONS = {
     'Tough / Strong': 'big-energy names, the way “Chaos” fits a hyperactive dog.', // [hint]
     'Cute / Sweet': 'soft, sweet names like Bella or Luna.', // [hint examples]
     'Playful / Funny': 'names with a little mischief in them.', // [proposed]
+    // 2026-09-28: the pet question now offers the client's six styles. The
+    // old labels above stay for contests that picked them.
+    'A human name': 'a person’s name on an animal, like Bella, Charlie, or Milo.', // [guide examples]
+    'A classic pet name': 'a name in the long pet tradition, like Buddy, Max, or Luna.', // [guide examples]
+    'Food or an object': 'named for something on a plate or a shelf, like Biscuit, Miso, or Pickles.', // [proposed]
+    'A pop culture reference': 'lifted from a film, a show, a song, or a book.', // [proposed]
+    'Regal': 'stately names for a pet with presence, the way “Professor” suits a dignified cat.', // [hint]
+    'Silly': 'names with a little mischief in them, funnier the smaller the animal.', // [proposed]
   },
 
   // t5 gaming tag structure
@@ -293,7 +318,27 @@ export const PARTICIPANT_LABELS = {
   exploreDirections:  'Anything to specifically explore?',
   avoidDirections:    'Anything to specifically avoid?',
 };
+// The three "Something else" tiers share a question set, so they share
+// these too (2026-09-28).
+const SOMETHING_ELSE_PARTICIPANT_LABELS = {
+  purpose:              'What it does, or is for',
+  newOrReplacing:       'New, or replacing a name?',
+  audience:             'Who the name is for',
+  reflect:              'Something about the host the name should reflect',
+  feeling:              'The feeling it should give',
+  descriptiveEvocative: 'Direct or abstract?',
+  nameTypes:            'Types of names the host likes or wants to avoid',
+  admiredNames:         'Three names the host likes',
+  dislikedNames:        'Three names the host doesn’t like',
+};
 export const PARTICIPANT_LABELS_BY_SUB = {
+  p4: SOMETHING_ELSE_PARTICIPANT_LABELS,
+  t6: SOMETHING_ELSE_PARTICIPANT_LABELS,
+  b5: SOMETHING_ELSE_PARTICIPANT_LABELS,
+  p2: {
+    origin:       'How they came to the family',
+    admiredNames: 'Pet names the host has loved',
+  },
   t4: {
     admiredNames:   'Which organization or group names does the host admire?',
   },
@@ -301,17 +346,23 @@ export const PARTICIPANT_LABELS_BY_SUB = {
     compShows:      'Any show or project names the host admires?',
   },
   t2: {
-    genre:        'What’s the band’s genre and sound?',
-    nameStyle:    'Naming territory',
-    admiredNames: 'Which band names does the host admire?',
+    personalityWords: 'Personality',
+    similarAdmired:   'Similar bands or clubs the host admires, and what their names do well',
+    confusedWith:     'Not to be confused with',
+    references:       'References that feel true to the band or club',
+    admiredNames:     'Three band or club names the host loves',
+    namesConsidered:  'Names already considered and rejected',
   },
   t1: {
-    admiredNames: 'Which team names does the host like?',
-    teamColors:   'Team colors',
-  },
-  b5: {
-    nameConnection: 'Should the name connect to the company or other names?',
-    admiredNames:   'Any names the host has in mind, or admires?',
+    based:            'Where the team is based',
+    audience:         'Who the name is for',
+    localInspiration: 'Local inspiration worth drawing on',
+    teamColors:       'Colors or mascot already decided',
+    personality:      'Intimidating or playful',
+    leagueNames:      'Other teams in the league, liked and not',
+    admiredNames:     'Three team names the host thinks are great',
+    terribleNames:    'Three team names the host thinks are terrible',
+    namesConsidered:  'Names already proposed and rejected',
   },
   b4: {
     currentName: 'Current name',
@@ -359,6 +410,14 @@ export const BRIEF_PARTICIPANT_NOTES = {
   heritage:       'Names that honor these roots, or work across them.', // [hint]
   exploreDirections: 'Lean toward these.', // [proposed]
   avoidDirections:   'Steer clear of these.', // [proposed]
+  // 2026-09-28 question set
+  dislikedNames:     'The opposite of the target.', // [proposed]
+  terribleNames:     'The opposite of the target.', // [proposed]
+  leagueNames:       'Belong in this league without sounding like any of these.', // [proposed]
+  confusedWith:      'Anything close to these is out.', // [proposed]
+  similarAdmired:    'What their names do well is the thing to aim for.', // [proposed]
+  siblingNames:      'Entries should fit alongside these without being matchy.', // [prompt]
+  otherPets:         'Similar or different to these, as the host says.', // [prompt]
 };
 
 export const BRIEF_PARTICIPANT_NOTES_BY_SUB = {
@@ -436,154 +495,111 @@ export function getParticipantNote(questionId, subId) {
 //
 // Any question missing from the map falls into a trailing group, so adding a
 // question to a segment can never silently drop it from the brief.
+// 2026-09-28: section subtitles removed on the client's request (Mark:
+// "Remove 'The basics…' copy… can probably remove that sub-title text in
+// all of the contests"). BriefSectionHead already renders nothing when a
+// section has no `sub`, so the maps just stop carrying one.
+const SOMETHING_ELSE_SECTIONS = [
+  { title: 'About it', icon: 'Sparkle',
+    ids: ['projectSummary', 'purpose', 'newOrReplacing', 'audience', 'reflect'] },
+  { title: 'What the name should do', icon: 'Target',
+    ids: ['vibe', 'feeling', 'descriptiveEvocative', 'nameTypes'] },
+  { title: 'Directions to explore and avoid', icon: 'Compass',
+    ids: ['admiredNames', 'dislikedNames', 'avoidNames', 'customRequirements'] },
+];
+
 export const BRIEF_SECTIONS = {
-  p4: [
-    { title: 'About it', icon: 'Sparkle',
-      sub: 'The basics, and the story behind it',
-      ids: ['projectSummary', 'history'] },
-    { title: 'Directions to explore and avoid', icon: 'Compass',
-      sub: 'The vibe, names already floated, and what to steer clear of',
-      ids: ['vibe', 'namesConsidered', 'avoidNames', 'customRequirements'] },
-  ],
+  // The three "Something else" tiers share one question set, so one map.
+  p4: SOMETHING_ELSE_SECTIONS,
+  t6: SOMETHING_ELSE_SECTIONS,
+  b5: SOMETHING_ELSE_SECTIONS,
+  // p3 card retired 2026-09-28; map kept so old contests still group.
   p3: [
     { title: 'About it', icon: 'House',
-      sub: 'What it is, what makes it special, and where',
       ids: ['namingTarget', 'propDesc', 'location'] },
     { title: 'Directions to explore and avoid', icon: 'Compass',
-      sub: 'The tone to strike, the shortlist so far, and what to steer clear of',
       ids: ['vibe', 'namesConsidered', 'avoidNames'] },
     { title: 'Practical requirements', icon: 'ListChecks',
-      sub: 'Where the name shows up, language, and anything else',
       ids: ['signDisplay', 'languagePref', 'customRequirements'] },
   ],
   p2: [
     { title: 'About the pet', icon: 'PawPrint',
-      sub: 'What kind of pet, and what they’re like',
-      ids: ['petType', 'breed'] },
+      ids: ['petType', 'origin', 'sexAge', 'breed', 'petPersonality', 'otherPets'] },
     { title: 'Directions to explore and avoid', icon: 'Compass',
-      sub: 'The tone, the shortlist so far, and what to steer clear of',
-      ids: ['nameTone', 'namesConsidered', 'avoidNames', 'customRequirements'] },
+      ids: ['nameTone', 'quirks', 'interests', 'admiredNames', 'customRequirements'] },
   ],
   p1: [
     { title: 'About the baby', icon: 'Baby',
-      sub: 'The basics, and the surname the name sits beside',
-      ids: ['dueDate', 'gender', 'lastName'] },
+      ids: ['dueDate', 'gender', 'lastName', 'siblingNames', 'heritage'] },
     { title: 'What the name should do', icon: 'Target',
-      sub: 'Roots to honor, and the shape of the name',
-      ids: ['heritage', 'lengthPref'] },
+      ids: ['lengthPref', 'familiarity', 'personalityPath'] },
     { title: 'Directions to explore and avoid', icon: 'Compass',
-      sub: 'Where to aim, the shortlist so far, and what to steer clear of',
       ids: ['exploreDirections', 'avoidDirections', 'namesConsidered', 'customRequirements'] },
   ],
-  t6: [
-    { title: 'About the group', icon: 'UsersThree',
-      sub: 'What the group is, and the story behind it',
-      ids: ['projectSummary', 'history'] },
-    // Tone leads Directions rather than sitting alone under its own heading,
-    // mirroring p4 (this segment's twin): a one-row section reads as broken.
-    { title: 'Directions to explore and avoid', icon: 'Compass',
-      sub: 'The vibe, names already floated, and what to steer clear of',
-      ids: ['vibe', 'namesConsidered', 'avoidNames', 'customRequirements'] },
-  ],
+  // t4 card retired 2026-09-28 (folded into t2); map kept for old contests.
   t4: [
     { title: 'About the group', icon: 'UsersThree',
-      sub: 'What the group is, where it’s rooted, and its story',
       ids: ['projectSummary', 'orgType', 'localConnection', 'story'] },
     { title: 'Directions to explore and avoid', icon: 'Compass',
-      sub: 'The vibe, the names to match, and what to steer clear of',
       ids: ['vibe', 'admiredNames', 'avoidNames', 'customRequirements'] },
   ],
+  // t3 card retired 2026-09-28 (podcasts go to t6); map kept for old contests.
   t3: [
-    // compShows sits with the concept as taste context so neither section
-    // is a lone row (a one-row section reads as broken).
     { title: 'About the show', icon: 'Microphone',
-      sub: 'The concept, and the show names the host admires',
       ids: ['projectSummary', 'compShows'] },
     { title: 'Directions to explore and avoid', icon: 'Compass',
-      sub: 'The naming territory, and what to steer clear of',
       ids: ['namingDirection', 'avoidNames', 'customRequirements'] },
   ],
   t2: [
-    { title: 'About the band', icon: 'MusicNote',
-      sub: 'The band, its sound, and how it formed',
-      ids: ['projectSummary', 'genre', 'originStory'] },
+    { title: 'About the band or club', icon: 'MusicNote',
+      ids: ['projectSummary', 'personalityWords', 'originStory', 'localConnection'] },
+    { title: 'Names to learn from', icon: 'Sparkle',
+      ids: ['similarAdmired', 'admiredNames', 'namesConsidered'] },
     { title: 'Directions to explore and avoid', icon: 'Compass',
-      sub: 'The naming territory, the names to match, and what to steer clear of',
-      ids: ['nameStyle', 'admiredNames', 'avoidNames', 'customRequirements'] },
+      ids: ['references', 'confusedWith', 'avoidNames', 'customRequirements'] },
   ],
   t1: [
     { title: 'About the team', icon: 'SoccerBall',
-      sub: 'The team, its home turf, and who plays',
-      ids: ['projectSummary', 'sportLeague', 'ageGroup', 'geography'] },
+      ids: ['projectSummary', 'based', 'audience', 'localInspiration', 'teamColors'] },
     { title: 'What the name should do', icon: 'Target',
-      sub: 'The personality and the territories to explore',
-      ids: ['personality', 'namingDirection'] },
+      ids: ['personality', 'leagueNames'] },
     { title: 'Directions to explore and avoid', icon: 'Compass',
-      sub: 'The names to match, and what to steer clear of',
-      ids: ['admiredNames', 'avoidNames', 'customRequirements'] },
-  ],
-  b5: [
-    { title: 'About it', icon: 'Sparkle',
-      sub: 'What it is, where it shows up, and who it’s for',
-      ids: ['projectSummary', 'nameUsage', 'audience'] },
-    { title: 'What the name should do', icon: 'Target',
-      sub: 'The message, the style, and how it relates to other names',
-      ids: ['nameCommunicate', 'descriptiveEvocative', 'nameConnection'] },
-    { title: 'Directions to explore and avoid', icon: 'Compass',
-      sub: 'The taste to match, and what to steer clear of',
-      ids: ['admiredNames', 'avoidNames'] },
-    { title: 'Practical requirements', icon: 'ListChecks',
-      sub: 'Length, spelling, and anything non-negotiable',
-      ids: ['practicalReqs', 'customRequirements'] },
+      ids: ['admiredNames', 'terribleNames', 'namesConsidered', 'avoidNames', 'customRequirements'] },
   ],
   b1: [
     { title: 'About the company', icon: 'Buildings',
-      sub: 'What it is, who it’s for, and what sets it apart',
       ids: ['namingTarget', 'projectSummary'] },
     { title: 'What the name should do', icon: 'Target',
-      sub: 'The message and personality it should carry',
       ids: ['nameCommunicate', 'brandPersonality', 'nameStyles', 'descriptiveEvocative', 'otherLanguages'] },
     { title: 'Directions to explore and avoid', icon: 'Compass',
-      sub: 'The taste to match, and what’s off the table',
-      ids: ['includeAvoid', 'admiredNames'] },
+      ids: ['includeAvoid', 'admiredNames', 'namesConsidered'] },
     { title: 'Practical requirements', icon: 'ListChecks',
-      sub: 'Length, spelling, domains, and anything non-negotiable',
       ids: ['practicalReqs', 'customRequirements'] },
   ],
   b3: [
     { title: 'About the project', icon: 'Flag',
-      sub: 'The goal, who it affects, and how long it runs',
       ids: ['projectSummary', 'projDesc', 'projDuration'] },
     { title: 'What the name should do', icon: 'Target',
-      sub: 'How functional or evocative the name should feel',
       ids: ['projNameType'] },
     { title: 'Directions to explore and avoid', icon: 'Compass',
-      sub: 'The names that landed, and what to steer clear of',
       ids: ['admiredNames', 'includeAvoid', 'customRequirements'] },
   ],
   b4: [
     { title: 'About the rebrand', icon: 'ArrowsClockwise',
-      sub: 'The company today, and why it’s changing',
       ids: ['projectSummary', 'currentName', 'rebrandReason', 'companyDesc'] },
     { title: 'What the name should do', icon: 'Target',
-      sub: 'The style, and who it has to win over',
       ids: ['namingStyle', 'targetAudience'] },
     { title: 'Directions to explore and avoid', icon: 'Compass',
-      sub: 'Who to stand apart from, and what to keep or drop',
       ids: ['competitors', 'keepOrLeave', 'customRequirements'] },
   ],
   b2: [
     { title: 'About the product', icon: 'Package',
-      sub: 'What it is, who it’s for, and the family it joins',
       ids: ['projectSummary', 'brandFamily', 'productLine', 'namingConventions', 'pairedWithCompany'] },
     { title: 'What the name should do', icon: 'Target',
-      sub: 'The message it should carry, and the places it has to work',
       ids: ['featuresBenefits', 'nameUsage', 'nameStyles', 'descriptiveEvocative', 'otherLanguages'] },
     { title: 'Directions to explore and avoid', icon: 'Compass',
-      sub: 'The taste to match, and what’s off the table',
-      ids: ['includeAvoid', 'admiredNames'] },
+      ids: ['includeAvoid', 'admiredNames', 'namesConsidered'] },
     { title: 'Practical requirements', icon: 'ListChecks',
-      sub: 'Length, spelling, domains, and anything non-negotiable',
       ids: ['practicalReqs', 'customRequirements'] },
   ],
 };

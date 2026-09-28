@@ -16,28 +16,32 @@ export const TONES = {
 // Per-tier labels + sub-segment options. Icons reference Phosphor names
 // resolved at render-time so this data file is import-light.
 export const SUB_SEGMENTS = {
+  // 2026-09-28 client decision (Mark's doc): three cards per tier, so every
+  // tier follows the Business model (two specific categories + Something
+  // else). Retired cards are commented out (reversible); their question
+  // sets, guides, and themes stay in the data files so old contests render.
   personal: {
     label: 'personal',
     options: [
-      { id: 'p1', icon: 'Baby',          tone: TONES.pink,       title: 'New baby',                       body: "The most exciting naming you’ll ever do." },
-      { id: 'p2', icon: 'PawPrint',      tone: TONES.butter,     title: 'Pet',                            body: 'Dogs, cats, horses, the lot.' },
-      { id: 'p3', icon: 'House',         tone: TONES.mint,       title: 'Home, WiFi network, boat, and more', body: 'Holiday cottage, boat, or anything in between.' },
-      { id: 'p4', icon: 'PencilSimple',  tone: TONES.periwinkle, title: 'Something else',                   body: 'A group chat, a girls’ weekend, a friend group, anything that needs a name.' },
+      { id: 'p1', icon: 'Baby',          tone: TONES.pink,       title: 'New baby',       body: "The most exciting naming you’ll ever do." },
+      { id: 'p2', icon: 'PawPrint',      tone: TONES.butter,     title: 'Pet',            body: 'Dogs, cats, horses, the lot.' },
+      // { id: 'p3', icon: 'House',         tone: TONES.mint,       title: 'Home, boat, and more', body: 'Holiday cottage, boat, or anything in between.' },
+      { id: 'p4', icon: 'PencilSimple',  tone: TONES.periwinkle, title: 'Something else', body: 'A home, a boat, a group chat, a girls’ weekend, anything that needs a name.' },
     ],
   },
   group: {
     label: 'group',
     options: [
-      { id: 't1', icon: 'SoccerBall',    tone: TONES.mint,       title: 'Sports team',                            body: 'Local league, school squad, recreational team.' },
-      { id: 't2', icon: 'MusicNote',     tone: TONES.lavender,   title: 'Band or music group',                    body: 'Whatever the genre.' },
-      { id: 't3', icon: 'Microphone',    tone: TONES.sky,        title: 'Podcast, channel, or creative project',  body: 'Audio, video, or anything in between.' },
-      { id: 't4', icon: 'GraduationCap', tone: TONES.blush,      title: 'Club or civic group',                    body: 'A chess club, a neighborhood group, a civic cause.' },
+      { id: 't1', icon: 'SoccerBall',    tone: TONES.mint,       title: 'Team',           body: 'Local league, school squad, recreational team.' },
+      { id: 't2', icon: 'MusicNote',     tone: TONES.lavender,   title: 'Band or club',   body: 'Whatever the genre, whatever brings you together.' },
+      // { id: 't3', icon: 'Microphone',    tone: TONES.sky,        title: 'Podcast, channel, or creative project',  body: 'Audio, video, or anything in between.' },
+      // { id: 't4', icon: 'GraduationCap', tone: TONES.blush,      title: 'Club or civic group',                    body: 'A chess club, a neighborhood group, a civic cause.' },
       // 2026-08-17 client decision (Maria/Mark): drop the Gaming Group
       // category — "too many Groups; roll it into Sports Team or Club.
       // We can always add this later." Card commented out (reversible);
       // t5's question set + guides stay in the data files.
       // { id: 't5', icon: 'GameController',tone: TONES.butter,     title: 'A gaming group',                           body: 'Team, guild, or clan.' },
-      { id: 't6', icon: 'PencilSimple',  tone: TONES.periwinkle, title: 'Something else',                           body: 'A group chat, a friend group, a shared tradition, anything that needs a name.' },
+      { id: 't6', icon: 'PencilSimple',  tone: TONES.periwinkle, title: 'Something else', body: 'A podcast, a group chat, a friend group, a shared tradition, anything that needs a name.' },
     ],
   },
   business: {
