@@ -12293,14 +12293,29 @@ button.v4-exit {
 .v4-cal-row-value { color: var(--v4-fg); font-weight: 600; white-space: nowrap; }
 .v4-cal-row-value b { font-weight: 700; }
 .v4-cal-row-pending { color: var(--v4-muted); font-weight: 500; font-style: italic; }
-.v4-cal-footer-text {
+.v4-cal-picked {
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  line-height: 1.35;
+  margin-top: 10px;
 }
-.v4-cal-footer-text b { color: var(--v4-fg); font-weight: 700; }
-.v4-cal-footer-text i { font-style: italic; }
+.v4-cal-picked-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 2px;
+  border-top: 1px solid var(--v4-faint);
+  font-family: var(--font-text);
+  font-size: 13.5px;
+}
+.v4-cal-picked-label { color: var(--v4-muted); font-weight: 600; }
+.v4-cal-picked-value { color: var(--v4-fg); font-weight: 700; text-align: right; white-space: nowrap; }
+.v4-cal-picked-value i { color: var(--v4-muted); font-weight: 500; }
+.v4-cal-footer { justify-content: flex-end; padding-top: 10px; }
+@media (max-width: 480px) {
+  .v4-cal-picked-row { flex-direction: column; align-items: flex-start; gap: 2px; }
+  .v4-cal-picked-value { text-align: left; white-space: normal; }
+}
 .v4-sched-leg-dur {
   font-weight: 500;
   color: var(--v4-muted);

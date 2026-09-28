@@ -553,13 +553,23 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
             })}
           </div>
         </div>
-        <div className="v4-multichips-footer">
-          <span className="v4-multichips-count v4-cal-footer-text">
-            <span>Submissions open until <b>{fmtDay(subEnd)}</b><span className="v4-sched-leg-dur">{spanLabel(new Date(), subEnd)}</span></span>
-            <span>Voting open until {voteEnd
-              ? <><b>{fmtDay(voteEnd)}</b><span className="v4-sched-leg-dur">{spanLabel(subEnd, voteEnd)}</span></>
-              : <i>tap a day</i>}</span>
-          </span>
+        {/* The picked range in the pills' own words, as full-width rows so
+            it never fights the Done button for space. */}
+        <div className="v4-cal-picked">
+          <div className="v4-cal-picked-row">
+            <span className="v4-cal-picked-label">Submissions open until</span>
+            <span className="v4-cal-picked-value"><b>{fmtDay(subEnd)}</b><span className="v4-sched-leg-dur">{spanLabel(new Date(), subEnd)}</span></span>
+          </div>
+          <div className="v4-cal-picked-row">
+            <span className="v4-cal-picked-label">Voting open until</span>
+            <span className="v4-cal-picked-value">
+              {voteEnd
+                ? <><b>{fmtDay(voteEnd)}</b><span className="v4-sched-leg-dur">{spanLabel(subEnd, voteEnd)}</span></>
+                : <i>tap a day</i>}
+            </span>
+          </div>
+        </div>
+        <div className="v4-multichips-footer v4-cal-footer">
           <button type="button" className="v4-multichips-submit" disabled={!voteEnd} onClick={() => { setEditing(false); setAwaitingEnd(false); }}>
             Done
           </button>
