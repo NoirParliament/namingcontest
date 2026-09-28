@@ -683,8 +683,10 @@ export const BRIEF_QUESTIONS = {
         type: 'textarea',
         rows: 3,
         required: true,
-        placeholder: 'e.g. A Sunday-league 7-a-side football team in the Brookside Adult Rec League Division B. Mostly mates from work who took it more seriously than expected.',
-        hint: `Different sports and leagues have their own naming traditions. Soccer teams might draw on places, animals, colors, or local references. Hockey names often lean into toughness, nature, or weather, while recreational teams can be much more playful. Tell participants what kind of team they’re naming, and they can draw on the conventions that fit, or take the name in a completely different direction.`,
+        placeholder: 'e.g. A Sunday-league 7-a-side team, mostly friends from work',
+        // Maria's hint, shortened (the guide below carries the soccer / hockey /
+        // rec detail). Flag for her sign-off.
+        hint: `Different sports and leagues have their own naming traditions. Tell participants what kind of team this is.`,
         guideId: 't1-anatomy',
       },
       {
