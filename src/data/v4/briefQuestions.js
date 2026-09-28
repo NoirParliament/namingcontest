@@ -167,7 +167,7 @@ const SOMETHING_ELSE_TIERS = {
       projectSummary: 'e.g. A monthly potluck club of eight friends who’ve been meeting since college',
       purpose:        'e.g. Dinner, mostly. And a standing excuse to see each other',
       newOrReplacing: 'e.g. We’ve been “the potluck thing” for a decade. It needs a real name.',
-      audience:       'e.g. The eight of us, plus whoever we invite. For a podcast: listeners finding it in an app',
+      audience:       'e.g. The eight of us, plus friends we invite along',
       reflect:        'e.g. Half of us are Italian-American and everyone competes over the sauce',
       feeling:        'e.g. Warm, a bit competitive',
       nameTypes:      'e.g. Real words over invented ones. Puns are fine if they’re good.',
