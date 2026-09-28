@@ -7,7 +7,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import {
-  ArrowRight, ArrowLeft, CaretLeft, CaretRight, CalendarBlank,
+  ArrowRight, ArrowLeft, CaretLeft, CaretRight,
   // Sub-segment card icons (resolved by name from question.options[].icon)
   Baby, PawPrint, House, PencilSimple,
   SoccerBall, MusicNote, Microphone, GraduationCap, GameController,
@@ -64,7 +64,7 @@ export default function QuestionInput({ question, onSubmit, autoFocus = true, cu
   if (type === 'contestSchedule') return <ContestScheduleInput question={question} onSubmit={onSubmit} />;
   if (type === 'voterTier')      return <VoterTierInput question={question} onSubmit={onSubmit} />;
   if (type === 'toggle')         return <ToggleInput question={question} onSubmit={onSubmit} />;
-  if (type === 'date')           return <DateInput question={question} onSubmit={onSubmit} />;
+  if (type === 'date')           return <DateInput question={question} onSubmit={onSubmit} currentAnswer={currentAnswer} />;
   if (type === 'toggleTextarea') return <ToggleTextareaInput question={question} onSubmit={onSubmit} currentAnswer={currentAnswer} />;
   if (type === 'toggleNameDesc') return <ToggleNameDescInput question={question} onSubmit={onSubmit} currentAnswer={currentAnswer} />;
   if (type === 'brandingBlock')  return <BrandingBlockInput question={question} onSubmit={onSubmit} />;
@@ -702,48 +702,64 @@ function ToggleInput({ question, onSubmit }) {
   );
 }
 
-// ── date (date picker + quick-pick chips) ───────────────────────────
-function DateInput({ question, onSubmit }) {
-  const [value, setValue] = useState('');
-  const inputRef = useRef(null);
+// ── date (single-day calendar) ──────────────────────────────────────
+// Same month grid as the schedule picker so the two calendars look like
+// one component (Matt: the browser's native date field looked out of
+// place next to it). Tap a day, then Continue. Stores "YYYY-MM-DD" like
+// the native input did, so formatDateAnswer and every reader are
+// unchanged. Earliest pick is tomorrow (as before); pages ten months out.
+function DateInput({ question, onSubmit, currentAnswer }) {
+  const [picked, setPicked] = useState(() => fromDayKey(typeof currentAnswer === 'string' ? currentAnswer : null));
+  const today = startOfDay(Date.now());
+  const [month, setMonth] = useState(() => {
+    const d = picked || today;
+    return new Date(d.getFullYear(), d.getMonth(), 1);
+  });
 
-  // Compute the date N days from today as a YYYY-MM-DD string
-  const dateFromOffset = (days) => {
-    const d = new Date();
-    d.setDate(d.getDate() + days);
-    return d.toISOString().slice(0, 10);
-  };
-
-  const handleSubmit = (e) => {
-    e?.preventDefault?.();
-    if (!value) return;
-    onSubmit(value);
-  };
+  const first = new Date(month.getFullYear(), month.getMonth(), 1);
+  const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
+  const cells = [...Array(first.getDay()).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => new Date(month.getFullYear(), month.getMonth(), i + 1))];
+  const canPrev = month > new Date(today.getFullYear(), today.getMonth(), 1);
+  const canNext = month < new Date(today.getFullYear(), today.getMonth() + 10, 1);
+  const fmtFull = (d) => d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
 
   return (
-    <div className="v4-date-block">
-      <form className="v4-input-row v4-date-row" onSubmit={handleSubmit}>
-        <span className="v4-input-icon" aria-hidden="true">
-          <CalendarBlank weight="duotone" size={20} />
+    <div className="v4-sched-block">
+      <div className="v4-cal">
+        <div className="v4-cal-head">
+          <button type="button" className="v4-cal-nav" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))} disabled={!canPrev} aria-label="Previous month">
+            <CaretLeft weight="bold" size={14} />
+          </button>
+          <span className="v4-cal-month">{month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</span>
+          <button type="button" className="v4-cal-nav" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))} disabled={!canNext} aria-label="Next month">
+            <CaretRight weight="bold" size={14} />
+          </button>
+        </div>
+        <div className="v4-cal-grid" role="grid" aria-label={question.label}>
+          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => <span key={`dow-${i}`} className="v4-cal-dow" aria-hidden="true">{d}</span>)}
+          {cells.map((day, i) => {
+            if (!day) return <span key={`blank-${i}`} className="v4-cal-day is-blank" />;
+            const past = day <= today;
+            const isPicked = sameDay(day, picked);
+            const cls = ['v4-cal-day', past && 'is-past', sameDay(day, today) && 'is-today', isPicked && 'is-picked']
+              .filter(Boolean).join(' ');
+            return (
+              <button key={day.toISOString()} type="button" className={cls} disabled={past} onClick={() => setPicked(day)}
+                aria-label={fmtDay(day)} aria-pressed={isPicked}>
+                <span className="v4-cal-num">{day.getDate()}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <div className="v4-multichips-footer v4-date-footer">
+        <span className="v4-multichips-count">
+          {picked ? <b>{fmtFull(picked)}</b> : 'Tap a day'}
         </span>
-        <input
-          ref={inputRef}
-          type="date"
-          className="v4-input v4-input-date"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          min={dateFromOffset(1)}
-          aria-label={question.label}
-        />
-        <button
-          type="submit"
-          className="v4-input-submit"
-          disabled={!value}
-          aria-label="Continue"
-        >
-          <ArrowRight weight="bold" size={18} />
+        <button type="button" className="v4-multichips-submit" disabled={!picked} onClick={() => picked && onSubmit(dayKey(picked))}>
+          Continue <ArrowRight weight="bold" size={14} />
         </button>
-      </form>
+      </div>
     </div>
   );
 }

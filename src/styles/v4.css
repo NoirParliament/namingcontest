@@ -12251,14 +12251,15 @@ button.v4-exit {
 }
 .v4-cal-day.is-blank { cursor: default; }
 .v4-cal-day.is-past { color: rgba(3, 3, 2, 0.28); cursor: default; }
-.v4-cal-day.is-today:not(.is-start):not(.is-end) .v4-cal-num { box-shadow: inset 0 0 0 1.5px rgba(3, 3, 2, 0.35); }
-.v4-cal-day:not(.is-past):not(.is-blank):not(.is-start):not(.is-end):hover .v4-cal-num { background: rgba(3, 3, 2, 0.07); }
+.v4-cal-day.is-today:not(.is-start):not(.is-end):not(.is-picked) .v4-cal-num { box-shadow: inset 0 0 0 1.5px rgba(3, 3, 2, 0.35); }
+.v4-cal-day:not(.is-past):not(.is-blank):not(.is-start):not(.is-end):not(.is-picked):hover .v4-cal-num { background: rgba(3, 3, 2, 0.07); }
 /* Range band: full cell between the two picks; half cell on the inner
    side of each pick so the band meets the circles. */
 .v4-cal-day.is-inrange { background: rgba(3, 3, 2, 0.07); }
 .v4-cal-day.is-start:not(.is-single) { background: linear-gradient(to right, transparent 50%, rgba(3, 3, 2, 0.07) 50%); }
 .v4-cal-day.is-end:not(.is-single) { background: linear-gradient(to left, transparent 50%, rgba(3, 3, 2, 0.07) 50%); }
 .v4-cal-day.is-start:not(.is-single):not(:has(~ .is-inrange, ~ .is-end)) { background: transparent; }
+.v4-cal-day.is-picked .v4-cal-num,
 .v4-cal-day.is-start .v4-cal-num,
 .v4-cal-day.is-end .v4-cal-num {
   background: var(--v4-fg);
@@ -12341,7 +12342,9 @@ button.v4-exit {
     column-gap: 0;
     row-gap: 1px;
   }
-  .v4-sched-leg-value, .v4-sched-leg-dur { white-space: nowrap; }
+  .v4-sched-leg-value, .v4-date-footer { padding-top: 12px; }
+.v4-date-footer b { color: var(--v4-fg); font-weight: 700; font-size: 13px; }
+.v4-sched-leg-dur { white-space: nowrap; }
   /* The length always gets its own line on phones ("Open for 22 days"),
      so every pill has the same three-line shape and no line starts with
      a stray dot. */
