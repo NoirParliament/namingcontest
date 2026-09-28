@@ -120,7 +120,9 @@ function makeWorkingNameQuestion(subSegmentTitle, subId) {
     type: 'creatorIdentity',
     label: 'Working name',
     prompt: `To start with, what should we call you, and this contest?`,
-    placeholder: `A short working title (e.g. “${example}”)`,
+    // The field is already labelled "Contest name"; the example alone fits
+    // on a phone (the full sentence overflowed).
+    placeholder: `e.g. “${example}”`,
     required: true,
     maxLength: 60,
   };
