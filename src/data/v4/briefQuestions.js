@@ -736,7 +736,8 @@ export const BRIEF_QUESTIONS = {
           { id: 'mostly-playful', label: 'Mostly playful',       sublabel: 'Fun first, still a team name' },
           { id: 'full-joke',      label: 'Full joke',            sublabel: 'Ball Busters territory' },
         ],
-        hint: `Personality sets the tone. A team name signals what kind of team you are. An intimidating name like Predators or Raptors projects power and aggression; a name rooted in place, community, or identity can create a different kind of pride and belonging. Playful names can be perfect for youth or rec teams, while a highly competitive team may want more edge. Let your names reflect your team’s personality, audience, and ambitions.`,
+        // Maria's hint, shortened (flag for her sign-off).
+        hint: `Intimidating names like Predators project power; playful ones suit youth and rec teams.`,
         guideId: 't1-chant',
       },
       {
