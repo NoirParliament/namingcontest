@@ -498,6 +498,19 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
   const voteDur = voteEnd ? spanLabel(subEnd, voteEnd) : '';
   const when = (d) => (d.getTime() - Date.now() < MS_DAY && sameDay(d, new Date()) ? fmtClock(d) : fmtDay(d));
 
+  // Recommended schedule (5 days of submissions, 3 of voting, from the
+  // question). Offered under the roadmap as a one-tap reset, only when the
+  // current dates differ from it.
+  const recSubDays = question.subDefault ?? 5;
+  const recVoteDays = question.voteDefault ?? 3;
+  const recSubEnd = endOfDay(Date.now() + recSubDays * MS_DAY);
+  const recVoteEnd = endOfDay(recSubEnd.getTime() + recVoteDays * MS_DAY);
+  const isRecommended = sameDay(subEnd, recSubEnd) && !!voteEnd && sameDay(voteEnd, recVoteEnd);
+  const useRecommended = () => {
+    setEnds({ subEnd: recSubEnd, voteEnd: recVoteEnd });
+    setAwaitingEnd(false);
+  };
+
   // ── Calendar view ───────────────────────────────────────────────────
   if (editing) {
     const pick = (day) => {
@@ -510,12 +523,6 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
         setAwaitingEnd(false);
       }
     };
-    const useRecommended = () => {
-      const s = endOfDay(Date.now() + (question.subDefault ?? 5) * MS_DAY);
-      setEnds({ subEnd: s, voteEnd: endOfDay(s.getTime() + (question.voteDefault ?? 3) * MS_DAY) });
-      setAwaitingEnd(false);
-    };
-
     // Month grid: leading blanks so the 1st lands on its weekday (Sunday first).
     const first = new Date(month.getFullYear(), month.getMonth(), 1);
     const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
@@ -554,7 +561,7 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
               return (
                 <button key={day.toISOString()} type="button" className={cls} disabled={past} onClick={() => pick(day)}
                   aria-label={fmtDay(day)} aria-pressed={isStart || isEnd}>
-                  {day.getDate()}
+                  <span className="v4-cal-num">{day.getDate()}</span>
                 </button>
               );
             })}
@@ -564,9 +571,6 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
           <span><b>Names due</b> {when(subEnd)}</span>
           <span><b>Votes due</b> {voteEnd ? when(voteEnd) : 'tap a day'}</span>
         </div>
-        <button type="button" className="v4-sched-rec-link" onClick={useRecommended}>
-          Use recommended · {question.subDefault ?? 5} days of submissions, {question.voteDefault ?? 3} of voting
-        </button>
         <div className="v4-multichips-footer">
           <button type="button" className="v4-sched-back" onClick={() => { if (voteEnd) { setEditing(false); setAwaitingEnd(false); } }} disabled={!voteEnd}>
             <ArrowLeft weight="bold" size={13} />
@@ -613,6 +617,11 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
         <Leg label="Voting open until" value={when(voteEnd)} dur={voteDur} />
         <Event label="Pick the winner" when="After voting closes" />
       </div>
+      {!isRecommended && (
+        <button type="button" className="v4-sched-rec-link" onClick={useRecommended}>
+          Use recommended · {recSubDays} days of submissions, {recVoteDays} of voting
+        </button>
+      )}
       {mode === 'submit' && (
         <div className="v4-multichips-footer">
           <span className="v4-multichips-count">Tap a date to change it</span>
