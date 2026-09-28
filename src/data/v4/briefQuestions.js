@@ -1649,9 +1649,9 @@ export const INTRO_PLACEHOLDERS = {
   t3: `e.g. We're launching a podcast for first-time founders, and it needs a name people remember.`,
   t4: `e.g. Our Thursday-night chess club has outgrown "the chess club." Help us find a proper name.`,
   t6: `e.g. Our potluck club has been nameless since college. Time to change that.`,
-  b1: `e.g. We're launching a small-batch coffee roaster and need a name that feels warm and confident.`,
+  b1: `e.g. We're launching a small-batch coffee roaster and need a name as good as the coffee. Can't wait to see your ideas.`,
   b2: `e.g. We're naming our new hot sauce, made with fermented local peppers. Bring your boldest ideas.`,
-  b5: `e.g. We're naming our new innovation program. Help us do better than "the program."`,
+  b5: `e.g. Our new innovation program needs a name people will actually want to join. Show us what you've got.`,
 };
 
 export function getIntroQuestionFor(subId) {
