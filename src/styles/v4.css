@@ -1718,6 +1718,36 @@ textarea.v4-input::placeholder {
   animation: v4-bubble-in 0.5s ease-out forwards;
   opacity: 0;
 }
+/* Styled date field: a button that reads like the text input it sits in,
+   opening a dropdown calendar (same grid as the schedule picker). */
+.v4-date-block { position: relative; }
+.v4-date-field {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  padding: 8px 4px;
+  text-align: left;
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--v4-fg);
+  cursor: pointer;
+}
+.v4-date-field.is-empty { color: var(--v4-muted); font-weight: 400; }
+.v4-date-field:focus-visible { outline: 2px solid var(--v4-fg); outline-offset: 2px; border-radius: 8px; }
+.v4-date-pop {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 30;
+  width: min(320px, 100%);
+  filter: drop-shadow(0 12px 28px rgba(3, 3, 2, 0.16));
+}
+.v4-date-pop.is-up { top: auto; bottom: calc(100% + 6px); }
+.v4-date-pop .v4-cal { padding: 10px 10px 8px; }
+.v4-date-pop .v4-cal-day { height: 34px; }
+.v4-date-pop .v4-cal-num { width: 30px; height: 30px; }
 .v4-date-row {
   padding: 6px 6px 6px 16px;
 }
@@ -12342,9 +12372,7 @@ button.v4-exit {
     column-gap: 0;
     row-gap: 1px;
   }
-  .v4-sched-leg-value, .v4-date-footer { padding-top: 12px; }
-.v4-date-footer b { color: var(--v4-fg); font-weight: 700; font-size: 13px; }
-.v4-sched-leg-dur { white-space: nowrap; }
+  .v4-sched-leg-value, .v4-sched-leg-dur { white-space: nowrap; }
   /* The length always gets its own line on phones ("Open for 22 days"),
      so every pill has the same three-line shape and no line starts with
      a stray dot. */

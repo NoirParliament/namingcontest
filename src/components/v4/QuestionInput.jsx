@@ -7,7 +7,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import {
-  ArrowRight, ArrowLeft, CaretLeft, CaretRight,
+  ArrowRight, ArrowLeft, CaretLeft, CaretRight, CalendarBlank,
   // Sub-segment card icons (resolved by name from question.options[].icon)
   Baby, PawPrint, House, PencilSimple,
   SoccerBall, MusicNote, Microphone, GraduationCap, GameController,
@@ -702,64 +702,107 @@ function ToggleInput({ question, onSubmit }) {
   );
 }
 
-// ── date (single-day calendar) ──────────────────────────────────────
-// Same month grid as the schedule picker so the two calendars look like
-// one component (Matt: the browser's native date field looked out of
-// place next to it). Tap a day, then Continue. Stores "YYYY-MM-DD" like
-// the native input did, so formatDateAnswer and every reader are
+// ── date (styled date field + dropdown calendar) ────────────────────
+// Looks and behaves like a browser date input: one field showing the
+// date; clicking it opens a small calendar under it (the schedule
+// picker's month grid, so the two look like one component); picking a
+// day fills the field and closes the calendar; the arrow submits.
+// Stores "YYYY-MM-DD" like the native input did, so every reader is
 // unchanged. Earliest pick is tomorrow (as before); pages ten months out.
 function DateInput({ question, onSubmit, currentAnswer }) {
   const [picked, setPicked] = useState(() => fromDayKey(typeof currentAnswer === 'string' ? currentAnswer : null));
+  const [open, setOpen] = useState(false);
+  // Opens upward when there isn't room below (the field often sits at the
+  // bottom of the chat), the way a native picker flips.
+  const [openUp, setOpenUp] = useState(false);
+  const wrapRef = useRef(null);
   const today = startOfDay(Date.now());
   const [month, setMonth] = useState(() => {
     const d = picked || today;
     return new Date(d.getFullYear(), d.getMonth(), 1);
   });
 
+  // Close on an outside click or Esc, like a native picker.
+  useEffect(() => {
+    if (!open) return undefined;
+    const onDown = (e) => { if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false); };
+    const onKey = (e) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
   const first = new Date(month.getFullYear(), month.getMonth(), 1);
   const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
   const cells = [...Array(first.getDay()).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => new Date(month.getFullYear(), month.getMonth(), i + 1))];
   const canPrev = month > new Date(today.getFullYear(), today.getMonth(), 1);
   const canNext = month < new Date(today.getFullYear(), today.getMonth() + 10, 1);
-  const fmtFull = (d) => d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+  const fmtFull = (d) => d.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+
+  const handleSubmit = (e) => {
+    e?.preventDefault?.();
+    if (picked) onSubmit(dayKey(picked));
+  };
 
   return (
-    <div className="v4-sched-block">
-      <div className="v4-cal">
-        <div className="v4-cal-head">
-          <button type="button" className="v4-cal-nav" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))} disabled={!canPrev} aria-label="Previous month">
-            <CaretLeft weight="bold" size={14} />
-          </button>
-          <span className="v4-cal-month">{month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</span>
-          <button type="button" className="v4-cal-nav" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))} disabled={!canNext} aria-label="Next month">
-            <CaretRight weight="bold" size={14} />
-          </button>
-        </div>
-        <div className="v4-cal-grid" role="grid" aria-label={question.label}>
-          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => <span key={`dow-${i}`} className="v4-cal-dow" aria-hidden="true">{d}</span>)}
-          {cells.map((day, i) => {
-            if (!day) return <span key={`blank-${i}`} className="v4-cal-day is-blank" />;
-            const past = day <= today;
-            const isPicked = sameDay(day, picked);
-            const cls = ['v4-cal-day', past && 'is-past', sameDay(day, today) && 'is-today', isPicked && 'is-picked']
-              .filter(Boolean).join(' ');
-            return (
-              <button key={day.toISOString()} type="button" className={cls} disabled={past} onClick={() => setPicked(day)}
-                aria-label={fmtDay(day)} aria-pressed={isPicked}>
-                <span className="v4-cal-num">{day.getDate()}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-      <div className="v4-multichips-footer v4-date-footer">
-        <span className="v4-multichips-count">
-          {picked ? <b>{fmtFull(picked)}</b> : 'Tap a day'}
+    <div className="v4-date-block" ref={wrapRef}>
+      <form className="v4-input-row v4-date-row" onSubmit={handleSubmit}>
+        <span className="v4-input-icon" aria-hidden="true">
+          <CalendarBlank weight="duotone" size={20} />
         </span>
-        <button type="button" className="v4-multichips-submit" disabled={!picked} onClick={() => picked && onSubmit(dayKey(picked))}>
-          Continue <ArrowRight weight="bold" size={14} />
+        <button
+          type="button"
+          className={`v4-date-field${picked ? '' : ' is-empty'}`}
+          onClick={() => {
+            const r = wrapRef.current?.getBoundingClientRect();
+            setOpenUp(!!r && window.innerHeight - r.bottom < 340 && r.top > 340);
+            setOpen((o) => !o);
+          }}
+          aria-haspopup="dialog"
+          aria-expanded={open}
+          aria-label={question.label}
+        >
+          {picked ? fmtFull(picked) : 'Pick a date'}
         </button>
-      </div>
+        <button type="submit" className="v4-input-submit" disabled={!picked} aria-label="Continue">
+          <ArrowRight weight="bold" size={18} />
+        </button>
+      </form>
+      {open && (
+        <div className={`v4-date-pop${openUp ? ' is-up' : ''}`} role="dialog" aria-label={question.label}>
+          <div className="v4-cal">
+            <div className="v4-cal-head">
+              <button type="button" className="v4-cal-nav" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))} disabled={!canPrev} aria-label="Previous month">
+                <CaretLeft weight="bold" size={14} />
+              </button>
+              <span className="v4-cal-month">{month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</span>
+              <button type="button" className="v4-cal-nav" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))} disabled={!canNext} aria-label="Next month">
+                <CaretRight weight="bold" size={14} />
+              </button>
+            </div>
+            <div className="v4-cal-grid" role="grid">
+              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => <span key={`dow-${i}`} className="v4-cal-dow" aria-hidden="true">{d}</span>)}
+              {cells.map((day, i) => {
+                if (!day) return <span key={`blank-${i}`} className="v4-cal-day is-blank" />;
+                const past = day <= today;
+                const isPicked = sameDay(day, picked);
+                const cls = ['v4-cal-day', past && 'is-past', sameDay(day, today) && 'is-today', isPicked && 'is-picked']
+                  .filter(Boolean).join(' ');
+                return (
+                  <button key={day.toISOString()} type="button" className={cls} disabled={past}
+                    onClick={() => { setPicked(day); setOpen(false); }}
+                    aria-label={fmtDay(day)} aria-pressed={isPicked}>
+                    <span className="v4-cal-num">{day.getDate()}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
