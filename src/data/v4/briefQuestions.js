@@ -774,7 +774,7 @@ export const BRIEF_QUESTIONS = {
         type: 'textarea',
         rows: 3,
         required: false,
-        placeholder: 'e.g. Anything with “United” tacked on, names you can’t chant, mascots that mean nothing here',
+        placeholder: 'e.g. Utah Jazz (no jazz in Utah), FC United (says nothing), Mighty Warriors (trying too hard)',
       },
       {
         id: 'namesConsidered',
