@@ -763,7 +763,7 @@ export const BRIEF_QUESTIONS = {
         type: 'textarea',
         rows: 3,
         required: false,
-        placeholder: 'e.g. Athletic Club (history in it), Kraken (unexpected), Heat (chants itself)',
+        placeholder: 'e.g. Seattle Kraken (unexpected), Miami Heat (chants itself), Athletic Club (history in it)',
         hint: `A few reference names tell participants more than a paragraph of description. Say what you like about each one, and participants will read the pattern and aim for it.`,
         guideId: 't1-chant',
       },
@@ -774,7 +774,7 @@ export const BRIEF_QUESTIONS = {
         type: 'textarea',
         rows: 3,
         required: false,
-        placeholder: 'e.g. Sunday Strikers (every league has one), FC United (says nothing), Mighty Warriors (trying too hard)',
+        placeholder: 'e.g. Tampa Bay Devil Rays (later cut to Rays), Mighty Ducks of Anaheim (dropped “Mighty”), Houston Colt .45s (renamed after three seasons)',
       },
       {
         id: 'namesConsidered',
