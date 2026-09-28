@@ -332,6 +332,11 @@ const SOMETHING_ELSE_PARTICIPANT_LABELS = {
   dislikedNames:        'Three names the host doesn’t like',
 };
 export const PARTICIPANT_LABELS_BY_SUB = {
+  // Company: the prompt says "ideas or themes you'd like participants to
+  // explore", which reads wrong on the participant brief.
+  b1: {
+    nameCommunicate: 'What should the name communicate? Any ideas or themes to explore?',
+  },
   p4: SOMETHING_ELSE_PARTICIPANT_LABELS,
   t6: SOMETHING_ELSE_PARTICIPANT_LABELS,
   b5: SOMETHING_ELSE_PARTICIPANT_LABELS,
