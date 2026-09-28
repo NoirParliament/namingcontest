@@ -52,6 +52,7 @@ import {
   getSegmentLabel,
   getSetupStepTotal,
   formatScheduleSummary,
+  scheduleSettingsPatch,
   formatDateAnswer,
 } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS, getIntroQuestionFor } from '../../data/v4/briefQuestions';
@@ -214,11 +215,7 @@ function persistAnswer(question, value) {
     // their real keys so launch, cron, and every reader stay untouched.
     if (question.type === 'contestSchedule') {
       return writeSetup({
-        settings: {
-          ...(current.settings || {}),
-          submissionDays: value.submissionDays,
-          votingDays: value.votingDays,
-        },
+        settings: { ...(current.settings || {}), ...scheduleSettingsPatch(value) },
       });
     }
     return writeSetup({ settings: { ...(current.settings || {}), [question.id]: value } });
@@ -368,7 +365,7 @@ export default function BriefChat() {
       if (q.type === 'contestSchedule') {
         const st = saved.settings || {};
         return st.submissionDays !== undefined || st.votingDays !== undefined
-          ? { submissionDays: st.submissionDays, votingDays: st.votingDays }
+          ? scheduleSettingsPatch(st)
           : undefined;
       }
       if (q.section === 'brief') return (saved.brief || {})[q.id];

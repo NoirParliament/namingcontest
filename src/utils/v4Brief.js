@@ -108,10 +108,31 @@ export function formatWindowDuration(days) {
   const n = Number(days);
   if (!Number.isFinite(n) || n <= 0) return String(days ?? '');
   if (n < 1) {
-    const h = Math.round(n * 24);
+    const h = Math.max(1, Math.round(n * 24));
     return h === 1 ? '1 hour' : `${h} hours`;
   }
-  return n === 1 ? '1 day' : `${n} days`;
+  // Calendar picks produce fractional days (end of the chosen day); show
+  // whole days.
+  const d = Math.round(n);
+  return d === 1 ? '1 day' : `${d} days`;
+}
+
+// Short "Sat, Oct 3" for a stored ISO deadline; null if it isn't one.
+export function formatDeadlineDate(iso) {
+  const t = typeof iso === 'string' ? Date.parse(iso) : NaN;
+  if (!Number.isFinite(t)) return null;
+  return new Date(t).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+}
+
+// The settings keys a schedule answer carries. The calendar picker stores
+// the chosen dates AND the derived day counts; the old chips stored only
+// the counts. Every writer spreads this so the two stay together.
+export function scheduleSettingsPatch(value) {
+  const patch = {};
+  for (const k of ['submissionDays', 'votingDays', 'submissionEndsAt', 'votingEndsAt']) {
+    if (value?.[k] !== undefined) patch[k] = value[k];
+  }
+  return patch;
 }
 
 // Format a stored date answer ("YYYY-MM-DD", as the date picker saves it)
@@ -136,6 +157,11 @@ export function formatDateAnswer(value) {
 // answer bubble. "open for" because the values are durations: the client
 // read "Submissions 1 day" as "submissions open in one day".
 export function formatScheduleSummary(settings) {
+  // Calendar picks carry real dates; show those ("Names due Sat, Oct 3 ·
+  // Votes due Tue, Oct 6"). Older day-count answers keep the durations.
+  const subDate = formatDeadlineDate(settings?.submissionEndsAt);
+  const voteDate = formatDeadlineDate(settings?.votingEndsAt);
+  if (subDate && voteDate) return `Names due ${subDate} · Votes due ${voteDate}`;
   const sub = settings?.submissionDays;
   const vote = settings?.votingDays;
   const parts = [];

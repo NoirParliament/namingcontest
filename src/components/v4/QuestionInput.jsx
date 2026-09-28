@@ -7,7 +7,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import {
-  ArrowRight, ArrowLeft, CaretRight, CalendarBlank,
+  ArrowRight, ArrowLeft, CaretLeft, CaretRight, CalendarBlank,
   // Sub-segment card icons (resolved by name from question.options[].icon)
   Baby, PawPrint, House, PencilSimple,
   SoccerBall, MusicNote, Microphone, GraduationCap, GameController,
@@ -416,87 +416,191 @@ function NumberChipsInput({ question, onSubmit, currentAnswer }) {
   );
 }
 
-// ── contestSchedule (one roadmap for both windows) ──────────────────
-// A vertical stepper of the whole contest — Launch → Submissions →
-// Names in → Voting → Winner — with as-if-launched-today dates. Tapping
-// a leg swaps to a focused picker (day chips per the client's options,
-// plus 3/6/12h same-day presets stored as day fractions); picking
-// returns to the roadmap. Continue submits BOTH values at once as
-// { submissionDays, votingDays }.
-export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onChange }) {
-  // Prefill from anything already stored (editing from review/manage).
-  const stored = readSetup()?.settings || {};
-  const [sub, setSub] = useState(
-    Number(stored.submissionDays) > 0 ? Number(stored.submissionDays) : (question.subDefault ?? 5)
-  );
-  const [vote, setVote] = useState(
-    Number(stored.votingDays) > 0 ? Number(stored.votingDays) : (question.voteDefault ?? 3)
-  );
-  const [editing, setEditing] = useState(null); // null | 'submission' | 'voting'
+// ── contestSchedule (roadmap + calendar) ────────────────────────────
+// 2026-09-28 (client): "open a calendar to choose… the dates, like you do
+// when you're booking a hotel", instead of picking a number of days.
+// Launch is still the moment of payment. The owner taps two days on a
+// calendar: the day names are due, then the day votes are due. The
+// roadmap (Launch → Names due → Voting opens → Votes due → Winner) stays
+// as the summary, now showing those real dates.
+//
+// Storage: { submissionEndsAt, votingEndsAt } (ISO, end of the chosen day
+// in the owner's local time) PLUS the derived { submissionDays,
+// votingDays }, so every reader that computes launched_at + days keeps
+// working. confirm-launch prefers the dates and re-derives the day counts
+// at the real launch moment, so both stay in step. Same-day sprints are
+// still possible: tapping today offers the 3/6/12-hour chips (stored as
+// day fractions, as before).
+const MS_DAY = 86400000;
+const startOfDay = (t) => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d; };
+const endOfDay = (t) => { const d = new Date(t); d.setHours(23, 59, 0, 0); return d; };
+const sameDay = (a, b) =>
+  !!a && !!b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+const fmtDay = (d) => d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+const fmtClock = (d) => d.toLocaleString(undefined, { weekday: 'short', hour: 'numeric', minute: '2-digit' });
+const isSprint = (d) => d.getTime() - Date.now() < MS_DAY && sameDay(d, new Date());
 
-  // Inline mode (review page): persist every change immediately — there is
-  // no Continue, the roadmap itself is the saved state.
-  useEffect(() => {
-    if (mode === 'inline') onChange?.({ submissionDays: sub, votingDays: vote });
-  }, [sub, vote]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const DAY = 86400000;
+// Resolve the starting dates from whatever is stored: real dates if they
+// are still ahead of us, else the day counts (a draft picked with the old
+// chips, or one whose dates have passed), else the question's defaults.
+function initialEnds(stored, question) {
   const now = Date.now();
-  const subEnd = now + sub * DAY;
-  const voteEnd = now + (sub + vote) * DAY;
-  const fmtWhen = (t, hourLevel) =>
-    hourLevel
-      ? new Date(t).toLocaleString(undefined, { weekday: 'short', hour: 'numeric', minute: '2-digit' })
-      : new Date(t).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+  const parse = (s) => { const t = typeof s === 'string' ? Date.parse(s) : NaN; return Number.isFinite(t) && t > now ? new Date(t) : null; };
+  let subEnd = parse(stored.submissionEndsAt);
+  let voteEnd = parse(stored.votingEndsAt);
+  if (!subEnd) {
+    const days = Number(stored.submissionDays) > 0 ? Number(stored.submissionDays) : (question.subDefault ?? 5);
+    subEnd = days < 1 ? new Date(now + days * MS_DAY) : endOfDay(now + days * MS_DAY);
+  }
+  if (!voteEnd || voteEnd <= subEnd) {
+    const days = Number(stored.votingDays) > 0 ? Number(stored.votingDays) : (question.voteDefault ?? 3);
+    voteEnd = days < 1 ? new Date(subEnd.getTime() + days * MS_DAY) : endOfDay(subEnd.getTime() + days * MS_DAY);
+  }
+  return { subEnd, voteEnd };
+}
 
-  // ── Picker view — one slider over one standardized scale ───────────
-  // Stops run from a 3-hour sprint to 10 days (hours as day fractions);
-  // the SAME scale serves both stages, only the recommendation differs.
-  const stops = [
-    ...(question.hourOptions || []).map((h) => h / 24),
-    ...(question.dayOptions || []),
-  ];
+export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onChange }) {
+  const stored = readSetup()?.settings || {};
+  const [{ subEnd, voteEnd }, setEnds] = useState(() => initialEnds(stored, question));
+  const [editing, setEditing] = useState(false);
+  // In the calendar: true after the first tap (names due picked, waiting
+  // for the votes-due tap), so a second tap completes the range.
+  const [awaitingEnd, setAwaitingEnd] = useState(false);
+  // Calendar month on screen; opens on the month names are due.
+  const [month, setMonth] = useState(() => new Date(subEnd.getFullYear(), subEnd.getMonth(), 1));
+
+  const payload = () => {
+    const now = Date.now();
+    const round = (n) => Math.round(n * 1000) / 1000;
+    return {
+      submissionDays: round((subEnd.getTime() - now) / MS_DAY),
+      votingDays: round((voteEnd.getTime() - subEnd.getTime()) / MS_DAY),
+      submissionEndsAt: subEnd.toISOString(),
+      votingEndsAt: voteEnd.toISOString(),
+    };
+  };
+
+  // Inline mode (review page): persist every complete change immediately;
+  // the roadmap itself is the saved state.
+  useEffect(() => {
+    if (mode === 'inline' && subEnd && voteEnd) onChange?.(payload());
+  }, [subEnd, voteEnd]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const today = startOfDay(Date.now());
+  // Leg durations count calendar days (Sept 28 → Oct 3 is "5 days"), not
+  // the exact end-of-day span, which would round up to 6. Same-day sprints
+  // show hours.
+  const calDays = (from, to) => Math.round((startOfDay(to).getTime() - startOfDay(from).getTime()) / MS_DAY);
+  const spanLabel = (from, to) =>
+    to.getTime() - from.getTime() < MS_DAY && sameDay(from, to)
+      ? formatWindowDuration((to.getTime() - from.getTime()) / MS_DAY)
+      : formatWindowDuration(Math.max(1, calDays(from, to)));
+  const subDur = spanLabel(new Date(), subEnd);
+  const voteDur = voteEnd ? spanLabel(subEnd, voteEnd) : '';
+  const when = (d) => (d.getTime() - Date.now() < MS_DAY && sameDay(d, new Date()) ? fmtClock(d) : fmtDay(d));
+
+  // ── Calendar view ───────────────────────────────────────────────────
   if (editing) {
-    const isSub = editing === 'submission';
-    const value = isSub ? sub : vote;
-    const setValue = isSub ? setSub : setVote;
-    const def = isSub ? question.subDefault : question.voteDefault;
-    const idx = Math.max(0, stops.findIndex((x) => x === value));
+    const pick = (day) => {
+      if (!awaitingEnd || day <= startOfDay(subEnd)) {
+        // First tap (or a tap at/before the current start): names due here.
+        const isToday = sameDay(day, today);
+        const nextSub = isToday ? new Date(Date.now() + 6 * 3600000) : endOfDay(day);
+        setEnds({ subEnd: nextSub, voteEnd: null });
+        setAwaitingEnd(true);
+      } else {
+        setEnds((s) => ({ subEnd: s.subEnd, voteEnd: endOfDay(day) }));
+        setAwaitingEnd(false);
+      }
+    };
+    const setSubHours = (h) => setEnds({ subEnd: new Date(Date.now() + h * 3600000), voteEnd: null });
+    const setVoteHours = (h) => { setEnds((s) => ({ subEnd: s.subEnd, voteEnd: new Date(s.subEnd.getTime() + h * 3600000) })); setAwaitingEnd(false); };
+    const useRecommended = () => {
+      const s = endOfDay(Date.now() + (question.subDefault ?? 5) * MS_DAY);
+      setEnds({ subEnd: s, voteEnd: endOfDay(s.getTime() + (question.voteDefault ?? 3) * MS_DAY) });
+      setAwaitingEnd(false);
+    };
+
+    // Month grid: leading blanks so the 1st lands on its weekday (Sunday first).
+    const first = new Date(month.getFullYear(), month.getMonth(), 1);
+    const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
+    const cells = [...Array(first.getDay()).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => new Date(month.getFullYear(), month.getMonth(), i + 1))];
+    const maxMonth = new Date(today.getFullYear(), today.getMonth() + 3, 1);
+    const canPrev = month > new Date(today.getFullYear(), today.getMonth(), 1);
+    const canNext = month < maxMonth;
+    const subDay = startOfDay(subEnd);
+    const voteDay = voteEnd ? startOfDay(voteEnd) : null;
+    const sprintSub = isSprint(subEnd);
+    const sprintVote = voteEnd && sameDay(voteEnd, subEnd) && sprintSub;
+
     return (
       <div className="v4-sched-block">
         <div className="v4-sched-picker-title">
-          {isSub ? 'How long should submissions stay open?' : 'How long should voting stay open?'}
+          {awaitingEnd ? 'Now tap the day votes are due.' : 'Tap the day names are due, then the day votes are due.'}
         </div>
-        <div className="v4-sched-picker-value">
-          {formatWindowDuration(value)}
-          {value === def && <span className="v4-sched-picker-rec">Recommended</span>}
+        <div className="v4-cal">
+          <div className="v4-cal-head">
+            <button type="button" className="v4-cal-nav" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))} disabled={!canPrev} aria-label="Previous month">
+              <CaretLeft weight="bold" size={14} />
+            </button>
+            <span className="v4-cal-month">{month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</span>
+            <button type="button" className="v4-cal-nav" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))} disabled={!canNext} aria-label="Next month">
+              <CaretRight weight="bold" size={14} />
+            </button>
+          </div>
+          <div className="v4-cal-grid" role="grid">
+            {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => <span key={`dow-${i}`} className="v4-cal-dow" aria-hidden="true">{d}</span>)}
+            {cells.map((day, i) => {
+              if (!day) return <span key={`blank-${i}`} className="v4-cal-day is-blank" />;
+              const past = day < today;
+              const isStart = sameDay(day, subDay);
+              const isEnd = !!voteDay && sameDay(day, voteDay);
+              const inRange = !!voteDay && day > subDay && day < voteDay;
+              const cls = ['v4-cal-day', past && 'is-past', sameDay(day, today) && 'is-today', isStart && 'is-start', isEnd && 'is-end', inRange && 'is-inrange', isStart && isEnd && 'is-single']
+                .filter(Boolean).join(' ');
+              return (
+                <button key={day.toISOString()} type="button" className={cls} disabled={past} onClick={() => pick(day)}
+                  aria-label={fmtDay(day)} aria-pressed={isStart || isEnd}>
+                  {day.getDate()}
+                </button>
+              );
+            })}
+          </div>
         </div>
-        <input
-          type="range"
-          className="v4-sched-slider"
-          min={0}
-          max={stops.length - 1}
-          step={1}
-          value={idx}
-          onChange={(e) => setValue(stops[Number(e.target.value)])}
-          aria-label={isSub ? 'Submission window' : 'Voting window'}
-          aria-valuetext={formatWindowDuration(value)}
-        />
-        <div className="v4-sched-slider-scale">
-          <span>{formatWindowDuration(stops[0])}</span>
-          <span>{formatWindowDuration(stops[stops.length - 1])}</span>
-        </div>
-        {value !== def && (
-          <button type="button" className="v4-sched-rec-link" onClick={() => setValue(def)}>
-            Use recommended · {formatWindowDuration(def)}
-          </button>
+        {sprintSub && (
+          <div className="v4-sched-hours">
+            <span className="v4-sched-hours-label">Names due in</span>
+            {(question.hourOptions || [3, 6, 12]).map((h) => (
+              <button key={h} type="button" className={`v4-chip ${Math.round((subEnd.getTime() - Date.now()) / 3600000) === h ? 'is-checked' : ''}`} onClick={() => setSubHours(h)}>
+                {h} hours
+              </button>
+            ))}
+          </div>
         )}
+        {sprintSub && (awaitingEnd || sprintVote) && (
+          <div className="v4-sched-hours">
+            <span className="v4-sched-hours-label">Then voting open for</span>
+            {(question.hourOptions || [3, 6, 12]).map((h) => (
+              <button key={h} type="button" className={`v4-chip ${sprintVote && Math.round((voteEnd.getTime() - subEnd.getTime()) / 3600000) === h ? 'is-checked' : ''}`} onClick={() => setVoteHours(h)}>
+                {h} hours
+              </button>
+            ))}
+            <span className="v4-sched-hours-label">or tap a later day</span>
+          </div>
+        )}
+        <div className="v4-cal-summary">
+          <span><b>Names due</b> {when(subEnd)}{voteEnd ? '' : ''}</span>
+          <span><b>Votes due</b> {voteEnd ? when(voteEnd) : 'tap a day'}</span>
+        </div>
+        <button type="button" className="v4-sched-rec-link" onClick={useRecommended}>
+          Use recommended · {question.subDefault ?? 5} days of submissions, {question.voteDefault ?? 3} of voting
+        </button>
         <div className="v4-multichips-footer">
-          <button type="button" className="v4-sched-back" onClick={() => setEditing(null)}>
+          <button type="button" className="v4-sched-back" onClick={() => { if (voteEnd) { setEditing(false); setAwaitingEnd(false); } }} disabled={!voteEnd}>
             <ArrowLeft weight="bold" size={13} />
             Back to schedule
           </button>
-          <button type="button" className="v4-multichips-submit" onClick={() => setEditing(null)}>
+          <button type="button" className="v4-multichips-submit" disabled={!voteEnd} onClick={() => { setEditing(false); setAwaitingEnd(false); }}>
             Done
           </button>
         </div>
@@ -505,20 +609,21 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
   }
 
   // ── Roadmap view ────────────────────────────────────────────────────
-  const Event = ({ label, when }) => (
+  const Event = ({ label, when: w }) => (
     <div className="v4-sched-row">
       <span className="v4-sched-rail"><span className="v4-sched-dot" /></span>
       <span className="v4-sched-event">{label}</span>
-      <span className="v4-sched-when">{when}</span>
+      <span className="v4-sched-when">{w}</span>
     </div>
   );
-  const Leg = ({ label, value, onClick }) => (
+  const Leg = ({ label, value, dur }) => (
     <div className="v4-sched-row">
       <span className="v4-sched-rail"><span className="v4-sched-line" /></span>
-      <button type="button" className="v4-sched-leg" onClick={onClick}>
+      <button type="button" className="v4-sched-leg" onClick={() => { setMonth(new Date(subEnd.getFullYear(), subEnd.getMonth(), 1)); setEditing(true); }}>
         <span className="v4-sched-leg-label">{label}</span>
         <span className="v4-sched-leg-value">
-          {formatWindowDuration(value)}
+          {value}
+          {dur && <span className="v4-sched-leg-dur">{dur}</span>}
           <CaretRight weight="bold" size={12} />
         </span>
       </button>
@@ -527,24 +632,17 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
 
   return (
     <div className="v4-sched-block">
-      {mode === 'submit' && <span className="v4-sched-note">If you launch today</span>}
       <div className="v4-sched-steps">
-        <Event label="Launch" when="Today" />
-        {/* "open for": the value is a duration, not a start time (client
-            read "Submissions open · 1 day" as "opens in one day"). */}
-        <Leg label="Submissions open for" value={sub} onClick={() => setEditing('submission')} />
-        <Event label="Names are in" when={fmtWhen(subEnd, sub < 1)} />
-        <Leg label="Voting open for" value={vote} onClick={() => setEditing('voting')} />
-        <Event label="Pick the winner" when={fmtWhen(voteEnd, sub + vote < 1)} />
+        <Event label="Launch" when="When you pay" />
+        <Leg label="Names due" value={when(subEnd)} dur={subDur} />
+        <Event label="Voting opens" when={when(subEnd)} />
+        <Leg label="Votes due" value={when(voteEnd)} dur={voteDur} />
+        <Event label="Pick the winner" when={when(voteEnd)} />
       </div>
       {mode === 'submit' && (
         <div className="v4-multichips-footer">
-          <span className="v4-multichips-count">Tap a stage to change it</span>
-          <button
-            type="submit"
-            className="v4-multichips-submit"
-            onClick={() => onSubmit({ submissionDays: sub, votingDays: vote })}
-          >
+          <span className="v4-multichips-count">Tap a date to change it</span>
+          <button type="submit" className="v4-multichips-submit" onClick={() => onSubmit(payload())}>
             Continue <ArrowRight weight="bold" size={14} />
           </button>
         </div>

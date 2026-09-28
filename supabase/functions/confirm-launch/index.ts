@@ -60,10 +60,34 @@ Deno.serve(async (req) => {
     if (pi.amount !== Math.round((contest.price || 0) * 100)) return json({ error: 'Paid amount does not match the price.' }, 400);
 
     if (!alreadyPaid) {
-      const settings = (contest.settings ?? {}) as { submissionDays?: number; votingDays?: number };
-      const subDays = settings.submissionDays || 7;
-      const voteDays = settings.votingDays || 3;
+      const settings = (contest.settings ?? {}) as {
+        submissionDays?: number; votingDays?: number;
+        submissionEndsAt?: string; votingEndsAt?: string;
+      };
       const now = Date.now();
+      // 2026-09-28: the calendar picker stores the chosen deadline DATES.
+      // Prefer them when they're still ahead (at least an hour out, in
+      // order); otherwise fall back to the day counts, as before. Either
+      // way the stored day counts are re-derived from the real launch
+      // moment so readers computing launched_at + days land on the same
+      // timestamps the cron flips on.
+      const HOUR = 3600000;
+      const parse = (s: unknown) => { const t = typeof s === 'string' ? Date.parse(s) : NaN; return Number.isFinite(t) ? t : null; };
+      let subEnd = parse(settings.submissionEndsAt);
+      let voteEnd = parse(settings.votingEndsAt);
+      const fromDates = !!subEnd && subEnd > now + HOUR && !!voteEnd && voteEnd > subEnd + HOUR;
+      if (!fromDates) {
+        subEnd = now + (settings.submissionDays || 7) * DAY;
+        voteEnd = subEnd + (settings.votingDays || 3) * DAY;
+      }
+      const round = (n: number) => Math.round(n * 1000) / 1000;
+      const nextSettings = fromDates
+        ? {
+            ...settings,
+            submissionDays: round((subEnd! - now) / DAY),
+            votingDays: round((voteEnd! - subEnd!) / DAY),
+          }
+        : settings;
 
       const { error: upErr } = await admin
         .from('contests')
@@ -71,9 +95,10 @@ Deno.serve(async (req) => {
           paid: true,
           status: 'submission',
           stripe_session_id: pi.id,
+          settings: nextSettings,
           launched_at: new Date(now).toISOString(),
-          submission_ends_at: new Date(now + subDays * DAY).toISOString(),
-          voting_ends_at: new Date(now + (subDays + voteDays) * DAY).toISOString(),
+          submission_ends_at: new Date(subEnd!).toISOString(),
+          voting_ends_at: new Date(voteEnd!).toISOString(),
         })
         .eq('id', contestId);
       if (upErr) throw upErr;

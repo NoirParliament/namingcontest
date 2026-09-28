@@ -10,7 +10,7 @@ import {
 } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
-import { readSetup, writeSetup, getQuestionsFor, formatScheduleSummary, formatWindowDuration, formatDateAnswer, getArticleFor } from '../../utils/v4Brief';
+import { readSetup, writeSetup, getQuestionsFor, formatScheduleSummary, scheduleSettingsPatch, formatWindowDuration, formatDateAnswer, getArticleFor } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS, INTRO_QUESTION, getIntroQuestionFor } from '../../data/v4/briefQuestions';
 import { SegmentThemeBackdrop, getSegmentTone, getSegmentIcon, getSegmentPalette } from '../../data/v4/segmentTheme';
 import LaunchModal from '../../components/v4/LaunchModal';
@@ -225,11 +225,7 @@ export default function ReviewLaunch() {
       // The schedule answers both windows at once — spread into real keys.
       if (question.type === 'contestSchedule') {
         writeSetup({
-          settings: {
-            ...(cur.settings || {}),
-            submissionDays: newValue.submissionDays,
-            votingDays: newValue.votingDays,
-          },
+          settings: { ...(cur.settings || {}), ...scheduleSettingsPatch(newValue) },
         });
       } else {
         writeSetup({ settings: { ...(cur.settings || {}), [question.id]: newValue } });
@@ -630,11 +626,7 @@ export default function ReviewLaunch() {
                 onChange={(v) => {
                   const cur = readSetup();
                   writeSetup({
-                    settings: {
-                      ...(cur.settings || {}),
-                      submissionDays: v.submissionDays,
-                      votingDays: v.votingDays,
-                    },
+                    settings: { ...(cur.settings || {}), ...scheduleSettingsPatch(v) },
                   });
                 }}
               />

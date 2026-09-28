@@ -25,7 +25,7 @@ import BrandLink from '../../components/v4/BrandLink';
 import creatorProfile from '../../assets/creator-profile.png';
 import {
   readSetup, writeSetup, getSegmentLabel, getContestDescriptor, getQuestionsFor,
-  formatWindowDuration, formatScheduleSummary, formatDateAnswer,
+  formatWindowDuration, formatScheduleSummary, scheduleSettingsPatch, formatDateAnswer,
 } from '../../utils/v4Brief';
 import { useProfile } from '../../lib/useProfile';
 import { buildLiveData, buildLiveDataFromReal } from '../../utils/v4LiveData';
@@ -447,7 +447,7 @@ export default function ContestManage() {
     // The schedule question answers both windows at once — spread into the
     // real keys instead of storing under its own id.
     const patch = question.type === 'contestSchedule'
-      ? { submissionDays: newValue.submissionDays, votingDays: newValue.votingDays }
+      ? scheduleSettingsPatch(newValue)
       : { [question.id]: newValue };
     if (dbContest && !mockContest && (section === 'brief' || section === 'settings')) {
       // Real contest → persist the edit to the database and update state.
