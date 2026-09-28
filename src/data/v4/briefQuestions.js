@@ -1341,7 +1341,7 @@ export const BRIEF_QUESTIONS = {
         type: 'textarea',
         rows: 2,
         required: false,
-        placeholder: 'e.g. Small, all black except one white sock, ears too big for her head',
+        placeholder: 'e.g. Small, all black except one white sock, big floppy ears',
       },
       {
         id: 'petPersonality',
