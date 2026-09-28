@@ -818,8 +818,10 @@ export const BRIEF_QUESTIONS = {
         type: 'text',
         required: false,
         placeholder: 'e.g. Loud, warm, chaotic',
-        // No hint (Matt): the question already gives examples, and the guide follows.
-        guideId: 't4-belonging',
+        // Maria's club "vibe" hint, adapted: "vibe" -> "personality", "a
+        // spirited advocacy group" -> "a loud punk band" (advocacy groups now
+        // go to Business). No guide here (Matt: too long with both).
+        hint: `The personality steers the whole feel of a name. A welcoming book club and a loud punk band want very different names, even in the same town. Tell participants the tone so the ideas match who you are.`,
       },
       {
         id: 'originStory',
@@ -830,7 +832,7 @@ export const BRIEF_QUESTIONS = {
         required: false,
         placeholder: 'e.g. All the band members have kids at the same school. We all love bad science fiction movies.',
         hint: `People inevitably ask, “How did you get your name?” A name with a good story gives them something to remember and talk about. Lynyrd Skynyrd took its name from a gym teacher, Radiohead from a Talking Heads song, and Foo Fighters from a World War II term for mysterious aerial sightings. Give participants some of the band or club’s story or shared context, and they may find a name with meaning built in.`, // Maria's hint, full; only "Fans" -> "People" and "band's" -> "band or club's" for the combined category
-        guideId: 't2-firstsong',
+        // Guide moved to "similar bands or clubs you admire" (Matt: too long with the hint).
       },
       {
         id: 'localConnection',
@@ -849,6 +851,9 @@ export const BRIEF_QUESTIONS = {
         rows: 2,
         required: false,
         placeholder: 'e.g. Beach House. Two plain words that feel like a whole mood.',
+        // "The Band Name Is the First Note": memorable, distinctive, evocative,
+        // the lens for judging names you admire.
+        guideId: 't2-firstsong',
       },
       {
         id: 'confusedWith',
