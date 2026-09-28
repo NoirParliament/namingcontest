@@ -41,7 +41,7 @@ export const SUB_SEGMENTS = {
       // We can always add this later." Card commented out (reversible);
       // t5's question set + guides stay in the data files.
       // { id: 't5', icon: 'GameController',tone: TONES.butter,     title: 'A gaming group',                           body: 'Team, guild, or clan.' },
-      { id: 't6', icon: 'PencilSimple',  tone: TONES.periwinkle, title: 'Something else', body: 'A podcast, a group chat, a friend group, a shared tradition, anything that needs a name.' },
+      { id: 't6', icon: 'PencilSimple',  tone: TONES.periwinkle, title: 'Something else', body: 'A podcast, a group chat, a tradition, anything that needs a name.' },
     ],
   },
   business: {
