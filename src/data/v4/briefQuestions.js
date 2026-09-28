@@ -736,8 +736,7 @@ export const BRIEF_QUESTIONS = {
           { id: 'mostly-playful', label: 'Mostly playful',       sublabel: 'Fun first, still a team name' },
           { id: 'full-joke',      label: 'Full joke',            sublabel: 'Ball Busters territory' },
         ],
-        // Maria's hint, shortened (flag for her sign-off).
-        hint: `Intimidating names like Predators project power; playful ones suit youth and rec teams.`,
+        // No hint (Matt): the question and the options say it all.
         guideId: 't1-chant',
       },
       {
