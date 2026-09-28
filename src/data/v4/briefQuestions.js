@@ -807,7 +807,7 @@ export const BRIEF_QUESTIONS = {
         type: 'textarea',
         rows: 3,
         required: true,
-        placeholder: 'e.g. A 4-piece dream-pop band from Bristol with one EP out. Or: a neighborhood chess club that meets Thursday nights at the library.',
+        placeholder: 'e.g. A four-piece dream-pop band from Bristol, or a chess club that meets Thursday nights at the library',
       },
       {
         id: 'personalityWords',
