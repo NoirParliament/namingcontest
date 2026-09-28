@@ -523,7 +523,7 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
       } else {
         setEnds((cur) => ({ subEnd: cur.subEnd, voteEnd: endOfDay(day) }));
       }
-      setEditing(null);
+      // Stays open after a tap so the pick can be adjusted; Done closes.
     };
     // Month grid: leading blanks so the 1st lands on its weekday (Sunday first).
     const first = new Date(month.getFullYear(), month.getMonth(), 1);
@@ -571,9 +571,11 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
           </div>
         </div>
         <div className="v4-multichips-footer">
-          <button type="button" className="v4-sched-back" onClick={() => setEditing(null)}>
-            <ArrowLeft weight="bold" size={13} />
-            Back to schedule
+          <span className="v4-multichips-count">
+            {editingSub ? 'Names due' : 'Votes due'} {when(editingSub ? subEnd : voteEnd)}
+          </span>
+          <button type="button" className="v4-multichips-submit" onClick={() => setEditing(null)}>
+            Done
           </button>
         </div>
       </div>
