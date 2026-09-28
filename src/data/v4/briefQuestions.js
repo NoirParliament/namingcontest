@@ -728,15 +728,13 @@ export const BRIEF_QUESTIONS = {
         briefLabel: 'Intimidating or playful',
         label: 'Intimidating or playful',
         prompt: 'How intimidating vs. playful should it feel? Where on the spectrum from “Titans” to “Ball Busters”?',
-        // 1–5 scale between Mark's two ends (his "spectrum" wording). Each
-        // step saves its label, so the brief still reads "Mostly playful"
-        // and the expansions keep working.
-        type: 'scale',
-        scaleEnds: ['Titans', 'Ball Busters'],
-        options: ['Intimidating', 'Mostly serious', 'Somewhere in between', 'Mostly playful', 'Full joke'],
-        // No hint (Matt): the question and the scale say it all. The
-        // chantability guide moved to "three great team names" (it's a test
-        // for judging names, not about tone).
+        // Open-ended (Matt, 2026-09-28): the owner answers in their own
+        // words. No hint; the chantability guide lives on "three great team
+        // names". (The 1–5 ScaleInput stays available in QuestionInput.)
+        type: 'textarea',
+        rows: 2,
+        required: false,
+        placeholder: 'e.g. Closer to Titans, tough but not scary',
       },
       {
         id: 'leagueNames',
