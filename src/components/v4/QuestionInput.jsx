@@ -571,54 +571,50 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
     );
   }
 
-  // ── Roadmap (resting view) ──────────────────────────────────────────
-  const Event = ({ label, when: w }) => (
-    <div className="v4-sched-row">
-      <span className="v4-sched-rail"><span className="v4-sched-dot" /></span>
-      <span className="v4-sched-event">{label}</span>
-      <span className="v4-sched-when">{w}</span>
-    </div>
-  );
-  const Leg = ({ label, value, dur }) => (
-    <div className="v4-sched-row">
-      <span className="v4-sched-rail"><span className="v4-sched-line" /></span>
-      <span className="v4-sched-leg is-static">
-        <span className="v4-sched-leg-label">{label}</span>
-        <span className="v4-sched-leg-value">
-          {value}
-          {dur && <span className="v4-sched-leg-dur">{dur}</span>}
-        </span>
+  // ── Schedule (resting view) ─────────────────────────────────────────
+  // Read-only timeline in the review page's own row language (muted label
+  // left, value right, thin dividers, a dot rail), so nothing here looks
+  // tappable. The one action, Change dates, sits in the footer, next to
+  // Continue in the chat; the recommended-schedule reset takes the
+  // footer's text slot.
+  const Row = ({ label, value, dur, mark }) => (
+    <div className={`v4-sched-item${mark ? ' is-mark' : ''}`}>
+      <span className="v4-sched-item-label">{label}</span>
+      <span className="v4-sched-item-value">
+        {value}
+        {dur && <span className="v4-sched-item-dur">{dur}</span>}
       </span>
     </div>
   );
 
   return (
     <div className="v4-sched-block">
-      <div className="v4-sched-actions">
-        <button type="button" className="v4-sched-change" onClick={() => { setMonth(new Date(subEnd.getFullYear(), subEnd.getMonth(), 1)); setAwaitingEnd(false); setEditing(true); }}>
-          <CalendarBlank weight="duotone" size={15} />
-          Change dates
-        </button>
-        {!isRecommended && (
+      <div className="v4-sched-list">
+        <Row label="Launch" value="When you pay" />
+        <Row label="Submissions open until" value={fmtDay(subEnd)} dur={spanLabel(new Date(), subEnd)} mark />
+        <Row label="Voting open until" value={fmtDay(voteEnd)} dur={spanLabel(subEnd, voteEnd)} mark />
+        <Row label="Pick the winner" value="After voting closes" />
+      </div>
+      <div className="v4-multichips-footer">
+        {isRecommended ? (
+          <span className="v4-multichips-count">Recommended schedule</span>
+        ) : (
           <button type="button" className="v4-sched-rec-link" onClick={useRecommended}>
             Use recommended · {recSubDays} days of submissions, {recVoteDays} of voting
           </button>
         )}
-      </div>
-      <div className="v4-sched-steps">
-        <Event label="Launch" when="When you pay" />
-        <Leg label="Submissions open until" value={fmtDay(subEnd)} dur={spanLabel(new Date(), subEnd)} />
-        <Leg label="Voting open until" value={fmtDay(voteEnd)} dur={spanLabel(subEnd, voteEnd)} />
-        <Event label="Pick the winner" when="After voting closes" />
-      </div>
-      {mode === 'submit' && (
-        <div className="v4-multichips-footer">
-          <span className="v4-multichips-count">Happy with these dates?</span>
-          <button type="submit" className="v4-multichips-submit" onClick={() => onSubmit(payload())}>
-            Continue <ArrowRight weight="bold" size={14} />
+        <span className="v4-sched-buttons">
+          <button type="button" className="v4-sched-change" onClick={() => { setMonth(new Date(subEnd.getFullYear(), subEnd.getMonth(), 1)); setAwaitingEnd(false); setEditing(true); }}>
+            <CalendarBlank weight="duotone" size={15} />
+            Change dates
           </button>
-        </div>
-      )}
+          {mode === 'submit' && (
+            <button type="submit" className="v4-multichips-submit" onClick={() => onSubmit(payload())}>
+              Continue <ArrowRight weight="bold" size={14} />
+            </button>
+          )}
+        </span>
+      </div>
     </div>
   );
 }

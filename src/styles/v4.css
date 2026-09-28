@@ -11351,35 +11351,81 @@ select.v4-pvote-sort-select:hover {
   font-family: var(--font-text);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-.v4-sched-leg.is-static { cursor: default; }
-.v4-sched-leg.is-static:hover { border-color: rgba(3, 3, 2, 0.14); box-shadow: none; }
-.v4-sched-actions {
+/* ── Schedule · resting view ─────────────────────────────────────────
+   Read-only timeline: muted label left, value right, thin dividers (the
+   review page's row language), a dot rail down the left with the two
+   deadline rows in ink. Nothing here is a control; the actions live in
+   the footer below. */
+.v4-sched-list {
+  position: relative;
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 8px 16px;
-  margin-bottom: 10px;
+  flex-direction: column;
 }
-.v4-sched-actions .v4-sched-rec-link { padding: 0; }
+.v4-sched-list::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 20px;
+  bottom: 20px;
+  width: 2px;
+  background: var(--v4-faint);
+}
+.v4-sched-item {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0 10px 24px;
+  border-top: 1px solid var(--v4-faint);
+  font-family: var(--font-text);
+  font-size: 13.5px;
+}
+.v4-sched-item:first-child { border-top: 0; }
+.v4-sched-item::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  background: #ffffff;
+  box-shadow: inset 0 0 0 2px rgba(3, 3, 2, 0.3);
+  z-index: 1;
+}
+.v4-sched-item.is-mark::before { background: var(--v4-fg); box-shadow: none; }
+.v4-sched-item-label { color: var(--v4-muted); font-weight: 600; }
+.v4-sched-item-value { color: var(--v4-muted); font-weight: 600; text-align: right; white-space: nowrap; }
+.v4-sched-item.is-mark .v4-sched-item-value { color: var(--v4-fg); font-weight: 700; }
+.v4-sched-item-dur { font-weight: 500; color: var(--v4-muted); }
+.v4-sched-item-dur::before { content: '·'; margin: 0 5px; }
+.v4-sched-buttons { display: inline-flex; align-items: center; gap: 8px; }
+/* Secondary button: same size as the primary Continue, white with a border. */
 .v4-sched-change {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 12px;
+  padding: 8px 14px;
   background: #ffffff;
-  border: 1.5px solid rgba(3, 3, 2, 0.14);
+  border: 1.5px solid rgba(3, 3, 2, 0.18);
   border-radius: 999px;
   cursor: pointer;
-  font-family: var(--font-text);
-  font-size: 12.5px;
-  font-weight: 700;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--v4-fg);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
 }
-.v4-sched-change:hover {
-  border-color: rgba(3, 3, 2, 0.3);
-  box-shadow: 0 4px 14px -8px rgba(3, 3, 2, 0.25);
+.v4-sched-change:hover { border-color: rgba(3, 3, 2, 0.4); background: rgba(3, 3, 2, 0.03); }
+.v4-sched-change:focus-visible { outline: 2px solid var(--v4-fg); outline-offset: 2px; }
+.v4-sched-block .v4-sched-rec-link { padding: 0; }
+@media (max-width: 480px) {
+  .v4-sched-item { flex-direction: column; align-items: flex-start; gap: 2px; }
+  .v4-sched-item-value { text-align: left; white-space: normal; }
+  .v4-sched-block .v4-multichips-footer { flex-direction: column; align-items: stretch; }
+  .v4-sched-buttons { justify-content: flex-end; }
 }
 .v4-sched-leg:hover {
   border-color: rgba(3, 3, 2, 0.3);
