@@ -10,7 +10,7 @@ import {
   ArrowRight, ArrowLeft, CaretLeft, CaretRight, CalendarBlank,
   // Sub-segment card icons (resolved by name from question.options[].icon)
   Baby, PawPrint, House, PencilSimple,
-  SoccerBall, MusicNote, Microphone, GraduationCap, GameController,
+  SoccerBall, MusicNote, HandsClapping, Microphone, GraduationCap, GameController,
   Buildings, Package, Target, ArrowsClockwise,
 } from '@phosphor-icons/react';
 import {
@@ -25,7 +25,7 @@ import { readSetup, formatWindowDuration } from '../../utils/v4Brief';
 
 const SEGMENT_ICONS = {
   Baby, PawPrint, House, PencilSimple,
-  SoccerBall, MusicNote, Microphone, GraduationCap, GameController,
+  SoccerBall, MusicNote, HandsClapping, Microphone, GraduationCap, GameController,
   Buildings, Package, Target, ArrowsClockwise,
 };
 

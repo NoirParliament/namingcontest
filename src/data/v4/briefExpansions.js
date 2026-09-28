@@ -556,7 +556,7 @@ export const BRIEF_SECTIONS = {
       ids: ['namingDirection', 'avoidNames', 'customRequirements'] },
   ],
   t2: [
-    { title: 'About the band or club', icon: 'MusicNote',
+    { title: 'About the band or club', icon: 'HandsClapping',
       ids: ['projectSummary', 'personalityWords', 'originStory', 'localConnection'] },
     { title: 'Names to learn from', icon: 'Sparkle',
       ids: ['similarAdmired', 'admiredNames', 'namesConsidered'] },

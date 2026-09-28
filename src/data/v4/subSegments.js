@@ -33,7 +33,7 @@ export const SUB_SEGMENTS = {
     label: 'group',
     options: [
       { id: 't1', icon: 'SoccerBall',    tone: TONES.mint,       title: 'Team',           body: 'Local league, school squad, recreational team.' },
-      { id: 't2', icon: 'MusicNote',     tone: TONES.lavender,   title: 'Band or club',   body: 'Whatever the genre, whatever brings you together.' },
+      { id: 't2', icon: 'HandsClapping', tone: TONES.lavender,   title: 'Band or club',   body: 'Whatever the genre, whatever brings you together.' },
       // { id: 't3', icon: 'Microphone',    tone: TONES.sky,        title: 'Podcast, channel, or creative project',  body: 'Audio, video, or anything in between.' },
       // { id: 't4', icon: 'GraduationCap', tone: TONES.blush,      title: 'Club or civic group',                    body: 'A chess club, a neighborhood group, a civic cause.' },
       // 2026-08-17 client decision (Maria/Mark): drop the Gaming Group
