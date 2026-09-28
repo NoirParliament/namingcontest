@@ -774,7 +774,7 @@ export const BRIEF_QUESTIONS = {
         type: 'textarea',
         rows: 3,
         required: false,
-        placeholder: 'e.g. Utah Jazz (a New Orleans name that moved), FC United (says nothing), Mighty Warriors (trying too hard)',
+        placeholder: 'e.g. Sunday Strikers (every league has one), FC United (says nothing), Mighty Warriors (trying too hard)',
       },
       {
         id: 'namesConsidered',
