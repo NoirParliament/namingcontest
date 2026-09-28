@@ -15,7 +15,7 @@ const TIERS = [
     Icon: Heart,
     tone: TONES.blush,
     title: 'Personal',
-    body: 'Babies, pets, holiday homes, the family boat.',
+    body: 'Babies, pets, homes, boats, and more.',
   },
   {
     id: 'group',
@@ -29,7 +29,7 @@ const TIERS = [
     Icon: Briefcase,
     tone: TONES.mint,
     title: 'Business',
-    body: 'Companies, products, rebrands, internal projects.',
+    body: 'Company names, product names, internal projects, and more.',
   },
 ];
 
