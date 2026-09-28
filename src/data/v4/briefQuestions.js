@@ -813,7 +813,8 @@ export const BRIEF_QUESTIONS = {
         id: 'personalityWords',
         briefLabel: 'Personality',
         label: 'Personality in a few words',
-        prompt: 'What does your band or club feel like? Describe its personality in 3 to 5 words, for example, playful, laid-back, bold, or welcoming.',
+        // Mark's own wording, dashes kept (his authored prompt; see the em-dash rule).
+        prompt: 'What does your band or club feel like? Describe its personality in 3–5 words—for example, playful, laid-back, bold, or welcoming.',
         type: 'text',
         required: false,
         placeholder: 'e.g. Loud, warm, chaotic',
@@ -1204,7 +1205,8 @@ export const BRIEF_QUESTIONS = {
         id: 'gender',
         briefLabel: 'Gender',
         label: 'Do you know the gender?',
-        prompt: 'Do you know the gender, or is it a surprise?',
+        // Mark's own wording, dash kept.
+        prompt: 'Do you know the gender — or is it a surprise?',
         type: 'chips',
         options: ['Boy', 'Girl', 'Surprise', 'Prefer not to say'],
         hint: `If surprise, people can suggest both boy and girl names. You pick after baby arrives. We’ll keep all submissions organized.`,
@@ -1258,7 +1260,8 @@ export const BRIEF_QUESTIONS = {
         id: 'personalityPath',
         briefLabel: 'Personality or path the name should suggest',
         label: 'Personality or path',
-        prompt: 'Should the name suggest a particular personality or path, creative, adventurous, ambitious, or feel open to whoever your child becomes? If the former, please state the type of personality or profession that comes to mind.',
+        // Mark's own wording, dashes kept.
+        prompt: 'Should the name suggest a particular personality or path—creative, adventurous, ambitious—or feel open to whoever your child becomes? If the former, please state the type of personality or profession that comes to mind.',
         type: 'textarea',
         rows: 2,
         required: false,
