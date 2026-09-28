@@ -1746,6 +1746,9 @@ textarea.v4-input::placeholder {
 }
 .v4-date-pop.is-up { top: auto; bottom: calc(100% + 6px); }
 .v4-date-pop .v4-cal { padding: 10px 10px 8px; }
+/* Inside the edit popup (overflow: hidden) a floating dropdown gets clipped,
+   so there the calendar opens in place and the popup grows to fit it. */
+.v4-edit-modal .v4-date-pop { position: static; width: 100%; margin-top: 8px; filter: none; }
 .v4-date-pop .v4-cal-day { height: 34px; }
 .v4-date-pop .v4-cal-num { width: 30px; height: 30px; }
 .v4-date-row {
