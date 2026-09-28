@@ -149,7 +149,7 @@ const SOMETHING_ELSE_BASE = [
 const SOMETHING_ELSE_TIERS = {
   p4: {
     placeholders: {
-      projectSummary: 'e.g. Our weekly Saturday brunch crew, 6 friends, 4 years, still unnamed. Or: the lake cabin we just inherited from my grandmother.',
+      projectSummary: 'e.g. Six friends who’ve met for Saturday brunch for four years and still have no name for it',
       purpose:        'e.g. An excuse to see each other every week, and to argue about pancakes',
       newOrReplacing: 'e.g. New. Well, the group chat is called “brunch??” and it has to go',
       audience:       'e.g. The six of us, mostly in the group chat and on a custom mug',
@@ -164,7 +164,7 @@ const SOMETHING_ELSE_TIERS = {
   },
   t6: {
     placeholders: {
-      projectSummary: 'e.g. A monthly potluck club of 8 friends who’ve been meeting since college. Or: a weekly podcast where first-time founders tell the truth about year one.',
+      projectSummary: 'e.g. A monthly potluck club of eight friends who’ve been meeting since college',
       purpose:        'e.g. Dinner, mostly. And a standing excuse to see each other',
       newOrReplacing: 'e.g. We’ve been “the potluck thing” for a decade. It needs a real name.',
       audience:       'e.g. The eight of us, plus whoever we invite. For a podcast: listeners finding it in an app',
