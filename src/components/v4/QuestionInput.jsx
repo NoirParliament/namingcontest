@@ -416,14 +416,15 @@ function NumberChipsInput({ question, onSubmit, currentAnswer }) {
   );
 }
 
-// ── contestSchedule (roadmap + one shared calendar) ──────────────────
+// ── contestSchedule (roadmap pills + one shared calendar) ────────────
 // 2026-09-28 (client): pick dates on a calendar "like you do when you're
 // booking a hotel". Resting view is the roadmap (Launch · Submissions
-// open until <date> · Voting open until <date> · Pick the winner) with a
-// "Change dates" button and, when the range isn't the default, "Use
-// recommended". Change dates swaps in ONE month calendar: first tap is
-// the day names are due, second the day votes are due; Done returns.
-// Launch is still the moment of payment.
+// open until <date> · Voting open until <date> · Pick the winner); the two
+// date pills open ONE shared calendar with the tapped date active. Two
+// labelled fields above the grid (Names due / Votes due) say which date
+// is which; on the grid names due is a filled day, votes due a ring, each
+// captioned. A names-due tap hands over to votes due so two taps set a
+// whole new range; Done returns. Launch is still the moment of payment.
 //
 // Storage: { submissionEndsAt, votingEndsAt } (ISO, end of the chosen day
 // in the owner's local time) PLUS the derived { submissionDays,
@@ -460,12 +461,10 @@ function initialEnds(stored, question) {
 export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onChange }) {
   const stored = readSetup()?.settings || {};
   const [{ subEnd, voteEnd }, setEnds] = useState(() => initialEnds(stored, question));
-  // Hotel-style range on ONE always-visible calendar: first tap = names
-  // due (clears votes due), second tap = votes due. Tapping on/before the
-  // start restarts. `awaitingEnd` is true between the two taps.
-  const [awaitingEnd, setAwaitingEnd] = useState(false);
-  // The roadmap is the resting view; "Change dates" swaps in the calendar.
-  const [editing, setEditing] = useState(false);
+  // null = roadmap; 'sub' / 'vote' = calendar open with that field active
+  // (the pill that was tapped). A names-due tap hands over to votes due,
+  // hotel-style, so two taps set a whole new range.
+  const [editing, setEditing] = useState(null);
   const [month, setMonth] = useState(() => new Date(subEnd.getFullYear(), subEnd.getMonth(), 1));
 
   const payload = () => {
@@ -499,17 +498,21 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
   const isRecommended = sameDay(subEnd, recSubEnd) && !!voteEnd && sameDay(voteEnd, recVoteEnd);
   const useRecommended = () => {
     setEnds({ subEnd: recSubEnd, voteEnd: recVoteEnd });
-    setAwaitingEnd(false);
     setMonth(new Date(recSubEnd.getFullYear(), recSubEnd.getMonth(), 1));
   };
 
   const pick = (day) => {
-    if (!awaitingEnd || day <= startOfDay(subEnd)) {
-      setEnds({ subEnd: endOfDay(day), voteEnd: null });
-      setAwaitingEnd(true);
+    if (editing === 'sub') {
+      const nextSub = endOfDay(day);
+      // Names due moved onto or past votes due: push voting forward so it
+      // keeps its length.
+      const nextVote = voteEnd > nextSub
+        ? voteEnd
+        : endOfDay(nextSub.getTime() + Math.max(1, calDays(subEnd, voteEnd)) * MS_DAY);
+      setEnds({ subEnd: nextSub, voteEnd: nextVote });
+      setEditing('vote');
     } else {
       setEnds((cur) => ({ subEnd: cur.subEnd, voteEnd: endOfDay(day) }));
-      setAwaitingEnd(false);
     }
   };
 
@@ -521,14 +524,28 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
   const canPrev = month > new Date(today.getFullYear(), today.getMonth(), 1);
   const canNext = month < maxMonth;
   const subDay = startOfDay(subEnd);
-  const voteDay = voteEnd ? startOfDay(voteEnd) : null;
+  const voteDay = startOfDay(voteEnd);
 
-  // ── Calendar (one shared range pick) ────────────────────────────────
+  // ── Calendar (one shared calendar, two labelled fields) ─────────────
+  // Hotel-booking pattern: two fields above the grid say which date is
+  // which; the active one (the pill that was tapped) takes the next tap.
+  // On the grid, names due is a filled ink day, votes due a ring, each
+  // with a caption, so the two picks can't be confused.
   if (editing) {
+    const editingSub = editing === 'sub';
     return (
       <div className="v4-sched-block">
-        <div className="v4-sched-picker-title">
-          {awaitingEnd ? 'Now tap the day votes are due.' : 'Tap the day names are due, then the day votes are due.'}
+        <div className="v4-cal-fields" role="tablist" aria-label="Which date to change">
+          <button type="button" role="tab" aria-selected={editingSub} className={`v4-cal-field${editingSub ? ' is-active' : ''}`} onClick={() => setEditing('sub')}>
+            <i className="v4-cal-swatch is-sub" aria-hidden="true" />
+            <span className="v4-cal-field-label">Names due</span>
+            <span className="v4-cal-field-value">{fmtDay(subEnd)}</span>
+          </button>
+          <button type="button" role="tab" aria-selected={!editingSub} className={`v4-cal-field${!editingSub ? ' is-active' : ''}`} onClick={() => setEditing('vote')}>
+            <i className="v4-cal-swatch is-vote" aria-hidden="true" />
+            <span className="v4-cal-field-label">Votes due</span>
+            <span className="v4-cal-field-value">{fmtDay(voteEnd)}</span>
+          </button>
         </div>
         <div className="v4-cal">
           <div className="v4-cal-head">
@@ -544,26 +561,26 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
             {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => <span key={`dow-${i}`} className="v4-cal-dow" aria-hidden="true">{d}</span>)}
             {cells.map((day, i) => {
               if (!day) return <span key={`blank-${i}`} className="v4-cal-day is-blank" />;
-              const past = day <= today;
+              // Names due: tomorrow onward. Votes due: after names due.
+              const past = editingSub ? day <= today : day <= subDay;
               const isStart = sameDay(day, subDay);
-              const isEnd = !!voteDay && sameDay(day, voteDay);
-              const inRange = !!voteDay && day > subDay && day < voteDay;
-              const cls = ['v4-cal-day', past && 'is-past', sameDay(day, today) && 'is-today', isStart && 'is-start', isEnd && 'is-end', inRange && 'is-inrange', isStart && !voteDay && 'is-open']
+              const isEnd = sameDay(day, voteDay);
+              const inRange = day > subDay && day < voteDay;
+              const cls = ['v4-cal-day', past && 'is-past', sameDay(day, today) && 'is-today', isStart && 'is-start', isEnd && 'is-end', inRange && 'is-inrange']
                 .filter(Boolean).join(' ');
               return (
                 <button key={day.toISOString()} type="button" className={cls} disabled={past} onClick={() => pick(day)}
                   aria-label={fmtDay(day)} aria-pressed={isStart || isEnd}>
                   <span className="v4-cal-num">{day.getDate()}</span>
+                  {(isStart || isEnd) && <span className="v4-cal-cap">{isStart ? 'Names' : 'Votes'}</span>}
                 </button>
               );
             })}
           </div>
         </div>
         <div className="v4-multichips-footer">
-          <span className="v4-multichips-count">
-            Names due <b>{fmtDay(subEnd)}</b> · Votes due {voteEnd ? <b>{fmtDay(voteEnd)}</b> : 'tap a day'}
-          </span>
-          <button type="button" className="v4-multichips-submit" disabled={!voteEnd} onClick={() => setEditing(false)}>
+          <span className="v4-multichips-count">{editingSub ? 'Tap the day names are due' : 'Tap the day votes are due'}</span>
+          <button type="button" className="v4-multichips-submit" onClick={() => setEditing(null)}>
             Done
           </button>
         </div>
@@ -571,49 +588,53 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
     );
   }
 
-  // ── Schedule (resting view) ─────────────────────────────────────────
-  // Read-only timeline in the review page's own row language (muted label
-  // left, value right, thin dividers, a dot rail), so nothing here looks
-  // tappable. The one action, Change dates, sits in the footer, next to
-  // Continue in the chat; the recommended-schedule reset takes the
-  // footer's text slot.
-  const Row = ({ label, value, dur, mark }) => (
-    <div className={`v4-sched-item${mark ? ' is-mark' : ''}`}>
-      <span className="v4-sched-item-label">{label}</span>
-      <span className="v4-sched-item-value">
-        {value}
-        {dur && <span className="v4-sched-item-dur">{dur}</span>}
-      </span>
+  // ── Roadmap (resting view) ──────────────────────────────────────────
+  const Event = ({ label, when: w }) => (
+    <div className="v4-sched-row">
+      <span className="v4-sched-rail"><span className="v4-sched-dot" /></span>
+      <span className="v4-sched-event">{label}</span>
+      <span className="v4-sched-when">{w}</span>
+    </div>
+  );
+  const Leg = ({ label, value, dur, edits }) => (
+    <div className="v4-sched-row">
+      <span className="v4-sched-rail"><span className="v4-sched-line" /></span>
+      <button type="button" className="v4-sched-leg" onClick={() => {
+        const d = edits === 'sub' ? subEnd : voteEnd;
+        setMonth(new Date(d.getFullYear(), d.getMonth(), 1));
+        setEditing(edits);
+      }}>
+        <span className="v4-sched-leg-label">{label}</span>
+        <span className="v4-sched-leg-value">
+          {value}
+          {dur && <span className="v4-sched-leg-dur">{dur}</span>}
+          <CaretRight weight="bold" size={12} />
+        </span>
+      </button>
     </div>
   );
 
   return (
     <div className="v4-sched-block">
-      <div className="v4-sched-list">
-        <Row label="Launch" value="When you pay" />
-        <Row label="Submissions open until" value={fmtDay(subEnd)} dur={spanLabel(new Date(), subEnd)} mark />
-        <Row label="Voting open until" value={fmtDay(voteEnd)} dur={spanLabel(subEnd, voteEnd)} mark />
-        <Row label="Pick the winner" value="After voting closes" />
+      <div className="v4-sched-steps">
+        <Event label="Launch" when="When you pay" />
+        <Leg label="Submissions open until" value={fmtDay(subEnd)} dur={spanLabel(new Date(), subEnd)} edits="sub" />
+        <Leg label="Voting open until" value={fmtDay(voteEnd)} dur={spanLabel(subEnd, voteEnd)} edits="vote" />
+        <Event label="Pick the winner" when="After voting closes" />
       </div>
       <div className="v4-multichips-footer">
         {isRecommended ? (
-          <span className="v4-multichips-count">Recommended schedule</span>
+          <span className="v4-multichips-count">Tap a date to change it</span>
         ) : (
           <button type="button" className="v4-sched-rec-link" onClick={useRecommended}>
             Use recommended · {recSubDays} days of submissions, {recVoteDays} of voting
           </button>
         )}
-        <span className="v4-sched-buttons">
-          <button type="button" className="v4-sched-change" onClick={() => { setMonth(new Date(subEnd.getFullYear(), subEnd.getMonth(), 1)); setAwaitingEnd(false); setEditing(true); }}>
-            <CalendarBlank weight="duotone" size={15} />
-            Change dates
+        {mode === 'submit' && (
+          <button type="submit" className="v4-multichips-submit" onClick={() => onSubmit(payload())}>
+            Continue <ArrowRight weight="bold" size={14} />
           </button>
-          {mode === 'submit' && (
-            <button type="submit" className="v4-multichips-submit" onClick={() => onSubmit(payload())}>
-              Continue <ArrowRight weight="bold" size={14} />
-            </button>
-          )}
-        </span>
+        )}
       </div>
     </div>
   );
