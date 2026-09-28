@@ -1374,7 +1374,8 @@ export const BRIEF_QUESTIONS = {
         options: ['A human name', 'A classic pet name', 'Food or an object', 'A pop culture reference', 'Regal', 'Silly'],
         allowCustom: true,
         hint: `Think about the style you’re drawn to: a human name, a classic pet name, something inspired by food or an object, a pop culture reference, a name that feels regal or silly, and so forth.`, // [Mark's wording]
-        guideId: 'p2-callname',
+        // Call-name guide moved to "pet names you've loved" (Matt: too much
+        // next to the picker; it's a test for judging names).
       },
       {
         id: 'quirks',
@@ -1403,6 +1404,7 @@ export const BRIEF_QUESTIONS = {
         required: false,
         placeholder: 'e.g. A friend’s cat called Admiral. Grand, and funny on a tiny animal.',
         hint: `A few reference names tell participants more than a paragraph of description. Say what you like about each one and participants will read the pattern and aim for it.`, // [hint]
+        guideId: 'p2-callname',
       },
     ],
   },
