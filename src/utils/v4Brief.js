@@ -131,14 +131,16 @@ export function formatDateAnswer(value) {
   });
 }
 
-// One-line summary of the contest schedule ("Submissions 5 days · Voting
-// 3 days") for review rows, recap rows, and the chat's answer bubble.
+// One-line summary of the contest schedule ("Submissions open for 5 days ·
+// Voting open for 3 days") for review rows, recap rows, and the chat's
+// answer bubble. "open for" because the values are durations: the client
+// read "Submissions 1 day" as "submissions open in one day".
 export function formatScheduleSummary(settings) {
   const sub = settings?.submissionDays;
   const vote = settings?.votingDays;
   const parts = [];
-  if (sub) parts.push(`Submissions ${formatWindowDuration(sub)}`);
-  if (vote) parts.push(`Voting ${formatWindowDuration(vote)}`);
+  if (sub) parts.push(`Submissions open for ${formatWindowDuration(sub)}`);
+  if (vote) parts.push(`Voting open for ${formatWindowDuration(vote)}`);
   return parts.join(' · ');
 }
 

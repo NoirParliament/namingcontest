@@ -530,9 +530,11 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
       {mode === 'submit' && <span className="v4-sched-note">If you launch today</span>}
       <div className="v4-sched-steps">
         <Event label="Launch" when="Today" />
-        <Leg label="Submissions open" value={sub} onClick={() => setEditing('submission')} />
+        {/* "open for": the value is a duration, not a start time (client
+            read "Submissions open · 1 day" as "opens in one day"). */}
+        <Leg label="Submissions open for" value={sub} onClick={() => setEditing('submission')} />
         <Event label="Names are in" when={fmtWhen(subEnd, sub < 1)} />
-        <Leg label="Voting opens" value={vote} onClick={() => setEditing('voting')} />
+        <Leg label="Voting open for" value={vote} onClick={() => setEditing('voting')} />
         <Event label="Pick the winner" when={fmtWhen(voteEnd, sub + vote < 1)} />
       </div>
       {mode === 'submit' && (

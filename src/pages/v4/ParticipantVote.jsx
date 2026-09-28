@@ -576,7 +576,7 @@ export default function ParticipantVote() {
                   <span>
                     One quick thing before the names, what should we save as
                     your profile name? Every vote is private, so this is only
-                    how you show up in your own Namespace, never next to your votes.
+                    how you show up in your own Contest Dashboard, never next to your votes.
                   </span>
                 </div>
                 <CreditNameEntry

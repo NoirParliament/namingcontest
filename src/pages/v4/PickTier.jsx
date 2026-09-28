@@ -20,7 +20,7 @@ const TIERS = [
   {
     tier: 'personal',
     title: 'Personal',
-    tagline: 'Babies, pets, homes, Wi-Fi networks, and more.',
+    tagline: 'Babies, pets, homes, boats, and more.',
     cta: 'Start a personal contest',
     img: personalDog,
     pillA: { text: 'Olly', meta: '8 votes', color: '#b25620', icon: <path d="M8 14s-5-3.2-5-7a3 3 0 0 1 5-2 3 3 0 0 1 5 2c0 3.8-5 7-5 7z" /> },
@@ -93,13 +93,14 @@ export default function PickTier() {
       {/* Slim v4-style nav — matches the chat screens */}
       <header className="v4-nav v4-nav--app">
         <BrandLink />
+        {/* Three dots = the three phases (Setup, Settings, Review). The
+            "1/16" question counter is gone (client: "what's 19/19? I don't
+            think I moved through 19 pages"); the dots carry titles instead. */}
         <div className="v4-progress">
-          <span className="v4-step-dot is-active"></span>
-          <span className="v4-step-dot"></span>
-          <span className="v4-step-dot"></span>
-          <span className="v4-step-label">
-            Setup<span className="v4-step-counter"> · 1/16</span>
-          </span>
+          <span className="v4-step-dot is-active" title="Setup"></span>
+          <span className="v4-step-dot" title="Settings"></span>
+          <span className="v4-step-dot" title="Review"></span>
+          <span className="v4-step-label">Setup</span>
         </div>
         <div className="v4-nav-right">
           <ExitLink to="/" aria-label="Exit" />

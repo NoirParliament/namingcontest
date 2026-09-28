@@ -615,7 +615,7 @@ export default function Settings() {
                     just the contests they've joined
                   - Fresh user (nothing yet) → friendly catch-all */}
             <div className="v4-settings-head">
-              <h1 className="v4-settings-title">Namespace</h1>
+              <h1 className="v4-settings-title">Contest Dashboard</h1>
               <p className="v4-settings-subtitle">
                 {realContest
                   ? 'Your contests, billing, and account in one place.'

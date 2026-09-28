@@ -10,7 +10,7 @@ import {
 } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
-import { readSetup, writeSetup, getQuestionsFor, getSetupStepTotal, formatScheduleSummary, formatWindowDuration, formatDateAnswer, getArticleFor } from '../../utils/v4Brief';
+import { readSetup, writeSetup, getQuestionsFor, formatScheduleSummary, formatWindowDuration, formatDateAnswer, getArticleFor } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS, INTRO_QUESTION, getIntroQuestionFor } from '../../data/v4/briefQuestions';
 import { SegmentThemeBackdrop, getSegmentTone, getSegmentIcon, getSegmentPalette } from '../../data/v4/segmentTheme';
 import LaunchModal from '../../components/v4/LaunchModal';
@@ -152,9 +152,6 @@ export default function ReviewLaunch() {
   // and pick steps (guests just see Exit). Cached hook = no placeholder flash.
   const [profile] = useProfile(user);
   const subId = setup.subSegmentId || 'b1';
-  // Review is the final step of the setup flow — show it as N/N so the
-  // progress counter that ran through the chat lands here.
-  const reviewTotal = getSetupStepTotal(subId);
   // Hero badge now uses the SEGMENT icon + tone (Trophy for any
   // sports team, PawPrint for any pet, etc.) — matches the Manage
   // page so a contest looks like itself everywhere. Tier-icon
@@ -457,10 +454,10 @@ export default function ReviewLaunch() {
           <header className={`v4-nav v4-nav-clear v4-nav--app ${isScrolled ? 'is-scrolled' : ''}`}>
             <BrandLink />
             <div className="v4-progress">
-              <span className="v4-step-dot is-done"></span>
-              <span className="v4-step-dot is-done"></span>
-              <span className="v4-step-dot is-active"></span>
-              <span className="v4-step-label">Review<span className="v4-step-counter"> · {reviewTotal}/{reviewTotal}</span></span>
+              <span className="v4-step-dot is-done" title="Setup"></span>
+              <span className="v4-step-dot is-done" title="Settings"></span>
+              <span className="v4-step-dot is-active" title="Review"></span>
+              <span className="v4-step-label">Review</span>
             </div>
             <div className="v4-nav-right">
               <ExitLink to="/" aria-label="Exit" />

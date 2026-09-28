@@ -184,7 +184,7 @@ export default function AvatarMenu({ email, name, photo, defaultPhoto, seed, ton
             onClick={() => setOpen(false)}
           >
             <Gear weight="duotone" size={16} />
-            <span>Namespace</span>
+            <span>Contest Dashboard</span>
           </Link>
           <button
             type="button"

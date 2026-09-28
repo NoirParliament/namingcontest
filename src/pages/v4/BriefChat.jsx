@@ -601,12 +601,11 @@ export default function BriefChat() {
               isDone || (settingsStart !== -1 && idx >= settingsStart);
             return (
               <div className="v4-progress">
-                <span className={`v4-step-dot ${!inSettings ? 'is-active' : 'is-done'}`}></span>
-                <span className={`v4-step-dot ${inSettings ? 'is-active' : ''}`}></span>
-                <span className="v4-step-dot"></span>
+                <span className={`v4-step-dot ${!inSettings ? 'is-active' : 'is-done'}`} title="Setup"></span>
+                <span className={`v4-step-dot ${inSettings ? 'is-active' : ''}`} title="Settings"></span>
+                <span className="v4-step-dot" title="Review"></span>
                 <span className="v4-step-label">
                   {inSettings ? 'Settings' : 'Setup'}
-                  <span className="v4-step-counter"> · {realCurrent}/{realTotal}</span>
                 </span>
               </div>
             );
