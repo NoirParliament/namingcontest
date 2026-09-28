@@ -11351,60 +11351,6 @@ select.v4-pvote-sort-select:hover {
   font-family: var(--font-text);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-/* ── Schedule · calendar fields ──────────────────────────────────────
-   Two labelled fields above the grid (hotel check-in / check-out): the
-   active one takes the next tap. Matching marks on the grid: names due
-   is a filled ink day, votes due a ring, both captioned. */
-.v4-cal-fields {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-.v4-cal-field {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-rows: auto auto;
-  column-gap: 8px;
-  align-items: center;
-  text-align: left;
-  padding: 9px 12px;
-  background: #ffffff;
-  border: 1.5px solid rgba(3, 3, 2, 0.14);
-  border-radius: 12px;
-  cursor: pointer;
-  font-family: var(--font-text);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-.v4-cal-field.is-active {
-  border-color: var(--v4-fg);
-  box-shadow: 0 0 0 1px var(--v4-fg);
-}
-.v4-cal-field .v4-cal-swatch { grid-row: 1 / span 2; }
-.v4-cal-field-label { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--v4-muted); }
-.v4-cal-field-value { font-size: 13.5px; font-weight: 700; color: var(--v4-fg); }
-.v4-cal-swatch {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-.v4-cal-swatch.is-sub { background: var(--v4-fg); }
-.v4-cal-swatch.is-vote { background: #ffffff; box-shadow: inset 0 0 0 2px var(--v4-fg); }
-.v4-cal-cap {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 1px;
-  text-align: center;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--v4-fg);
-  line-height: 1;
-  pointer-events: none;
-}
 .v4-sched-leg:hover {
   border-color: rgba(3, 3, 2, 0.3);
   box-shadow: 0 4px 14px -8px rgba(3, 3, 2, 0.25);
@@ -12280,9 +12226,8 @@ button.v4-exit {
    at any card width); the number sits in a fixed circle inside it, so a
    selected day is always round, never a stretched pill. */
 .v4-cal-day {
-  height: 46px;
-  padding: 0 0 9px;
-  position: relative;
+  height: 38px;
+  padding: 0;
   border: 0;
   background: transparent;
   display: flex;
@@ -12313,14 +12258,10 @@ button.v4-exit {
 .v4-cal-day.is-start:not(.is-single) { background: linear-gradient(to right, transparent 50%, rgba(3, 3, 2, 0.07) 50%); }
 .v4-cal-day.is-end:not(.is-single) { background: linear-gradient(to left, transparent 50%, rgba(3, 3, 2, 0.07) 50%); }
 .v4-cal-day.is-start:not(.is-single):not(:has(~ .is-inrange, ~ .is-end)) { background: transparent; }
-.v4-cal-day.is-start .v4-cal-num {
+.v4-cal-day.is-start .v4-cal-num,
+.v4-cal-day.is-end .v4-cal-num {
   background: var(--v4-fg);
   color: #ffffff;
-}
-.v4-cal-day.is-end .v4-cal-num {
-  background: #ffffff;
-  color: var(--v4-fg);
-  box-shadow: inset 0 0 0 2px var(--v4-fg);
 }
 .v4-cal-summary {
   display: flex;
@@ -12359,7 +12300,7 @@ button.v4-exit {
 .v4-sched-leg-dur::before { content: '·'; margin: 0 4px; }
 .v4-sched-back:disabled { opacity: 0.4; cursor: default; }
 @media (max-width: 480px) {
-  .v4-cal-day { height: 48px; }
+  .v4-cal-day { height: 40px; }
   .v4-cal-num { width: 36px; height: 36px; }
   .v4-cal-summary { flex-direction: column; gap: 4px; }
 }
