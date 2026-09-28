@@ -297,7 +297,7 @@ export function Nav() {
             {/* Signed in: the account leads, because someone who already has
                 one is far more likely to be heading back to their contests
                 than to the marketing sections. Tapping it goes to the
-                namespace, same destination the avatar's dropdown had on
+                namespace — same destination the avatar's dropdown had on
                 desktop, just given room to breathe. */}
             {isAuthed && (
               <div className="nav-mobile-menu-account-block">
@@ -356,7 +356,7 @@ export function Nav() {
               Pricing
             </a>
             {/* Signed in, the avatar next to the burger already covers the
-                account, so this section only needs the way back into the
+                account — so this section only needs the way back into the
                 workspace. Offering "Sign In" to someone already signed in was
                 the reason this sheet was hidden from them in the first place;
                 the fix is to word it for them, not to lock them out. */}
@@ -682,7 +682,7 @@ function Hero({ onStart }) {
             Run a <span className="em">naming</span> contest without the chaos
           </h1>
           <p className="sub">
-            Skip the group chats and Google Sheets. Create a naming contest in minutes: invite participants, collect suggestions, vote on favorites, and crown a winner, all in one place.
+            Skip the group chats and Google Sheets. Create a naming contest in minutes: invite participants, collect suggestions, vote on favorites, and crown a winner—all in one place.
           </p>
           <div className="cta-row">
             <a href="#start" onClick={(e) => { e.preventDefault(); onStart(); }} className="btn btn-primary btn-lg">
@@ -859,7 +859,7 @@ const RACE_SCENARIOS = [
     pool: { subs: 66, people: 22 },
   },
 ];
-const RACE_ROW_STEP = 63; // 56px row + 7px gap, keep in sync with the CSS
+const RACE_ROW_STEP = 63; // 56px row + 7px gap — keep in sync with the CSS
 
 // Footer avatar cluster — three circular face crops at equal visual weight.
 // Zoom + position are per-image: heads are different sizes in the source
@@ -1078,7 +1078,7 @@ function Offerings({ onStart }) {
       </div>
       <div className="price-band">
         {/* Same strip, same footprint. Tiers aren't clickable (nothing
-            useful to click into from here), hovering one just inks its
+            useful to click into from here) — hovering one just inks its
             price chip, the same ink-fill emphasis the buttons use, as a
             reading highlight. The note carries the spot rule + a link to
             the FAQ's full pricing explanation. */}
@@ -1346,7 +1346,7 @@ function FAQ() {
   const items = [
     {
       q: "Who’s behind NamingContest?",
-      a: <p className="faq-a"><strong>We’re Catchword Branding</strong>, a leading naming agency with 25+ years of experience creating names for companies and products around the world. We’ve worked with brands like Starbucks, Volkswagen, Asana, TikTok, and Corning. We created this platform to make running your own naming contest simple, social, and fun.</p>
+      a: <p className="faq-a"><strong>We’re Catchword Branding</strong>—a leading naming agency with 25+ years of experience creating names for companies and products around the world. We’ve worked with brands like Starbucks, Volkswagen, Asana, TikTok, and Corning. We created this platform to make running your own naming contest simple, social, and fun.</p>
     },
     {
       q: 'How long does a contest take?',
@@ -1354,11 +1354,11 @@ function FAQ() {
     },
     {
       q: 'How do participants contribute and vote?',
-      a: <p className="faq-a"><strong>They open your link and drop in their email</strong>, that’s the whole setup. A magic link signs them in and takes them straight to the contest. You’re the only one who builds and runs it.</p>
+      a: <p className="faq-a"><strong>They open your link and drop in their email</strong>—that’s the whole setup. A magic link signs them in and takes them straight to the contest. You’re the only one who builds and runs it.</p>
     },
     {
       q: 'How does the voting work?',
-      a: <p className="faq-a"><strong>One simple vote, no clunky ballots.</strong> Everyone opens your link, sees all the suggested names, and taps up to three favorites. Votes tally as they come in, and you crown the winner.</p>
+      a: <p className="faq-a"><strong>One simple vote—no clunky ballots.</strong> Everyone opens your link, sees all the suggested names, and taps up to three favorites. Votes tally as they come in, and you crown the winner.</p>
     },
     {
       q: 'What does it cost?',
