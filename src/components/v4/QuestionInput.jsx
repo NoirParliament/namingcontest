@@ -416,13 +416,14 @@ function NumberChipsInput({ question, onSubmit, currentAnswer }) {
   );
 }
 
-// ── contestSchedule (one calendar, range pick) ───────────────────────
-// 2026-09-28 (client): "open a calendar to choose… the dates, like you do
-// when you're booking a hotel". One always-visible month calendar; the
-// first tap is the day names are due, the second the day votes are due.
-// The schedule it produces (Launch · Submissions open until · Voting open
-// until) is listed under the calendar and updates as you tap. Launch is
-// still the moment of payment.
+// ── contestSchedule (roadmap + one shared calendar) ──────────────────
+// 2026-09-28 (client): pick dates on a calendar "like you do when you're
+// booking a hotel". Resting view is the roadmap (Launch · Submissions
+// open until <date> · Voting open until <date> · Pick the winner) with a
+// "Change dates" button and, when the range isn't the default, "Use
+// recommended". Change dates swaps in ONE month calendar: first tap is
+// the day names are due, second the day votes are due; Done returns.
+// Launch is still the moment of payment.
 //
 // Storage: { submissionEndsAt, votingEndsAt } (ISO, end of the chosen day
 // in the owner's local time) PLUS the derived { submissionDays,
@@ -463,6 +464,8 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
   // due (clears votes due), second tap = votes due. Tapping on/before the
   // start restarts. `awaitingEnd` is true between the two taps.
   const [awaitingEnd, setAwaitingEnd] = useState(false);
+  // The roadmap is the resting view; "Change dates" swaps in the calendar.
+  const [editing, setEditing] = useState(false);
   const [month, setMonth] = useState(() => new Date(subEnd.getFullYear(), subEnd.getMonth(), 1));
 
   const payload = () => {
@@ -520,78 +523,98 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
   const subDay = startOfDay(subEnd);
   const voteDay = voteEnd ? startOfDay(voteEnd) : null;
 
+  // ── Calendar (one shared range pick) ────────────────────────────────
+  if (editing) {
+    return (
+      <div className="v4-sched-block">
+        <div className="v4-sched-picker-title">
+          {awaitingEnd ? 'Now tap the day votes are due.' : 'Tap the day names are due, then the day votes are due.'}
+        </div>
+        <div className="v4-cal">
+          <div className="v4-cal-head">
+            <button type="button" className="v4-cal-nav" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))} disabled={!canPrev} aria-label="Previous month">
+              <CaretLeft weight="bold" size={14} />
+            </button>
+            <span className="v4-cal-month">{month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</span>
+            <button type="button" className="v4-cal-nav" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))} disabled={!canNext} aria-label="Next month">
+              <CaretRight weight="bold" size={14} />
+            </button>
+          </div>
+          <div className="v4-cal-grid" role="grid">
+            {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => <span key={`dow-${i}`} className="v4-cal-dow" aria-hidden="true">{d}</span>)}
+            {cells.map((day, i) => {
+              if (!day) return <span key={`blank-${i}`} className="v4-cal-day is-blank" />;
+              const past = day <= today;
+              const isStart = sameDay(day, subDay);
+              const isEnd = !!voteDay && sameDay(day, voteDay);
+              const inRange = !!voteDay && day > subDay && day < voteDay;
+              const cls = ['v4-cal-day', past && 'is-past', sameDay(day, today) && 'is-today', isStart && 'is-start', isEnd && 'is-end', inRange && 'is-inrange', isStart && !voteDay && 'is-open']
+                .filter(Boolean).join(' ');
+              return (
+                <button key={day.toISOString()} type="button" className={cls} disabled={past} onClick={() => pick(day)}
+                  aria-label={fmtDay(day)} aria-pressed={isStart || isEnd}>
+                  <span className="v4-cal-num">{day.getDate()}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <div className="v4-multichips-footer">
+          <span className="v4-multichips-count">
+            Names due <b>{fmtDay(subEnd)}</b> · Votes due {voteEnd ? <b>{fmtDay(voteEnd)}</b> : 'tap a day'}
+          </span>
+          <button type="button" className="v4-multichips-submit" disabled={!voteEnd} onClick={() => setEditing(false)}>
+            Done
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Roadmap (resting view) ──────────────────────────────────────────
+  const Event = ({ label, when: w }) => (
+    <div className="v4-sched-row">
+      <span className="v4-sched-rail"><span className="v4-sched-dot" /></span>
+      <span className="v4-sched-event">{label}</span>
+      <span className="v4-sched-when">{w}</span>
+    </div>
+  );
+  const Leg = ({ label, value, dur }) => (
+    <div className="v4-sched-row">
+      <span className="v4-sched-rail"><span className="v4-sched-line" /></span>
+      <span className="v4-sched-leg is-static">
+        <span className="v4-sched-leg-label">{label}</span>
+        <span className="v4-sched-leg-value">
+          {value}
+          {dur && <span className="v4-sched-leg-dur">{dur}</span>}
+        </span>
+      </span>
+    </div>
+  );
+
   return (
     <div className="v4-sched-block">
-      <div className="v4-sched-picker-title">
-        {awaitingEnd ? 'Now tap the day votes are due.' : 'Tap the day names are due, then the day votes are due.'}
+      <div className="v4-sched-steps">
+        <Event label="Launch" when="When you pay" />
+        <Leg label="Submissions open until" value={fmtDay(subEnd)} dur={spanLabel(new Date(), subEnd)} />
+        <Leg label="Voting open until" value={fmtDay(voteEnd)} dur={spanLabel(subEnd, voteEnd)} />
+        <Event label="Pick the winner" when="After voting closes" />
       </div>
-      <div className="v4-cal">
-        <div className="v4-cal-head">
-          <button type="button" className="v4-cal-nav" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))} disabled={!canPrev} aria-label="Previous month">
-            <CaretLeft weight="bold" size={14} />
-          </button>
-          <span className="v4-cal-month">{month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</span>
-          <button type="button" className="v4-cal-nav" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))} disabled={!canNext} aria-label="Next month">
-            <CaretRight weight="bold" size={14} />
-          </button>
-        </div>
-        <div className="v4-cal-grid" role="grid">
-          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => <span key={`dow-${i}`} className="v4-cal-dow" aria-hidden="true">{d}</span>)}
-          {cells.map((day, i) => {
-            if (!day) return <span key={`blank-${i}`} className="v4-cal-day is-blank" />;
-            const past = day <= today;
-            const isStart = sameDay(day, subDay);
-            const isEnd = !!voteDay && sameDay(day, voteDay);
-            const inRange = !!voteDay && day > subDay && day < voteDay;
-            const cls = ['v4-cal-day', past && 'is-past', sameDay(day, today) && 'is-today', isStart && 'is-start', isEnd && 'is-end', inRange && 'is-inrange', isStart && !voteDay && 'is-open']
-              .filter(Boolean).join(' ');
-            return (
-              <button key={day.toISOString()} type="button" className={cls} disabled={past} onClick={() => pick(day)}
-                aria-label={fmtDay(day)} aria-pressed={isStart || isEnd}>
-                <span className="v4-cal-num">{day.getDate()}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* The picked range, as the schedule it produces. Launch is the
-          moment of payment, so it needs no date. */}
-      <div className="v4-cal-rows">
-        <div className="v4-cal-row">
-          <span className="v4-cal-row-label">Launch</span>
-          <span className="v4-cal-row-value">When you pay</span>
-        </div>
-        <div className="v4-cal-row">
-          <span className="v4-cal-row-label">Submissions open until</span>
-          <span className="v4-cal-row-value">
-            <b>{fmtDay(subEnd)}</b>
-            <span className="v4-sched-leg-dur">{spanLabel(new Date(), subEnd)}</span>
-          </span>
-        </div>
-        <div className="v4-cal-row">
-          <span className="v4-cal-row-label">Voting open until</span>
-          <span className="v4-cal-row-value">
-            {voteEnd ? (
-              <>
-                <b>{fmtDay(voteEnd)}</b>
-                <span className="v4-sched-leg-dur">{spanLabel(subEnd, voteEnd)}</span>
-              </>
-            ) : (
-              <span className="v4-cal-row-pending">tap a day</span>
-            )}
-          </span>
-        </div>
-      </div>
-      {!isRecommended && (
-        <button type="button" className="v4-sched-rec-link" onClick={useRecommended}>
-          Use recommended · {recSubDays} days of submissions, {recVoteDays} of voting
+      <div className="v4-sched-actions">
+        <button type="button" className="v4-sched-change" onClick={() => { setMonth(new Date(subEnd.getFullYear(), subEnd.getMonth(), 1)); setAwaitingEnd(false); setEditing(true); }}>
+          <CalendarBlank weight="duotone" size={15} />
+          Change dates
         </button>
-      )}
+        {!isRecommended && (
+          <button type="button" className="v4-sched-rec-link" onClick={useRecommended}>
+            Use recommended · {recSubDays} days of submissions, {recVoteDays} of voting
+          </button>
+        )}
+      </div>
       {mode === 'submit' && (
         <div className="v4-multichips-footer">
-          <span className="v4-multichips-count">{voteEnd ? 'Both dates set' : 'Pick both dates to continue'}</span>
-          <button type="submit" className="v4-multichips-submit" disabled={!voteEnd} onClick={() => onSubmit(payload())}>
+          <span className="v4-multichips-count">Happy with these dates?</span>
+          <button type="submit" className="v4-multichips-submit" onClick={() => onSubmit(payload())}>
             Continue <ArrowRight weight="bold" size={14} />
           </button>
         </div>
