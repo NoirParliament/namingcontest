@@ -774,7 +774,7 @@ export const BRIEF_QUESTIONS = {
         type: 'textarea',
         rows: 3,
         required: false,
-        placeholder: 'e.g. Tampa Bay Devil Rays (later cut to Rays), Mighty Ducks of Anaheim (dropped “Mighty”), Houston Colt .45s (renamed after three seasons)',
+        placeholder: 'e.g. Tampa Bay Devil Rays (a mouthful to chant), Mighty Ducks of Anaheim (feels like a movie tie-in), Houston Colt .45s (named after a gun)',
       },
       {
         id: 'namesConsidered',
