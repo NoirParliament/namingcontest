@@ -12237,7 +12237,10 @@ button.v4-exit {
 .v4-cal-day.is-blank { cursor: default; }
 .v4-cal-day.is-past { color: rgba(3, 3, 2, 0.28); cursor: default; }
 .v4-cal-day.is-today:not(.is-start):not(.is-end) { box-shadow: inset 0 0 0 1.5px rgba(3, 3, 2, 0.35); }
-.v4-cal-day:not(.is-past):not(.is-blank):hover { background: rgba(3, 3, 2, 0.06); }
+/* Hover only on unselected days: this selector outranks .is-start/.is-end,
+   so without the exclusions a selected day under the cursor went light
+   with white text (invisible number). */
+.v4-cal-day:not(.is-past):not(.is-blank):not(.is-start):not(.is-end):hover { background: rgba(3, 3, 2, 0.06); }
 .v4-cal-day.is-inrange { background: rgba(3, 3, 2, 0.08); border-radius: 0; }
 .v4-cal-day.is-start,
 .v4-cal-day.is-end {

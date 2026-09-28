@@ -632,12 +632,14 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
 
   return (
     <div className="v4-sched-block">
+      {/* Four rows, each date shown once: the two pills carry the
+          deadlines (Matt: "Launch / Names due" and "Voting opens / Votes
+          due" repeated the same dates and read as confusing). */}
       <div className="v4-sched-steps">
         <Event label="Launch" when="When you pay" />
-        <Leg label="Names due" value={when(subEnd)} dur={subDur} />
-        <Event label="Voting opens" when={when(subEnd)} />
-        <Leg label="Votes due" value={when(voteEnd)} dur={voteDur} />
-        <Event label="Pick the winner" when={when(voteEnd)} />
+        <Leg label="Submissions open until" value={when(subEnd)} dur={subDur} />
+        <Leg label="Voting open until" value={when(voteEnd)} dur={voteDur} />
+        <Event label="Pick the winner" when="After voting closes" />
       </div>
       {mode === 'submit' && (
         <div className="v4-multichips-footer">
