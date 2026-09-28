@@ -1012,7 +1012,7 @@ function Offerings({ onStart }) {
     {
       tier: 'personal',
       title: 'Personal',
-      tagline: 'Babies, pets, homes, boats, gardens, and more.',
+      tagline: 'Babies, pets, and more.',
       cta: 'Start a personal contest',
       img: personalDog,
       pillA: { text: 'Olly', meta: '8 votes', color: '#b25620', icon: <path d="M8 14s-5-3.2-5-7a3 3 0 0 1 5-2 3 3 0 0 1 5 2c0 3.8-5 7-5 7z" /> },
@@ -1021,7 +1021,7 @@ function Offerings({ onStart }) {
     {
       tier: 'team',
       title: 'Group',
-      tagline: 'Sports teams, bands, podcasts, clubs, and more.',
+      tagline: 'Teams, bands, clubs, and more.',
       cta: 'Start a group contest',
       img: teamPlayers,
       pillA: { text: 'Riverside FC', meta: '24 votes', color: '#4b68c3', icon: <path d="M8 14s-5-3.2-5-7a3 3 0 0 1 5-2 3 3 0 0 1 5 2c0 3.8-5 7-5 7z" /> },
@@ -1030,7 +1030,7 @@ function Offerings({ onStart }) {
     {
       tier: 'business',
       title: 'Business',
-      tagline: 'Company names, product names, internal projects, and more.',
+      tagline: 'Companies, products, and more.',
       cta: 'Start a business contest',
       img: businessWoman,
       pillA: { text: 'EvoPay', meta: '31 votes', color: '#3f8850', icon: <path d="M8 14s-5-3.2-5-7a3 3 0 0 1 5-2 3 3 0 0 1 5 2c0 3.8-5 7-5 7z" /> },

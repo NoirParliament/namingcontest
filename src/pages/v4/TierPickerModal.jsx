@@ -15,21 +15,21 @@ const TIERS = [
     Icon: Heart,
     tone: TONES.blush,
     title: 'Personal',
-    body: 'Babies, pets, homes, boats, gardens, and more.',
+    body: 'Babies, pets, and more.',
   },
   {
     id: 'group',
     Icon: UsersThree,
     tone: TONES.periwinkle,
     title: 'Group',
-    body: 'Sports teams, bands, podcasts, clubs, and more.',
+    body: 'Teams, bands, clubs, and more.',
   },
   {
     id: 'business',
     Icon: Briefcase,
     tone: TONES.mint,
     title: 'Business',
-    body: 'Company names, product names, internal projects, and more.',
+    body: 'Companies, products, and more.',
   },
 ];
 
