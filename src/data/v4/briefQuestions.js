@@ -721,7 +721,7 @@ export const BRIEF_QUESTIONS = {
         prompt: 'Have the team colors or mascot already been decided? Any visual you’re locked into?',
         type: 'text',
         required: false,
-        placeholder: 'e.g. Navy and gold',
+        placeholder: 'e.g. Navy and gold, no mascot',
       },
       {
         id: 'personality',
