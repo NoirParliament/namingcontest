@@ -428,9 +428,9 @@ function NumberChipsInput({ question, onSubmit, currentAnswer }) {
 // in the owner's local time) PLUS the derived { submissionDays,
 // votingDays }, so every reader that computes launched_at + days keeps
 // working. confirm-launch prefers the dates and re-derives the day counts
-// at the real launch moment, so both stay in step. Same-day sprints are
-// still possible: tapping today offers the 3/6/12-hour chips (stored as
-// day fractions, as before).
+// at the real launch moment, so both stay in step. Days only: the earliest
+// pickable deadline is tomorrow (the hour-based sprint presets were dropped
+// with the calendar; older hour drafts open rounded up to one day).
 const MS_DAY = 86400000;
 const startOfDay = (t) => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d; };
 const endOfDay = (t) => { const d = new Date(t); d.setHours(23, 59, 0, 0); return d; };
@@ -438,7 +438,6 @@ const sameDay = (a, b) =>
   !!a && !!b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 const fmtDay = (d) => d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
 const fmtClock = (d) => d.toLocaleString(undefined, { weekday: 'short', hour: 'numeric', minute: '2-digit' });
-const isSprint = (d) => d.getTime() - Date.now() < MS_DAY && sameDay(d, new Date());
 
 // Resolve the starting dates from whatever is stored: real dates if they
 // are still ahead of us, else the day counts (a draft picked with the old
@@ -450,11 +449,11 @@ function initialEnds(stored, question) {
   let voteEnd = parse(stored.votingEndsAt);
   if (!subEnd) {
     const days = Number(stored.submissionDays) > 0 ? Number(stored.submissionDays) : (question.subDefault ?? 5);
-    subEnd = days < 1 ? new Date(now + days * MS_DAY) : endOfDay(now + days * MS_DAY);
+    subEnd = endOfDay(now + Math.max(1, Math.round(days)) * MS_DAY);
   }
   if (!voteEnd || voteEnd <= subEnd) {
     const days = Number(stored.votingDays) > 0 ? Number(stored.votingDays) : (question.voteDefault ?? 3);
-    voteEnd = days < 1 ? new Date(subEnd.getTime() + days * MS_DAY) : endOfDay(subEnd.getTime() + days * MS_DAY);
+    voteEnd = endOfDay(subEnd.getTime() + Math.max(1, Math.round(days)) * MS_DAY);
   }
   return { subEnd, voteEnd };
 }
@@ -504,17 +503,13 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
     const pick = (day) => {
       if (!awaitingEnd || day <= startOfDay(subEnd)) {
         // First tap (or a tap at/before the current start): names due here.
-        const isToday = sameDay(day, today);
-        const nextSub = isToday ? new Date(Date.now() + 6 * 3600000) : endOfDay(day);
-        setEnds({ subEnd: nextSub, voteEnd: null });
+        setEnds({ subEnd: endOfDay(day), voteEnd: null });
         setAwaitingEnd(true);
       } else {
         setEnds((s) => ({ subEnd: s.subEnd, voteEnd: endOfDay(day) }));
         setAwaitingEnd(false);
       }
     };
-    const setSubHours = (h) => setEnds({ subEnd: new Date(Date.now() + h * 3600000), voteEnd: null });
-    const setVoteHours = (h) => { setEnds((s) => ({ subEnd: s.subEnd, voteEnd: new Date(s.subEnd.getTime() + h * 3600000) })); setAwaitingEnd(false); };
     const useRecommended = () => {
       const s = endOfDay(Date.now() + (question.subDefault ?? 5) * MS_DAY);
       setEnds({ subEnd: s, voteEnd: endOfDay(s.getTime() + (question.voteDefault ?? 3) * MS_DAY) });
@@ -530,8 +525,6 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
     const canNext = month < maxMonth;
     const subDay = startOfDay(subEnd);
     const voteDay = voteEnd ? startOfDay(voteEnd) : null;
-    const sprintSub = isSprint(subEnd);
-    const sprintVote = voteEnd && sameDay(voteEnd, subEnd) && sprintSub;
 
     return (
       <div className="v4-sched-block">
@@ -552,7 +545,7 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
             {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => <span key={`dow-${i}`} className="v4-cal-dow" aria-hidden="true">{d}</span>)}
             {cells.map((day, i) => {
               if (!day) return <span key={`blank-${i}`} className="v4-cal-day is-blank" />;
-              const past = day < today;
+              const past = day <= today;
               const isStart = sameDay(day, subDay);
               const isEnd = !!voteDay && sameDay(day, voteDay);
               const inRange = !!voteDay && day > subDay && day < voteDay;
@@ -567,29 +560,8 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
             })}
           </div>
         </div>
-        {sprintSub && (
-          <div className="v4-sched-hours">
-            <span className="v4-sched-hours-label">Names due in</span>
-            {(question.hourOptions || [3, 6, 12]).map((h) => (
-              <button key={h} type="button" className={`v4-chip ${Math.round((subEnd.getTime() - Date.now()) / 3600000) === h ? 'is-checked' : ''}`} onClick={() => setSubHours(h)}>
-                {h} hours
-              </button>
-            ))}
-          </div>
-        )}
-        {sprintSub && (awaitingEnd || sprintVote) && (
-          <div className="v4-sched-hours">
-            <span className="v4-sched-hours-label">Then voting open for</span>
-            {(question.hourOptions || [3, 6, 12]).map((h) => (
-              <button key={h} type="button" className={`v4-chip ${sprintVote && Math.round((voteEnd.getTime() - subEnd.getTime()) / 3600000) === h ? 'is-checked' : ''}`} onClick={() => setVoteHours(h)}>
-                {h} hours
-              </button>
-            ))}
-            <span className="v4-sched-hours-label">or tap a later day</span>
-          </div>
-        )}
         <div className="v4-cal-summary">
-          <span><b>Names due</b> {when(subEnd)}{voteEnd ? '' : ''}</span>
+          <span><b>Names due</b> {when(subEnd)}</span>
           <span><b>Votes due</b> {voteEnd ? when(voteEnd) : 'tap a day'}</span>
         </div>
         <button type="button" className="v4-sched-rec-link" onClick={useRecommended}>

@@ -12178,6 +12178,9 @@ button.v4-exit {
    Hotel-style range: tap the day names are due, then the day votes are
    due. Ink range on a white card; past days faded, today ringed. */
 .v4-cal {
+  /* Capped so day cells stay round instead of stretching into wide pills
+     across the full review card. */
+  max-width: 340px;
   background: #ffffff;
   border: 1.5px solid rgba(3, 3, 2, 0.14);
   border-radius: 14px;
@@ -12251,6 +12254,7 @@ button.v4-exit {
 .v4-cal-day.is-end:not(.is-single) { border-radius: 0 999px 999px 0; }
 .v4-cal-day.is-start:not(.is-single):not(.is-end) { box-shadow: 6px 0 0 rgba(3, 3, 2, 0.08); }
 .v4-cal-summary {
+  max-width: 340px;
   display: flex;
   justify-content: space-between;
   gap: 12px;
