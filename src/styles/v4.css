@@ -11221,8 +11221,9 @@ select.v4-pvote-sort-select:hover {
   color: var(--v4-fg);
 }
 
-/* ── Review · private (creator-only) section ─────────────────────────
-   Settings aren't part of the participant-facing brief: the card drops
+/* ── Review · outside-the-brief section ──────────────────────────────
+   Schedule and settings aren't part of the brief card (participants meet
+   them as deadlines, limits, and the prize, not as this list): the card drops
    to a quiet paper tone (vs the white participant-facing cards) and
    wears a small lock in its heading. */
 .v4-review-section--private {

@@ -439,14 +439,34 @@ const sameDay = (a, b) =>
 const fmtDay = (d) => d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
 const fmtClock = (d) => d.toLocaleString(undefined, { weekday: 'short', hour: 'numeric', minute: '2-digit' });
 
-// Resolve the starting dates from whatever is stored: real dates if they
-// are still ahead of us, else the day counts (a draft picked with the old
-// chips, or one whose dates have passed), else the question's defaults.
+// Local calendar-day key ("2026-09-28") for the day the dates were chosen.
+const dayKey = (t) => {
+  const d = new Date(t);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+const fromDayKey = (k) => {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(k || '');
+  return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : null;
+};
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+
+// Resolve the starting dates from whatever is stored. Saved dates are
+// fixed days, so a draft reopened on a later day would quietly lose
+// schedule; both deadlines move forward by the gap since they were chosen
+// (scheduleSetOn), keeping the lengths the owner picked. Dates already
+// passed (or older drafts) fall back to the day counts, then the defaults.
 function initialEnds(stored, question) {
   const now = Date.now();
-  const parse = (s) => { const t = typeof s === 'string' ? Date.parse(s) : NaN; return Number.isFinite(t) && t > now ? new Date(t) : null; };
-  let subEnd = parse(stored.submissionEndsAt);
-  let voteEnd = parse(stored.votingEndsAt);
+  const parseAny = (s) => { const t = typeof s === 'string' ? Date.parse(s) : NaN; return Number.isFinite(t) ? new Date(t) : null; };
+  let subEnd = parseAny(stored.submissionEndsAt);
+  let voteEnd = parseAny(stored.votingEndsAt);
+  const setOn = fromDayKey(stored.scheduleSetOn);
+  if (subEnd && voteEnd && setOn) {
+    const gap = Math.round((startOfDay(now).getTime() - setOn.getTime()) / MS_DAY);
+    if (gap > 0) { subEnd = addDays(subEnd, gap); voteEnd = addDays(voteEnd, gap); }
+  }
+  if (subEnd && subEnd.getTime() <= now) subEnd = null;
+  if (voteEnd && voteEnd.getTime() <= now) voteEnd = null;
   if (!subEnd) {
     const days = Number(stored.submissionDays) > 0 ? Number(stored.submissionDays) : (question.subDefault ?? 5);
     subEnd = endOfDay(now + Math.max(1, Math.round(days)) * MS_DAY);
@@ -475,6 +495,7 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
       votingDays: round((voteEnd.getTime() - subEnd.getTime()) / MS_DAY),
       submissionEndsAt: subEnd.toISOString(),
       votingEndsAt: voteEnd.toISOString(),
+      scheduleSetOn: dayKey(now),
     };
   };
 
@@ -615,20 +636,22 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
         <Leg label="Voting closes" value={fmtDay(voteEnd)} dur={`open for ${spanLabel(subEnd, voteEnd)}`} edits="vote" />
         <Event label="Pick the winner" when="After voting closes" />
       </div>
-      <div className="v4-multichips-footer">
-        {isRecommended ? (
-          <span className="v4-multichips-count">Recommended</span>
-        ) : (
-          <button type="button" className="v4-sched-rec-link" onClick={useRecommended}>
-            Use recommended · {recSubDays} days of submissions, {recVoteDays} of voting
-          </button>
-        )}
-        {mode === 'submit' && (
-          <button type="submit" className="v4-multichips-submit" onClick={() => onSubmit(payload())}>
-            Continue <ArrowRight weight="bold" size={14} />
-          </button>
-        )}
-      </div>
+      {(!isRecommended || mode === 'submit') && (
+        <div className="v4-multichips-footer">
+          {/* Reset link only when the dates are custom; on the recommended
+              5 + 3 there's nothing to say. */}
+          {!isRecommended ? (
+            <button type="button" className="v4-sched-rec-link" onClick={useRecommended}>
+              Use recommended · {recSubDays} days of submissions, {recVoteDays} of voting
+            </button>
+          ) : <span />}
+          {mode === 'submit' && (
+            <button type="submit" className="v4-multichips-submit" onClick={() => onSubmit(payload())}>
+              Continue <ArrowRight weight="bold" size={14} />
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

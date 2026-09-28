@@ -129,7 +129,7 @@ export function formatDeadlineDate(iso) {
 // the counts. Every writer spreads this so the two stay together.
 export function scheduleSettingsPatch(value) {
   const patch = {};
-  for (const k of ['submissionDays', 'votingDays', 'submissionEndsAt', 'votingEndsAt']) {
+  for (const k of ['submissionDays', 'votingDays', 'submissionEndsAt', 'votingEndsAt', 'scheduleSetOn']) {
     if (value?.[k] !== undefined) patch[k] = value[k];
   }
   return patch;
