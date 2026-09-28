@@ -465,8 +465,9 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
   // In the calendar: true after the first tap (names due picked, waiting
   // for the votes-due tap), so a second tap completes the range.
   const [awaitingEnd, setAwaitingEnd] = useState(false);
-  // Calendar month on screen; opens on the month names are due.
-  const [month, setMonth] = useState(() => new Date(subEnd.getFullYear(), subEnd.getMonth(), 1));
+  // Calendar month on screen; opens on the current month so launch day
+  // (today) is always visible as the start of the contest.
+  const [month, setMonth] = useState(() => { const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), 1); });
 
   const payload = () => {
     const now = Date.now();
@@ -536,7 +537,7 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
     return (
       <div className="v4-sched-block">
         <div className="v4-sched-picker-title">
-          {awaitingEnd ? 'Now tap the day votes are due.' : 'Tap the day names are due, then the day votes are due.'}
+          {awaitingEnd ? 'Now tap the day votes are due.' : 'Your contest launches today. Tap the day names are due, then the day votes are due.'}
         </div>
         <div className="v4-cal">
           <div className="v4-cal-head">
@@ -552,11 +553,18 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
             {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => <span key={`dow-${i}`} className="v4-cal-dow" aria-hidden="true">{d}</span>)}
             {cells.map((day, i) => {
               if (!day) return <span key={`blank-${i}`} className="v4-cal-day is-blank" />;
+              // The calendar shows the WHOLE contest, not just the two picks:
+              // today is launch, a light band for submissions (launch → names
+              // due), a darker band for voting (names due → votes due). A bare
+              // names-due → votes-due range read as "the contest starts on
+              // the 3rd" (Matt).
               const past = day <= today;
+              const isLaunch = sameDay(day, today);
               const isStart = sameDay(day, subDay);
               const isEnd = !!voteDay && sameDay(day, voteDay);
-              const inRange = !!voteDay && day > subDay && day < voteDay;
-              const cls = ['v4-cal-day', past && 'is-past', sameDay(day, today) && 'is-today', isStart && 'is-start', isEnd && 'is-end', inRange && 'is-inrange', isStart && isEnd && 'is-single']
+              const inSub = day > today && day < subDay;
+              const inVote = !!voteDay && day > subDay && day < voteDay;
+              const cls = ['v4-cal-day', past && 'is-past', isLaunch && 'is-launch', isStart && 'is-start', isEnd && 'is-end', inSub && 'is-insub', inVote && 'is-invote', isStart && !voteDay && 'is-open']
                 .filter(Boolean).join(' ');
               return (
                 <button key={day.toISOString()} type="button" className={cls} disabled={past} onClick={() => pick(day)}
@@ -566,6 +574,11 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
               );
             })}
           </div>
+        </div>
+        <div className="v4-cal-legend" aria-hidden="true">
+          <span><i className="v4-cal-swatch is-launch" />Launch today</span>
+          <span><i className="v4-cal-swatch is-sub" />Submissions</span>
+          <span><i className="v4-cal-swatch is-vote" />Voting</span>
         </div>
         <div className="v4-cal-summary">
           <span><b>Names due</b> {when(subEnd)}</span>
@@ -595,7 +608,7 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
   const Leg = ({ label, value, dur }) => (
     <div className="v4-sched-row">
       <span className="v4-sched-rail"><span className="v4-sched-line" /></span>
-      <button type="button" className="v4-sched-leg" onClick={() => { setMonth(new Date(subEnd.getFullYear(), subEnd.getMonth(), 1)); setEditing(true); }}>
+      <button type="button" className="v4-sched-leg" onClick={() => { setMonth(new Date(today.getFullYear(), today.getMonth(), 1)); setEditing(true); }}>
         <span className="v4-sched-leg-label">{label}</span>
         <span className="v4-sched-leg-value">
           {value}
