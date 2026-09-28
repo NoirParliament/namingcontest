@@ -20,7 +20,7 @@ const TIERS = [
   {
     tier: 'personal',
     title: 'Personal',
-    tagline: 'Babies, pets, homes, Wi-Fi networks, and more.',
+    tagline: 'Babies, pets, homes, boats, and more.',
     cta: 'Start a personal contest',
     img: personalDog,
     pillA: { text: 'Olly', meta: '8 votes', color: '#b25620', icon: <path d="M8 14s-5-3.2-5-7a3 3 0 0 1 5-2 3 3 0 0 1 5 2c0 3.8-5 7-5 7z" /> },

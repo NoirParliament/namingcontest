@@ -1415,7 +1415,7 @@ export const BRIEF_QUESTIONS = {
 
   // ── p3 · Home / Property / Fun ──
   p3: {
-    label: 'Home, WiFi network, boat, and more',
+    label: 'Home, boat, and more',
     suggestedDeadlineDays: 7,
     questions: [
       {
@@ -1433,7 +1433,7 @@ export const BRIEF_QUESTIONS = {
         label: 'What are you naming?',
         prompt: 'What are you naming?',
         type: 'chips',
-        options: ['House / Home', 'Vacation Home / Cabin', 'Boat / Watercraft', 'Car / Vehicle', 'WiFi network', 'Other'],
+        options: ['House / Home', 'Vacation Home / Cabin', 'Boat / Watercraft', 'Car / Vehicle', 'Other'],
         describeOption: 'Other',
         describePlaceholder: 'e.g. A treehouse, a fire pit, a boat trailer',
         required: true,

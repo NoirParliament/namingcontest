@@ -1012,7 +1012,7 @@ function Offerings({ onStart }) {
     {
       tier: 'personal',
       title: 'Personal',
-      tagline: 'Babies, pets, homes, Wi-Fi networks, and more.',
+      tagline: 'Babies, pets, homes, boats, and more.',
       cta: 'Start a personal contest',
       img: personalDog,
       pillA: { text: 'Olly', meta: '8 votes', color: '#b25620', icon: <path d="M8 14s-5-3.2-5-7a3 3 0 0 1 5-2 3 3 0 0 1 5 2c0 3.8-5 7-5 7z" /> },
@@ -1043,7 +1043,7 @@ function Offerings({ onStart }) {
       <div className="section-head">
         <p className="eyebrow">Pick your path</p>
         <h2 className="h-display h2">Your name starts here</h2>
-        <p className="lede">Whether you’re naming a new company, a youth sports team, a WiFi network, or anything in between, NamingContest makes it easy to bring everyone together, stay organized, and find a name you love.</p>
+        <p className="lede">Whether you’re naming a new company, a youth sports team, a boat, or anything in between, NamingContest makes it easy to bring everyone together, stay organized, and find a name you love.</p>
       </div>
       <div className="offerings">
         {tiers.map(t => (
