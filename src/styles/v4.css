@@ -12293,6 +12293,14 @@ button.v4-exit {
 .v4-cal-row-value { color: var(--v4-fg); font-weight: 600; white-space: nowrap; }
 .v4-cal-row-value b { font-weight: 700; }
 .v4-cal-row-pending { color: var(--v4-muted); font-weight: 500; font-style: italic; }
+.v4-cal-footer-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  line-height: 1.35;
+}
+.v4-cal-footer-text b { color: var(--v4-fg); font-weight: 700; }
+.v4-cal-footer-text i { font-style: italic; }
 .v4-sched-leg-dur {
   font-weight: 500;
   color: var(--v4-muted);
