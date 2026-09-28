@@ -641,8 +641,8 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
           {/* Reset link only when the dates are custom; on the recommended
               5 + 3 there's nothing to say. */}
           {!isRecommended ? (
-            <button type="button" className="v4-sched-rec-link" onClick={useRecommended}>
-              Use recommended · {recSubDays} days of submissions, {recVoteDays} of voting
+            <button type="button" className="v4-sched-rec-link" onClick={useRecommended} title={`${recSubDays} days of submissions, ${recVoteDays} of voting`}>
+              Use recommended dates
             </button>
           ) : <span />}
           {mode === 'submit' && (

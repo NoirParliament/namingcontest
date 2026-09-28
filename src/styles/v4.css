@@ -12317,6 +12317,51 @@ button.v4-exit {
   .v4-cal-picked-row { flex-direction: column; align-items: flex-start; gap: 2px; }
   .v4-cal-picked-value { text-align: left; white-space: normal; }
 }
+/* The chat column aligns its children to the start, which let the
+   calendar shrink to its content; the schedule always spans the column. */
+.v4-sched-block { align-self: stretch; width: 100%; box-sizing: border-box; }
+/* Phones: a date pill is two left-aligned lines (label, then date ·
+   length) with the caret on the right, instead of three columns that
+   each wrap. The Launch / Pick the winner rows keep their when-text on
+   the right but no longer squeeze it. */
+@media (max-width: 480px) {
+  .v4-sched-leg {
+    position: relative;
+    min-width: 0;
+    flex-wrap: wrap;
+    row-gap: 2px;
+    text-align: left;
+    padding: 10px 34px 10px 12px;
+  }
+  .v4-sched-leg-label { flex: 1 0 100%; }
+  .v4-sched-leg-value {
+    flex: 1 0 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    column-gap: 0;
+    row-gap: 1px;
+  }
+  .v4-sched-leg-value, .v4-sched-leg-dur { white-space: nowrap; }
+  /* The length always gets its own line on phones ("Open for 22 days"),
+     so every pill has the same three-line shape and no line starts with
+     a stray dot. */
+  .v4-sched-leg .v4-sched-leg-dur {
+    display: block;
+    flex: 1 0 100%;
+    font-size: 13px;
+  }
+  .v4-sched-leg .v4-sched-leg-dur::before { content: none; }
+  .v4-sched-leg .v4-sched-leg-dur::first-letter { text-transform: uppercase; }
+  /* Arrow pinned right-centre so it never rides along with the text. */
+  .v4-sched-leg-value > svg {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .v4-sched-leg .v4-sched-leg-value { font-size: 14px; }
+  .v4-sched-when { font-size: 12px; }
+}
 .v4-sched-leg-dur {
   font-weight: 500;
   color: var(--v4-muted);

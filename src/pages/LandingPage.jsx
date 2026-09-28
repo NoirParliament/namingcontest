@@ -370,7 +370,7 @@ export function Nav() {
                   className="nav-mobile-menu-signin"
                   onClick={() => { closeMenu(); navigate('/v4/settings'); }}
                 >
-                  Go to your namespace
+                  Go to your Contest Dashboard
                 </button>
               ) : (
                 <button
