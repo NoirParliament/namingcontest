@@ -818,7 +818,7 @@ export const BRIEF_QUESTIONS = {
         type: 'text',
         required: false,
         placeholder: 'e.g. Loud, warm, chaotic',
-        hint: `The personality steers the whole feel of a name. A welcoming book club and a loud punk band want very different names, even in the same town. Tell participants the tone so the ideas match who you are.`, // [adapted]
+        // No hint (Matt): the question already gives examples, and the guide follows.
         guideId: 't4-belonging',
       },
       {
