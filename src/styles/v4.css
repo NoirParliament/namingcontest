@@ -12273,6 +12273,26 @@ button.v4-exit {
   color: var(--v4-muted);
 }
 .v4-cal-summary b { color: var(--v4-fg); font-weight: 700; margin-right: 4px; }
+.v4-cal-rows {
+  display: flex;
+  flex-direction: column;
+  margin-top: 12px;
+  border-top: 1px solid rgba(3, 3, 2, 0.1);
+}
+.v4-cal-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 2px;
+  border-bottom: 1px solid rgba(3, 3, 2, 0.08);
+  font-family: var(--font-text);
+  font-size: 13px;
+}
+.v4-cal-row-label { color: var(--v4-muted); font-weight: 600; }
+.v4-cal-row-value { color: var(--v4-fg); font-weight: 600; white-space: nowrap; }
+.v4-cal-row-value b { font-weight: 700; }
+.v4-cal-row-pending { color: var(--v4-muted); font-weight: 500; font-style: italic; }
 .v4-sched-leg-dur {
   font-weight: 500;
   color: var(--v4-muted);

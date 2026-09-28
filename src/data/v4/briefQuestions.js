@@ -1590,7 +1590,7 @@ export const SHARED_SETTINGS_QUESTIONS = [
     hourOptions: [3, 6, 12],
     subDefault: 5,
     voteDefault: 3,
-    hint: `Here’s your contest from launch to winner. Tap a stage to change how long it runs; most contests do well with 5 days of submissions and 3 of voting.`,
+    hint: `Tap the day names are due, then the day votes are due. Most contests do well with 5 days of submissions and 3 of voting.`,
   },
 ];
 
