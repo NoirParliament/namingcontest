@@ -11356,9 +11356,10 @@ select.v4-pvote-sort-select:hover {
 .v4-sched-actions {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   flex-wrap: wrap;
   gap: 8px 16px;
-  margin-top: 10px;
+  margin-bottom: 10px;
 }
 .v4-sched-actions .v4-sched-rec-link { padding: 0; }
 .v4-sched-change {

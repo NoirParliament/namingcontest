@@ -594,12 +594,6 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
 
   return (
     <div className="v4-sched-block">
-      <div className="v4-sched-steps">
-        <Event label="Launch" when="When you pay" />
-        <Leg label="Submissions open until" value={fmtDay(subEnd)} dur={spanLabel(new Date(), subEnd)} />
-        <Leg label="Voting open until" value={fmtDay(voteEnd)} dur={spanLabel(subEnd, voteEnd)} />
-        <Event label="Pick the winner" when="After voting closes" />
-      </div>
       <div className="v4-sched-actions">
         <button type="button" className="v4-sched-change" onClick={() => { setMonth(new Date(subEnd.getFullYear(), subEnd.getMonth(), 1)); setAwaitingEnd(false); setEditing(true); }}>
           <CalendarBlank weight="duotone" size={15} />
@@ -610,6 +604,12 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
             Use recommended · {recSubDays} days of submissions, {recVoteDays} of voting
           </button>
         )}
+      </div>
+      <div className="v4-sched-steps">
+        <Event label="Launch" when="When you pay" />
+        <Leg label="Submissions open until" value={fmtDay(subEnd)} dur={spanLabel(new Date(), subEnd)} />
+        <Leg label="Voting open until" value={fmtDay(voteEnd)} dur={spanLabel(subEnd, voteEnd)} />
+        <Event label="Pick the winner" when="After voting closes" />
       </div>
       {mode === 'submit' && (
         <div className="v4-multichips-footer">
