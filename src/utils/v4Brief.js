@@ -157,11 +157,12 @@ export function formatDateAnswer(value) {
 // answer bubble. "open for" because the values are durations: the client
 // read "Submissions 1 day" as "submissions open in one day".
 export function formatScheduleSummary(settings) {
-  // Calendar picks carry real dates; show those ("Names due Sat, Oct 3 ·
-  // Votes due Tue, Oct 6"). Older day-count answers keep the durations.
+  // Calendar picks carry real dates; show those ("Submissions close Sat,
+  // Oct 3 · Voting closes Tue, Oct 6", the join page's own wording). Older
+  // day-count answers keep the durations.
   const subDate = formatDeadlineDate(settings?.submissionEndsAt);
   const voteDate = formatDeadlineDate(settings?.votingEndsAt);
-  if (subDate && voteDate) return `Names due ${subDate} · Votes due ${voteDate}`;
+  if (subDate && voteDate) return `Submissions close ${subDate} · Voting closes ${voteDate}`;
   const sub = settings?.submissionDays;
   const vote = settings?.votingDays;
   const parts = [];

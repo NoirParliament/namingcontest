@@ -419,7 +419,9 @@ function NumberChipsInput({ question, onSubmit, currentAnswer }) {
 // ── contestSchedule (roadmap pills + range calendar) ─────────────────
 // 2026-09-28 (client): pick dates on a calendar "like you do when you're
 // booking a hotel". Resting view is the roadmap (Launch · Submissions
-// open until <date> · Voting open until <date> · Pick the winner); the two
+// close <date> · open for N days, Voting closes <date> · open for N days,
+// Pick the winner); "close" + date and "open for" + duration per Mark's
+// note that "Submissions open · 1 day" read as "opens in one day". The two
 // date pills open one standard range calendar: first tap is the day names
 // are due, second the day votes are due; Done returns. Launch is still the
 // moment of payment.
@@ -557,14 +559,14 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
             it never fights the Done button for space. */}
         <div className="v4-cal-picked">
           <div className="v4-cal-picked-row">
-            <span className="v4-cal-picked-label">Submissions open until</span>
-            <span className="v4-cal-picked-value"><b>{fmtDay(subEnd)}</b><span className="v4-sched-leg-dur">{spanLabel(new Date(), subEnd)}</span></span>
+            <span className="v4-cal-picked-label">Submissions close</span>
+            <span className="v4-cal-picked-value"><b>{fmtDay(subEnd)}</b><span className="v4-sched-leg-dur">open for {spanLabel(new Date(), subEnd)}</span></span>
           </div>
           <div className="v4-cal-picked-row">
-            <span className="v4-cal-picked-label">Voting open until</span>
+            <span className="v4-cal-picked-label">Voting closes</span>
             <span className="v4-cal-picked-value">
               {voteEnd
-                ? <><b>{fmtDay(voteEnd)}</b><span className="v4-sched-leg-dur">{spanLabel(subEnd, voteEnd)}</span></>
+                ? <><b>{fmtDay(voteEnd)}</b><span className="v4-sched-leg-dur">open for {spanLabel(subEnd, voteEnd)}</span></>
                 : <i>tap a day</i>}
             </span>
           </div>
@@ -609,8 +611,8 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
     <div className="v4-sched-block">
       <div className="v4-sched-steps">
         <Event label="Launch" when="When you pay" />
-        <Leg label="Submissions open until" value={fmtDay(subEnd)} dur={spanLabel(new Date(), subEnd)} edits="sub" />
-        <Leg label="Voting open until" value={fmtDay(voteEnd)} dur={spanLabel(subEnd, voteEnd)} edits="vote" />
+        <Leg label="Submissions close" value={fmtDay(subEnd)} dur={`open for ${spanLabel(new Date(), subEnd)}`} edits="sub" />
+        <Leg label="Voting closes" value={fmtDay(voteEnd)} dur={`open for ${spanLabel(subEnd, voteEnd)}`} edits="vote" />
         <Event label="Pick the winner" when="After voting closes" />
       </div>
       <div className="v4-multichips-footer">
