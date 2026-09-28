@@ -169,7 +169,7 @@ const SOMETHING_ELSE_TIERS = {
       newOrReplacing: 'e.g. We’ve been “the potluck thing” for a decade. It needs a real name.',
       audience:       'e.g. The eight of us, plus friends we invite along',
       reflect:        'e.g. Half of us are Italian-American and everyone competes over the sauce',
-      feeling:        'e.g. Warm, a bit competitive',
+      feeling:        'e.g. Cozy and a little rowdy',
       nameTypes:      'e.g. Real words over invented ones. Puns are fine if they’re good.',
       admiredNames:   'e.g. Radiolab (curious, not stuffy), The Thursday Table (says when and what), Between the Wines',
       dislikedNames:  'e.g. Anything ending in “Society”, names that sound like a corporate offsite',
