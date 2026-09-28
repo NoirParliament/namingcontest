@@ -892,7 +892,7 @@ export const BRIEF_QUESTIONS = {
         type: 'textarea',
         rows: 3,
         required: false,
-        placeholder: 'e.g. Arctic Monkeys (an unexpected pairing), The Beatles (a pun that stuck), Pearl Jam (short and vivid)',
+        placeholder: 'e.g. Arctic Monkeys (an unexpected pairing), The Beatles (“beetles” spelled with a beat), Pearl Jam (short and vivid)',
         hint: `A few reference names tell participants more than a paragraph of description. Share the band or club names you find yourself admiring and say what you like about them: the sound, the imagery, the attitude. Participants will read the pattern and aim for it.`, // [adapted]
       },
       {
