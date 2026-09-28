@@ -712,7 +712,7 @@ export const BRIEF_QUESTIONS = {
         type: 'textarea',
         rows: 2,
         required: false,
-        placeholder: 'e.g. The old steel mill, the river herons, everyone calls the hill “the Knob”',
+        placeholder: 'e.g. The old steel mill and the herons along the river',
         hint: `A strong connection to place can give a team name instant identity and local meaning. Local landmarks, landscapes, weather, history, cultural references, and slang can all inspire names that feel connected to where the team plays.`,
       },
       {
