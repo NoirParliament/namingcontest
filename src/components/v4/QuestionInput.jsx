@@ -510,19 +510,6 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
   const calDays = (from, to) => Math.round((startOfDay(to).getTime() - startOfDay(from).getTime()) / MS_DAY);
   const spanLabel = (from, to) => formatWindowDuration(Math.max(1, calDays(from, to)));
 
-  // Recommended schedule (5 days of submissions, 3 of voting, from the
-  // question); a one-tap reset shown only when the range differs from it.
-  const recSubDays = question.subDefault ?? 5;
-  const recVoteDays = question.voteDefault ?? 3;
-  const recSubEnd = endOfDay(Date.now() + recSubDays * MS_DAY);
-  const recVoteEnd = endOfDay(recSubEnd.getTime() + recVoteDays * MS_DAY);
-  const isRecommended = sameDay(subEnd, recSubEnd) && !!voteEnd && sameDay(voteEnd, recVoteEnd);
-  const useRecommended = () => {
-    setEnds({ subEnd: recSubEnd, voteEnd: recVoteEnd });
-    setAwaitingEnd(false);
-    setMonth(new Date(recSubEnd.getFullYear(), recSubEnd.getMonth(), 1));
-  };
-
   const pick = (day) => {
     if (!awaitingEnd || day <= startOfDay(subEnd)) {
       setEnds({ subEnd: endOfDay(day), voteEnd: null });
@@ -636,20 +623,13 @@ export function ContestScheduleInput({ question, onSubmit, mode = 'submit', onCh
         <Leg label="Voting closes" value={fmtDay(voteEnd)} dur={`open for ${spanLabel(subEnd, voteEnd)}`} edits="vote" />
         <Event label="Pick the winner" when="After voting closes" />
       </div>
-      {(!isRecommended || mode === 'submit') && (
-        <div className="v4-multichips-footer">
-          {/* Reset link only when the dates are custom; on the recommended
-              5 + 3 there's nothing to say. */}
-          {!isRecommended ? (
-            <button type="button" className="v4-sched-rec-link" onClick={useRecommended} title={`${recSubDays} days of submissions, ${recVoteDays} of voting`}>
-              Use recommended dates
-            </button>
-          ) : <span />}
-          {mode === 'submit' && (
-            <button type="submit" className="v4-multichips-submit" onClick={() => onSubmit(payload())}>
-              Continue <ArrowRight weight="bold" size={14} />
-            </button>
-          )}
+      {/* No "use recommended" reset: every contest starts on 5 + 3 and the
+          chat hint says so; changing back is two taps on the calendar. */}
+      {mode === 'submit' && (
+        <div className="v4-multichips-footer v4-cal-footer">
+          <button type="submit" className="v4-multichips-submit" onClick={() => onSubmit(payload())}>
+            Continue <ArrowRight weight="bold" size={14} />
+          </button>
         </div>
       )}
     </div>
