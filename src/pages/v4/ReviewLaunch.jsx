@@ -618,7 +618,7 @@ export default function ReviewLaunch() {
             <section className="v4-review-section v4-review-section--private">
               <header className="v4-review-section-head">
                 <h2>Schedule</h2>
-                <span className="v4-review-section-hint">Participants see these dates</span>
+                <span className="v4-review-section-hint">Participants see this</span>
               </header>
               <ContestScheduleInput
                 question={scheduleQuestion}
@@ -638,7 +638,7 @@ export default function ReviewLaunch() {
             <section className="v4-review-section v4-review-section--private">
               <header className="v4-review-section-head">
                 <h2>Settings</h2>
-                <span className="v4-review-section-hint">Participants see the effects · click to edit</span>
+                <span className="v4-review-section-hint">Participants see this · click to edit</span>
               </header>
               <ul className="v4-review-list v4-review-list-editable">
                 {filledSettings.map((q) => (
