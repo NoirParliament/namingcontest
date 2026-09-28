@@ -115,7 +115,9 @@ export default function EditQuestionModal({
           <p className="v4-edit-modal-hint">{question.hint}</p>
         )}
 
-        {currentAnswer !== undefined && currentAnswer !== '' && (
+        {/* The schedule's own date pills already show its current dates (and
+            its answer is an object, which printed as "[object Object]"). */}
+        {currentAnswer !== undefined && currentAnswer !== '' && question.type !== 'contestSchedule' && (
           <div className="v4-edit-modal-current">
             <span className="v4-edit-modal-current-label">Current:</span>
             <span className="v4-edit-modal-current-value">

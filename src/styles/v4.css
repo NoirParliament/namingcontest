@@ -12354,11 +12354,12 @@ button.v4-exit {
 /* The chat column aligns its children to the start, which let the
    calendar shrink to its content; the schedule always spans the column. */
 .v4-sched-block { align-self: stretch; width: 100%; box-sizing: border-box; }
-/* Phones: a date pill is two left-aligned lines (label, then date ·
-   length) with the caret on the right, instead of three columns that
-   each wrap. The Launch / Pick the winner rows keep their when-text on
-   the right but no longer squeeze it. */
-@media (max-width: 480px) {
+/* Narrow schedules (a phone, or the edit popup on any screen): a date pill
+   stacks label / date / length with the caret on the right, instead of
+   three columns that each wrap. Keyed to the schedule block's own width
+   (container query) so it works wherever the block is narrow. */
+.v4-sched-block { container-type: inline-size; }
+@container (max-width: 440px) {
   .v4-sched-leg {
     position: relative;
     min-width: 0;
