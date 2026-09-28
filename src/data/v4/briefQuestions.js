@@ -1265,7 +1265,7 @@ export const BRIEF_QUESTIONS = {
         type: 'textarea',
         rows: 2,
         required: false,
-        placeholder: 'e.g. Something with a creative, artistic feel. Or: open, we don’t want to steer it.',
+        placeholder: 'e.g. Something creative and artistic, or open to whoever they become',
       },
       {
         id: 'exploreDirections',
