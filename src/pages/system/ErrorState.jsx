@@ -19,7 +19,7 @@ const SYSTEM_SEGMENT = 'p1';
 export default function ErrorState({
   code = 'Error',
   title = 'We hit a snag.',
-  message = 'An unexpected error occurred. Try again in a moment — if it keeps happening, get in touch and we’ll sort it out.',
+  message = 'An unexpected error occurred. Try again in a moment, if it keeps happening, get in touch and we’ll sort it out.',
 }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();

@@ -240,9 +240,9 @@ export default function ParticipantThanks() {
                 Activates and routes to /vote when ready. */}
             <div className="v4-pthanks-cta">
               {/* aria-disabled (not the HTML disabled attr) so hover still
-                  fires — the click is no-op'd in onClick instead. Lets the
+                  fires, the click is no-op'd in onClick instead. Lets the
                   user feel the button as a button: it lights up under the
-                  cursor and tells them "almost — time is ticking" rather
+                  cursor and tells them "almost, time is ticking" rather
                   than reading as a broken/dead element. */}
               <button
                 type="button"

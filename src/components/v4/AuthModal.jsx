@@ -15,7 +15,7 @@ export default function AuthModal({
   mode = 'launch',           // 'launch' | 'save'
   onClose,
   onSuccess,                 // called with the email after stub auth
-  contextLabel = '',         // e.g., the working name — shown for context
+  contextLabel = '',         // e.g., the working name, shown for context
 }) {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);

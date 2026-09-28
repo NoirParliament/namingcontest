@@ -55,12 +55,12 @@ const STEPS = [
   },
   {
     id: 'message', type: 'longtext', placeholder: 'The more detail, the faster we can help.',
-    ask: () => 'Got it. Tell us a little more —',
+    ask: () => 'Got it. Tell us a little more, ',
     valid: (v) => v.trim().length > 0,
   },
   {
     id: 'email', type: 'email', placeholder: 'you@example.com', autoComplete: 'email',
-    ask: (a) => `Last thing, ${firstName(a.name)} — where should we reply?`,
+    ask: (a) => `Last thing, ${firstName(a.name)}, where should we reply?`,
     valid: (v) => /^\S+@\S+\.\S+$/.test(v.trim()),
   },
 ];
@@ -281,7 +281,7 @@ export default function ContactPage() {
                   />
                   <h2 className="contact-received-title">Message received</h2>
                   <p className="contact-received-sub">
-                    Thanks{answers.name ? `, ${firstName(answers.name)}` : ''} —
+                    Thanks{answers.name ? `, ${firstName(answers.name)}` : ''}, 
                     we’ll reply to <strong>{answers.email}</strong> within a
                     business day. Keep an eye on your inbox.
                   </p>
@@ -325,21 +325,21 @@ export default function ContactPage() {
                     )}
                     {/* Delivery failed. Said in the bot's own voice so it reads
                         as part of the conversation, and it hands over a real
-                        address — a contact form that silently eats a message
+                        address, a contact form that silently eats a message
                         is worse than no form. */}
                     {sendError && !botTyping && (
                       <div className="contact-chat-row bot" role="alert">
                         <div className="contact-chat-bubble">
                           {sendError === 'limit' ? (
                             <>
-                              That&rsquo;s a few messages in a short while — give it an
+                              That&rsquo;s a few messages in a short while, give it an
                               hour, or email us straight at{' '}
                               <a href="mailto:hello@namingcontest.com">hello@namingcontest.com</a>{' '}
                               and we&rsquo;ll pick it up there.
                             </>
                           ) : (
                             <>
-                              Something went wrong sending that — sorry.{' '}
+                              Something went wrong sending that, sorry.{' '}
                               <button
                                 type="button"
                                 className="contact-retry-link"

@@ -44,7 +44,7 @@ export default function NotFound() {
                 Back to home <span className="arrow">→</span>
               </button>
               {/* The "Platform map" button that sat here pointed at the demo
-                  gallery, which is unrouted for launch — it would have been a
+                  gallery, which is unrouted for launch, it would have been a
                   404 offered from a 404. */}
             </div>
           </main>

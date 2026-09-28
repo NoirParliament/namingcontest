@@ -108,7 +108,7 @@ export default function AvatarMenu({ email, name, photo, defaultPhoto, seed, ton
       >
         <span className="v4-avatar-photo-wrap" aria-hidden="true">
           {/* Real photo wins; otherwise the generated avatar (seeded by the
-              user id) — falling back to the legacy default image only for
+              user id), falling back to the legacy default image only for
               callers that don't pass a seed yet. */}
           {photo ? (
             <img src={photo} alt="" className="v4-avatar-photo is-custom" />

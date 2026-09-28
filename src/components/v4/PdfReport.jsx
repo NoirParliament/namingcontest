@@ -37,7 +37,7 @@ const PdfReport = forwardRef(function PdfReport({
   durationDays,
   hideBranding = false,
   customLogo,
-  customColor, // optional override — when set, paints the ENTIRE doc
+  customColor, // optional override, when set, paints the ENTIRE doc
 }, ref) {
   if (!winner) return null;
   const t = tone || { bg: '#fadecc', fg: '#9c4818' };
@@ -58,7 +58,7 @@ const PdfReport = forwardRef(function PdfReport({
       }}
     >
       {/* The same backdrop the chat stages wear — cream page, segment glow,
-          the segment's line-art scene — so the exported report reads as the
+          the segment's line-art scene, so the exported report reads as the
           same product the contest ran in. Rendered via the shared component
           rather than re-created here, so the two can't drift apart.
 
@@ -148,7 +148,7 @@ const PdfReport = forwardRef(function PdfReport({
             <div className="v4-pdf-report-stat-label">Names</div>
           </div>
           <div className="v4-pdf-report-stat">
-            <div className="v4-pdf-report-stat-value">{stats.participants ?? '—'}</div>
+            <div className="v4-pdf-report-stat-value">{stats.participants ?? ', '}</div>
             <div className="v4-pdf-report-stat-label">Voters</div>
           </div>
           <div className="v4-pdf-report-stat">

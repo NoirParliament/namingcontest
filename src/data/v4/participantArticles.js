@@ -26,13 +26,13 @@ export const PARTICIPANT_ARTICLES = {
   b1: [
     {
       id: 'pb1-chooser',
-      title: 'What Founders Actually Pick — and What They Reject',
+      title: 'What Founders Actually Pick, and What They Reject',
       readTime: '2 min',
       icon: 'Brain',
       sections: [
         {
           heading: 'Founders reject “obviously good” before they pick “right”',
-          body: `Watch a founder work through a shortlist and the same pattern repeats. The clever, dictionary-perfect entries get a polite nod, then quietly slide to the bottom. What rises to the top is almost always the name that “feels like us” — usually one the founders couldn’t have written themselves but instantly recognized when they saw it. Your edge as a participant is that you’re outside that founder bubble. Submit the name the brief asks for, not the name a naming book would.`,
+          body: `Watch a founder work through a shortlist and the same pattern repeats. The clever, dictionary-perfect entries get a polite nod, then quietly slide to the bottom. What rises to the top is almost always the name that “feels like us”, usually one the founders couldn’t have written themselves but instantly recognized when they saw it. Your edge as a participant is that you’re outside that founder bubble. Submit the name the brief asks for, not the name a naming book would.`,
         },
         {
           heading: 'The three rejection reflexes',
@@ -40,7 +40,7 @@ export const PARTICIPANT_ARTICLES = {
         },
         {
           heading: 'What rises',
-          body: `Names that survive are usually short (5–7 letters), have a satisfying sound when said aloud, and leave room for the founder to project meaning onto them. Lexicon’s case studies of Pentium, Swiffer and Dasani all share that profile — invented but pronounceable, suggestive but not literal. Aim there.`,
+          body: `Names that survive are usually short (5–7 letters), have a satisfying sound when said aloud, and leave room for the founder to project meaning onto them. Lexicon’s case studies of Pentium, Swiffer and Dasani all share that profile: invented but pronounceable, suggestive but not literal. Aim there.`,
         },
       ],
       callout: {
@@ -56,20 +56,20 @@ export const PARTICIPANT_ARTICLES = {
       sections: [
         {
           heading: 'Lead on-brief, then spend a slot on the wildcard',
-          body: `If the contest lets you submit three names, your first slot is where the chooser forms their opinion of you. Reviewers form a quick “is this person on-strategy?” judgment in the first 5 seconds, so lead with your most on-brief name. That earns the trust that makes a reviewer willing to consider a bolder swing. Then deliberately spend one of your remaining slots on the wildcard you almost didn’t dare submit. Leading safe doesn’t mean hiding the bold name — it means ordering it so the bold name gets a fair hearing.`,
+          body: `If the contest lets you submit three names, your first slot is where the chooser forms their opinion of you. Reviewers form a quick “is this person on-strategy?” judgment in the first 5 seconds, so lead with your most on-brief name. That earns the trust that makes a reviewer willing to consider a bolder swing. Then deliberately spend one of your remaining slots on the wildcard you almost didn’t dare submit. Leading safe doesn’t mean hiding the bold name, it means ordering it so the bold name gets a fair hearing.`,
         },
         {
           heading: 'Write the why-it-fits like a sentence in their pitch deck',
-          body: `Most participants explain a name by describing the name. “Aurora — because it means dawn.” That’s an etymology, not a rationale. The submissions that win say what the name does for the business: “Aurora — positions you as the calm-before-the-launch tool when every competitor sounds aggressive.” Imagine the founder copy-pasting your sentence into a slide. That’s the standard.`,
+          body: `Most participants explain a name by describing the name. “Aurora, because it means dawn.” That’s an etymology, not a rationale. The submissions that win say what the name does for the business: “Aurora, positions you as the calm-before-the-launch tool when every competitor sounds aggressive.” Imagine the founder copy-pasting your sentence into a slide. That’s the standard.`,
         },
         {
           heading: 'Skip the trends actively',
-          body: `In any given year, naming trends saturate one or two patterns: dropping vowels, doubling letters, adding “-ly” or “-ify”. Submitting another one buries you in the pile. Catchword’s annual naming-trend reports are a great cheat sheet for what to avoid — if it’s in their “rising” column, your name is already old news by the time the contest closes.`,
+          body: `In any given year, naming trends saturate one or two patterns: dropping vowels, doubling letters, adding “-ly” or “-ify”. Submitting another one buries you in the pile. Catchword’s annual naming-trend reports are a great cheat sheet for what to avoid, if it’s in their “rising” column, your name is already old news by the time the contest closes.`,
         },
       ],
       callout: {
         type: 'example',
-        text: `When Stripe held early shortlist reviews, the entries that survived the first cut weren’t the most “fintech-sounding” — they were the names that suggested infrastructure without saying it. Submit the soft signal, not the loud one.`,
+        text: `When Stripe held early shortlist reviews, the entries that survived the first cut weren’t the most “fintech-sounding”, they were the names that suggested infrastructure without saying it. Submit the soft signal, not the loud one.`,
       },
     },
   ],
@@ -84,16 +84,16 @@ export const PARTICIPANT_ARTICLES = {
       sections: [
         {
           heading: 'The trademark trap',
-          body: `The single biggest source of product-name rejection isn’t taste — it’s lawyers. Reviewers have learned to instantly discard names that obviously collide with a known brand in any adjacent category. “Cloudly,” “Notionly,” “Slackify” sound clever but die in trademark review. Before submitting, do a 30-second mental check: would a sleep-deprived corporate attorney flag this? If yes, swap it.`,
+          body: `The single biggest source of product-name rejection isn’t taste, it’s lawyers. Reviewers have learned to instantly discard names that obviously collide with a known brand in any adjacent category. “Cloudly,” “Notionly,” “Slackify” sound clever but die in trademark review. Before submitting, do a 30-second mental check: would a sleep-deprived corporate attorney flag this? If yes, swap it.`,
         },
         {
           heading: 'The architecture mismatch',
-          body: `If the company is a branded house (every product extends the master brand), your submission needs to feel like it could live alongside the company name without fighting it. “Salesforce Thunderbolt” doesn’t fit Salesforce’s tone. “Salesforce Einstein” does. Read the brief carefully for which products the company already sells — your name has to sit naturally on that shelf.`,
+          body: `If the company is a branded house (every product extends the master brand), your submission needs to feel like it could live alongside the company name without fighting it. “Salesforce Thunderbolt” doesn’t fit Salesforce’s tone. “Salesforce Einstein” does. Read the brief carefully for which products the company already sells, your name has to sit naturally on that shelf.`,
         },
       ],
       callout: {
         type: 'warning',
-        text: `If the brief mentions an existing parent brand and you don’t, your submission usually gets cut without serious review. Always reference the parent in your why-it-fits — even if just to say why your name extends it.`,
+        text: `If the brief mentions an existing parent brand and you don’t, your submission usually gets cut without serious review. Always reference the parent in your why-it-fits, even if just to say why your name extends it.`,
       },
     },
     {
@@ -108,7 +108,7 @@ export const PARTICIPANT_ARTICLES = {
         },
         {
           heading: 'Too abstract dies in the pitch',
-          body: `On the other end: pure invented words (“Zylora”, “Quenex”) give the sales team nothing to lean on in the first 5 seconds of a cold meeting. The sweet spot is suggestive — a real word, slight twist, or compound that hints at the benefit without spelling it out. Think “Mailchimp” (real word + unexpected animal), “Lyft” (action verb, respelled), “Notion” (abstract noun that suggests creative thought).`,
+          body: `On the other end: pure invented words (“Zylora”, “Quenex”) give the sales team nothing to lean on in the first 5 seconds of a cold meeting. The sweet spot is suggestive, a real word, slight twist, or compound that hints at the benefit without spelling it out. Think “Mailchimp” (real word + unexpected animal), “Lyft” (action verb, respelled), “Notion” (abstract noun that suggests creative thought).`,
         },
         {
           heading: 'The first-meeting test',
@@ -117,7 +117,7 @@ export const PARTICIPANT_ARTICLES = {
       ],
       callout: {
         type: 'insight',
-        text: `Watkins’ SMILE heuristic — Suggestive, Meaningful, Imagery, Legs, Emotional — is the cleanest checklist for product-name self-review. Run your top entry against all five before you hit submit.`,
+        text: `Watkins’ SMILE heuristic (Suggestive, Meaningful, Imagery, Legs, Emotional) is the cleanest checklist for product-name self-review. Run your top entry against all five before you hit submit.`,
       },
     },
   ],
@@ -132,7 +132,7 @@ export const PARTICIPANT_ARTICLES = {
       sections: [
         {
           heading: 'Outsiders submit Phoenix. Insiders submit specifics.',
-          body: `Project naming contests are unusual: the chooser already knows the team intimately. That means generic mythological names (Phoenix, Atlas, Titan, Apollo) — which work great in public contexts — read as lazy to internal reviewers. They’ve seen those names on five past projects. What wins is a name that signals you actually read the brief: a reference to a specific challenge, an internal acronym repurposed, a wink at the team’s culture.`,
+          body: `Project naming contests are unusual: the chooser already knows the team intimately. That means generic mythological names (Phoenix, Atlas, Titan, Apollo), which work great in public contexts, read as lazy to internal reviewers. They’ve seen those names on five past projects. What wins is a name that signals you actually read the brief: a reference to a specific challenge, an internal acronym repurposed, a wink at the team’s culture.`,
         },
         {
           heading: 'Mine the brief for clues',
@@ -180,7 +180,7 @@ export const PARTICIPANT_ARTICLES = {
         },
         {
           heading: 'Watch for asymmetric risk',
-          body: `Founders rebranding are simultaneously hopeful and terrified. Names that feel like a clean break from the past read as exciting to half the room and reckless to the other half. The submissions that win usually come with a built-in bridge: a sound, a letter pattern, or a meaning that lets the founder say “this is still us, just evolved.” Give the founder that built-in bridge — a way to carry the old equity forward instead of asking customers to start over.`,
+          body: `Founders rebranding are simultaneously hopeful and terrified. Names that feel like a clean break from the past read as exciting to half the room and reckless to the other half. The submissions that win usually come with a built-in bridge: a sound, a letter pattern, or a meaning that lets the founder say “this is still us, just evolved.” Give the founder that built-in bridge, a way to carry the old equity forward instead of asking customers to start over.`,
         },
       ],
       callout: {
@@ -196,7 +196,7 @@ export const PARTICIPANT_ARTICLES = {
       sections: [
         {
           heading: 'When a bridge name is the safer default',
-          body: `A bridge name — one that keeps a thread of the old identity — is the lower-risk default whenever the existing equity is worth keeping. Clean-break names can absolutely win: Accenture, Google, Meta all broke hard and succeeded. But those revolutions carried more risk and needed serious marketing fuel to land, and plenty of others bounced (Tribune Publishing → Tronc lasted 18 months; Weight Watchers → WW confused customers for years). A contest participant rarely controls a re-education budget, so unless the brief is clearly asking for a fresh start, the bridge is the smarter bet.`,
+          body: `A bridge name, one that keeps a thread of the old identity, is the lower-risk default whenever the existing equity is worth keeping. Clean-break names can absolutely win: Accenture, Google, Meta all broke hard and succeeded. But those revolutions carried more risk and needed serious marketing fuel to land, and plenty of others bounced (Tribune Publishing → Tronc lasted 18 months; Weight Watchers → WW confused customers for years). A contest participant rarely controls a re-education budget, so unless the brief is clearly asking for a fresh start, the bridge is the smarter bet.`,
         },
         {
           heading: 'How to design the bridge',
@@ -224,7 +224,7 @@ export const PARTICIPANT_ARTICLES = {
       sections: [
         {
           heading: 'Open briefs are gift, not curse',
-          body: `When a brief doesn’t fit neatly into “company” or “product,” participants tend to play it safe. Don’t. Open briefs are where bold names actually have room to win — there’s no established category convention to violate, no competitor pattern to break. Lexicon’s most distinctive work (think BlackBerry, Swiffer) came out of contexts where the category was new or undefined.`,
+          body: `When a brief doesn’t fit neatly into “company” or “product,” participants tend to play it safe. Don’t. Open briefs are where bold names actually have room to win, there’s no established category convention to violate, no competitor pattern to break. Lexicon’s most distinctive work (think BlackBerry, Swiffer) came out of contexts where the category was new or undefined.`,
         },
         {
           heading: 'Anchor to the human, not the thing',
@@ -233,7 +233,7 @@ export const PARTICIPANT_ARTICLES = {
       ],
       callout: {
         type: 'insight',
-        text: `If the briefer is hesitant to call it a “company” or “product,” they’re often signaling that they want something that feels less corporate. Match that energy in your submission — warmer, more human, less optimized-for-pitch.`,
+        text: `If the briefer is hesitant to call it a “company” or “product,” they’re often signaling that they want something that feels less corporate. Match that energy in your submission, warmer, more human, less optimized-for-pitch.`,
       },
     },
     {
@@ -248,12 +248,12 @@ export const PARTICIPANT_ARTICLES = {
         },
         {
           heading: 'Use the why-it-fits to teach',
-          body: `Open briefs reward participants who give the chooser language to think with. Frame each submission’s rationale as “if you want X, this name does X.” You’re not just submitting names — you’re submitting a small naming strategy. That’s the difference between getting picked and getting forgotten.`,
+          body: `Open briefs reward participants who give the chooser language to think with. Frame each submission’s rationale as “if you want X, this name does X.” You’re not just submitting names, you’re submitting a small naming strategy. That’s the difference between getting picked and getting forgotten.`,
         },
       ],
       callout: {
         type: 'example',
-        text: `When IDEO names internal initiatives, they often submit three names in deliberate contrast — formal, playful, aspirational — to help the team see their own preferences. Borrow that pattern for any open-ended contest.`,
+        text: `When IDEO names internal initiatives, they often submit three names in deliberate contrast (formal, playful, aspirational) to help the team see their own preferences. Borrow that pattern for any open-ended contest.`,
       },
     },
   ],
@@ -262,24 +262,24 @@ export const PARTICIPANT_ARTICLES = {
   t1: [
     {
       id: 'pt1-tests',
-      title: 'The Chant Test — and 3 Others Every Team Name Must Pass',
+      title: 'The Chant Test, and 3 Others Every Team Name Must Pass',
       readTime: '2 min',
       icon: 'MegaphoneSimple',
       sections: [
         {
-          heading: 'Test 1 — The chant',
-          body: `Stand up, picture 50 people on a sideline after a goal, and shout your submission three times: “EAGLES! EAGLES! EAGLES!” If your throat trips or the rhythm flatlines after two beats, the name fails the most important test in sports naming. Hard consonants and short vowels chant; soft endings and three-syllable names do not. Oklahoma City’s “Thunder” was picked by fan vote off an ownership shortlist — beating finalists like Barons, Bison, Energy and Wind — and it carries partly because of that one syllable and the hard “T-H.” One more thing before you fall for a name: say it out loud and check the obvious second meaning, the slur, the unfortunate initials. The crowd will find them for you if you don’t.`,
+          heading: 'Test 1, The chant',
+          body: `Stand up, picture 50 people on a sideline after a goal, and shout your submission three times: “EAGLES! EAGLES! EAGLES!” If your throat trips or the rhythm flatlines after two beats, the name fails the most important test in sports naming. Hard consonants and short vowels chant; soft endings and three-syllable names do not. Oklahoma City’s “Thunder” was picked by fan vote off an ownership shortlist (beating finalists like Barons, Bison, Energy and Wind) and it carries partly because of that one syllable and the hard “T-H.” One more thing before you fall for a name: say it out loud and check the obvious second meaning, the slur, the unfortunate initials. The crowd will find them for you if you don’t.`,
         },
         {
-          heading: 'Test 2 — The jersey',
+          heading: 'Test 2, The jersey',
           body: `Imagine the name printed in block capitals across a chest. Is it readable from 30 metres away? Compound names get shrunk to fit (“EAST END EAGLES” becomes microscopic). Single bold words (“KRAKEN”, “HEAT”) dominate the jersey and read from the back row of the stand. If your name needs two lines on a kit, reconsider.`,
         },
         {
-          heading: 'Test 3 — The kid in the merch shop',
+          heading: 'Test 3, The kid in the merch shop',
           body: `Can a seven-year-old draw the logo for your team name without help? Visualisable nouns (animals, weather, weapons, mythology) crush abstract ones in youth merchandise sales. Veterinary marketing research shows the same effect for any name a kid attaches to: pictureable always outsells conceptual when the buyer is under ten.`,
         },
         {
-          heading: 'Test 4 — The 50-year horizon',
+          heading: 'Test 4, The 50-year horizon',
           body: `Will this name still feel right when the original players are coaches and their kids are wearing the kit? Names tied to a current trend or pop-culture reference age fast. Names built on enduring local geography, mythology, or natural elements age into tradition. The teams that get renamed every decade are the ones that chased the moment instead of the era.`,
         },
       ],
@@ -300,16 +300,16 @@ export const PARTICIPANT_ARTICLES = {
         },
         {
           heading: 'Working-class signal beats aspirational signal',
-          body: `Amateur and community team names that stick almost always reference real local life rather than aspirational imagery. “Iron Boots FC” wins where “Phoenix Strikers” loses. The reason is identity: fans want a name that says “this is who we are” more than “this is what we wish we were.” The cleverest entries draw from the trade, the river, the steel works, the docks — whatever the locals actually call this place.`,
+          body: `Amateur and community team names that stick almost always reference real local life rather than aspirational imagery. “Iron Boots FC” wins where “Phoenix Strikers” loses. The reason is identity: fans want a name that says “this is who we are” more than “this is what we wish we were.” The cleverest entries draw from the trade, the river, the steel works, the docks, whatever the locals actually call this place.`,
         },
         {
           heading: 'How to test for local resonance',
-          body: `Picture three different fans at the local pub: an 18-year-old who grew up here, a 45-year-old who works nearby, a 70-year-old who’s lived here their whole life. Would any of them be embarrassed to wear a scarf with your name on it? If the answer’s no for all three, you’ve found a name with cross-generational community fit — which is the actual definition of a sports-team name that lasts.`,
+          body: `Picture three different fans at the local pub: an 18-year-old who grew up here, a 45-year-old who works nearby, a 70-year-old who’s lived here their whole life. Would any of them be embarrassed to wear a scarf with your name on it? If the answer’s no for all three, you’ve found a name with cross-generational community fit, which is the actual definition of a sports-team name that lasts.`,
         },
       ],
       callout: {
         type: 'insight',
-        text: `The Premier League’s most beloved team names — Arsenal, Tottenham Hotspur, Manchester United — all sound rooted in 1880s industrial English life because they literally are. Authenticity-of-place is the deepest moat in sports naming. Submit names that sound like they couldn’t have been chosen anywhere else.`,
+        text: `The Premier League’s most beloved team names (Arsenal, Tottenham Hotspur, Manchester United) all sound rooted in 1880s industrial English life because they literally are. Authenticity-of-place is the deepest moat in sports naming. Submit names that sound like they couldn’t have been chosen anywhere else.`,
       },
     },
   ],
@@ -328,11 +328,11 @@ export const PARTICIPANT_ARTICLES = {
         },
         {
           heading: 'Names with a story they can quote',
-          body: `Every band gets asked the same first interview question: “Where did the name come from?” Names with a quick, repeatable origin story — “It’s from a misheard lyric,” “It’s our grandmother’s nickname,” “It’s the street we grew up on” — give journalists a built-in pull quote. Names with no story require an awkward shrug. Submit names that come with a sentence the band can say a hundred times without rolling their eyes.`,
+          body: `Every band gets asked the same first interview question: “Where did the name come from?” Names with a quick, repeatable origin story, “It’s from a misheard lyric,” “It’s our grandmother’s nickname,” “It’s the street we grew up on”, give journalists a built-in pull quote. Names with no story require an awkward shrug. Submit names that come with a sentence the band can say a hundred times without rolling their eyes.`,
         },
         {
           heading: 'Names that don’t fight the genre',
-          body: `A folk band named “Demonkill” or a metal band named “Soft Pillow” creates cognitive friction that loses listeners before the first stream. Read the brief for the band’s actual sound and make sure your name’s phonetic register matches. Sharp consonants for aggressive music; longer vowels and softer endings for melodic work. Phonetic congruence isn’t decoration; it’s the band’s first promise about the music. And before you fall for a name, say it out loud and check the obvious second meaning, the slur, the unfortunate initials — what looks clean on the page can sound very different shouted back at a show.`,
+          body: `A folk band named “Demonkill” or a metal band named “Soft Pillow” creates cognitive friction that loses listeners before the first stream. Read the brief for the band’s actual sound and make sure your name’s phonetic register matches. Sharp consonants for aggressive music; longer vowels and softer endings for melodic work. Phonetic congruence isn’t decoration; it’s the band’s first promise about the music. And before you fall for a name, say it out loud and check the obvious second meaning, the slur, the unfortunate initials, what looks clean on the page can sound very different shouted back at a show.`,
         },
       ],
       callout: {
@@ -352,11 +352,11 @@ export const PARTICIPANT_ARTICLES = {
         },
         {
           heading: 'The “yelled at the encore” test',
-          body: `A great band name also has to work in the loudest possible context: the crowd yelling it for one more song. Listen to the acoustics of your submission first — does the last syllable land like a kick drum, or trail off into nothing? Names that carry almost always have either a sharp consonant ending or a long vowel that can be sustained (“Queeeen”, “Oasiiiis”). Soft trailing syllables die in stadium air.`,
+          body: `A great band name also has to work in the loudest possible context: the crowd yelling it for one more song. Listen to the acoustics of your submission first, does the last syllable land like a kick drum, or trail off into nothing? Names that carry almost always have either a sharp consonant ending or a long vowel that can be sustained (“Queeeen”, “Oasiiiis”). Soft trailing syllables die in stadium air.`,
         },
         {
           heading: 'Distinctiveness compounds',
-          body: `Distinctive, hard-to-confuse names tend to compound discovery over time, while common-word names quietly bleed listeners to search collisions — every mis-search hands a potential fan to someone else with a similar name. The trade-off, slower initial recognition for stronger long-term ownership, is almost always worth it for new bands. Submit the distinctive name even if it sounds risky on first read.`,
+          body: `Distinctive, hard-to-confuse names tend to compound discovery over time, while common-word names quietly bleed listeners to search collisions, every mis-search hands a potential fan to someone else with a similar name. The trade-off, slower initial recognition for stronger long-term ownership, is almost always worth it for new bands. Submit the distinctive name even if it sounds risky on first read.`,
         },
       ],
       callout: {
@@ -376,7 +376,7 @@ export const PARTICIPANT_ARTICLES = {
       sections: [
         {
           heading: 'Word-of-mouth is still the #1 podcast discovery channel',
-          body: `Edison Research’s annual podcast consumer report has shown for over a decade that the most common way new listeners find a show is “a friend told me.” That means your name has to survive a casual recommendation in a noisy bar: “You should listen to [your name] — it’s about [topic].” If the friend has to look at their phone to remember the exact name, the recommendation breaks. Submit names short enough to remember after one hearing.`,
+          body: `Edison Research’s annual podcast consumer report has shown for over a decade that the most common way new listeners find a show is “a friend told me.” That means your name has to survive a casual recommendation in a noisy bar: “You should listen to [your name], it’s about [topic].” If the friend has to look at their phone to remember the exact name, the recommendation breaks. Submit names short enough to remember after one hearing.`,
         },
         {
           heading: 'The “podcast app autocomplete” test',
@@ -385,7 +385,7 @@ export const PARTICIPANT_ARTICLES = {
       ],
       callout: {
         type: 'insight',
-        text: `Hidden Brain, Serial, Radiolab, 99% Invisible — the most word-of-mouth-friendly podcast names of the last decade all share a quality: they’re short enough to remember and weird enough to ask about. Aim for both, not just one.`,
+        text: `Hidden Brain, Serial, Radiolab, 99% Invisible: the most word-of-mouth-friendly podcast names of the last decade all share a quality: they’re short enough to remember and weird enough to ask about. Aim for both, not just one.`,
       },
     },
     {
@@ -409,7 +409,7 @@ export const PARTICIPANT_ARTICLES = {
       ],
       callout: {
         type: 'example',
-        text: `My Favorite Murder works partly because it sounds exactly like how the hosts actually talk: dark, conversational, slightly off-kilter. The name and the voice are inseparable. Test your submission by reading it in the host’s voice — if it sounds off, it is.`,
+        text: `My Favorite Murder works partly because it sounds exactly like how the hosts actually talk: dark, conversational, slightly off-kilter. The name and the voice are inseparable. Test your submission by reading it in the host’s voice, if it sounds off, it is.`,
       },
     },
   ],
@@ -424,7 +424,7 @@ export const PARTICIPANT_ARTICLES = {
       sections: [
         {
           heading: 'Two audiences, one name',
-          body: `Civic and nonprofit names have to land with two completely different audiences at once: the community being served and the donors paying for the service. A name that excites donors but confuses recipients (“The Synergistic Wellness Initiative”) fails. A name that resonates with recipients but bores donors (“Helping Hands #43”) also fails. The great civic names — Doctors Without Borders, Habitat for Humanity, Feeding America — speak to both at once.`,
+          body: `Civic and nonprofit names have to land with two completely different audiences at once: the community being served and the donors paying for the service. A name that excites donors but confuses recipients (“The Synergistic Wellness Initiative”) fails. A name that resonates with recipients but bores donors (“Helping Hands #43”) also fails. The great civic names (Doctors Without Borders, Habitat for Humanity, Feeding America) speak to both at once.`,
         },
         {
           heading: 'Communicate impact, not method',
@@ -433,7 +433,7 @@ export const PARTICIPANT_ARTICLES = {
       ],
       callout: {
         type: 'insight',
-        text: `Names that state the mission plainly lower the barrier to a first gift — a donor doesn’t have to decode anything before deciding to give. Clarity reads as trustworthiness, and first impressions are also first dollars.`,
+        text: `Names that state the mission plainly lower the barrier to a first gift, a donor doesn’t have to decode anything before deciding to give. Clarity reads as trustworthiness, and first impressions are also first dollars.`,
       },
     },
     {
@@ -444,7 +444,7 @@ export const PARTICIPANT_ARTICLES = {
       sections: [
         {
           heading: 'Names that outlast their founders',
-          body: `YMCA was founded in 1844. Habitat for Humanity in 1976. Doctors Without Borders in 1971. None used trendy language, slang, or tech buzzwords at founding — and that’s exactly why they’re still standing. When submitting a civic name, ask: will this still make sense in 2074? Anything that name-checks a current platform, trend, or pop-culture moment will date itself within 15 years.`,
+          body: `YMCA was founded in 1844. Habitat for Humanity in 1976. Doctors Without Borders in 1971. None used trendy language, slang, or tech buzzwords at founding, and that’s exactly why they’re still standing. When submitting a civic name, ask: will this still make sense in 2074? Anything that name-checks a current platform, trend, or pop-culture moment will date itself within 15 years.`,
         },
         {
           heading: 'Avoid the “e-” and “i-” prefixes',
@@ -476,12 +476,12 @@ export const PARTICIPANT_ARTICLES = {
         },
         {
           heading: 'The 1v5 yell',
-          body: `Picture a teammate clutching a 1v5 in ranked. The name has to be screamable in that moment — “LET’S GO [NAME]!” Names with hard consonants (FaZe, NRG, T1) and short vowels survive the yell. Multi-syllable names (Phantom Reaver Sentinels) get truncated within a week to whatever the team actually shouts in voice comms. Save the full name from death-by-nickname by submitting something already short and sharp. And before you commit, read the tag and the name out loud — check the obvious second meaning, the slur, the unfortunate initials, because a tag that reads wrong follows the team into every bracket.`,
+          body: `Picture a teammate clutching a 1v5 in ranked. The name has to be screamable in that moment, “LET’S GO [NAME]!” Names with hard consonants (FaZe, NRG, T1) and short vowels survive the yell. Multi-syllable names (Phantom Reaver Sentinels) get truncated within a week to whatever the team actually shouts in voice comms. Save the full name from death-by-nickname by submitting something already short and sharp. And before you commit, read the tag and the name out loud, check the obvious second meaning, the slur, the unfortunate initials, because a tag that reads wrong follows the team into every bracket.`,
         },
       ],
       callout: {
         type: 'example',
-        text: `NaVi (Natus Vincere — Latin for “born to win”) compresses perfectly: memorable 4-letter tag, meaningful full name, global audience doesn’t need to know the Latin to feel the dominance. The tag and the name work as one system.`,
+        text: `NaVi (Natus Vincere, Latin for “born to win”) compresses perfectly: memorable 4-letter tag, meaningful full name, global audience doesn’t need to know the Latin to feel the dominance. The tag and the name work as one system.`,
       },
     },
     {
@@ -496,12 +496,12 @@ export const PARTICIPANT_ARTICLES = {
         },
         {
           heading: 'Multi-game futureproofing',
-          body: `Most serious gaming groups eventually expand to multiple titles. A name tied to one game (“Valorant Vipers”) boxes the team in if they ever stream another title or branch into competitive scenes elsewhere. The most adaptable names — abstract concepts, mythological references, or pure invented words — let the team be themselves across any game they pick up.`,
+          body: `Most serious gaming groups eventually expand to multiple titles. A name tied to one game (“Valorant Vipers”) boxes the team in if they ever stream another title or branch into competitive scenes elsewhere. The most adaptable names (abstract concepts, mythological references, or pure invented words) let the team be themselves across any game they pick up.`,
         },
       ],
       callout: {
         type: 'insight',
-        text: `Short team names travel further in a scene built on tags, chants, and quick searches — fans find them, type them, and shout them without friction. A name that compresses cleanly is doing free marketing every time someone says it.`,
+        text: `Short team names travel further in a scene built on tags, chants, and quick searches, fans find them, type them, and shout them without friction. A name that compresses cleanly is doing free marketing every time someone says it.`,
       },
     },
   ],
@@ -525,7 +525,7 @@ export const PARTICIPANT_ARTICLES = {
       ],
       callout: {
         type: 'insight',
-        text: `Group identity research finds that names with light insider meaning produce higher long-term member retention than purely descriptive names. The shared reference becomes a quiet marker of belonging — but only when outsiders aren’t excluded.`,
+        text: `Group identity research finds that names with light insider meaning produce higher long-term member retention than purely descriptive names. The shared reference becomes a quiet marker of belonging, but only when outsiders aren’t excluded.`,
       },
     },
     {
@@ -540,12 +540,12 @@ export const PARTICIPANT_ARTICLES = {
         },
         {
           heading: 'Avoid current activities',
-          body: `“The Tuesday Crew” stops being funny when the group switches to Saturdays. “The Book Club” gets ironic when they pivot to wine and gossip. Names tied to a current logistics fact age into irony fast. Better to anchor in values, shared history, or aspirations — things that travel with the group even when surface-level activities change.`,
+          body: `“The Tuesday Crew” stops being funny when the group switches to Saturdays. “The Book Club” gets ironic when they pivot to wine and gossip. Names tied to a current logistics fact age into irony fast. Better to anchor in values, shared history, or aspirations, things that travel with the group even when surface-level activities change.`,
         },
       ],
       callout: {
         type: 'example',
-        text: `The Inklings (Tolkien, Lewis, and friends) survived 17 years of changing membership because the name described an attitude — “people who play with little hints of ideas” — not the specific members or meeting day. Submit names with that kind of give.`,
+        text: `The Inklings (Tolkien, Lewis, and friends) survived 17 years of changing membership because the name described an attitude, “people who play with little hints of ideas”, not the specific members or meeting day. Submit names with that kind of give.`,
       },
     },
   ],
@@ -560,7 +560,7 @@ export const PARTICIPANT_ARTICLES = {
       sections: [
         {
           heading: 'Skip the year’s top-20',
-          body: `Names in any given year’s top-20 list — currently Olivia, Liam, Emma, Noah, Charlotte and their peers — tend to feel “of an era” within 15 years, the way the Jennifers and Jasons still date their decade. The genuinely durable picks usually sit just outside the current top names: familiar enough to be spelled and said without a fight, but not the one three other kids in the kindergarten already answer to. Look a little past the front of the popularity list and you find names that feel both timeless and uncrowded.`,
+          body: `Names in any given year’s top-20 list (currently Olivia, Liam, Emma, Noah, Charlotte and their peers) tend to feel “of an era” within 15 years, the way the Jennifers and Jasons still date their decade. The genuinely durable picks usually sit just outside the current top names: familiar enough to be spelled and said without a fight, but not the one three other kids in the kindergarten already answer to. Look a little past the front of the popularity list and you find names that feel both timeless and uncrowded.`,
         },
         {
           heading: 'The lifetime test',
@@ -580,7 +580,7 @@ export const PARTICIPANT_ARTICLES = {
       sections: [
         {
           heading: 'Mind the family room',
-          body: `Baby naming contests are uniquely personal — the chooser is making a permanent decision for someone they love. Submissions written with sales-language (“This name perfectly positions...”) feel cold. Submissions written like a gift (“I thought of this one because it reminds me of...”) land warm. Write your rationale the way you’d write a card, not a pitch.`,
+          body: `Baby naming contests are uniquely personal, the chooser is making a permanent decision for someone they love. Submissions written with sales-language (“This name perfectly positions...”) feel cold. Submissions written like a gift (“I thought of this one because it reminds me of...”) land warm. Write your rationale the way you’d write a card, not a pitch.`,
         },
         {
           heading: 'Share the meaning, briefly',
@@ -604,7 +604,7 @@ export const PARTICIPANT_ARTICLES = {
       sections: [
         {
           heading: 'Fluffy ages out, Chaos ages well',
-          body: `Submissions that name the appearance (“Spots”, “Patches”, “Blackie”) feel cute for a puppy but flatten into description by year two. Submissions that capture personality (“Chaos”, “Gremlin”, “Professor”, “Bandit”) give the animal a character that grows with them. Personality-based names also give the pet a tiny narrative — friends and family use the name like a story, not a label.`,
+          body: `Submissions that name the appearance (“Spots”, “Patches”, “Blackie”) feel cute for a puppy but flatten into description by year two. Submissions that capture personality (“Chaos”, “Gremlin”, “Professor”, “Bandit”) give the animal a character that grows with them. Personality-based names also give the pet a tiny narrative, friends and family use the name like a story, not a label.`,
         },
         {
           heading: 'Watch the call name',
@@ -613,7 +613,7 @@ export const PARTICIPANT_ARTICLES = {
       ],
       callout: {
         type: 'example',
-        text: `American Kennel Club popularity data shows Luna, Bella, Charlie, Max and Cooper hovering at the top for over a decade. If distinctiveness matters, those are exactly the names to avoid — every dog park in America already has three of each.`,
+        text: `American Kennel Club popularity data shows Luna, Bella, Charlie, Max and Cooper hovering at the top for over a decade. If distinctiveness matters, those are exactly the names to avoid: every dog park in America already has three of each.`,
       },
     },
     {
@@ -624,7 +624,7 @@ export const PARTICIPANT_ARTICLES = {
       sections: [
         {
           heading: 'Can you yell it in public?',
-          body: `Some names are perfect at home and embarrassing in public. “Pickle Princess,” “Lord Stinky,” “Mr. Fartwhistle” — funny on the couch, awkward in the dog park at 7am. Before submitting, picture yourself shouting the name across an open field full of strangers. If you’d lower your voice or rephrase, the family will too — and the name will quietly get replaced by a nickname within a month.`,
+          body: `Some names are perfect at home and embarrassing in public. “Pickle Princess,” “Lord Stinky,” “Mr. Fartwhistle”: funny on the couch, awkward in the dog park at 7am. Before submitting, picture yourself shouting the name across an open field full of strangers. If you’d lower your voice or rephrase, the family will too, and the name will quietly get replaced by a nickname within a month.`,
         },
         {
           heading: 'Recall phonetics',
@@ -648,16 +648,16 @@ export const PARTICIPANT_ARTICLES = {
       sections: [
         {
           heading: 'The pronoun problem',
-          body: `“Our Place,” “The Cabin,” “The Lake House” — these aren’t names, they’re pronouns. They never become part of a guest’s vocabulary because they don’t carry any specificity. A real property name lets a guest say “I’m going to Willowbend this weekend” with the same comfort they’d say “I’m going to Boston.” Submit names with the proper-noun feel built in.`,
+          body: `“Our Place,” “The Cabin,” “The Lake House”, these aren’t names, they’re pronouns. They never become part of a guest’s vocabulary because they don’t carry any specificity. A real property name lets a guest say “I’m going to Willowbend this weekend” with the same comfort they’d say “I’m going to Boston.” Submit names with the proper-noun feel built in.`,
         },
         {
           heading: 'Two-word maximum',
-          body: `Property names that survive guest conversations are almost always one or two words. “Casa Bella Serenissima Di Toscana” gets shortened to “the Italian place” within a week. Stillwater, Driftwood, Heronwood, The Bungalow, Magnolia House — each is short enough to roll off the tongue and specific enough to feel like a place. Before you settle on one, say it out loud and check the obvious second meaning or unfortunate initials — a name guests have to giggle at is a name they’ll quietly stop using.`,
+          body: `Property names that survive guest conversations are almost always one or two words. “Casa Bella Serenissima Di Toscana” gets shortened to “the Italian place” within a week. Stillwater, Driftwood, Heronwood, The Bungalow, Magnolia House: each is short enough to roll off the tongue and specific enough to feel like a place. Before you settle on one, say it out loud and check the obvious second meaning or unfortunate initials, a name guests have to giggle at is a name they’ll quietly stop using.`,
         },
       ],
       callout: {
         type: 'example',
-        text: `Atlas Obscura’s archive of named homes — from English country cottages to American summer camps — finds that nearly every long-surviving property name shares two traits: under 20 letters total, and references something physically visible from the property itself. Anchor wins.`,
+        text: `Atlas Obscura’s archive of named homes, from English country cottages to American summer camps, finds that nearly every long-surviving property name shares two traits: under 20 letters total, and references something physically visible from the property itself. Anchor wins.`,
       },
     },
     {
@@ -668,11 +668,11 @@ export const PARTICIPANT_ARTICLES = {
       sections: [
         {
           heading: 'The four anchors that work',
-          body: `Property naming traditions across cultures consistently draw from four sources: (1) geography — a local feature, view, or landmark visible from the property (“Ridgecrest”); (2) history — a previous use or long-ago owner (“The Old Mill,” “Shepherd’s Rest”); (3) nature — flora, fauna, or natural elements specific to the land (“Heronwood,” “Cliffside”); (4) feeling — the emotional experience the place creates (“Stillwater,” “Driftwood”). Abstract invented names (“Verandia,” “Bellora”) rarely stick because they don’t ground in anything real.`,
+          body: `Property naming traditions across cultures consistently draw from four sources: (1) geography, a local feature, view, or landmark visible from the property (“Ridgecrest”); (2) history, a previous use or long-ago owner (“The Old Mill,” “Shepherd’s Rest”); (3) nature, flora, fauna, or natural elements specific to the land (“Heronwood,” “Cliffside”); (4) feeling, the emotional experience the place creates (“Stillwater,” “Driftwood”). Abstract invented names (“Verandia,” “Bellora”) rarely stick because they don’t ground in anything real.`,
         },
         {
           heading: 'Mine the brief for the anchor',
-          body: `A good brief usually contains the anchor without realizing it: a mention of “the willow at the gate,” “the year the family bought it,” “the view from the porch.” The submission that wins is the one that grabs that detail and turns it into a name. The owner reads it and thinks “of course — that’s been the name all along.”`,
+          body: `A good brief usually contains the anchor without realizing it: a mention of “the willow at the gate,” “the year the family bought it,” “the view from the porch.” The submission that wins is the one that grabs that detail and turns it into a name. The owner reads it and thinks “of course, that’s been the name all along.”`,
         },
         {
           heading: 'Test it on the welcome mat',
@@ -681,7 +681,7 @@ export const PARTICIPANT_ARTICLES = {
       ],
       callout: {
         type: 'insight',
-        text: `Airbnb listings with proper property names see higher booking rates than identically-priced listings without names. The name signals care, story, and place — three things travellers pay for.`,
+        text: `Airbnb listings with proper property names see higher booking rates than identically-priced listings without names. The name signals care, story, and place, three things travellers pay for.`,
       },
     },
   ],
@@ -696,20 +696,20 @@ export const PARTICIPANT_ARTICLES = {
       sections: [
         {
           heading: 'Read for what they’re excited about',
-          body: `Every brief has a sentence — sometimes one phrase — where the organizer’s tone shifts from informational to enthusiastic. That’s the heart of what they want named. The participants who win consistently are the ones who spot that emotional core and write directly to it, instead of treating the brief as a checklist. Read the brief twice: once for facts, once for feelings.`,
+          body: `Every brief has a sentence, sometimes one phrase, where the organizer’s tone shifts from informational to enthusiastic. That’s the heart of what they want named. The participants who win consistently are the ones who spot that emotional core and write directly to it, instead of treating the brief as a checklist. Read the brief twice: once for facts, once for feelings.`,
         },
         {
           heading: 'Read for what they’re afraid of',
-          body: `Briefs also contain quiet warnings: “we don’t want anything that feels...” or “in the past we tried...” Those sentences mark the cliffs. Submissions that walk the participant straight off a cliff get cut without ceremony. Read the brief looking for both the “want” and the “don’t want” — the winning name lives in the space between them.`,
+          body: `Briefs also contain quiet warnings: “we don’t want anything that feels...” or “in the past we tried...” Those sentences mark the cliffs. Submissions that walk the participant straight off a cliff get cut without ceremony. Read the brief looking for both the “want” and the “don’t want”, the winning name lives in the space between them.`,
         },
         {
           heading: 'When in doubt, ask in the why-it-fits',
-          body: `If something in the brief is genuinely ambiguous, don’t guess silently — flag it in your why-it-fits line. “I read this as wanting [X]; if you meant [Y], my second submission below fits that direction better.” This turns ambiguity into dialogue and shows the organizer you’re paying attention. It also justifies why your submissions vary tonally.`,
+          body: `If something in the brief is genuinely ambiguous, don’t guess silently, flag it in your why-it-fits line. “I read this as wanting [X]; if you meant [Y], my second submission below fits that direction better.” This turns ambiguity into dialogue and shows the organizer you’re paying attention. It also justifies why your submissions vary tonally.`,
         },
       ],
       callout: {
         type: 'insight',
-        text: `Watkins’ SCRATCH heuristic — Spelling-challenged, Copycat, Restrictive, Annoying, Tame, Curse-of-knowledge, Hard-to-pronounce — is a great post-write checklist. If your submission triggers any of the seven, revise before sending.`,
+        text: `Watkins’ SCRATCH heuristic (Spelling-challenged, Copycat, Restrictive, Annoying, Tame, Curse-of-knowledge, Hard-to-pronounce) is a great post-write checklist. If your submission triggers any of the seven, revise before sending.`,
       },
     },
     {
@@ -720,7 +720,7 @@ export const PARTICIPANT_ARTICLES = {
       sections: [
         {
           heading: 'The first two names clear your throat',
-          body: `Naming professionals working on a brief almost universally describe the same arc: the first 10 names you generate are the obvious ones, the next 20 are variations, and the truly distinctive options start appearing around name #30. If your contest gives you three submission slots, the names you put in slots two and three are usually stronger than slot one — but only if you push past the obvious to get there.`,
+          body: `Naming professionals working on a brief almost universally describe the same arc: the first 10 names you generate are the obvious ones, the next 20 are variations, and the truly distinctive options start appearing around name #30. If your contest gives you three submission slots, the names you put in slots two and three are usually stronger than slot one, but only if you push past the obvious to get there.`,
         },
         {
           heading: 'Push the wildcard',
@@ -729,7 +729,7 @@ export const PARTICIPANT_ARTICLES = {
       ],
       callout: {
         type: 'example',
-        text: `In Catchword Branding’s published case studies, the winning name was the participant’s “I almost didn’t send it” entry in a notable share of contests. So lead with your most on-brief name — then spend one slot on that wildcard. The safe lead earns you the trust; the wildcard wins the contest.`,
+        text: `In Catchword Branding’s published case studies, the winning name was the participant’s “I almost didn’t send it” entry in a notable share of contests. So lead with your most on-brief name, then spend one slot on that wildcard. The safe lead earns you the trust; the wildcard wins the contest.`,
       },
     },
   ],
@@ -753,7 +753,7 @@ export const FUN_FACTS = {
   b1: [
     {
       title: 'The .com is overrated',
-      body: `Many top startups launched on .co, .io, or alt-TLDs (Notion was Notion.so for years; Slack lived on .com only after they grew). For a funded startup, don’t kill a good name over the .com. But for a small or local business, a name you can’t actually secure — domain, business registration, or trademark in your category — can be a real dealbreaker. Check availability before you fall in love.`,
+      body: `Many top startups launched on .co, .io, or alt-TLDs (Notion was Notion.so for years; Slack lived on .com only after they grew). For a funded startup, don’t kill a good name over the .com. But for a small or local business, a name you can’t actually secure (domain, business registration, or trademark in your category) can be a real dealbreaker. Check availability before you fall in love.`,
     },
     {
       title: 'Two syllables win',
@@ -795,7 +795,7 @@ export const FUN_FACTS = {
   b4: [
     {
       title: 'Equity transfers slowly',
-      body: `Trust takes time to move from an old name to a new one — customers have to relearn who you are. A name that shares a sound or letter with the original lets recognition carry forward instead of starting from zero.`,
+      body: `Trust takes time to move from an old name to a new one, customers have to relearn who you are. A name that shares a sound or letter with the original lets recognition carry forward instead of starting from zero.`,
     },
     {
       title: 'Pure revolutions tend to fail',
@@ -823,15 +823,15 @@ export const FUN_FACTS = {
   t1: [
     {
       title: 'Hard consonants chant best',
-      body: `Names ending in hard consonants (T, K, P, B) sustain crowd energy far better than soft endings. “HEAT” beats “Lakers” — try chanting both and feel where your throat lands.`,
+      body: `Names ending in hard consonants (T, K, P, B) sustain crowd energy far better than soft endings. “HEAT” beats “Lakers”, try chanting both and feel where your throat lands.`,
     },
     {
       title: 'Kraken drew 215,000+ votes',
-      body: `Seattle’s NHL team drew 215,000+ fan votes and narrowed to a five-name shortlist in 2020 before landing on Kraken — a single chantable mythological creature rooted in Pacific Northwest seafaring lore.`,
+      body: `Seattle’s NHL team drew 215,000+ fan votes and narrowed to a five-name shortlist in 2020 before landing on Kraken, a single chantable mythological creature rooted in Pacific Northwest seafaring lore.`,
     },
     {
       title: 'Two syllables = jersey gold',
-      body: `Shorter team names are easier to search, print, and chant than longer ones — less to mistype, less to shrink on a jersey, less to trip over in a crowd. Brevity does real work.`,
+      body: `Shorter team names are easier to search, print, and chant than longer ones, less to mistype, less to shrink on a jersey, less to trip over in a crowd. Brevity does real work.`,
     },
   ],
   t2: [
@@ -855,7 +855,7 @@ export const FUN_FACTS = {
     },
     {
       title: 'Distinctive names = loyal listeners',
-      body: `Listeners who choose a show by its name, rather than stumbling on it by keyword, tend to stick around. A distinctive name attracts people who actually wanted that show — and they stay.`,
+      body: `Listeners who choose a show by its name, rather than stumbling on it by keyword, tend to stick around. A distinctive name attracts people who actually wanted that show, and they stay.`,
     },
     {
       title: 'Subtitles are your safety net',
@@ -869,7 +869,7 @@ export const FUN_FACTS = {
     },
     {
       title: 'YMCA was founded in 1844',
-      body: `The civic names that age best — YMCA, Doctors Without Borders, Habitat for Humanity — all reference enduring human values, not the era’s technology. None contain “e-” or “i-” prefixes.`,
+      body: `The civic names that age best (YMCA, Doctors Without Borders, Habitat for Humanity) all reference enduring human values, not the era’s technology. None contain “e-” or “i-” prefixes.`,
     },
     {
       title: 'charity: water made a category',
@@ -883,11 +883,11 @@ export const FUN_FACTS = {
     },
     {
       title: 'Short squads sell merch',
-      body: `Short team names get searched, typed, and printed more easily than long ones — fans find your gear instead of fumbling the spelling. Brevity quietly does the selling.`,
+      body: `Short team names get searched, typed, and printed more easily than long ones, fans find your gear instead of fumbling the spelling. Brevity quietly does the selling.`,
     },
     {
       title: 'Latin still works',
-      body: `NaVi (Natus Vincere — “born to win”) proves fans don’t need to know the etymology to feel the dominance. Memorable tag + meaningful full name + global accessibility = the formula.`,
+      body: `NaVi (Natus Vincere, “born to win”) proves fans don’t need to know the etymology to feel the dominance. Memorable tag + meaningful full name + global accessibility = the formula.`,
     },
   ],
   t6: [
@@ -907,7 +907,7 @@ export const FUN_FACTS = {
   p1: [
     {
       title: 'Look just past the top of the list',
-      body: `The most durable baby names usually sit just outside the current top names — familiar enough to spell and say, but not the one three other kids already answer to. For uniqueness without inventing, browse names ranked #500–1000: distinctive but phonetically established.`,
+      body: `The most durable baby names usually sit just outside the current top names, familiar enough to spell and say, but not the one three other kids already answer to. For uniqueness without inventing, browse names ranked #500–1000: distinctive but phonetically established.`,
     },
     {
       title: '2–3 syllables = easiest to learn',
@@ -939,11 +939,11 @@ export const FUN_FACTS = {
     },
     {
       title: 'Anchor to something visible',
-      body: `Property names that reference something physically visible from the property — a view, a tree, a body of water — get repeated more often by guests and neighbors. Pointable beats decorative.`,
+      body: `Property names that reference something physically visible from the property (a view, a tree, a body of water) get repeated more often by guests and neighbors. Pointable beats decorative.`,
     },
     {
       title: 'Named Airbnb listings book more',
-      body: `Airbnb host data shows properties with proper names see higher booking rates than identically-priced listings without. The name signals care, story, and place — three things travelers pay for.`,
+      body: `Airbnb host data shows properties with proper names see higher booking rates than identically-priced listings without. The name signals care, story, and place, three things travelers pay for.`,
     },
   ],
   p4: [
@@ -975,7 +975,7 @@ export const CHECKLISTS = {
   b1: [
     { question: 'Does it sound like infrastructure, not a feature?', hint: 'Stripe sounds like a tool that does. Aurora sounds like a feature.' },
     { question: `Could you say it in a board meeting without flinching?`, hint: `Read it aloud in a serious context. If it lands awkward, it’ll keep landing awkward.` },
-    { question: 'Is the domain situation solvable?', hint: `Not “is .com free” — “can the company live with a .ai or .co for now?”` },
+    { question: 'Is the domain situation solvable?', hint: `Not “is .com free”, “can the company live with a .ai or .co for now?”` },
     { question: 'Would it survive a pivot?', hint: `Slack started in gaming. The name didn’t fight the move to enterprise.` },
   ],
   b2: [
@@ -991,7 +991,7 @@ export const CHECKLISTS = {
     { question: 'Will it still make sense in 18 months?', hint: `Projects outlast their kickoff. Names tied to current buzzwords date themselves fast.` },
   ],
   b4: [
-    { question: 'Does it preserve at least one thread from the old name?', hint: `A sound, a letter, a meaning — any anchor that helps customers carry trust forward.` },
+    { question: 'Does it preserve at least one thread from the old name?', hint: `A sound, a letter, a meaning, any anchor that helps customers carry trust forward.` },
     { question: 'Does the why-it-fits spell out the bridge?', hint: `Don’t make the founder reverse-engineer your logic from a single word.` },
     { question: 'Would it work without a $50M re-education budget?', hint: `If the name needs massive marketing to land, it’s not the right one for a contest entry.` },
     { question: `Does it feel honest about what’s changing?`, hint: `Customers can smell a name trying to hide something. Acknowledge transitions, don’t disguise them.` },
@@ -999,18 +999,18 @@ export const CHECKLISTS = {
   b5: [
     { question: 'Does it commit to a feeling?', hint: `Open briefs reward emotional clarity more than technical precision.` },
     { question: `Have you submitted at least one unsafe option?`, hint: `If all three of yours feel “fine,” you haven’t tested the brief’s range.` },
-    { question: 'Does the why-it-fits do half the explaining?', hint: `Open briefs need framing — write rationale that helps the chooser see what your name unlocks.` },
+    { question: 'Does the why-it-fits do half the explaining?', hint: `Open briefs need framing, write rationale that helps the chooser see what your name unlocks.` },
     { question: 'Would it work as the cover of a deck?', hint: `The name should look right large, alone, on its own slide.` },
   ],
   t1: [
     { question: 'Can 50 people on a sideline chant it three times?', hint: `If your throat trips, the name fails the most important test in sports naming.` },
     { question: 'Does it work on a jersey in block capitals from 30m?', hint: `Long compound names get shrunk to microscopic. One bold word dominates from the back row.` },
     { question: 'Could a 7-year-old draw the logo without help?', hint: `Pictureable animals/weather/mythology crush abstract concepts in youth merch.` },
-    { question: 'Does it feel like THIS place, not anywhere?', hint: `Authenticity-of-place — the river, the trade, the local industry — is the deepest moat in sports naming.` },
+    { question: 'Does it feel like THIS place, not anywhere?', hint: `Authenticity-of-place (the river, the trade, the local industry) is the deepest moat in sports naming.` },
   ],
   t2: [
     { question: 'Does it fit a 60-character headline?', hint: `Music journalists pick coverage partly by how easy a name is to lay out. Long names lose press.` },
-    { question: 'Does it come with a 1-sentence origin story?', hint: `“It’s from a misheard lyric” / “our grandmother’s nickname” — give the band something to repeat.` },
+    { question: 'Does it come with a 1-sentence origin story?', hint: `“It’s from a misheard lyric” / “our grandmother’s nickname”, give the band something to repeat.` },
     { question: 'Does the phonetic profile match the sound?', hint: `Folk band with hard consonants = friction. Sharp music with soft vowels = friction.` },
     { question: 'Does it search clean?', hint: `Google + Spotify your name. If you collide with a 1970s prog band and a sandwich shop, you’ll fight SEO for a decade.` },
   ],
@@ -1042,7 +1042,7 @@ export const CHECKLISTS = {
     { question: 'Will it work at every life stage?', hint: `Toddler, teenager, professional intro, hospital wristband at 80. A great baby name carries through all four.` },
     { question: 'Does it have built-in nickname flexibility?', hint: `Names that let the child self-edit (Alexander → Alex/Xander/Lex/Al) give them editorial control.` },
     { question: 'Is it easy to spell and pronounce daily?', hint: `Lifetime friction from correcting spellings is real; “creative” spellings add admin, not character.` },
-    { question: 'Does it carry meaning the family will gladly explain?', hint: `“It’s a family name from...” / “We loved the meaning...” — the story matters and gets told a hundred times.` },
+    { question: 'Does it carry meaning the family will gladly explain?', hint: `“It’s a family name from...” / “We loved the meaning...”, the story matters and gets told a hundred times.` },
   ],
   p2: [
     { question: 'Can you yell it in a dog park without lowering your voice?', hint: `If you’d reduce the volume in public, the family will replace it with a nickname within a month.` },
@@ -1052,7 +1052,7 @@ export const CHECKLISTS = {
   ],
   p3: [
     { question: 'Is it one or two words max?', hint: `Anything longer gets shortened to “the [place type]” in conversation. Brevity survives.` },
-    { question: 'Does it reference something real about this place?', hint: `Geography, history, nature, or feeling — name the anchor, not the abstraction.` },
+    { question: 'Does it reference something real about this place?', hint: `Geography, history, nature, or feeling, name the anchor, not the abstraction.` },
     { question: 'Would a friend say it naturally in conversation?', hint: `“I’m going to Willowbend” should roll off the tongue. If it requires explanation, it won’t survive.` },
     { question: 'Does it work on a welcome mat or address card?', hint: `Properties get name-printed eventually. If it looks weird carved into wood, reconsider.` },
   ],

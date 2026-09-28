@@ -56,7 +56,7 @@ function formatAnswer(value) {
   if (value === false) return 'No';
   if (value === '[configure-later]') return 'Configure after launch';
   if (Array.isArray(value)) {
-    if (value.length === 0) return '—';
+    if (value.length === 0) return ', ';
     return value.join(' · ');
   }
   if (value && typeof value === 'object') {

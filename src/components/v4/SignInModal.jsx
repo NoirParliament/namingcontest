@@ -172,7 +172,7 @@ export default function SignInModal({ open, onClose, redirectPath }) {
             </p>
             {/* No "use a different email" button here: it competed with the
                 one instruction that matters (go check your inbox). A typo is
-                still recoverable — the modal resets to the input step every
+                still recoverable, the modal resets to the input step every
                 time it opens, so closing and reopening gives a fresh field. */}
           </>
         )}

@@ -269,7 +269,7 @@ export const BRIEF_QUESTIONS = {
           { label: 'Coined / made-up words', eg: 'Pixar, Verizon' },
           { label: 'Combined words',        eg: 'YouTube, MasterCard' },
         ],
-        hint: `Pick any that appeal — the guide breaks each one down.`,
+        hint: `Pick any that appeal, the guide breaks each one down.`,
         guideId: 'b1-styles',
       },
       {
@@ -289,8 +289,8 @@ export const BRIEF_QUESTIONS = {
         label: 'Names from other languages?',
         prompt: 'Are you open to names drawn from other languages?',
         type: 'chips',
-        options: ['Yes — open to it', 'Prefer English', 'Not sure'],
-        describeOption: 'Yes — open to it',
+        options: ['Yes, open to it', 'Prefer English', 'Not sure'],
+        describeOption: 'Yes, open to it',
         describePlaceholder: 'e.g. Latin, Italian, Japanese',
         hint: `For example, would you consider names that use or adapt words from Latin, Greek, Italian, or other languages?`,
       },
@@ -312,7 +312,7 @@ export const BRIEF_QUESTIONS = {
         rows: 3,
         required: false,
         placeholder: 'e.g. I like Patagonia and the North Face for their sense of adventure.',
-        hint: `Share a few company, product, or brand names that represent the kind of name you’d like for your company. They can come from any industry. Tell us what you like about them — whether it’s their sound, style, meaning, originality, or something else. This will help participants understand the naming direction you’re drawn to.`,
+        hint: `Share a few company, product, or brand names that represent the kind of name you’d like for your company. They can come from any industry. Tell us what you like about them, whether it’s their sound, style, meaning, originality, or something else. This will help participants understand the naming direction you’re drawn to.`,
       },
       {
         id: 'practicalReqs',
@@ -356,7 +356,7 @@ export const BRIEF_QUESTIONS = {
         rows: 4,
         required: true,
         placeholder: 'e.g. A hot sauce made with fermented local peppers. Three heat levels, aimed at home cooks who want flavor first and burn second.',
-        hint: `Tell us what it is, what it does, and who it’s for — a physical product, an app, a service, or a feature. The clearer the picture participants have, the more relevant their name ideas can be.`,
+        hint: `Tell us what it is, what it does, and who it’s for, a physical product, an app, a service, or a feature. The clearer the picture participants have, the more relevant their name ideas can be.`,
         guideId: 'b2-vs-company',
       },
       {
@@ -377,7 +377,7 @@ export const BRIEF_QUESTIONS = {
         rows: 2,
         required: false,
         placeholder: 'e.g. Two more sauces are planned for next year',
-        hint: `If more products are coming, the name may need to work as a pattern — think Kindle, Kindle Paperwhite, Kindle Oasis. If this is a one-off, participants have more freedom.`,
+        hint: `If more products are coming, the name may need to work as a pattern: think Kindle, Kindle Paperwhite, Kindle Oasis. If this is a one-off, participants have more freedom.`,
       },
       {
         id: 'namingConventions',
@@ -387,7 +387,7 @@ export const BRIEF_QUESTIONS = {
         rows: 2,
         required: false,
         placeholder: 'e.g. All our products are named after birds',
-        hint: `Any pattern your existing names follow — a shared theme, a structure, a length, a starting letter. If the new name has to fit an established system, participants should know the rules.`,
+        hint: `Any pattern your existing names follow, a shared theme, a structure, a length, a starting letter. If the new name has to fit an established system, participants should know the rules.`,
       },
       {
         id: 'pairedWithCompany',
@@ -429,7 +429,7 @@ export const BRIEF_QUESTIONS = {
           { label: 'Coined / made-up words', eg: 'Swiffer, Prius' },
           { label: 'Combined words',        eg: 'PowerPoint, AirPods' },
         ],
-        hint: `Pick any that appeal — the guide breaks each one down.`,
+        hint: `Pick any that appeal, the guide breaks each one down.`,
         guideId: 'b2-styles',
       },
       {
@@ -449,8 +449,8 @@ export const BRIEF_QUESTIONS = {
         label: 'Names from other languages?',
         prompt: 'Are you open to names drawn from other languages?',
         type: 'chips',
-        options: ['Yes — open to it', 'Prefer English', 'Not sure'],
-        describeOption: 'Yes — open to it',
+        options: ['Yes, open to it', 'Prefer English', 'Not sure'],
+        describeOption: 'Yes, open to it',
         describePlaceholder: 'e.g. Latin, Italian, Japanese',
         hint: `For example, would you consider names that use or adapt words from Latin, Greek, Italian, or other languages?`,
       },
@@ -471,7 +471,7 @@ export const BRIEF_QUESTIONS = {
         type: 'textarea',
         rows: 3,
         required: false,
-        placeholder: 'e.g. I like Calm and Sharpie — each name is the product’s promise in one word.',
+        placeholder: 'e.g. I like Calm and Sharpie, each name is the product’s promise in one word.',
         hint: `Share a few product, company, or brand names that represent the kind of name you’d like for this product. They can come from any industry. Tell us what you like about them, whether it’s their sound, style, meaning, originality, or something else.`,
       },
       // 2026-09-28: added per the client's Product list (Mark's doc).
@@ -493,7 +493,7 @@ export const BRIEF_QUESTIONS = {
         rows: 3,
         required: false,
         placeholder: 'e.g. Short, easy to spell, app-store friendly, .com available',
-        hint: `For example: a maximum number of letters or syllables, easy to pronounce or spell, a preference for the exact dot-com domain, app-store or trademark friendly, works well internationally — plus where the name will appear and how it will be used. Anything the name must, or ideally should, do.`,
+        hint: `For example: a maximum number of letters or syllables, easy to pronounce or spell, a preference for the exact dot-com domain, app-store or trademark friendly, works well internationally, plus where the name will appear and how it will be used. Anything the name must, or ideally should, do.`,
       },
     ],
   },
@@ -538,8 +538,8 @@ export const BRIEF_QUESTIONS = {
         options: [
           { id: 'functional', label: 'Functional', sublabel: '“Migration 2025”, “Customer Portal Rebuild”' },
           { id: 'inspirational', label: 'Inspirational', sublabel: '“Project Phoenix”, “Operation Clarity”' },
-          { id: 'codename', label: 'Codename / Abstract', sublabel: 'Random word — Everest, Sequoia, Saturn' },
-          { id: 'any', label: `Any — I’ll know it when I see it`, sublabel: '' },
+          { id: 'codename', label: 'Codename / Abstract', sublabel: 'Random word: Everest, Sequoia, Saturn' },
+          { id: 'any', label: `Any, I’ll know it when I see it`, sublabel: '' },
         ],
         hint: `Functional names are clear but forgettable. Inspirational names build morale but can feel forced. Codenames/abstract names (like Google’s internal project names) feel cool but need internal adoption. The right choice depends on how much the name needs to communicate outside the core team.`,
         guideId: 'b3-funcvsinsp',
@@ -575,7 +575,7 @@ export const BRIEF_QUESTIONS = {
       {
         id: 'projectSummary',
         label: 'About this',
-        prompt: `What’s the company being rebranded — and what does it do today?`,
+        prompt: `What’s the company being rebranded, and what does it do today?`,
         type: 'textarea',
         rows: 3,
         required: true,
@@ -592,7 +592,7 @@ export const BRIEF_QUESTIONS = {
       {
         id: 'rebrandReason',
         label: 'Why are you rebranding?',
-        prompt: `What’s prompting the rebrand — and what’s changing about the business?`,
+        prompt: `What’s prompting the rebrand, and what’s changing about the business?`,
         type: 'textarea',
         rows: 3,
         required: false,
@@ -1036,12 +1036,12 @@ export const BRIEF_QUESTIONS = {
         type: 'text',
         required: false,
         placeholder: 'e.g. Named after an inside joke',
-        hint: `Group names with a story behind them tend to stick. If there’s a founding moment, an inside reference, or a reason you came together, share it — it often sparks the most meaningful names.`,
+        hint: `Group names with a story behind them tend to stick. If there’s a founding moment, an inside reference, or a reason you came together, share it, it often sparks the most meaningful names.`,
       },
       {
         id: 'mission',
         label: 'Mission / Purpose',
-        prompt: `What’s the mission — who does it serve and what change does it create?`,
+        prompt: `What’s the mission, who does it serve and what change does it create?`,
         type: 'textarea',
         rows: 4,
         required: false,
@@ -1059,11 +1059,11 @@ export const BRIEF_QUESTIONS = {
       },
       {
         id: 'acronymPref',
-        label: 'Acronym test — will people use initials?',
+        label: 'Acronym test, will people use initials?',
         prompt: 'Will people refer to your org by its initials?',
         type: 'chips',
         options: ['Full name (no acronym expected)', 'Acronym likely (initials matter)', 'Not sure'],
-        hint: `Some civic names are universally known by acronym: ACLU, YMCA, NAACP. If your organization will likely be shortened to initials, participants should know — so they can suggest names where the acronym is also strong. Ask yourself: will people say the full name or the letters?`,
+        hint: `Some civic names are universally known by acronym: ACLU, YMCA, NAACP. If your organization will likely be shortened to initials, participants should know, so they can suggest names where the acronym is also strong. Ask yourself: will people say the full name or the letters?`,
       },
       {
         id: 'longevity',
@@ -1109,7 +1109,7 @@ export const BRIEF_QUESTIONS = {
         type: 'textarea',
         rows: 3,
         required: true,
-        placeholder: 'e.g. A 6-player Valorant roster playing Diamond rank in NA East. Mix of an old college clan and two pickups — first time we’re properly registering as a team.',
+        placeholder: 'e.g. A 6-player Valorant roster playing Diamond rank in NA East. Mix of an old college clan and two pickups, first time we’re properly registering as a team.',
       },
       {
         id: 'games',
@@ -1126,7 +1126,7 @@ export const BRIEF_QUESTIONS = {
         label: 'Competitive or casual?',
         prompt: 'Are you competing, hanging out, or both?',
         type: 'chips',
-        options: ['Tournament / Competitive', 'Casual / Social', 'Both — we do both'],
+        options: ['Tournament / Competitive', 'Casual / Social', 'Both, we do both'],
         hint: `Competitive teams need names that convey threat. Casual groups can lean into personality and in-jokes. A name like “Ctrl+Alt+Delete” works for a casual squad but wouldn’t intimidate at a tournament.`,
       },
       {
@@ -1155,7 +1155,7 @@ export const BRIEF_QUESTIONS = {
           { id: 'clan-suffix', label: 'Clan suffix', sublabel: '“X Gaming”, “X Esports”, “X GG”' },
           { id: 'any', label: 'No preference', sublabel: '' },
         ],
-        hint: `Esports teams are often known by tag (FaZe) or full name (FaZe Clan). Some teams use “Gaming” or “Esports” as a suffix when entering tournaments. Tell participants what structure you want — especially if the tag (3-5 letters shown in-game) matters.`,
+        hint: `Esports teams are often known by tag (FaZe) or full name (FaZe Clan). Some teams use “Gaming” or “Esports” as a suffix when entering tournaments. Tell participants what structure you want, especially if the tag (3-5 letters shown in-game) matters.`,
         guideId: 't5-tag',
       },
       {
@@ -1430,12 +1430,12 @@ export const BRIEF_QUESTIONS = {
         id: 'propDesc',
         briefLabel: 'What makes it special?',
         label: 'Tell people about it',
-        prompt: 'Tell people about it — what makes it special?',
+        prompt: 'Tell people about it, what makes it special?',
         type: 'textarea',
         rows: 3,
         required: false,
         placeholder: 'e.g. A 1920s craftsman bungalow with a big porch, always full of people on summer evenings',
-        hint: `A little context sparks better names. Is there something unique about this place or thing? A quirk, a story, a feeling? Research shows named spaces are used more, cared for more, and remembered more fondly — the name you pick will become part of the story you tell about this place.`,
+        hint: `A little context sparks better names. Is there something unique about this place or thing? A quirk, a story, a feeling? Research shows named spaces are used more, cared for more, and remembered more fondly, the name you pick will become part of the story you tell about this place.`,
         guideId: 'p3-places',
       },
       {
@@ -1445,7 +1445,7 @@ export const BRIEF_QUESTIONS = {
         type: 'text',
         required: false,
         placeholder: 'e.g. A lakefront cabin',
-        hint: `Local geography, nature, or architectural style can inspire names that feel native to the place — a cabin in the Adirondacks has different naming territory than a beach house in the Florida Keys.`,
+        hint: `Local geography, nature, or architectural style can inspire names that feel native to the place, a cabin in the Adirondacks has different naming territory than a beach house in the Florida Keys.`,
       },
       {
         id: 'vibe',
@@ -1461,7 +1461,7 @@ export const BRIEF_QUESTIONS = {
         label: 'Will the name appear on a sign or plaque?',
         prompt: 'Will the name appear on a sign, plaque, hull, or other physical display?',
         type: 'chips',
-        options: ['Yes — will be on a sign/plaque', 'Just for us, informal use', 'Not decided yet'],
+        options: ['Yes, will be on a sign/plaque', 'Just for us, informal use', 'Not decided yet'],
         hint: `If so, consider how the name will look as well as how it sounds. Think about length, readability, and how it will appear in the typeface or lettering style you have in mind. A name that sounds perfect but becomes hard to read when engraved, painted, or viewed from a distance may not be the best fit.`,
         guideId: 'p3-stick',
       },
@@ -1526,7 +1526,7 @@ export const SHARED_SETTINGS_QUESTIONS = [
       {
         id: 'participant',
         label: 'Let participants choose',
-        sublabel: 'Each person decides — credited or anonymous, name by name',
+        sublabel: 'Each person decides, credited or anonymous, name by name',
         recommended: true,
       },
       {
@@ -1566,7 +1566,7 @@ export const SHARED_SETTINGS_QUESTIONS = [
     description: 'Reward the person who submitted the winning name',
     namePlaceholder: 'Prize name (e.g. $50 gift card)',
     descPlaceholder: 'Prize description (optional)',
-    hint: `A small reward—a gift card, a shout-out, or something else—can get more people submitting. Totally optional. If you do offer a prize, you're responsible for providing it to the winner.`,
+    hint: `A small reward, a gift card, a shout-out, or something else, can get more people submitting. Totally optional. If you do offer a prize, you're responsible for providing it to the winner.`,
   },
   // 2026-08-18: ONE schedule question replaces the two window questions.
   // Rendered as a vertical roadmap (Launch → Submissions → Names in →
@@ -1673,8 +1673,8 @@ export const ARTICLES = {
       icon: 'Sparkle',
       sections: [
         {
-          heading: 'Every great name looks inevitable — later',
-          body: `Amazon. Google. Starbucks. Say them now and they sound like they were always destined to exist. They weren’t. Behind many famous names is a winding path of ideas, arguments, accidents, associations, and near-misses. Sometimes inspiration comes from an unexpected place. The challenge isn’t simply having an idea — it’s recognizing when an idea has the potential to become a great name.`,
+          heading: 'Every great name looks inevitable, later',
+          body: `Amazon. Google. Starbucks. Say them now and they sound like they were always destined to exist. They weren’t. Behind many famous names is a winding path of ideas, arguments, accidents, associations, and near-misses. Sometimes inspiration comes from an unexpected place. The challenge isn’t simply having an idea, it’s recognizing when an idea has the potential to become a great name.`,
         },
         {
           heading: 'The ice cream invented at a kitchen table',
@@ -1682,7 +1682,7 @@ export const ARTICLES = {
         },
         {
           heading: 'The bookstore saved by a mishearing',
-          body: `Jeff Bezos incorporated his company in 1994 as Cadabra, Inc., short for abracadabra. It didn’t last long: his lawyer kept hearing “cadaver” on the phone. Bezos went looking for a replacement, reportedly favoring a name beginning with A, and landed on Amazon, the world’s largest river. The name connected naturally to his ambition for the world’s largest bookstore — and eventually much more.`,
+          body: `Jeff Bezos incorporated his company in 1994 as Cadabra, Inc., short for abracadabra. It didn’t last long: his lawyer kept hearing “cadaver” on the phone. Bezos went looking for a replacement, reportedly favoring a name beginning with A, and landed on Amazon, the world’s largest river. The name connected naturally to his ambition for the world’s largest bookstore, and eventually much more.`,
         },
         {
           heading: 'The search engine that misspelled itself',
@@ -1694,7 +1694,7 @@ export const ARTICLES = {
         },
         {
           heading: 'What this means for your contest',
-          body: `Great names can start with a sound, a story, a place, a personal connection, a cultural reference, or even an unexpected mistake. That’s one reason a diverse group can be valuable: different people notice different possibilities. Your job in this brief isn’t to come up with the answer yourself. It’s to give participants enough context to understand what you’re naming, what it needs to accomplish, and what territory might be worth exploring. From there, the best ideas can emerge — and the strongest can be recognized, refined, and tested.`,
+          body: `Great names can start with a sound, a story, a place, a personal connection, a cultural reference, or even an unexpected mistake. That’s one reason a diverse group can be valuable: different people notice different possibilities. Your job in this brief isn’t to come up with the answer yourself. It’s to give participants enough context to understand what you’re naming, what it needs to accomplish, and what territory might be worth exploring. From there, the best ideas can emerge, and the strongest can be recognized, refined, and tested.`,
         },
       ],
       callout: {
@@ -1742,7 +1742,7 @@ export const ARTICLES = {
       sections: [
         {
           heading: 'Not all names are created equal',
-          body: 'Every company name fits one of five archetypes — but for a brand-new name, three do the heavy lifting: Descriptive, Suggestive, and Abstract/Coined. (The other two — a repurposed real word like Apple, or a founder/acronym like Dell — can work, but rarely beat these three out of the gate.) Each of the three has tradeoffs, and knowing them is the difference between a name that constrains you at Series B and one that grows with you to IPO.',
+          body: 'Every company name fits one of five archetypes, but for a brand-new name, three do the heavy lifting: Descriptive, Suggestive, and Abstract/Coined. (The other two, a repurposed real word like Apple, or a founder/acronym like Dell, can work, but rarely beat these three out of the gate.) Each of the three has tradeoffs, and knowing them is the difference between a name that constrains you at Series B and one that grows with you to IPO.',
         },
         {
           heading: 'Descriptive names (QuickBooks, PayPal)',
@@ -1754,7 +1754,7 @@ export const ARTICLES = {
         },
         {
           heading: 'Abstract/Coined names (Google, Kodak, Xerox)',
-          body: 'Meaningless until you make them mean something. Hardest to launch, strongest moat once established. These require the most marketing investment but provide the deepest long-term competitive advantage — no one can accidentally use your name in a sentence.',
+          body: 'Meaningless until you make them mean something. Hardest to launch, strongest moat once established. These require the most marketing investment but provide the deepest long-term competitive advantage, no one can accidentally use your name in a sentence.',
         },
       ],
       callout: {
@@ -1770,15 +1770,15 @@ export const ARTICLES = {
       sections: [
         {
           heading: 'The differentiation principle',
-          body: 'If five of your competitors have two-syllable, suggestive names — do not be the sixth. Brand-distinctiveness research is blunt about this: in one analysis of over 5,000 brand assets, fewer than one in five were actually distinctive. Most brands blend in. The competitor field in your brief is the highest-leverage field you will fill out.',
+          body: 'If five of your competitors have two-syllable, suggestive names, do not be the sixth. Brand-distinctiveness research is blunt about this: in one analysis of over 5,000 brand assets, fewer than one in five were actually distinctive. Most brands blend in. The competitor field in your brief is the highest-leverage field you will fill out.',
         },
         {
           heading: 'What to look for',
-          body: `List 5 competitors and analyze: What archetype? What length? What tone (serious, playful, technical)? Where there’s density — that’s exactly where your name should not be.`,
+          body: `List 5 competitors and analyze: What archetype? What length? What tone (serious, playful, technical)? Where there’s density, that’s exactly where your name should not be.`,
         },
         {
           heading: 'The pattern break wins',
-          body: 'When HubSpot launched, every CRM was descriptive or founder-named. HubSpot was a compound abstract — stood alone immediately. When Notion launched against Evernote, Confluence, OneNote — they chose a single abstract word. They owned that positioning.',
+          body: 'When HubSpot launched, every CRM was descriptive or founder-named. HubSpot was a compound abstract, and stood alone immediately. When Notion launched against Evernote, Confluence, and OneNote, they chose a single abstract word. They owned that positioning.',
         },
       ],
       callout: {
@@ -1803,7 +1803,7 @@ export const ARTICLES = {
       ],
       callout: {
         type: 'warning',
-        text: `Warning: “I’ll know the right name when I see it” is not a brief. That’s a wish. Great briefs define success criteria before the contest starts — so participants aim at a defined target, not a moving one.`,
+        text: `Warning: “I’ll know the right name when I see it” is not a brief. That’s a wish. Great briefs define success criteria before the contest starts, so participants aim at a defined target, not a moving one.`,
       },
     },
   ],
@@ -1850,15 +1850,15 @@ export const ARTICLES = {
         },
         {
           heading: 'Coined names: create something new',
-          body: `Swiffer. Febreze. Prius. Advil. Coined names are newly created, but the best ones still whisper their meaning. Swiffer sounds like the swift sweep it does; Febreze blends “fabric” and “breeze”; Prius comes from the Latin for “to go before.” A coined name is the easiest to own and trademark, and it can grow into a family of its own — Swiffer became Swiffer WetJet and Swiffer Duster without missing a step.`,
+          body: `Swiffer. Febreze. Prius. Advil. Coined names are newly created, but the best ones still whisper their meaning. Swiffer sounds like the swift sweep it does; Febreze blends “fabric” and “breeze”; Prius comes from the Latin for “to go before.” A coined name is the easiest to own and trademark, and it can grow into a family of its own: Swiffer became Swiffer WetJet and Swiffer Duster without missing a step.`,
         },
         {
           heading: 'Compound names: put ideas together',
-          body: `PowerPoint. AirPods. PlayStation. Photoshop. Compound names weld two recognizable words into one new idea, and the meaning assembles itself on first read — you know roughly what a PlayStation is before anyone explains it. The combination can be literal (Photoshop), suggestive (PowerPoint), or playful (AirPods), and compounds tend to sit comfortably next to a company name.`,
+          body: `PowerPoint. AirPods. PlayStation. Photoshop. Compound names weld two recognizable words into one new idea, and the meaning assembles itself on first read, you know roughly what a PlayStation is before anyone explains it. The combination can be literal (Photoshop), suggestive (PowerPoint), or playful (AirPods), and compounds tend to sit comfortably next to a company name.`,
         },
         {
           heading: 'Which approach fits your product?',
-          body: `Think about how much meaning you want to inherit versus create. A real word brings instant associations to the shelf or the app store. A coined name gives you something ownable that can anchor a whole product line. A compound explains itself fastest, which helps when a product is new and unfamiliar. You don’t need to choose before seeing the ideas — if you’re open to all three, the contest can reveal a direction you hadn’t considered.`,
+          body: `Think about how much meaning you want to inherit versus create. A real word brings instant associations to the shelf or the app store. A coined name gives you something ownable that can anchor a whole product line. A compound explains itself fastest, which helps when a product is new and unfamiliar. You don’t need to choose before seeing the ideas, if you’re open to all three, the contest can reveal a direction you hadn’t considered.`,
         },
       ],
       callout: {
@@ -1878,16 +1878,16 @@ export const ARTICLES = {
         },
         {
           heading: 'Three models',
-          body: `Branded House (Google, Apple): every product extends the master brand. House of Brands (P&G, Unilever): each product is standalone — consumers don’t know the parent. Endorsed Brand (Marriott Courtyard): parent lends credibility, product has distinct identity.`,
+          body: `Branded House (Google, Apple): every product extends the master brand. House of Brands (P&G, Unilever): each product is standalone, consumers don’t know the parent. Endorsed Brand (Marriott Courtyard): parent lends credibility, product has distinct identity.`,
         },
         {
           heading: 'Which model is right?',
-          body: `Branded house works when the parent brand is strong and consistent. House of brands works when products serve radically different markets. Tell participants which model you’re using — it completely changes what “good” looks like for a submission.`,
+          body: `Branded house works when the parent brand is strong and consistent. House of brands works when products serve radically different markets. Tell participants which model you’re using, it completely changes what “good” looks like for a submission.`,
         },
       ],
       callout: {
         type: 'example',
-        text: `Salesforce chose branded house → Sales Cloud, Service Cloud, Marketing Cloud. Every product extends the master. Consistent, scalable — but every product must feel “salesforce-y.” Choose your architecture before you brief.`,
+        text: `Salesforce chose branded house → Sales Cloud, Service Cloud, Marketing Cloud. Every product extends the master. Consistent, scalable, but every product must feel “salesforce-y.” Choose your architecture before you brief.`,
       },
     },
     {
@@ -1902,7 +1902,7 @@ export const ARTICLES = {
         },
         {
           heading: 'The precision requirement',
-          body: `A new product name often has to work on first contact — in a headline, a demo, a pitch. If it doesn’t land in 3 seconds, it’s working against your sales team, not for them. Precision matters more in product naming than in company naming.`,
+          body: `A new product name often has to work on first contact, in a headline, a demo, a pitch. If it doesn’t land in 3 seconds, it’s working against your sales team, not for them. Precision matters more in product naming than in company naming.`,
         },
       ],
       callout: {
@@ -1918,20 +1918,20 @@ export const ARTICLES = {
       sections: [
         {
           heading: 'Sound carries meaning before the dictionary does',
-          body: `Hard consonants (K, T, B, P) signal speed, strength, and precision. Soft sounds (L, M, S, vowel-heavy names) signal ease, warmth, and approachability. “Crisp” feels sharper than “Smooth.” Neither is wrong — but the phonetic profile of your product name creates subconscious expectations before a customer reads a single word of copy.`,
+          body: `Hard consonants (K, T, B, P) signal speed, strength, and precision. Soft sounds (L, M, S, vowel-heavy names) signal ease, warmth, and approachability. “Crisp” feels sharper than “Smooth.” Neither is wrong, but the phonetic profile of your product name creates subconscious expectations before a customer reads a single word of copy.`,
         },
         {
           heading: 'Onomatopoeia is one option when speed is the point',
-          body: `When your product’s core benefit is speed or instantness, a name that sounds like the experience it delivers can be processed faster and remembered longer. “Zip” for a file compressor. “Zoom” for anything that should feel instant. It’s a narrow tool, not a universal one — it works when the sound genuinely matches the benefit, and falls flat when it’s forced. The product name that sounds like its core benefit is doing double marketing duty every time someone says it aloud.`,
+          body: `When your product’s core benefit is speed or instantness, a name that sounds like the experience it delivers can be processed faster and remembered longer. “Zip” for a file compressor. “Zoom” for anything that should feel instant. It’s a narrow tool, not a universal one, it works when the sound genuinely matches the benefit, and falls flat when it’s forced. The product name that sounds like its core benefit is doing double marketing duty every time someone says it aloud.`,
         },
         {
           heading: 'Apply this to your brief',
-          body: `Think about how your product feels to use — fast, calm, precise, expansive, warm? Write that adjective down before you brief. Tell participants the emotional experience the name should evoke. Sound design in naming is invisible when done right and glaring when wrong.`,
+          body: `Think about how your product feels to use, fast, calm, precise, expansive, warm? Write that adjective down before you brief. Tell participants the emotional experience the name should evoke. Sound design in naming is invisible when done right and glaring when wrong.`,
         },
       ],
       callout: {
         type: 'example',
-        text: `“Zoom” — short, explosive, onomatopoeic. You feel the speed before you know it’s a video tool. Compare to “WebEx” — technical, hyphenated, sounds like IT infrastructure. Same category, completely different phonetic signal.`,
+        text: `“Zoom”, short, explosive, onomatopoeic. You feel the speed before you know it’s a video tool. Compare to “WebEx”, technical, hyphenated, sounds like IT infrastructure. Same category, completely different phonetic signal.`,
       },
     },
   ],
@@ -1946,11 +1946,11 @@ export const ARTICLES = {
       sections: [
         {
           heading: `What’s in a project name?`,
-          body: `More than you think. A name gives people something to rally behind — “Torque shipped” lands differently than “data-sync v2 deployed.” A great project name creates a shared mental model, motivates ownership, and makes status updates feel like progress rather than reporting.`,
+          body: `More than you think. A name gives people something to rally behind, “Torque shipped” lands differently than “data-sync v2 deployed.” A great project name creates a shared mental model, motivates ownership, and makes status updates feel like progress rather than reporting.`,
         },
         {
           heading: '“Project Phoenix” has been done to death',
-          body: `Phoenix, Titan, Horizon, Apollo, Catalyst — the cargo shorts of project naming. They’re so overused they signal nothing: each one could belong to any project at any company, which means none of them belong to yours. A name that could mean anything ends up meaning nothing. The names that actually work are either (a) crystal-clear about the goal, or (b) specific to your culture — something outsiders wouldn’t get but insiders feel.`,
+          body: `Phoenix, Titan, Horizon, Apollo, Catalyst: the cargo shorts of project naming. They’re so overused they signal nothing: each one could belong to any project at any company, which means none of them belong to yours. A name that could mean anything ends up meaning nothing. The names that actually work are either (a) crystal-clear about the goal, or (b) specific to your culture, something outsiders wouldn’t get but insiders feel.`,
         },
       ],
       callout: {
@@ -1970,7 +1970,7 @@ export const ARTICLES = {
         },
         {
           heading: 'Inspirational names',
-          body: `The good ones connect to the actual work, so you feel the goal in the name — a latency push called “Greyhound,” a retention effort called “Heartbeat,” a security sprint called “Drawbridge.” That pride builds ownership the way a ticket number never will. The trap is grabbing a generic stock codename (Phoenix, Catalyst, Titan) — those wear the costume of inspiration without the substance. And any codename has a cost: it adds friction for newcomers and partner teams, trading a little legibility for a lot of energy. Best for transformation and culture-change projects.`,
+          body: `The good ones connect to the actual work, so you feel the goal in the name: a latency push called “Greyhound,” a retention effort called “Heartbeat,” a security sprint called “Drawbridge.” That pride builds ownership the way a ticket number never will. The trap is grabbing a generic stock codename (Phoenix, Catalyst, Titan), those wear the costume of inspiration without the substance. And any codename has a cost: it adds friction for newcomers and partner teams, trading a little legibility for a lot of energy. Best for transformation and culture-change projects.`,
         },
       ],
       callout: {
@@ -1990,11 +1990,11 @@ export const ARTICLES = {
       sections: [
         {
           heading: 'Brand equity is real money',
-          body: `Before rebranding, answer honestly: what does the current name mean to customers? Not what you wish it meant — what does it actually mean? Brand equity is the sum of all associations, memories, and expectations your name triggers. Some is valuable. Some is what you’re trying to escape.`,
+          body: `Before rebranding, answer honestly: what does the current name mean to customers? Not what you wish it meant, what does it actually mean? Brand equity is the sum of all associations, memories, and expectations your name triggers. Some is valuable. Some is what you’re trying to escape.`,
         },
         {
           heading: 'What to preserve',
-          body: `Mastercard evolved from “MasterCard” — they kept the name, the red circle, the two-hemisphere concept because the equity was enormous. Before you start this contest: identify specifically what about the current name or brand is worth preserving. This becomes a constraint for participants.`,
+          body: `Mastercard evolved from “MasterCard”, they kept the name, the red circle, the two-hemisphere concept because the equity was enormous. Before you start this contest: identify specifically what about the current name or brand is worth preserving. This becomes a constraint for participants.`,
         },
         {
           heading: 'What to escape',
@@ -2003,12 +2003,12 @@ export const ARTICLES = {
       ],
       callout: {
         type: 'warning',
-        text: `Warning: rebrands that change too much at once (name + logo + color + tone) confuse customers more than they help. The marketing “rule of seven” is a useful gut-check — people need to encounter a brand roughly seven times before it registers, so every element you reset starts that clock over. Evolutionary rebrands tend to hold onto existing customers better than revolutionary ones.`,
+        text: `Warning: rebrands that change too much at once (name + logo + color + tone) confuse customers more than they help. The marketing “rule of seven” is a useful gut-check, people need to encounter a brand roughly seven times before it registers, so every element you reset starts that clock over. Evolutionary rebrands tend to hold onto existing customers better than revolutionary ones.`,
       },
     },
     {
       id: 'b4-evolverev',
-      title: 'Evolution vs Revolution — How to Choose',
+      title: 'Evolution vs Revolution, How to Choose',
       readTime: '2 min',
       icon: 'Hourglass',
       sections: [
@@ -2041,7 +2041,7 @@ export const ARTICLES = {
       sections: [
         {
           heading: 'Four qualities that make a name memorable',
-          body: `Chantable: can fans yell it together? Visual: does it conjure an image, symbol, or idea? Emotional: does it create energy, pride, toughness, fun, or a sense of belonging? Distinctive: does it feel like it belongs to this team rather than any team? The strongest names often hit several of these at once — but they don’t all have to.`,
+          body: `Chantable: can fans yell it together? Visual: does it conjure an image, symbol, or idea? Emotional: does it create energy, pride, toughness, fun, or a sense of belonging? Distinctive: does it feel like it belongs to this team rather than any team? The strongest names often hit several of these at once, but they don’t all have to.`,
         },
         {
           heading: 'The geography question',
@@ -2049,7 +2049,7 @@ export const ARTICLES = {
         },
         {
           heading: 'Mascot or something more abstract?',
-          body: `Not every great team name needs an animal. Miami Heat, Oklahoma City Thunder, and Utah Jazz all create strong identities without one. Abstract names can open up more possibilities for visual identity and storytelling, while animal names offer an immediate character and image. Neither approach is inherently better — the right choice depends on the personality you want the team to project.`,
+          body: `Not every great team name needs an animal. Miami Heat, Oklahoma City Thunder, and Utah Jazz all create strong identities without one. Abstract names can open up more possibilities for visual identity and storytelling, while animal names offer an immediate character and image. Neither approach is inherently better, the right choice depends on the personality you want the team to project.`,
         },
       ],
       callout: {
@@ -2065,7 +2065,7 @@ export const ARTICLES = {
       sections: [
         {
           heading: 'The stadium test',
-          body: `Imagine thousands of fans chanting your team name after a big play. Not reading it or typing it — shouting it together. Does it have a natural rhythm? Can the crowd easily land on the key word? “HEAT! HEAT! HEAT!” and “THUNDER! THUNDER!” practically chant themselves. Longer names can work, too, if they have a natural way to shorten or emphasize them.`,
+          body: `Imagine thousands of fans chanting your team name after a big play. Not reading it or typing it, shouting it together. Does it have a natural rhythm? Can the crowd easily land on the key word? “HEAT! HEAT! HEAT!” and “THUNDER! THUNDER!” practically chant themselves. Longer names can work, too, if they have a natural way to shorten or emphasize them.`,
         },
         {
           heading: 'What makes a name chant-ready',
@@ -2074,7 +2074,7 @@ export const ARTICLES = {
       ],
       callout: {
         type: 'insight',
-        text: `A great team name should work with the voice as well as on the page. If fans can say it together without thinking about it, the name becomes part of the team’s energy — not just its identity.`,
+        text: `A great team name should work with the voice as well as on the page. If fans can say it together without thinking about it, the name becomes part of the team’s energy, not just its identity.`,
       },
     },
   ],
@@ -2173,26 +2173,26 @@ export const ARTICLES = {
     },
     {
       id: 't3-algorithm',
-      title: 'The Algorithm vs Memory Tension — How to Win Both',
+      title: 'The Algorithm vs Memory Tension, How to Win Both',
       readTime: '2 min',
       icon: 'MagnifyingGlass',
       sections: [
         {
           heading: 'What the algorithm wants',
-          body: `Podcast platforms surface shows based on keyword relevance. Clear, descriptive names (“The Marketing Podcast,” “Daily News Brief”) index well in search and get recommended in the right categories automatically. If search is your only acquisition channel, lean descriptive — you will get traffic earlier.`,
+          body: `Podcast platforms surface shows based on keyword relevance. Clear, descriptive names (“The Marketing Podcast,” “Daily News Brief”) index well in search and get recommended in the right categories automatically. If search is your only acquisition channel, lean descriptive, you will get traffic earlier.`,
         },
         {
           heading: 'What memory wants',
-          body: `Word-of-mouth — still the highest-conversion podcast acquisition channel — requires a name that lives in the brain and rolls off the tongue. “You Must Remember This,” “My Favorite Murder,” “Conan Needs a Friend” spread because the names are interesting enough to repeat. Distinctive names compound.`,
+          body: `Word-of-mouth, still the highest-conversion podcast acquisition channel, requires a name that lives in the brain and rolls off the tongue. “You Must Remember This,” “My Favorite Murder,” “Conan Needs a Friend” spread because the names are interesting enough to repeat. Distinctive names compound.`,
         },
         {
           heading: 'The hybrid strategy',
-          body: `Name the show memorably. Use the subtitle for clarity and keywords. “Hidden Brain: A Podcast About the Unconscious Forces That Drive Human Behavior.” The name is memorable; the subtitle handles SEO. Many top shows use this approach — give participants both a name and subtitle brief.`,
+          body: `Name the show memorably. Use the subtitle for clarity and keywords. “Hidden Brain: A Podcast About the Unconscious Forces That Drive Human Behavior.” The name is memorable; the subtitle handles SEO. Many top shows use this approach, give participants both a name and subtitle brief.`,
         },
       ],
       callout: {
         type: 'insight',
-        text: `The hybrid move: name the show memorably, then let the subtitle carry the keywords. “Hidden Brain: A Podcast About the Unconscious Forces That Drive Human Behavior” — the name sticks in memory, the subtitle does the SEO.`,
+        text: `The hybrid move: name the show memorably, then let the subtitle carry the keywords. “Hidden Brain: A Podcast About the Unconscious Forces That Drive Human Behavior”, the name sticks in memory, the subtitle does the SEO.`,
       },
     },
   ],
@@ -2220,7 +2220,7 @@ export const ARTICLES = {
       ],
       callout: {
         type: 'example',
-        text: `“eCorps” (2000s nonprofit): the “e-” prefix aged terribly. “charity: water” (2006): aged beautifully — the lowercase and colon feel intentional and modern without being tied to any tech era.`,
+        text: `“eCorps” (2000s nonprofit): the “e-” prefix aged terribly. “charity: water” (2006): aged beautifully, the lowercase and colon feel intentional and modern without being tied to any tech era.`,
       },
     },
     {
@@ -2235,7 +2235,7 @@ export const ARTICLES = {
         },
         {
           heading: 'Say what brings people together',
-          body: `The strongest group names hint at what you share — an activity, a place, a purpose, or a cause. “Thursday Night Chess” says exactly what it is; “The Riverside Readers” pairs a place with a pastime; “Neighbors for Fair Housing” puts the cause right up front. You don’t need to explain everything, just give participants a clear sense of who you are and what brings you together.`,
+          body: `The strongest group names hint at what you share, an activity, a place, a purpose, or a cause. “Thursday Night Chess” says exactly what it is; “The Riverside Readers” pairs a place with a pastime; “Neighbors for Fair Housing” puts the cause right up front. You don’t need to explain everything, just give participants a clear sense of who you are and what brings you together.`,
         },
       ],
       callout: {
@@ -2266,7 +2266,7 @@ export const ARTICLES = {
       ],
       callout: {
         type: 'insight',
-        text: 'Look at the names that actually move merch — Liquid, FaZe, C9, NaVi. Short compresses into a tag, a chant, and a logo. Brevity is a feature, not a constraint.',
+        text: 'Look at the names that actually move merch: Liquid, FaZe, C9, NaVi. Short compresses into a tag, a chant, and a logo. Brevity is a feature, not a constraint.',
       },
     },
     {
@@ -2281,12 +2281,12 @@ export const ARTICLES = {
         },
         {
           heading: 'Tag collision and uniqueness',
-          body: `Before finalizing any name, check if the tag is already claimed in your game’s community or in major esports. A unique tag is not just aesthetic — it determines search results, community identity on Discord and Reddit, and how other players refer to you in comms. “GG” was taken before online gaming existed. Plan ahead.`,
+          body: `Before finalizing any name, check if the tag is already claimed in your game’s community or in major esports. A unique tag is not just aesthetic, it determines search results, community identity on Discord and Reddit, and how other players refer to you in comms. “GG” was taken before online gaming existed. Plan ahead.`,
         },
       ],
       callout: {
         type: 'example',
-        text: `“NaVi” (Natus Vincere — Latin for “born to win”) compresses perfectly: memorable tag, meaningful full name, global audience doesn’t need to know the Latin to feel the dominance. The tag and the name work as a system.`,
+        text: `“NaVi” (Natus Vincere, Latin for “born to win”) compresses perfectly: memorable tag, meaningful full name, global audience doesn’t need to know the Latin to feel the dominance. The tag and the name work as a system.`,
       },
     },
   ],
@@ -2301,7 +2301,7 @@ export const ARTICLES = {
       sections: [
         {
           heading: 'The name creates the group before the group exists',
-          body: 'Groups that rally around an aspirational name tend to act like it — the name becomes a quiet self-fulfilling prophecy. A great group name is the first act of leadership.',
+          body: 'Groups that rally around an aspirational name tend to act like it, the name becomes a quiet self-fulfilling prophecy. A great group name is the first act of leadership.',
         },
         {
           heading: 'Inside vs. outside meaning',
@@ -2310,7 +2310,7 @@ export const ARTICLES = {
       ],
       callout: {
         type: 'insight',
-        text: `A distinctive, creative name tends to attract more committed members than a generic identifier. Your name isn’t just identity — it’s a membership signal.`,
+        text: `A distinctive, creative name tends to attract more committed members than a generic identifier. Your name isn’t just identity, it’s a membership signal.`,
       },
     },
     {
@@ -2325,12 +2325,12 @@ export const ARTICLES = {
         },
         {
           heading: 'Future-proof naming criteria',
-          body: `Ask: if this group’s activity changes but the people stay the same, does the name still fit? If yes — it’s identity-based and will age well. If no — it’s activity-based and will need updating. For most groups, identity-based names are worth the extra effort to find.`,
+          body: `Ask: if this group’s activity changes but the people stay the same, does the name still fit? If yes, it’s identity-based and will age well. If no, it’s activity-based and will need updating. For most groups, identity-based names are worth the extra effort to find.`,
         },
       ],
       callout: {
         type: 'insight',
-        text: 'The best group names describe who you are, not what you do — because what you do will change.',
+        text: 'The best group names describe who you are, not what you do, because what you do will change.',
       },
     },
   ],
@@ -2345,16 +2345,16 @@ export const ARTICLES = {
       sections: [
         {
           heading: 'Sound shapes perception',
-          body: `The sounds in a name can subtly influence how it feels. Names with crisp, hard consonants—Kate, Jack, Blake—may come across as more energetic or assertive, while names with softer sounds—Lily, Maya, Noah—can feel warmer or gentler. Neither is better. The key is to consider what you want the name to convey—and how it sounds when spoken aloud.`,
+          body: `The sounds in a name can subtly influence how it feels. Names with crisp, hard consonants (Kate, Jack, Blake) may come across as more energetic or assertive, while names with softer sounds (Lily, Maya, Noah) can feel warmer or gentler. Neither is better. The key is to consider what you want the name to convey, and how it sounds when spoken aloud.`,
         },
         {
           heading: 'The uniqueness question',
-          body: `A distinctive or culturally specific name can be memorable and meaningful. The question isn’t whether a name is familiar to everyone—it’s whether it feels right for the child and family. If a name has an uncommon spelling or pronunciation, consider how easily people are likely to say, spell, and remember it, and whether that tradeoff matters to you.`,
+          body: `A distinctive or culturally specific name can be memorable and meaningful. The question isn’t whether a name is familiar to everyone, it’s whether it feels right for the child and family. If a name has an uncommon spelling or pronunciation, consider how easily people are likely to say, spell, and remember it, and whether that tradeoff matters to you.`,
         },
       ],
       callout: {
         type: 'insight',
-        text: `Names tend to move in cycles. What feels old-fashioned to one generation can feel fresh and distinctive to the next—which is why names like Eleanor, Theodore, and Hazel have made such strong comebacks. And there’s no rule that a great name has to come from the top 100—or from any list at all. A name can be inherited, rediscovered, invented, or completely your own.`,
+        text: `Names tend to move in cycles. What feels old-fashioned to one generation can feel fresh and distinctive to the next, which is why names like Eleanor, Theodore, and Hazel have made such strong comebacks. And there’s no rule that a great name has to come from the top 100, or from any list at all. A name can be inherited, rediscovered, invented, or completely your own.`,
       },
     },
     {
@@ -2365,20 +2365,20 @@ export const ARTICLES = {
       sections: [
         {
           heading: 'A name grows with a person',
-          body: `Most parents picture a name on a baby. It’s worth picturing it at every stage of life, too: on a school roster, at a first job, on a wedding invitation, or at 75. The most versatile names can evolve with the person who carries them. “Eleanor” works for a toddler, a teenager, a CEO, and an older adult—that’s range. But there’s no single formula for a name that works across a lifetime. A playful name may be exactly right for your family; a more formal one may offer a different kind of flexibility. The question is whether the name feels right for the person you imagine growing into it.`,
+          body: `Most parents picture a name on a baby. It’s worth picturing it at every stage of life, too: on a school roster, at a first job, on a wedding invitation, or at 75. The most versatile names can evolve with the person who carries them. “Eleanor” works for a toddler, a teenager, a CEO, and an older adult, that’s range. But there’s no single formula for a name that works across a lifetime. A playful name may be exactly right for your family; a more formal one may offer a different kind of flexibility. The question is whether the name feels right for the person you imagine growing into it.`,
         },
         {
           heading: 'The nickname architecture',
-          body: `Built-in nickname flexibility can be a feature, not a compromise. “Alexander” offers Alex, Al, Xander, Lex, and Alec, giving the person who wears it options as they grow. Other names have no obvious nickname—and that can be just as appealing. Think about whether you want a name that offers different ways to use it, or one that feels complete just as it is.`,
+          body: `Built-in nickname flexibility can be a feature, not a compromise. “Alexander” offers Alex, Al, Xander, Lex, and Alec, giving the person who wears it options as they grow. Other names have no obvious nickname, and that can be just as appealing. Think about whether you want a name that offers different ways to use it, or one that feels complete just as it is.`,
         },
         {
           heading: 'The professional context test',
-          body: `Try the name in a few different settings: “I’d like to introduce our CEO, [name].” Then: “Have you met [name]?” And imagine it on a school roster, a diploma, or a wedding invitation. If it feels natural across different contexts, the name has range. If it feels especially tied to one stage or setting, consider whether that’s part of its charm—or a limitation you want to avoid.`,
+          body: `Try the name in a few different settings: “I’d like to introduce our CEO, [name].” Then: “Have you met [name]?” And imagine it on a school roster, a diploma, or a wedding invitation. If it feels natural across different contexts, the name has range. If it feels especially tied to one stage or setting, consider whether that’s part of its charm, or a limitation you want to avoid.`,
         },
       ],
       callout: {
         type: 'insight',
-        text: `Some research suggests that names that are easier for others to pronounce can lead to more positive judgments in certain professional contexts. That doesn’t mean an unfamiliar, culturally specific, or creatively invented name is a disadvantage—it simply highlights one practical consideration: if a name is frequently mispronounced or misspelled, think about whether that matters to you and your child. And remember, pronunciation and spelling are often matters of familiarity, not inherent difficulty.`,
+        text: `Some research suggests that names that are easier for others to pronounce can lead to more positive judgments in certain professional contexts. That doesn’t mean an unfamiliar, culturally specific, or creatively invented name is a disadvantage, it simply highlights one practical consideration: if a name is frequently mispronounced or misspelled, think about whether that matters to you and your child. And remember, pronunciation and spelling are often matters of familiarity, not inherent difficulty.`,
       },
     },
   ],
@@ -2393,16 +2393,16 @@ export const ARTICLES = {
       sections: [
         {
           heading: 'Names that fit the animal',
-          body: `A pet’s personality can be one of the richest sources of naming inspiration. Is your dog a little Chaos? A total Gremlin? Is your cat a Diva, a Professor, or a Couch Potato? Names that capture a pet’s quirks can feel especially personal—and give participants something specific to riff on. Rover’s 2025 research found that nearly half of pet parents choose names based on personality or appearance. Give participants a glimpse of what makes the animal unique, and let that personality spark the ideas.`,
+          body: `A pet’s personality can be one of the richest sources of naming inspiration. Is your dog a little Chaos? A total Gremlin? Is your cat a Diva, a Professor, or a Couch Potato? Names that capture a pet’s quirks can feel especially personal, and give participants something specific to riff on. Rover’s 2025 research found that nearly half of pet parents choose names based on personality or appearance. Give participants a glimpse of what makes the animal unique, and let that personality spark the ideas.`,
         },
         {
           heading: 'The practical tests',
-          body: `Say the name out loud. Can you imagine calling it across a dog park without feeling awkward? Is there a natural short form for everyday use? (Maximilian → Max.) Can you say it warmly when they’re being good—and with authority when they’re not? For pets, the name you write down and the name you actually call can be two different things. Both are worth considering.`,
+          body: `Say the name out loud. Can you imagine calling it across a dog park without feeling awkward? Is there a natural short form for everyday use? (Maximilian → Max.) Can you say it warmly when they’re being good, and with authority when they’re not? For pets, the name you write down and the name you actually call can be two different things. Both are worth considering.`,
         },
       ],
       callout: {
         type: 'insight',
-        text: `Rover’s 2025 U.S. data puts Luna and Charlie at the top of the dog-name charts, with Luna and Milo leading for cats. Popular names have staying power, but if you want something more distinctive, look beyond the usual choices. The goal isn’t simply an uncommon name—it’s one that feels unmistakably like your pet.`,
+        text: `Rover’s 2025 U.S. data puts Luna and Charlie at the top of the dog-name charts, with Luna and Milo leading for cats. Popular names have staying power, but if you want something more distinctive, look beyond the usual choices. The goal isn’t simply an uncommon name, it’s one that feels unmistakably like your pet.`,
       },
     },
     {
@@ -2413,11 +2413,11 @@ export const ARTICLES = {
       sections: [
         {
           heading: 'Make sure both names work',
-          body: `A pet’s full name and everyday call name can serve different purposes. “Bartholomew” can be wonderfully over-the-top, while “Bart” is what you’ll actually call him at the dog park. “Persephone” has a certain grandeur; “Percy” is easy to toss across the room. There’s no need to choose between the two—just make sure you like both the full name and the version that will become part of everyday life.`,
+          body: `A pet’s full name and everyday call name can serve different purposes. “Bartholomew” can be wonderfully over-the-top, while “Bart” is what you’ll actually call him at the dog park. “Persephone” has a certain grandeur; “Percy” is easy to toss across the room. There’s no need to choose between the two, just make sure you like both the full name and the version that will become part of everyday life.`,
         },
         {
           heading: 'Make the call name easy to hear',
-          body: `For dogs especially, short names are practical: one or two syllables are easy to say and give you room to vary your tone. Hard consonants at the beginning can help a name stand out in a noisy environment, while vowel endings can make it easier to stretch or emphasize the sound. Also consider whether the name sounds too much like an everyday command—“Kit” and “Sit,” for example, could get confusing.`,
+          body: `For dogs especially, short names are practical: one or two syllables are easy to say and give you room to vary your tone. Hard consonants at the beginning can help a name stand out in a noisy environment, while vowel endings can make it easier to stretch or emphasize the sound. Also consider whether the name sounds too much like an everyday command, “Kit” and “Sit,” for example, could get confusing.`,
         },
       ],
       callout: {
@@ -2437,7 +2437,7 @@ export const ARTICLES = {
       sections: [
         {
           heading: 'The psychology of place names',
-          body: `Giving a place a name can make it feel more distinctive, memorable, and personal. “We’re going to Willowbend” creates a different feeling than “We’re going to the lake house.” A name gives a place an identity—and over time, that identity can become part of the stories and memories associated with it.`,
+          body: `Giving a place a name can make it feel more distinctive, memorable, and personal. “We’re going to Willowbend” creates a different feeling than “We’re going to the lake house.” A name gives a place an identity, and over time, that identity can become part of the stories and memories associated with it.`,
         },
         {
           heading: 'What makes a great place name',
@@ -2446,7 +2446,7 @@ export const ARTICLES = {
       ],
       callout: {
         type: 'example',
-        text: `A good name gives people something to remember and share. “We loved Willowbend” is more distinctive than “we loved the lake house”—and a memorable name can become part of the experience of visiting, staying, or returning to a place.`,
+        text: `A good name gives people something to remember and share. “We loved Willowbend” is more distinctive than “we loved the lake house”, and a memorable name can become part of the experience of visiting, staying, or returning to a place.`,
       },
     },
     {
@@ -2457,7 +2457,7 @@ export const ARTICLES = {
       sections: [
         {
           heading: 'Four sources that inspire great names',
-          body: `Memorable property names often draw from four places: geography (a local feature, view, or landmark—“Ridgecrest,” “Harborside”), history (a former use, previous owner, or story connected to the property—“The Old Mill,” “Shepherd’s Rest”), nature (something distinctive about the landscape—“Heronwood,” “Cliffside”), and feeling (the experience or mood the place creates—“Stillwater,” “Driftwood”). The more a name has a story behind it, the more there is to remember and share.`,
+          body: `Memorable property names often draw from four places: geography (a local feature, view, or landmark, “Ridgecrest,” “Harborside”), history (a former use, previous owner, or story connected to the property, “The Old Mill,” “Shepherd’s Rest”), nature (something distinctive about the landscape, “Heronwood,” “Cliffside”), and feeling (the experience or mood the place creates, “Stillwater,” “Driftwood”). The more a name has a story behind it, the more there is to remember and share.`,
         },
         {
           heading: 'The conversational test',
@@ -2485,12 +2485,12 @@ export const ARTICLES = {
         },
         {
           heading: 'Why naming together matters',
-          body: `When people have a hand in naming something, they have a reason to care about the outcome. They contribute ideas, see what others come up with, and have a voice in choosing the name. The process itself becomes a shared experience—and when the winning name emerges, people are more likely to feel they had a part in it.`,
+          body: `When people have a hand in naming something, they have a reason to care about the outcome. They contribute ideas, see what others come up with, and have a voice in choosing the name. The process itself becomes a shared experience, and when the winning name emerges, people are more likely to feel they had a part in it.`,
         },
       ],
       callout: {
         type: 'insight',
-        text: `The right name doesn’t just describe what something is—it shapes how people think and talk about it. A great name can turn something ordinary into something that feels like it has an identity of its own.`,
+        text: `The right name doesn’t just describe what something is, it shapes how people think and talk about it. A great name can turn something ordinary into something that feels like it has an identity of its own.`,
       },
     },
     {
@@ -2501,7 +2501,7 @@ export const ARTICLES = {
       sections: [
         {
           heading: 'Why the process matters as much as the outcome',
-          body: `When a group names something together—a friendship circle, club, tradition, shared space, or inside joke—the process becomes part of the story. Everyone gets to contribute, react, and have a say in what the group will call its thing. That shared experience can make the final name feel more meaningful than one chosen by someone else.`,
+          body: `When a group names something together, a friendship circle, club, tradition, shared space, or inside joke, the process becomes part of the story. Everyone gets to contribute, react, and have a say in what the group will call its thing. That shared experience can make the final name feel more meaningful than one chosen by someone else.`,
         },
         {
           heading: 'Give participants the backstory',
@@ -2510,7 +2510,7 @@ export const ARTICLES = {
       ],
       callout: {
         type: 'insight',
-        text: `The name you choose together becomes part of your shared history—a little piece of language that everyone helped create. Years later, the name can carry the memories, jokes, and stories that inspired it.`,
+        text: `The name you choose together becomes part of your shared history, a little piece of language that everyone helped create. Years later, the name can carry the memories, jokes, and stories that inspired it.`,
       },
     },
   ],
@@ -2546,11 +2546,11 @@ export const PRIMERS = {
   b4: {
     title: 'Rebranding: Evolution or Revolution?',
     body: `You’re not starting from scratch. You have brand equity. The question is: Evolution or Revolution?`,
-    example: `Mastercard (evolution — kept the name, dropped “MasterCard” spacing), Facebook→Meta (revolution), Dunkin’ Donuts→Dunkin’ (evolution — simplified)`,
+    example: `Mastercard (evolution, kept the name, dropped “MasterCard” spacing), Facebook→Meta (revolution), Dunkin’ Donuts→Dunkin’ (evolution, simplified)`,
   },
   b5: {
     title: 'Before You Start: The Naming Philosophy',
-    body: `A name is the shortest story you can tell about something — it doesn’t just describe what you do, it sets up everything you’ll become.`,
+    body: `A name is the shortest story you can tell about something, it doesn’t just describe what you do, it sets up everything you’ll become.`,
     example: `The best name isn’t the one everyone likes. It’s the one that works. Trust the process.`,
   },
   t1: {
@@ -2560,12 +2560,12 @@ export const PRIMERS = {
   },
   t2: {
     title: 'Band Naming: The Mythology Matters',
-    body: `Your band name is your first song. Fans will ask “How’d you get your name?” — have a good story.`,
+    body: `Your band name is your first song. Fans will ask “How’d you get your name?”, have a good story.`,
     example: `Radiohead (from Talking Heads song), Foo Fighters (Dave Grohl’s WWII UFO reference)`,
   },
   t3: {
-    title: 'Podcast Naming: Clarity vs. Intrigue — Both Can Win',
-    body: `You’re on a spectrum between ultra-clear (“How I Built This”) and utterly intriguing (“Radiolab”). Both work — but they work differently.`,
+    title: 'Podcast Naming: Clarity vs. Intrigue, Both Can Win',
+    body: `You’re on a spectrum between ultra-clear (“How I Built This”) and utterly intriguing (“Radiolab”). Both work, but they work differently.`,
     example: `The sweet spot: Most winning podcast names balance both. “Hidden Brain” is intriguing (why hidden?) but clearly about psychology. Aim for that.`,
   },
   t4: {
@@ -2574,13 +2574,13 @@ export const PRIMERS = {
     example: 'Habitat for Humanity (clear + aspirational), charity: water (memorable lowercase), Doctors Without Borders (communicates scope and courage in 3 words).',
   },
   t5: {
-    title: 'Gaming Names: Intimidate or Meme — Both Work',
+    title: 'Gaming Names: Intimidate or Meme, Both Work',
     body: 'Two camps: intimidating (FaZe Clan, Team Liquid) or meme-worthy (Panda Global, Golden Guardians).',
     example: 'Test: Can you yell it when you clutch a 1v5?',
   },
   t6: {
     title: 'Group Names Create Identity Before the First Meeting',
-    body: `Names shape group identity before a single shared experience happens. A great group name creates belonging — outsiders want in.`,
+    body: `Names shape group identity before a single shared experience happens. A great group name creates belonging, outsiders want in.`,
     example: `Groups that rally around an aspirational title (“The Visionaries”) tend to act more like it than ones with a generic identifier. Your name becomes a self-fulfilling prophecy.`,
   },
   p1: {
@@ -2600,7 +2600,7 @@ export const PRIMERS = {
   },
   p4: {
     title: 'The Right Name Changes How Something Feels',
-    body: `A great name doesn’t just describe what you do — it gives the thing room to grow into.`,
+    body: `A great name doesn’t just describe what you do, it gives the thing room to grow into.`,
     example: `Key insight: The best name isn’t the one everyone likes. It’s the one that works. Trust the process.`,
   },
 };
@@ -2611,7 +2611,7 @@ export const PRIMERS = {
 export const INVITE_GUIDANCE = {
   b1: {
     essential: ['Founders / C-suite', 'Marketing / Brand lead', `Anyone who’ll use the name daily`],
-    recommended: ['2-3 outsiders — investors, advisors, or customers'],
+    recommended: ['2-3 outsiders, investors, advisors, or customers'],
     recommendedNote: `30% of winning names came from someone outside the company. Airbnb’s name came from a designer they hired, not the founders.`,
     optional: ['Early employees (builds ownership)', 'Board members (if involved in brand decisions)'],
     sweetSpot: '12–25',
@@ -2620,7 +2620,7 @@ export const INVITE_GUIDANCE = {
   b2: {
     essential: ['Product team lead', 'Brand / Marketing team', 'Customer-facing staff (sales, support)'],
     recommended: ['2–3 existing customers who know the problem your product solves'],
-    recommendedNote: `Customers name things differently than internal teams. They use the words your market actually uses — not your internal jargon.`,
+    recommendedNote: `Customers name things differently than internal teams. They use the words your market actually uses, not your internal jargon.`,
     optional: ['Product designers / UX team', 'Key investors or advisors'],
     sweetSpot: '10–20',
     sweetSpotNote: 'Product naming benefits from diverse internal + a few external voices. Keep it tight.',
@@ -2628,7 +2628,7 @@ export const INVITE_GUIDANCE = {
   b3: {
     essential: ['Project team lead(s)', 'Department heads impacted by the project', 'Executive sponsor'],
     recommended: ['2–3 people most affected by this project (end users, downstream teams)'],
-    recommendedNote: `The people most affected by the project often suggest names that stick — they know what this work means on the ground.`,
+    recommendedNote: `The people most affected by the project often suggest names that stick, they know what this work means on the ground.`,
     optional: ['Cross-functional stakeholders if broad impact'],
     sweetSpot: '8–15',
     sweetSpotNote: 'Internal project naming works best with a focused group. Too many voices = political naming.',
@@ -2636,7 +2636,7 @@ export const INVITE_GUIDANCE = {
   b4: {
     essential: ['Founders / CEO', 'Brand / Marketing team', 'Long-tenured employees (they carry brand memory)'],
     recommended: ['Customers who know the current name and what it means to them'],
-    recommendedNote: `Brand equity lives in customer memory. They’ll tell you what’s worth keeping — and what associations the new name needs to escape.`,
+    recommendedNote: `Brand equity lives in customer memory. They’ll tell you what’s worth keeping, and what associations the new name needs to escape.`,
     optional: ['PR / Communications team', 'Board members if involved in brand decisions'],
     sweetSpot: '10–20',
     sweetSpotNote: 'Rebrands need internal buy-in AND external reality check. Balance both.',
@@ -2652,7 +2652,7 @@ export const INVITE_GUIDANCE = {
   t1: {
     essential: ['Team captain(s)', 'Coach / Manager'],
     recommended: ['3–5 core team members'],
-    recommendedNote: 'The whole team should feel ownership of the name — it will define their identity every game.',
+    recommendedNote: 'The whole team should feel ownership of the name, it will define their identity every game.',
     optional: ['Parents or guardians (youth teams)', 'Fans or supporters if established'],
     sweetSpot: '8–15',
     sweetSpotNote: 'Enough voices for variety, small enough for consensus.',
@@ -2660,10 +2660,10 @@ export const INVITE_GUIDANCE = {
   t2: {
     essential: ['All band members (everyone in)'],
     recommended: ['Producer or manager', '1–2 superfans who know your sound'],
-    recommendedNote: 'Superfans tell you what the name means from the outside — they hear the music without the insider bias.',
+    recommendedNote: 'Superfans tell you what the name means from the outside, they hear the music without the insider bias.',
     optional: ['Label reps if signed', 'Collaborators or session musicians'],
     sweetSpot: '5–10',
-    sweetSpotNote: `Band names are personal — keep the circle tight. Too many outside voices dilute what makes you you.`,
+    sweetSpotNote: `Band names are personal, keep the circle tight. Too many outside voices dilute what makes you you.`,
   },
   t3: {
     essential: ['Host(s)', 'Producer / Editor'],
@@ -2676,7 +2676,7 @@ export const INVITE_GUIDANCE = {
   t4: {
     essential: ['Founding team members', 'Board members', 'Executive Director'],
     recommended: ['5–10 community members you serve or plan to serve'],
-    recommendedNote: `The community you serve should have a voice in what you’re called. This is also a trust-building act — invite them in.`,
+    recommendedNote: `The community you serve should have a voice in what you’re called. This is also a trust-building act, invite them in.`,
     optional: ['Major donors or funders (if brand matters to them)', 'Volunteers and long-term supporters'],
     sweetSpot: '15–25',
     sweetSpotNote: 'Civic naming benefits from broad inclusion. More voices = more community ownership of the final name.',
@@ -2691,17 +2691,17 @@ export const INVITE_GUIDANCE = {
   },
   t6: {
     essential: ['All group members'],
-    recommended: ['Friends who know the group well — they see you from the outside'],
-    recommendedNote: 'Outside friends often suggest names that capture what the group looks like from the outside — which is the name that will stick with others.',
+    recommended: ['Friends who know the group well, they see you from the outside'],
+    recommendedNote: 'Outside friends often suggest names that capture what the group looks like from the outside, which is the name that will stick with others.',
     optional: ['Anyone who has been part of the group in the past'],
     sweetSpot: '8–20',
-    sweetSpotNote: 'Depends on group size — invite everyone who matters.',
+    sweetSpotNote: 'Depends on group size, invite everyone who matters.',
   },
   p1: {
-    essential: ['Immediate family — parents, siblings, grandparents'],
-    recommended: [`Close friends in the baby’s life — godparents, best friends`],
+    essential: ['Immediate family, parents, siblings, grandparents'],
+    recommended: [`Close friends in the baby’s life, godparents, best friends`],
     recommendedNote: `People who’ll be in this child’s life should feel included. It also means more people invested in the name from day one.`,
-    optional: ['Distant relatives, coworkers — anyone you want to feel involved'],
+    optional: ['Distant relatives, coworkers, anyone you want to feel involved'],
     sweetSpot: '8–15',
     sweetSpotNote: 'Great way to make distant relatives feel connected. The certificate on the nursery wall tells the whole story.',
   },
@@ -2711,12 +2711,12 @@ export const INVITE_GUIDANCE = {
     recommendedNote: `Pets become part of the community around them. The people who’ll call the name most often should help choose it.`,
     optional: ['Friends of the family who know about the new pet'],
     sweetSpot: '5–15',
-    sweetSpotNote: 'Keep it personal — this is a family moment.',
+    sweetSpotNote: 'Keep it personal, this is a family moment.',
   },
   p3: {
     essential: [`People who’ll live in or regularly use the space`],
     recommended: ['Friends who know the space and your style'],
-    recommendedNote: `Friends who’ve visited often name places better than the owners — they see the vibe without the familiarity bias.`,
+    recommendedNote: `Friends who’ve visited often name places better than the owners, they see the vibe without the familiarity bias.`,
     optional: ['Neighbors, frequent guests, anyone with a connection to the space'],
     sweetSpot: '5–15',
     sweetSpotNote: 'Keep it fun and intimate.',
@@ -2737,7 +2737,7 @@ export const INVITE_GUIDANCE = {
 export const CUT_QUESTIONS = {
   // b1 rewritten 2026-07-10 (client 10-question guide) — no cuts apply.
   b1: [],
-  b2: [], // mirrors b1 since 2026-07-13 — its old 'differentiator' cut no longer applies
+  b2: [], // mirrors b1 since 2026-07-13, its old 'differentiator' cut no longer applies
   b3: [],
   b4: [],
   b5: [],
@@ -2811,7 +2811,7 @@ export const FALLBACK_QUESTIONS = [
     type: 'text',
     required: false,
     placeholder: 'e.g. We all met in Berlin',
-    hint: `Group names with personal meaning create stronger belonging. If there’s a shared joke, a founding story, or a place that matters — share it.`,
+    hint: `Group names with personal meaning create stronger belonging. If there’s a shared joke, a founding story, or a place that matters, share it.`,
   },
 ];
 

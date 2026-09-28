@@ -90,7 +90,7 @@ export default function CreatorIdentityInput({ question, onSubmit, currentAnswer
       try {
         await supabase.from('profiles').update({ display_name: fullName }).eq('id', user.id);
         writeProfileCache(user.id, { display_name: fullName });
-      } catch { /* non-blocking — the blob still carries it to launch */ }
+      } catch { /* non-blocking, the blob still carries it to launch */ }
     }
     onSubmit(contestName.trim());
   };

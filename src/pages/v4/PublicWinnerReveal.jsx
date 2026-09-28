@@ -195,7 +195,7 @@ export default function PublicWinnerReveal() {
                 takes them to the MARKETING homepage. We use `/#top`
                 (not `/`) so the LandingPage's auth-redirect bypass
                 (already in place for hashes like /#faq) fires here
-                too — otherwise authed creators sharing the link
+                too, otherwise authed creators sharing the link
                 would get bounced into their workspace. */}
             <div className="v4-nav-right">
               <ExitLink to="/#top" aria-label="Exit" />

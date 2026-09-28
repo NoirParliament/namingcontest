@@ -65,7 +65,7 @@ function formatAnswer(value) {
   if (value === false) return 'No';
   if (value === '[configure-later]') return 'Configure after launch';
   if (Array.isArray(value)) {
-    if (value.length === 0) return '—';
+    if (value.length === 0) return ', ';
     if (value.length <= 3) return value.join(' · ');
     return `${value.slice(0, 2).join(' · ')} +${value.length - 2} more`;
   }
@@ -520,7 +520,7 @@ export default function ContestManage() {
           <SegmentThemeBackdrop subId={subId} minimal />
           <main className="v4-review" role="main">
             {/* The nav isn't decoration here. This page is most often reached
-                from an email link, so it's the first thing someone sees —
+                from an email link, so it's the first thing someone sees, 
                 without the logo there's nothing saying whose site this is,
                 and without the avatar someone signed into the WRONG account
                 has no way to switch. A dead end that can't be left is worse
@@ -753,7 +753,7 @@ export default function ContestManage() {
 
                       Only two: Facebook's sharer ignores prefilled text and
                       adds nothing over a pasted link, and Instagram has no
-                      share API at all — its button was a download dressed as
+                      share API at all, its button was a download dressed as
                       a share. The Copy link button covers both cases better
                       than a button that lies about what it does.
 
@@ -1190,7 +1190,7 @@ export default function ContestManage() {
               {/* Three steps mirror the three real contest phases. The
                   third step "Winner" has two sub-states: needs-picking
                   (active CTA) and picked (done).
-                  Steps are display-only — lifecycle stages are reached
+                  Steps are display-only, lifecycle stages are reached
                   via the platform map, not by clicking these cards. */}
               <div className="v4-manage-wait-steps">
 
@@ -1331,7 +1331,7 @@ export default function ContestManage() {
 
             {/* ── Footer actions ────────────────────────────────────
                 Winner phase shows the Catchword consult block instead
-                of the Cancel button (contest is already over —
+                of the Cancel button (contest is already over, 
                 cancelling doesn't apply, but a "didn't find what you
                 wanted? hire the pros" nudge does). */}
             {isWinnerPicked ? (

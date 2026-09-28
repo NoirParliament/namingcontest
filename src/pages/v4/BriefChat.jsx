@@ -157,7 +157,7 @@ function answerToDisplay(value) {
   if (value === '[configure-later]') return 'Configure after launch';
   // Multi-select chips → array of strings
   if (Array.isArray(value)) {
-    if (value.length === 0) return '—';
+    if (value.length === 0) return ', ';
     if (value.length <= 3) return value.join(' · ');
     return `${value.slice(0, 2).join(' · ')} +${value.length - 2} more`;
   }
@@ -897,7 +897,7 @@ function HistoryTurn({ turn, tone, isEditing, onStartEdit, onEditSubmit, onCance
           while editing) so the chat stays legible behind the edit
           popup. Tapping it opens EditQuestionModal, matching the
           desktop "popup to change answer" pattern that ReviewLaunch
-          and ContestManage already use — single editing UX across
+          and ContestManage already use, single editing UX across
           the whole product. */}
       {isSegment && (
         <SegmentReply

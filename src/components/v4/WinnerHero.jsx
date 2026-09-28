@@ -18,7 +18,7 @@ import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 export default function WinnerHero({
   name,           // winner name object from mockContestData NAMES
   submitter,      // participant object
-  tone,           // segment tone { bg, fg } — used if customColor not set
+  tone,           // segment tone { bg, fg }, used if customColor not set
   contestName,    // e.g. "Sunday football crew"
   totalVotes,     // total across the contest, for "X of Y votes"
   // Customization (set via WinnerCustomizer below)
@@ -100,7 +100,7 @@ export default function WinnerHero({
           "Start another", not "Run your own": this card only ever renders on
           ContestManage, the creator's own dashboard, so the reader has just
           finished running one. The old wording was written for the exported
-          share image, where strangers were the audience — that export is gone
+          share image, where strangers were the audience, that export is gone
           now, and the line was left telling the organiser to do the thing
           they'd just done. */}
       {!hideBranding && (

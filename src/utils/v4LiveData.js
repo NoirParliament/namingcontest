@@ -93,7 +93,7 @@ export function buildLiveData(contest, phase = 'voting') {
       submissions: names.length,
       participants: participants.length,
       votes: totalVotes,
-      leadingName: leading?.text || '—',
+      leadingName: leading?.text || ', ',
     },
   };
 }
@@ -177,7 +177,7 @@ export function buildLiveDataFromReal(subs, profilesById = {}, participantCount 
       // Prefer the real joined-participant count; fall back to submitters.
       participants: participantCount || participants.length,
       votes: totalVotes,
-      leadingName: leading?.text || '—',
+      leadingName: leading?.text || ', ',
     },
   };
 }

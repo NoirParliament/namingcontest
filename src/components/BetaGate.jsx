@@ -107,7 +107,7 @@ export default function BetaGate({ children }) {
             role="alert"
             style={{ margin: '10px 2px 0', fontSize: 13, lineHeight: 1.4, color: '#a8321f', fontFamily: 'var(--font-text)' }}
           >
-            That code isn’t right — try again.
+            That code isn’t right, try again.
           </p>
         )}
       </div>

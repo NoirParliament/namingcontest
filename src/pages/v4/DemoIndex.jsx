@@ -51,7 +51,7 @@ const CREATOR_SCREENS = [
     title: 'Pick a tier',
     path: '/v4/pick',
     status: 'LIVE',
-    description: 'First step of creator setup — choose Personal / Group / Business pricing.',
+    description: 'First step of creator setup, choose Personal / Group / Business pricing.',
   },
   {
     title: 'Brief setup chat',
@@ -77,7 +77,7 @@ const CREATOR_SCREENS = [
     path: '/v4/settings',
     status: 'LIVE',
     description: 'Account home. Running contests (with current contest card), past contests, billing, profile.',
-    notes: 'Adapts automatically when in participant mode — see Participant section below.',
+    notes: 'Adapts automatically when in participant mode, see Participant section below.',
   },
 ];
 
@@ -120,13 +120,13 @@ const PARTICIPANT_SCREENS = [
     path: `/v4/contest/${DEMO_CONTEST_ID}/status`,
     status: 'LIVE',
     description: 'Persistent participant dashboard with live d/h/m/s countdown to voting opens, greyed vote CTA that activates when the clock hits zero.',
-    notes: 'Mostly bypassed in normal flows — workspace shows the same data inline now.',
+    notes: 'Mostly bypassed in normal flows, workspace shows the same data inline now.',
   },
   {
     title: 'Workspace (participant mode)',
     path: '/v4/settings',
     status: 'LIVE',
-    description: 'Same /v4/settings URL as the creator workspace — auto-adapts when you have joined contests but no launched one. Joined-contest row shows live countdown + greyed Vote button inline.',
+    description: 'Same /v4/settings URL as the creator workspace, auto-adapts when you have joined contests but no launched one. Joined-contest row shows live countdown + greyed Vote button inline.',
   },
 ];
 
@@ -153,7 +153,7 @@ const PLANNED_SCREENS = [
     title: 'Footer + dropdown additions',
     path: '(all pages)',
     status: 'PLANNED',
-    description: 'Help center, contact us, privacy policy, terms, cookie policy — accessible from a slim footer + the avatar dropdown.',
+    description: 'Help center, contact us, privacy policy, terms, cookie policy, accessible from a slim footer + the avatar dropdown.',
     notes: 'Discussed earlier, deferred. Resurface before launch.',
   },
 ];
@@ -214,7 +214,7 @@ export default function DemoIndex() {
     });
     joinContest(VOTING_DEMO_CONTEST_ID, { name: displayName, email });
     [
-      { text: 'Iron Boots FC',     whyItFits: 'Sounds like Saturday-night football in the mud — and a long bus home.' },
+      { text: 'Iron Boots FC',     whyItFits: 'Sounds like Saturday-night football in the mud, and a long bus home.' },
       { text: 'Brookside Rovers',  whyItFits: 'Local geography wins community loyalty. Easy chant: “ROVERS!”' },
       { text: 'North Park United', whyItFits: 'Direct, two-syllable, chantable. Names the pitch.' },
     ].forEach((n) => recordSubmission(VOTING_DEMO_CONTEST_ID, n));
@@ -235,11 +235,11 @@ export default function DemoIndex() {
 
           <div className="v4-review-inner v4-demo-inner">
             <div className="v4-demo-head">
-              <h1 className="v4-demo-title">NamingContest.com — Screen Index</h1>
+              <h1 className="v4-demo-title">NamingContest.com, Screen Index</h1>
               <p className="v4-demo-sub">
                 Every screen in the demo, grouped by lifecycle stage.
                 Click any link to open. This page updates whenever a new
-                screen ships — it lives in the app, not a separate doc.
+                screen ships, it lives in the app, not a separate doc.
               </p>
             </div>
 

@@ -143,7 +143,7 @@ function LaunchModalInner({ onClose, onCreateIntent, onPaid, contextLabel, tier,
     // whatever a previous guest run saved to the setup blob.
     if (user?.email) {
       setEmail(user.email);
-      return; // field is locked — nothing to focus
+      return; // field is locked, nothing to focus
     }
     try {
       const raw = localStorage.getItem('v4_contest_setup');

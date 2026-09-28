@@ -713,7 +713,7 @@ export default function Settings() {
                 - WITH a real contest: full section with header, the
                   big tinted "current" card, closed-contest history,
                   and a quiet "start another" footer.
-                - WITHOUT: no header, no big empty card — just a quiet
+                - WITHOUT: no header, no big empty card, just a quiet
                   inline "Start a contest" prompt that lives politely
                   under the joined contests, so participants who never
                   intend to run one aren't pestered. */}
@@ -763,7 +763,7 @@ export default function Settings() {
             )}
 
             {/* ── CANCELLED (real) ─────────────────────────────────
-                Contests the creator ended. Muted rows, no actions —
+                Contests the creator ended. Muted rows, no actions, 
                 just a record that they were cancelled. */}
             {isRealUser && cancelledDbContests.length > 0 && (
               <section className="v4-settings-section">
@@ -973,7 +973,7 @@ export default function Settings() {
                         section) so it stays out of the way. */}
 
             {/* ── Billing section (compact, collapsed by default) ──
-                Only shown after the user has launched a real contest —
+                Only shown after the user has launched a real contest, 
                 participants and never-launched creators have nothing to
                 bill, so the section is hidden entirely (no Visa-on-file
                 placeholder, no "no purchases yet" empty state). */}
@@ -1164,7 +1164,7 @@ export default function Settings() {
                     </label>
 
                     {/* Email is the magic-link sign-in identity, so it only
-                        moves via Supabase's confirmation link — the address
+                        moves via Supabase's confirmation link, the address
                         below stays live until that link is clicked. Not a
                         <label>/<form>: this sits inside the profile form, and
                         nesting either would hijack its submit. */}
@@ -1288,7 +1288,7 @@ export default function Settings() {
                 Otherwise a quiet one-line nudge, worded for where they
                 actually are: joined-but-never-run gets "of your own",
                 an existing organiser gets "another". There is always a
-                way to start one from here — this branch used to end at
+                way to start one from here, this branch used to end at
                 !runsSomething, which meant the moment you ran a contest
                 the route to starting a second one vanished.
 

@@ -226,29 +226,29 @@ function openSeeded(seed, url) {
 // ── Flow step definitions ────────────────────────────────────────
 const CREATOR_STEPS = [
   { n: 1,  title: 'Landing page', desc: 'Public homepage with the hero animation, tier offerings, and sign-in entry point.', seed: seedFresh, url: '/' },
-  { n: 2,  title: 'Sign in / register', desc: 'Passwordless magic-link modal — the creator enters an email to start.', seed: seedFresh, url: '/?signin=creator' },
+  { n: 2,  title: 'Sign in / register', desc: 'Passwordless magic-link modal, the creator enters an email to start.', seed: seedFresh, url: '/?signin=creator' },
   { n: 3,  title: 'Pick a tier', desc: 'Choose Personal, Group, or Business pricing for the contest.', seed: seedCreatorIdentity, url: '/v4/pick' },
   { n: 4,  title: 'Brief setup chat', desc: 'Chat-style builder, opened mid-flow on a company example: working name, then the segment-specific brief questions.', seed: () => seedCreatorBriefChat('sim_b1'), url: '/v4/setup/brief' },
   { n: 5,  title: 'Review & launch', desc: 'Summary of every answer, then the fake-Stripe checkout modal to go live.', seed: () => seedCreatorContest(SUBMIT_ID), url: '/v4/setup/review?launch=1', payHint: 'Test card 4242 4242 4242 4242 · any future expiry · any 3-digit CVC' },
-  { n: 6,  title: 'Manage — submission stage (scroll down)', desc: 'Creator dashboard while names roll in, with live results and the brief recap. Scroll to the bottom to see the stage marked in the contest-journey strip.', seed: () => seedCreatorContest(SUBMIT_ID), url: `/v4/contest/${SUBMIT_ID}?phase=submission` },
-  { n: 7,  title: 'Manage — voting stage (scroll down)', desc: 'Same dashboard once submissions close and votes start accumulating. Scroll to the bottom to see the stage marked in the contest-journey strip.', seed: () => seedCreatorContest(VOTE_ID), url: `/v4/contest/${VOTE_ID}?phase=voting` },
-  { n: 8,  title: 'Manage — pick the winner stage (scroll down)', desc: 'Creator dashboard at the final stage. Scroll to the bottom — the journey strip shows voting closed, and the Pick the winner button opens the leaderboard to crown a name.', seed: () => seedCreatorContest(VOTE_ID), url: `/v4/contest/${VOTE_ID}?phase=winner` },
+  { n: 6,  title: 'Manage, submission stage (scroll down)', desc: 'Creator dashboard while names roll in, with live results and the brief recap. Scroll to the bottom to see the stage marked in the contest-journey strip.', seed: () => seedCreatorContest(SUBMIT_ID), url: `/v4/contest/${SUBMIT_ID}?phase=submission` },
+  { n: 7,  title: 'Manage, voting stage (scroll down)', desc: 'Same dashboard once submissions close and votes start accumulating. Scroll to the bottom to see the stage marked in the contest-journey strip.', seed: () => seedCreatorContest(VOTE_ID), url: `/v4/contest/${VOTE_ID}?phase=voting` },
+  { n: 8,  title: 'Manage (pick the winner stage (scroll down)', desc: 'Creator dashboard at the final stage. Scroll to the bottom) the journey strip shows voting closed, and the Pick the winner button opens the leaderboard to crown a name.', seed: () => seedCreatorContest(VOTE_ID), url: `/v4/contest/${VOTE_ID}?phase=winner` },
   { n: 9,  title: 'Winner screen', desc: 'The winner hero card with share + PNG/PDF export once a name is crowned.', seed: () => seedCreatorContest(VOTE_ID), url: `/v4/contest/${VOTE_ID}?phase=winner&winner=vsub_2` },
-  { n: 10, title: 'Workspace (creator)', desc: 'Account home — running and past contests, billing, and profile.', seed: () => seedCreatorContest(VOTE_ID), url: '/v4/settings' },
+  { n: 10, title: 'Workspace (creator)', desc: 'Account home, running and past contests, billing, and profile.', seed: () => seedCreatorContest(VOTE_ID), url: '/v4/settings' },
 ];
 
 const PARTICIPANT_STEPS = [
   { n: 1,  title: 'Join from an invite link (new)', desc: 'First-time participant: someone shares the contest link, you land on the segment-themed invitation page, see the prize, and enter your email to join.', seed: seedFresh, url: `/v4/join/${SUBMIT_ID}` },
-  { n: 2,  title: 'Sign in from the homepage (returning)', desc: 'Already registered from a past contest? Sign in from the homepage with a magic link — no invite needed — and your joined contests are waiting.', seed: seedFresh, url: '/?signin=participant' },
-  { n: 3,  title: 'Submission chat — participant chooses', desc: 'Chat-style flow to propose names. The host left crediting up to each person, so it opens by asking whether to show your name; choosing “credit me” lets you enter the name (which becomes your profile name).', seed: () => seedParticipant(SUBMIT_ID, 'joined'), url: `/v4/contest/${SUBMIT_ID}/submit` },
-  { n: 4,  title: 'Submission chat — credit mandatory (host set it public)', desc: 'Same flow when the host turned anonymity OFF: the chat explains crediting is required for this contest and asks you to confirm the name you’re okay sharing (which becomes your profile name). No anonymous option.', seed: () => seedParticipantPublic(SUBMIT_ID), url: `/v4/contest/${SUBMIT_ID}/submit` },
+  { n: 2,  title: 'Sign in from the homepage (returning)', desc: 'Already registered from a past contest? Sign in from the homepage with a magic link, no invite needed, and your joined contests are waiting.', seed: seedFresh, url: '/?signin=participant' },
+  { n: 3,  title: 'Submission chat, participant chooses', desc: 'Chat-style flow to propose names. The host left crediting up to each person, so it opens by asking whether to show your name; choosing “credit me” lets you enter the name (which becomes your profile name).', seed: () => seedParticipant(SUBMIT_ID, 'joined'), url: `/v4/contest/${SUBMIT_ID}/submit` },
+  { n: 4,  title: 'Submission chat, credit mandatory (host set it public)', desc: 'Same flow when the host turned anonymity OFF: the chat explains crediting is required for this contest and asks you to confirm the name you’re okay sharing (which becomes your profile name). No anonymous option.', seed: () => seedParticipantPublic(SUBMIT_ID), url: `/v4/contest/${SUBMIT_ID}/submit` },
   { n: 5,  title: 'Post-submit thanks', desc: 'Receipt of your names plus a countdown to when voting opens.', seed: () => seedParticipant(SUBMIT_ID, 'submitted'), url: `/v4/contest/${SUBMIT_ID}/thanks` },
   { n: 6,  title: 'Workspace (pre-vote)', desc: 'Your joined contest with a greyed Vote button + countdown until voting opens.', seed: () => seedParticipant(SUBMIT_ID, 'submitted'), url: '/v4/settings' },
   { n: 7,  title: 'Vote', desc: 'Pick your favourites from the shortlist with search, sort, and a sticky submit bar.', seed: () => seedParticipant(VOTE_ID, 'submitted'), url: `/v4/contest/${VOTE_ID}/vote` },
   { n: 8,  title: 'Post-vote thanks', desc: 'Receipt of your votes plus a countdown to the winner announcement.', seed: () => seedParticipant(VOTE_ID, 'voted'), url: `/v4/contest/${VOTE_ID}/vote-thanks` },
-  { n: 9,  title: 'Winner reveal — your name won', desc: 'The celebratory state: your own submission took it. Confetti, a YOU WON badge, and the prize.', seed: () => seedParticipantWinner(VOTE_ID, 'vsub_1'), url: `/v4/contest/${VOTE_ID}/winner` },
-  { n: 10, title: 'Winner reveal — a teammate won', desc: "The same reveal when someone else’s name took it — same winning name as the “your name won” demo, with a note here because you voted for the winner.", seed: () => seedParticipantWinnerOther(VOTE_ID, 'vsub_1'), url: `/v4/contest/${VOTE_ID}/winner` },
-  { n: 11, title: 'Workspace (concluded)', desc: 'Your joined contest once the winner’s out — the row reads “WINNER” and links straight through to the reveal.', seed: () => seedParticipantWinnerOther(VOTE_ID, 'vsub_1'), url: '/v4/settings' },
+  { n: 9,  title: 'Winner reveal, your name won', desc: 'The celebratory state: your own submission took it. Confetti, a YOU WON badge, and the prize.', seed: () => seedParticipantWinner(VOTE_ID, 'vsub_1'), url: `/v4/contest/${VOTE_ID}/winner` },
+  { n: 10, title: 'Winner reveal, a teammate won', desc: "The same reveal when someone else’s name took it, same winning name as the “your name won” demo, with a note here because you voted for the winner.", seed: () => seedParticipantWinnerOther(VOTE_ID, 'vsub_1'), url: `/v4/contest/${VOTE_ID}/winner` },
+  { n: 11, title: 'Workspace (concluded)', desc: 'Your joined contest once the winner’s out, the row reads “WINNER” and links straight through to the reveal.', seed: () => seedParticipantWinnerOther(VOTE_ID, 'vsub_1'), url: '/v4/settings' },
 ];
 
 // Neutral flow — a single page (for now): a stranger who clicked the
@@ -256,7 +256,7 @@ const PARTICIPANT_STEPS = [
 // didn't vote, may not even be logged in. The public reveal page
 // hosts the result + a single Share button + an "Exit" out.
 const NEUTRAL_STEPS = [
-  { n: 1, title: 'Public winner reveal', desc: "What anyone sees if they click the share link after the contest closed — winning name, who suggested it, vote count, and a Share button that copies the page URL. No auth required. Exit returns to the homepage.", seed: () => seedNeutralReveal(VOTE_ID, 'vsub_2'), url: `/v4/contest/${VOTE_ID}/reveal` },
+  { n: 1, title: 'Public winner reveal', desc: "What anyone sees if they click the share link after the contest closed, winning name, who suggested it, vote count, and a Share button that copies the page URL. No auth required. Exit returns to the homepage.", seed: () => seedNeutralReveal(VOTE_ID, 'vsub_2'), url: `/v4/contest/${VOTE_ID}/reveal` },
 ];
 
 const ADDITIONAL = {
@@ -271,7 +271,7 @@ const ADDITIONAL = {
     { title: 'Catchword Branding', desc: 'The naming agency behind NamingContest.', url: 'https://catchwordbranding.com/' },
   ],
   errors: [
-    { title: '404 — Not found', desc: 'Shown for any unknown URL; on-brand with a way back.', url: '/this-page-does-not-exist' },
+    { title: '404, Not found', desc: 'Shown for any unknown URL; on-brand with a way back.', url: '/this-page-does-not-exist' },
     { title: 'Error state', desc: 'Generic “something went wrong” page for unexpected failures.', url: '/error' },
   ],
 };
@@ -304,7 +304,7 @@ export default function PlatformMap() {
 
           <div className="v4-review-inner v4-map-inner">
             <div className="v4-map-head">
-              <h1 className="v4-map-title">NamingContest — Platform Map</h1>
+              <h1 className="v4-map-title">NamingContest, Platform Map</h1>
               <p className="v4-map-sub">
                 Every screen and flow in one place. Click any step to open
                 it in a new tab, pre-loaded with the right state (logged in,
@@ -338,7 +338,7 @@ export default function PlatformMap() {
               id="map-participant"
               icon={<UsersThree weight="duotone" size={18} />}
               title="Participant flow"
-              subtitle="Two ways in — an invite link (new) or a returning sign-in — through to seeing who won."
+              subtitle="Two ways in, an invite link (new) or a returning sign-in, through to seeing who won."
               steps={PARTICIPANT_STEPS}
             />
 
@@ -346,7 +346,7 @@ export default function PlatformMap() {
               id="map-neutral"
               icon={<ShareNetwork weight="duotone" size={18} />}
               title="Neutral flow"
-              subtitle="What a random visitor sees when they click the share link after the contest is already over — no auth, no participation, just the result."
+              subtitle="What a random visitor sees when they click the share link after the contest is already over, no auth, no participation, just the result."
               steps={NEUTRAL_STEPS}
             />
 
@@ -371,10 +371,10 @@ export default function PlatformMap() {
               <div className="v4-map-section-head">
                 <ArrowsIcon />
                 <div>
-                  <h2 className="v4-map-section-title">Simulations — every group &amp; segment</h2>
+                  <h2 className="v4-map-section-title">Simulations, every group &amp; segment</h2>
                   <p className="v4-map-section-sub">
                     End-to-end, themed to each segment&rsquo;s colours. Open the
-                    creator brief or the participant invitation for any one — or
+                    creator brief or the participant invitation for any one, or
                     hit <strong>Dashboard bg</strong> to preview that segment&rsquo;s
                     themed dashboard background on a fully filled-out winner screen.
                   </p>
@@ -426,7 +426,7 @@ export default function PlatformMap() {
                             <button
                               type="button"
                               className="btn btn-secondary btn-sm"
-                              title="Opens the creator winner dashboard — the richest view of this segment's themed background"
+                              title="Opens the creator winner dashboard, the richest view of this segment's themed background"
                               onClick={() => openSeeded(
                                 () => seedCreatorContest(id),
                                 `/v4/contest/${id}?phase=winner&winner=${id}_2`

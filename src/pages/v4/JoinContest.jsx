@@ -445,7 +445,7 @@ export default function JoinContest() {
 
         <main className="v4-review" role="main">
           {/* Logo left, inviter sentence center (matches the role the
-              breadcrumb plays elsewhere — top-of-page context), deadline
+              breadcrumb plays elsewhere, top-of-page context), deadline
               pill right. */}
           <header className="v4-nav v4-join-nav">
             <BrandLink />
@@ -515,7 +515,7 @@ export default function JoinContest() {
 
             {/* ── PRIMARY CTA + revealing magic-link form ───────────────
                 Initial state: ONE big exciting button. No mention of
-                magic links yet — that's mechanics, not motivation.
+                magic links yet, that's mechanics, not motivation.
                 When the user clicks "Yes, I'm in," the email field
                 reveals with the magic-link copy underneath. */}
             <section className="v4-join-action">

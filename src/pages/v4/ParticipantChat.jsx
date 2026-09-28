@@ -53,7 +53,7 @@ function formatAnswer(value) {
   if (value === false) return 'No';
   if (value === '[configure-later]') return 'Configure after launch';
   if (Array.isArray(value)) {
-    if (value.length === 0) return '—';
+    if (value.length === 0) return ', ';
     return value.join(' · ');
   }
   if (value && typeof value === 'object') {
@@ -130,7 +130,7 @@ function readDraftStash(contestId) {
 function writeDraftStash(contestId, stash) {
   try {
     localStorage.setItem(draftStashKey(contestId), JSON.stringify(stash));
-  } catch { /* storage full/blocked — worst case we're back to session-only */ }
+  } catch { /* storage full/blocked, worst case we're back to session-only */ }
 }
 function clearDraftStash(contestId) {
   try { localStorage.removeItem(draftStashKey(contestId)); } catch {}
@@ -375,7 +375,7 @@ export default function ParticipantChat() {
     const nm = (profile?.display_name || '').trim();
     if (!nm) return;
     const emailPrefix = (user?.email || userEmail || '').split('@')[0].trim().toLowerCase();
-    if (nm.toLowerCase() === emailPrefix) return; // just the email default — not a real name
+    if (nm.toLowerCase() === emailPrefix) return; // just the email default, not a real name
     namePrefilledRef.current = true;
     const parts = nm.split(/\s+/);
     setFirstName(parts[0] || '');
@@ -587,7 +587,7 @@ export default function ParticipantChat() {
     setTimeout(() => {
       setTypingFor(null);
       if (drafts.length + 1 >= remainingSlots) {
-        setSubmittedDone(true); // hit the limit — go straight to checklist
+        setSubmittedDone(true); // hit the limit, go straight to checklist
       } else {
         setShowForm(true);
       }
@@ -1140,11 +1140,11 @@ export default function ParticipantChat() {
                       the initial prompt bubble here.
                     - On subsequent submissions, the response bubble
                       from the previous draft (rendered above in
-                      drafts.map) already asks for the next one — so
+                      drafts.map) already asks for the next one, so
                       we skip the prompt here to avoid two system
                       bubbles in a row.
                     Tip and form follow either way. No "Suggestion N
-                    of M" counter — it pressures people to fill all
+                    of M" counter, it pressures people to fill all
                     slots when the creator allowed many. */}
                 {!submittedDone && showForm && editingDraftIndex === null && (
                   <>
@@ -1162,7 +1162,7 @@ export default function ParticipantChat() {
                       </>
                     )}
                     {/* Form. Stage gating only matters on the first
-                        turn — once drafts exist, the user is past intro
+                        turn, once drafts exist, the user is past intro
                         and everything renders normally. (The rotating
                         per-submission "Tip" line was dropped: with up
                         to 10 slots it read as filler by the third.) */}
@@ -1387,7 +1387,7 @@ function SubmissionCard({
       </div>
       {canSkip && (
         /* Lives OUTSIDE the form's primary action row so it's
-           clearly a different kind of action — finalizing, not
+           clearly a different kind of action, finalizing, not
            adding. Quieter visual weight (outline button) + an
            irreversibility note right under it. */
         <div className="v4-pchat-finalize">

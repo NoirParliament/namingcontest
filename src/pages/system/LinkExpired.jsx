@@ -44,7 +44,7 @@ export default function LinkExpired() {
             <div className="sys-eyebrow">Sign-in link</div>
             <h1 className="sys-title">That link has already been used.</h1>
             <p className="sys-sub">
-              Sign-in links work once, and only for a short while — and mail
+              Sign-in links work once, and only for a short while, and mail
               apps sometimes open them before you do. Nothing is wrong with
               your account. Ask for a fresh one and you&rsquo;ll be straight in.
             </p>

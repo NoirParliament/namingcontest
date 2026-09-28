@@ -43,7 +43,7 @@ const NAME_QUESTION = {
   label: 'Contest name',
   prompt: 'What should we call this contest?',
   type: 'text',
-  required: true, // a contest must have a name — no "Skip this question"
+  required: true, // a contest must have a name, no "Skip this question"
   placeholder: 'Give your contest a name',
 };
 
@@ -115,7 +115,7 @@ export default function ReviewLaunch() {
   // without a remount.
   const [editTick, setEditTick] = useState(0);
   const setup = readSetup();
-  void editTick; // keep eslint quiet — used as the re-read trigger
+  void editTick; // keep eslint quiet, used as the re-read trigger
 
   // ── Intro to participants ─────────────────────────────────────────
   // Written here, on review, rather than in the chat: a cover letter is
@@ -465,7 +465,7 @@ export default function ReviewLaunch() {
                 <AvatarMenu
                   email={user?.email || setup.userEmail}
                   /* Signed-in only (see the guard above), so the profile row is
-                     the identity source — the setup blob can still hold a demo
+                     the identity source, the setup blob can still hold a demo
                      persona from earlier local flows. */
                   name={profile?.display_name || user?.email?.split('@')[0]}
                   photo={profile?.avatar_url || null}

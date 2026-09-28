@@ -194,7 +194,7 @@ function NamesList({
   const [bonusVotes, setBonusVotes] = useState({}); // { nameId: +N }
   const [pulsedId, setPulsedId] = useState(null);
   useEffect(() => {
-    if (!simulateVotes) return;      // real contest — never fabricate votes
+    if (!simulateVotes) return;      // real contest, never fabricate votes
     if (!showVotes) return;          // submission phase has no votes yet
     if (!names || names.length === 0) return;
     if (typeof window === 'undefined') return;
@@ -306,7 +306,7 @@ function NamesList({
                   onClick={() => onToggle(name.id)}
                 >
                   {/* Ranking number only makes sense once there are
-                      votes to rank by — during submission we hide it
+                      votes to rank by, during submission we hide it
                       so the list reads as "names coming in," not "1st
                       place / 2nd place." */}
                   {showVotes && <div className="v4-results-rank">#{i + 1}</div>}
