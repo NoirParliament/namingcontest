@@ -165,7 +165,9 @@ function LaunchModalInner({ onClose, onCreateIntent, onPaid, contextLabel, tier,
     if (!canSubmit) return;
     setSubmitting(true);
     setCardError('');
-    track('checkout_submitted', { tier, value: price, currency: 'USD' });
+    let category;
+    try { category = JSON.parse(localStorage.getItem('v4_contest_setup') || '{}').subSegmentId; } catch { /* ignore */ }
+    track('checkout_submitted', { tier, category, value: price, currency: 'USD' });
 
     try {
       // 1. Create the draft contest + a PaymentIntent for its price (the price

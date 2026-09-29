@@ -367,12 +367,10 @@ export default function ReviewLaunch() {
   // STEP 2 (called by the modal after the card is confirmed): verify the
   // payment server-side and flip the contest live, then route.
   const handlePaid = async ({ contestId, paymentIntentId, email }) => {
-    {
-      const s = readSetup();
-      trackOnce(`paid_${contestId}`, 'payment_completed', {
-        tier: s.group, category: s.subSegmentId, contest_id: contestId, value: s.paidAmount, currency: 'USD',
-      });
-    }
+    const s = readSetup();
+    trackOnce(`paid_${contestId}`, 'payment_completed', {
+      tier: s.group, category: s.subSegmentId, contest_id: contestId, value: s.paidAmount, currency: 'USD',
+    });
     const { data, error } = await supabase.functions.invoke('confirm-launch', { body: { contestId, paymentIntentId, origin: window.location.origin, isGuest: !user } });
     if (error || data?.error) {
       window.alert(
@@ -381,7 +379,9 @@ export default function ReviewLaunch() {
         '\n\nIt will still appear once finalized. Please refresh in a moment.'
       );
     } else {
-      track('contest_launched', { contest_id: contestId });
+      track('contest_launched', {
+        tier: s.group, category: s.subSegmentId, contest_id: contestId, value: s.paidAmount, currency: 'USD',
+      });
     }
     setLaunchOpen(false);
     if (user?.id) {
