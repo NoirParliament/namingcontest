@@ -36,6 +36,15 @@ const CODES = [
 // the env vars are rotated. Bump again any time you need to force a re-lock.
 const STORAGE_KEY = 'nc_beta_ok_v3'; // bumped 2026-09-29 with the new access codes so every browser re-enters
 
+// Google's SEO TESTING tools (Rich Results Test, URL Inspection live test,
+// PageSpeed Insights / Lighthouse) announce themselves with these user
+// agents and never index anything. Letting them through means the site can
+// be validated (structured data, meta, performance) while the beta gate is
+// still on. The indexing crawler (Googlebot) and everyone else still see the
+// gate. Remove with the gate at public launch.
+const SEO_TOOL_UA = /Google-InspectionTool|Chrome-Lighthouse/i;
+const isSeoTool = typeof navigator !== 'undefined' && SEO_TOOL_UA.test(navigator.userAgent || '');
+
 export default function BetaGate({ children }) {
   const [unlocked, setUnlocked] = useState(() => {
     try { return localStorage.getItem(STORAGE_KEY) === '1'; } catch { return false; }
@@ -44,7 +53,7 @@ export default function BetaGate({ children }) {
   const [error, setError] = useState(false);
 
   // No codes configured → gate is off (local dev + public launch).
-  if (CODES.length === 0) return children;
+  if (CODES.length === 0 || isSeoTool) return children;
   if (unlocked) return children;
 
   const submit = (e) => {
