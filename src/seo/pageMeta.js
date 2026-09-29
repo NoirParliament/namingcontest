@@ -28,8 +28,9 @@ const t = (page) => `${page} · ${SITE_NAME}`;
 // Exact-path entries. `index: true` = indexable + canonical.
 export const ROUTE_META = {
   '/': {
-    title: 'NamingContest.com: Run a naming contest, crown the winner',
-    description: DEFAULT_DESCRIPTION,
+    // Real hero heading + hero paragraph (client copy, kept verbatim).
+    title: 'NamingContest.com: Run a naming contest without the chaos',
+    description: 'Skip the group chats and Google Sheets. Create a naming contest in minutes: invite participants, collect suggestions, vote on favorites, and crown a winner—all in one place.',
     index: true,
     ogType: 'website',
   },
