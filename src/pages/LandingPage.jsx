@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, Link, Navigate } from 'react-router-dom';
 import { MusicNote, PawPrint, Buildings } from '@phosphor-icons/react';
 import { PRICING_EXPLANATION } from '../data/v4/voterTiers';
+import { track } from '../utils/measure';
 import personalDog from '../assets/personal-dog.webp';
 import heroOfficeScene from '../assets/planning.webp';
 import teamPlayers from '../assets/team-players.webp';
@@ -1593,6 +1594,7 @@ export default function LandingPage() {
       } catch {
         // localStorage unavailable — proceed anyway
       }
+      track('tier_selected', { tier: group }); // homepage cards skip /v4/pick, so fire the funnel entry here
       navigate('/v4/setup/brief');
     } else {
       navigate('/v4/pick');
