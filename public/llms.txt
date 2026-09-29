@@ -1,0 +1,48 @@
+# NamingContest.com
+
+> Run a naming contest without the chaos. Skip the group chats and Google Sheets. Create a naming contest in minutes: invite participants, collect suggestions, vote on favorites, and crown a winner—all in one place.
+
+NamingContest.com is made by Catchword Branding. All text below is taken from the live site.
+
+## Contest types
+
+- Personal: Babies, pets, and more.
+- Group: Teams, bands, clubs, and more.
+- Business: Companies, products, and more.
+
+## How it works
+
+1. Setup, contest launch: Select your contest type, answer a few quick questions, and you’re set.
+2. Invite, invitations: Share a link and everyone’s ready to participate. No signups, no downloads.
+3. Participate, name submissions and votes: Names roll in, votes get counted, a winner rises to the top.
+4. Reveal, the winner is…: Explore how the votes landed, select a winner, and award a prize if you choose.
+
+## Pricing
+
+The price depends only on how many people take part: $9 for up to 10 participants, $19 for up to 30, or $39 for up to 90. You pay once per contest, with no subscription and no per-name or per-participant charges on top. The tier is the only thing that changes: a $9 contest works exactly like a $39 one. Invitations are unlimited, so share your link with as many people as you like. A spot is only used when someone signs in with their email to take part, whether to submit names or to vote; just opening the link doesn’t count. Fees aren’t refundable once a contest has launched.
+
+## FAQ
+
+### Who’s behind NamingContest?
+
+We’re Catchword Branding—a leading naming agency with 25+ years of experience creating names for companies and products around the world. We’ve worked with brands like Starbucks, Volkswagen, Asana, TikTok, and Corning. We created this platform to make running your own naming contest simple, social, and fun.
+
+### How long does a contest take?
+
+You set the deadline, but most contests wrap up in under a week.
+
+### How do participants contribute and vote?
+
+They open your link and drop in their email—that’s the whole setup. A magic link signs them in and takes them straight to the contest. You’re the only one who builds and runs it.
+
+### How does the voting work?
+
+One simple vote—no clunky ballots. Everyone opens your link, sees all the suggested names, and taps up to three favorites. Votes tally as they come in, and you crown the winner.
+
+## Pages
+
+- [Home](https://namingcontest.com/)
+- [Contact](https://namingcontest.com/contact)
+- [Privacy Policy](https://namingcontest.com/privacy)
+- [Terms of Service](https://namingcontest.com/terms)
+- [Cookie Policy](https://namingcontest.com/cookies)
