@@ -24,6 +24,7 @@ import {
 } from '@phosphor-icons/react';
 import rocketImg from '../../assets/rocket.png';
 import { priceForVoters, DEFAULT_VOTER_TIER } from '../../data/v4/voterTiers';
+import { track } from '../../utils/measure';
 import { useAuth } from '../../lib/AuthContext';
 import '../../styles/landing-v3.css';
 
@@ -161,6 +162,7 @@ function LaunchModalInner({ onClose, onCreateIntent, onPaid, contextLabel, tier,
     if (!canSubmit) return;
     setSubmitting(true);
     setCardError('');
+    track('checkout_submitted', { tier, value: price, currency: 'USD' });
 
     try {
       // 1. Create the draft contest + a PaymentIntent for its price (the price

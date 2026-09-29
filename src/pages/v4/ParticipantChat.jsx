@@ -32,6 +32,7 @@ import { useProfile } from '../../lib/useProfile';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
 import { readSetup, writeSetup, formatDateAnswer } from '../../utils/v4Brief';
 import { readParticipation, recordSubmission, writeParticipation } from '../../utils/v4Participant';
+import { track } from '../../utils/measure';
 import { anonymityMode, hostIdentity } from '../../utils/v4Anonymity';
 import { getChecklist } from '../../data/v4/participantArticles';
 import { getQuestionsFor, getArticleFor } from '../../utils/v4Brief';
@@ -651,6 +652,7 @@ export default function ParticipantChat() {
             return;
           }
         }
+        track('name_submitted', { contest_id: contestId, count: drafts.length });
         clearDraftStash(contestId);
         navigate(`/v4/contest/${contestId}/thanks`, { replace: true });
         return;
@@ -666,6 +668,7 @@ export default function ParticipantChat() {
         })
       );
       if (anonymous) writeParticipation(contestId, { anonymous: true });
+      track('name_submitted', { contest_id: contestId, count: drafts.length });
       clearDraftStash(contestId);
       navigate(`/v4/contest/${contestId}/thanks`, { replace: true });
     } finally {

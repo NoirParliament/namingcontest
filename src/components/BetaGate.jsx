@@ -12,6 +12,7 @@ import keyImg from '../assets/key.png';
 import { SegmentThemeBackdrop } from '../data/v4/segmentTheme';
 import '../styles/landing-v3.css';
 import '../styles/v4.css';
+import { track } from '../utils/measure';
 
 // The lock screen wears the "band" segment backdrop (t2 — periwinkle glow +
 // music-scene line art), same minimal treatment as the submit/vote chats, so
@@ -51,6 +52,7 @@ export default function BetaGate({ children }) {
     if (CODES.includes(value.trim())) {
       try { localStorage.setItem(STORAGE_KEY, '1'); } catch { /* ignore */ }
       setUnlocked(true);
+      track('beta_unlocked');
     } else {
       setError(true);
     }

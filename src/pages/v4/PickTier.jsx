@@ -12,6 +12,7 @@ import { useAuth } from '../../lib/AuthContext';
 import { useProfile } from '../../lib/useProfile';
 import { getSegmentTone } from '../../data/v4/segmentTheme';
 import { readSetup } from '../../utils/v4Brief';
+import { track } from '../../utils/measure';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -66,6 +67,7 @@ export default function PickTier() {
     // Persist the chosen tier so the unified setup chat can pick the right
     // sub-segment options when it mounts.
     const group = URL_TIER[tierKey];
+    track('tier_selected', { tier: group });
     try {
       const raw = localStorage.getItem('v4_contest_setup');
       const current = raw ? JSON.parse(raw) : {};

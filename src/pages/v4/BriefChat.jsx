@@ -55,6 +55,7 @@ import {
   scheduleSettingsPatch,
   formatDateAnswer,
 } from '../../utils/v4Brief';
+import { track } from '../../utils/measure';
 import { SHARED_SETTINGS_QUESTIONS, getIntroQuestionFor } from '../../data/v4/briefQuestions';
 import { VOTER_TIER_QUESTION, priceForVoters } from '../../data/v4/voterTiers';
 import { SUB_SEGMENTS } from '../../data/v4/subSegments';
@@ -452,6 +453,11 @@ export default function BriefChat() {
   const handleSubmit = (value) => {
     if (!currentQ) return;
     persistAnswer(currentQ, value);
+    if (currentQ.section === 'segment') {
+      track('category_selected', { tier: initial.group, category: value.id });
+    } else {
+      track('brief_step', { tier: initial.group, category: subId, step_index: idx, question_id: currentQ.id });
+    }
 
     if (currentQ.section === 'segment') {
       // value is the picked option object — keep it raw for icon rendering
@@ -567,6 +573,7 @@ export default function BriefChat() {
   // After every question answered, head to review
   useEffect(() => {
     if (isDone && history.length > 0 && !isEditing) {
+      track('brief_completed', { tier: initial.group, category: subId });
       const t = setTimeout(() => navigate('/v4/setup/review'), 1400);
       return () => clearTimeout(t);
     }

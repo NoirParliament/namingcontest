@@ -14,6 +14,7 @@ import { readSetup, writeSetup, getQuestionsFor, formatScheduleSummary, schedule
 import { SHARED_SETTINGS_QUESTIONS, INTRO_QUESTION, getIntroQuestionFor } from '../../data/v4/briefQuestions';
 import { SegmentThemeBackdrop, getSegmentTone, getSegmentIcon, getSegmentPalette } from '../../data/v4/segmentTheme';
 import LaunchModal from '../../components/v4/LaunchModal';
+import { track, trackOnce } from '../../utils/measure';
 import { priceForVoters, VOTER_TIER_QUESTION } from '../../data/v4/voterTiers';
 import { useAuth } from '../../lib/AuthContext';
 import { useProfile, writeProfileCache } from '../../lib/useProfile';
@@ -255,6 +256,11 @@ export default function ReviewLaunch() {
     () => searchParams.get('launch') === '1'
   );
 
+  useEffect(() => {
+    const s = readSetup();
+    track('review_viewed', { tier: s.group, category: s.subSegmentId });
+  }, []);
+
   const handleLaunch = () => {
     if (launching) return;
     // The intro is the one thing participants read first — a contest
@@ -270,6 +276,10 @@ export default function ReviewLaunch() {
     // Open the combined Launch modal (email + Stripe payment).
     // This always opens — even if userEmail was set by an earlier
     // save-progress, we still need to collect payment.
+    {
+      const s = readSetup();
+      track('checkout_opened', { tier: s.group, category: s.subSegmentId, value: priceForVoters(s.voterTier), currency: 'USD' });
+    }
     setLaunchOpen(true);
   };
 
@@ -357,6 +367,12 @@ export default function ReviewLaunch() {
   // STEP 2 (called by the modal after the card is confirmed): verify the
   // payment server-side and flip the contest live, then route.
   const handlePaid = async ({ contestId, paymentIntentId, email }) => {
+    {
+      const s = readSetup();
+      trackOnce(`paid_${contestId}`, 'payment_completed', {
+        tier: s.group, category: s.subSegmentId, contest_id: contestId, value: s.paidAmount, currency: 'USD',
+      });
+    }
     const { data, error } = await supabase.functions.invoke('confirm-launch', { body: { contestId, paymentIntentId, origin: window.location.origin, isGuest: !user } });
     if (error || data?.error) {
       window.alert(
@@ -364,6 +380,8 @@ export default function ReviewLaunch() {
         (data?.error || error?.message || 'unknown error') +
         '\n\nIt will still appear once finalized. Please refresh in a moment.'
       );
+    } else {
+      track('contest_launched', { contest_id: contestId });
     }
     setLaunchOpen(false);
     if (user?.id) {

@@ -28,6 +28,7 @@ import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme
 import { readSetup, writeSetup, getQuestionsFor, getArticleFor } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
 import { readParticipation, recordVotes } from '../../utils/v4Participant';
+import { track } from '../../utils/measure';
 import { showSubmitter, anonymityMode, hostIdentity } from '../../utils/v4Anonymity';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import CreditNameEntry from '../../components/v4/CreditNameEntry';
@@ -395,6 +396,7 @@ export default function ParticipantVote() {
     if (selectedIds.length === 0 || saving) return;
     if (!isRealContest) {
       recordVotes(contestId, selectedIds);
+      track('vote_cast', { contest_id: contestId, count: selectedIds.length });
       navigate(`/v4/contest/${contestId}/vote-thanks`, { replace: true });
       return;
     }
@@ -417,6 +419,7 @@ export default function ParticipantVote() {
         const { error } = await supabase.from('votes').insert(rows);
         if (error) throw error;
       }
+      track('vote_cast', { contest_id: contestId, count: selectedIds.length });
       navigate(`/v4/contest/${contestId}/vote-thanks`, { replace: true });
     } catch (err) {
       window.alert(err.message || 'Could not save your votes. Please try again.');

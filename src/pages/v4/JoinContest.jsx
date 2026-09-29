@@ -39,6 +39,7 @@ const HERO_PROFILES = [
 import { getMockContestById } from '../../data/v4/mockContests';
 import { getSegmentTone, getSegmentIcon, SEGMENT_THEME, SegmentThemeBackdrop } from '../../data/v4/segmentTheme';
 import { readSetup, writeSetup } from '../../utils/v4Brief';
+import { track } from '../../utils/measure';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../../lib/AuthContext';
 import {
@@ -370,6 +371,7 @@ export default function JoinContest() {
       setPhase('cta');
       return;
     }
+    track('participant_joined', { contest_id: realContest.id });
     // Land where the stage actually is — during voting you can't submit.
     const base = `/v4/contest/${realContest.id}`;
     const dest = realContest.status === 'voting' ? `${base}/vote`
@@ -424,6 +426,7 @@ export default function JoinContest() {
     // (empty submittedNames) state. In production this would only
     // seed for genuinely-new participants.
     joinContest(contestId, { name: displayName, email: cleanEmail });
+    track('participant_joined', { contest_id: contestId });
     setTimeout(() => {
       navigate(`/v4/contest/${contestId}/submit`);
     }, 700);
