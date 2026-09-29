@@ -22,7 +22,7 @@ import {
   MagnifyingGlass, ArrowsDownUp, CheckCircle, X, PaperPlaneTilt,
 } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
-import participantProfile from '../../assets/participant-profile.png';
+import participantProfile from '../../assets/participant-profile.webp';
 import { getMockContestById } from '../../data/v4/mockContests';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
 import { readSetup, writeSetup, getQuestionsFor, getArticleFor } from '../../utils/v4Brief';

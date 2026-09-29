@@ -5,7 +5,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Gear, SignOut, ArrowRight, CaretDown } from '@phosphor-icons/react';
-import heroProfile1 from '../../assets/hero-profile-1.png';
+import heroProfile1 from '../../assets/hero-profile-1.webp';
 import { readAllParticipations } from '../../utils/v4Participant';
 import { supabase } from '../../lib/supabaseClient';
 import { useLatestContest } from '../../lib/useLatestContest';

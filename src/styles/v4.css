@@ -6521,7 +6521,7 @@ input.v4-results-search-input::placeholder {
   width: 80px;
   height: 80px;
   border-radius: 20px;
-  background: url('../assets/signup.png') center/contain no-repeat;
+  background: url('../assets/signup.webp') center/contain no-repeat;
   color: var(--v4-fg);
   margin: 4px 0 22px;
   /* Drop shadow so the badge feels grounded on the white modal card. */

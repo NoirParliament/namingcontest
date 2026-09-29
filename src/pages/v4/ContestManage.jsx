@@ -22,7 +22,7 @@ import Avatar from 'boring-avatars';
 import UserAvatar from '../../components/v4/UserAvatar';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
-import creatorProfile from '../../assets/creator-profile.png';
+import creatorProfile from '../../assets/creator-profile.webp';
 import {
   readSetup, writeSetup, getSegmentLabel, getContestDescriptor, getQuestionsFor,
   formatWindowDuration, formatScheduleSummary, scheduleSettingsPatch, formatDateAnswer,

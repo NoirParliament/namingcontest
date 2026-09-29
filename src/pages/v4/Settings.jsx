@@ -11,8 +11,8 @@ import {
   ArrowRight, ListBullets, Trophy, Clock, CheckCircle, PaperPlaneTilt,
 } from '@phosphor-icons/react';
 import useCountdown, { pad2 } from '../../utils/useCountdown';
-import participantProfile from '../../assets/participant-profile.png';
-import creatorProfile from '../../assets/creator-profile.png';
+import participantProfile from '../../assets/participant-profile.webp';
+import creatorProfile from '../../assets/creator-profile.webp';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
 import { readSetup, writeSetup } from '../../utils/v4Brief';

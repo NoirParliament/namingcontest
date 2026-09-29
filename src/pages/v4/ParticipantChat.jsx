@@ -24,7 +24,7 @@ import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 // Default participant avatar. hero-profile-5 reads as a woman in the
 // illustration set — keeps the participant identity distinct from the
 // creator side's default (heroProfile1) and Marcus the inviter (profile-4).
-import participantProfile from '../../assets/participant-profile.png';
+import participantProfile from '../../assets/participant-profile.webp';
 import { getMockContestById } from '../../data/v4/mockContests';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../../lib/AuthContext';

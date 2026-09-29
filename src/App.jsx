@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import PageMeta from './components/PageMeta';
 import '@styles/tokens.css';
@@ -17,30 +17,30 @@ import AffiliateSimulator from './components/PartnerSimulator';
 
 // Pages
 import LandingPage          from '@pages/LandingPage';
-import V4PickTier          from '@pages/v4/PickTier';
-import V4BriefChat         from '@pages/v4/BriefChat';
-import V4ReviewLaunch      from '@pages/v4/ReviewLaunch';
-import V4ContestManage     from '@pages/v4/ContestManage';
-import V4Settings          from '@pages/v4/Settings';
-import V4JoinContest      from '@pages/v4/JoinContest';
-import V4ParticipantChat  from '@pages/v4/ParticipantChat';
-import V4ParticipantThanks from '@pages/v4/ParticipantThanks';
-import V4ParticipantStatus from '@pages/v4/ParticipantStatus';
-import V4ParticipantVote   from '@pages/v4/ParticipantVote';
-import V4ParticipantVoteThanks from '@pages/v4/ParticipantVoteThanks';
-import V4ParticipantWinner from '@pages/v4/ParticipantWinner';
-import V4PublicWinnerReveal from '@pages/v4/PublicWinnerReveal';
-import PrivacyPolicy       from '@pages/legal/PrivacyPolicy';
-import TermsOfService      from '@pages/legal/TermsOfService';
+const V4PickTier = lazy(() => import('@pages/v4/PickTier'));
+const V4BriefChat = lazy(() => import('@pages/v4/BriefChat'));
+const V4ReviewLaunch = lazy(() => import('@pages/v4/ReviewLaunch'));
+const V4ContestManage = lazy(() => import('@pages/v4/ContestManage'));
+const V4Settings = lazy(() => import('@pages/v4/Settings'));
+const V4JoinContest = lazy(() => import('@pages/v4/JoinContest'));
+const V4ParticipantChat = lazy(() => import('@pages/v4/ParticipantChat'));
+const V4ParticipantThanks = lazy(() => import('@pages/v4/ParticipantThanks'));
+const V4ParticipantStatus = lazy(() => import('@pages/v4/ParticipantStatus'));
+const V4ParticipantVote = lazy(() => import('@pages/v4/ParticipantVote'));
+const V4ParticipantVoteThanks = lazy(() => import('@pages/v4/ParticipantVoteThanks'));
+const V4ParticipantWinner = lazy(() => import('@pages/v4/ParticipantWinner'));
+const V4PublicWinnerReveal = lazy(() => import('@pages/v4/PublicWinnerReveal'));
+const PrivacyPolicy = lazy(() => import('@pages/legal/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('@pages/legal/TermsOfService'));
 // File named LegalCrumbs (not "CookiePolicy") so ad-blockers/Brave
 // Shields don't block the module by name (ERR_BLOCKED_BY_CLIENT).
-import CookiePolicy        from '@pages/legal/LegalCrumbs';
-import NotFound            from '@pages/system/NotFound';
-import LinkExpired         from '@pages/system/LinkExpired';
+const CookiePolicy = lazy(() => import('@pages/legal/LegalCrumbs'));
+const NotFound = lazy(() => import('@pages/system/NotFound'));
+const LinkExpired = lazy(() => import('@pages/system/LinkExpired'));
 import { useAuth } from './lib/AuthContext';
 import { Analytics } from '@vercel/analytics/react';
-import ErrorState         from '@pages/system/ErrorState';
-import ContactPage        from '@pages/system/ContactPage';
+const ErrorState = lazy(() => import('@pages/system/ErrorState'));
+const ContactPage = lazy(() => import('@pages/system/ContactPage'));
 import BetaGate            from './components/BetaGate';
 
 // ─── FloatingNav ─────────────────────────────────────────────────────────────
@@ -416,6 +416,9 @@ function AppInner() {
 
   return (
     <>
+      {/* Every page except the landing page is code-split: the landing bundle
+          no longer carries the contest app, PDF export, Supabase or Stripe. */}
+      <Suspense fallback={null}>
       <Routes>
         <Route path="/"                                element={<LandingPage />} />
         <Route path="/link-expired"                    element={<LinkExpired />} />
@@ -466,6 +469,7 @@ function AppInner() {
         <Route path="/contact"                         element={<ContactPage />} />
         <Route path="*"                                element={<NotFound />} />
       </Routes>
+      </Suspense>
       <FloatingNav />
     </>
   );

@@ -2,20 +2,20 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, Link, Navigate } from 'react-router-dom';
 import { MusicNote, PawPrint, Buildings } from '@phosphor-icons/react';
 import { PRICING_EXPLANATION } from '../data/v4/voterTiers';
-import personalDog from '../assets/personal-dog.png';
-import heroOfficeScene from '../assets/planning.png';
-import teamPlayers from '../assets/team-players.png';
-import businessWoman from '../assets/business-woman.png';
-import sarahChen from '../assets/sarah-chen.png';
-import marcusRodriguez from '../assets/marcus-rodriguez.png';
-import lindaMorrison from '../assets/linda-morrison.png';
-import heroProfile1 from '../assets/hero-profile-1.png';
-import heroProfile2 from '../assets/hero-profile-2.png';
-import heroProfile3 from '../assets/hero-profile-3.png';
-import heroProfile4 from '../assets/hero-profile-4.png';
-import heroProfile5 from '../assets/hero-profile-5.png';
-import heroProfile6 from '../assets/hero-profile-6.png';
-import creatorProfile from '../assets/creator-profile.png';
+import personalDog from '../assets/personal-dog.webp';
+import heroOfficeScene from '../assets/planning.webp';
+import teamPlayers from '../assets/team-players.webp';
+import businessWoman from '../assets/business-woman.webp';
+import sarahChen from '../assets/sarah-chen.webp';
+import marcusRodriguez from '../assets/marcus-rodriguez.webp';
+import lindaMorrison from '../assets/linda-morrison.webp';
+import heroProfile1 from '../assets/hero-profile-1.webp';
+import heroProfile2 from '../assets/hero-profile-2.webp';
+import heroProfile3 from '../assets/hero-profile-3.webp';
+import heroProfile4 from '../assets/hero-profile-4.webp';
+import heroProfile5 from '../assets/hero-profile-5.webp';
+import heroProfile6 from '../assets/hero-profile-6.webp';
+import creatorProfile from '../assets/creator-profile.webp';
 import namingContestLogo from '../assets/namingcontestlogo-cropped.svg';
 import namingContestLogoWhite from '../assets/namingcontestlogo-white.svg';
 import '../styles/landing-v3.css';
@@ -1325,7 +1325,7 @@ function Testimonials() {
                 <span className={`cat-tag ${t.cat}`}><span className="dot"></span>{t.label}</span>
               </div>
             </div>
-            <div className="stars" aria-label="5 out of 5">
+            <div className="stars" role="img" aria-label="5 out of 5">
               {[0, 1, 2, 3, 4].map(s => <Star key={s} />)}
             </div>
             <p className="quote-body">{t.quote}</p>
@@ -1502,7 +1502,7 @@ export function Footer() {
           </div>
         </div>
         <div>
-          <h6>Product</h6>
+          <p className="foot-heading">Product</p>
           <ul>
             <li><a href="/#how" onClick={goToSection('how')}>How it works</a></li>
             <li><a href="/#testimonials" onClick={goToSection('testimonials')}>Testimonials</a></li>
@@ -1510,7 +1510,7 @@ export function Footer() {
           </ul>
         </div>
         <div>
-          <h6>Resources</h6>
+          <p className="foot-heading">Resources</p>
           <ul>
             <li><a href="https://catchwordbranding.com/" target="_blank" rel="noopener noreferrer">Catchword</a></li>
             <li><Link to="/contact">Get in touch</Link></li>
@@ -1518,7 +1518,7 @@ export function Footer() {
           </ul>
         </div>
         <div>
-          <h6>Legal</h6>
+          <p className="foot-heading">Legal</p>
           <ul>
             {legalLink('/privacy', 'Privacy policy')}
             {legalLink('/terms', 'Terms of service')}
@@ -1605,7 +1605,7 @@ export default function LandingPage() {
         <div className="wrap">
           <Nav />
           <div className="hero-band">
-            <img src={heroOfficeScene} className="hero-under" alt="" aria-hidden="true" />
+            <img src={heroOfficeScene} className="hero-under" alt="" aria-hidden="true" fetchpriority="high" decoding="async" />
             <Hero onStart={handleStart} />
           </div>
           <Offerings onStart={handleStart} />

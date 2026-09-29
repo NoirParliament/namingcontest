@@ -14,9 +14,9 @@ import {
 } from '@phosphor-icons/react';
 import { Nav, Footer } from '../LandingPage';
 import { supabase } from '../../lib/supabaseClient';
-import mailboxImg from '../../assets/mailbox.png';
-import letterImg from '../../assets/letter.png';
-import messageImg from '../../assets/message.png';
+import mailboxImg from '../../assets/mailbox.webp';
+import letterImg from '../../assets/letter.webp';
+import messageImg from '../../assets/message.webp';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 import '../../styles/contact.css';

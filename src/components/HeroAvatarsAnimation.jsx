@@ -10,12 +10,12 @@
 // resolve. Otherwise you'll get unstyled markup.
 
 import { useState, useEffect, useRef } from 'react';
-import heroProfile1 from '../assets/hero-profile-1.png';
-import heroProfile2 from '../assets/hero-profile-2.png';
-import heroProfile3 from '../assets/hero-profile-3.png';
-import heroProfile4 from '../assets/hero-profile-4.png';
-import heroProfile5 from '../assets/hero-profile-5.png';
-import heroProfile6 from '../assets/hero-profile-6.png';
+import heroProfile1 from '../assets/hero-profile-1.webp';
+import heroProfile2 from '../assets/hero-profile-2.webp';
+import heroProfile3 from '../assets/hero-profile-3.webp';
+import heroProfile4 from '../assets/hero-profile-4.webp';
+import heroProfile5 from '../assets/hero-profile-5.webp';
+import heroProfile6 from '../assets/hero-profile-6.webp';
 
 const HERO_NAMES = ['Atlas', 'Quill', 'Spire', 'Beacon', 'Helix', 'Vesper', 'Ember', 'Cobalt', 'Verge', 'Onyx'];
 

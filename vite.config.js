@@ -7,6 +7,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   plugins: [react()],
+  build: {
+    // Ship modern JS: no legacy polyfills/transforms for browsers that all
+    // support ES2020+ (Lighthouse "legacy JavaScript" audit).
+    target: 'es2020',
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

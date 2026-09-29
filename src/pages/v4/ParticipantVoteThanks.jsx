@@ -12,7 +12,7 @@ import { useParams, useNavigate, Link, Navigate } from 'react-router-dom';
 import { Trophy, LockSimple } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
-import participantProfile from '../../assets/participant-profile.png';
+import participantProfile from '../../assets/participant-profile.webp';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import { getMockContestById } from '../../data/v4/mockContests';
 import { getSegmentTone, SEGMENT_THEME, SegmentThemeBackdrop } from '../../data/v4/segmentTheme';

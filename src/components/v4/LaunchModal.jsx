@@ -12,7 +12,10 @@
 //     generate a contestId, navigate to /v4/contest/[id].
 
 import { useState, useRef, useEffect } from 'react';
-import { loadStripe } from '@stripe/stripe-js';
+// '/pure' entry: Stripe.js is fetched only when loadStripe() runs (this modal),
+// not as an import side effect on every page. Keeps Stripe's 260 KB script
+// and its cookie off the landing page.
+import { loadStripe } from '@stripe/stripe-js/pure';
 import {
   Elements,
   CardElement,
@@ -22,7 +25,7 @@ import {
 import {
   X, CheckCircle, EnvelopeSimple, LockKey,
 } from '@phosphor-icons/react';
-import rocketImg from '../../assets/rocket.png';
+import rocketImg from '../../assets/rocket.webp';
 import { priceForVoters, DEFAULT_VOTER_TIER } from '../../data/v4/voterTiers';
 import { track } from '../../utils/measure';
 import { useAuth } from '../../lib/AuthContext';

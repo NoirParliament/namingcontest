@@ -21,15 +21,15 @@ import {
 } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
-import messageImg from '../../assets/message.png';
+import messageImg from '../../assets/message.webp';
 
 // Inviter avatars — hero-profile-1 through 6. Indexed by contest.creator.photoIndex.
-import heroProfile1 from '../../assets/hero-profile-1.png';
-import heroProfile2 from '../../assets/hero-profile-2.png';
-import heroProfile3 from '../../assets/hero-profile-3.png';
-import heroProfile4 from '../../assets/hero-profile-4.png';
-import heroProfile5 from '../../assets/hero-profile-5.png';
-import heroProfile6 from '../../assets/hero-profile-6.png';
+import heroProfile1 from '../../assets/hero-profile-1.webp';
+import heroProfile2 from '../../assets/hero-profile-2.webp';
+import heroProfile3 from '../../assets/hero-profile-3.webp';
+import heroProfile4 from '../../assets/hero-profile-4.webp';
+import heroProfile5 from '../../assets/hero-profile-5.webp';
+import heroProfile6 from '../../assets/hero-profile-6.webp';
 const HERO_PROFILES = [
   heroProfile1, heroProfile2, heroProfile3,
   heroProfile4, heroProfile5, heroProfile6,

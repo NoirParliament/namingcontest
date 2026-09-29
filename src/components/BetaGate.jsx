@@ -8,7 +8,7 @@
 // auth. Styled with the same sign-in-card design system as SignInModal
 // (Fraunces title, .v4-settings-input, .btn-primary slide-hover).
 import { useState } from 'react';
-import keyImg from '../assets/key.png';
+import keyImg from '../assets/key.webp';
 import { SegmentThemeBackdrop } from '../data/v4/segmentTheme';
 import '../styles/landing-v3.css';
 import '../styles/v4.css';

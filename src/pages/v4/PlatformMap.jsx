@@ -25,10 +25,10 @@ import { SIM_CONTESTS, SIM_GROUPS } from '../../data/v4/simContests';
 import { getSegmentTone } from '../../data/v4/segmentTheme';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
 import BrandLink from '../../components/v4/BrandLink';
-import heroProfile4 from '../../assets/hero-profile-4.png';
-import heroProfile5 from '../../assets/hero-profile-5.png';
-import creatorProfile from '../../assets/creator-profile.png';
-import participantProfile from '../../assets/participant-profile.png';
+import heroProfile4 from '../../assets/hero-profile-4.webp';
+import heroProfile5 from '../../assets/hero-profile-5.webp';
+import creatorProfile from '../../assets/creator-profile.webp';
+import participantProfile from '../../assets/participant-profile.webp';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 

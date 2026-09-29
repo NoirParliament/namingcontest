@@ -11,8 +11,8 @@ import { useState, useEffect, useRef } from 'react';
 import { X, PaperPlaneTilt } from '@phosphor-icons/react';
 import { readSetup } from '../../utils/v4Brief';
 import { useAuth } from '../../lib/AuthContext';
-import keyImg from '../../assets/key.png';
-import messageImg from '../../assets/message.png';
+import keyImg from '../../assets/key.webp';
+import messageImg from '../../assets/message.webp';
 // Pull landing-v3 styles in so the modal's .btn-primary / .btn-secondary
 // (and their hover-slide animation) resolve correctly even when the modal
 // is mounted outside the v4 page tree (e.g. triggered from the landing).
