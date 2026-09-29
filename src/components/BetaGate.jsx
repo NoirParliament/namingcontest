@@ -34,7 +34,7 @@ const CODES = [
 // Key bumped 2026-08-18 (was 'nc_beta_ok') to invalidate every cached unlock:
 // the gate re-appears for everyone, and the old codes stop working the moment
 // the env vars are rotated. Bump again any time you need to force a re-lock.
-const STORAGE_KEY = 'nc_beta_ok_v2';
+const STORAGE_KEY = 'nc_beta_ok_v3'; // bumped 2026-09-29 with the new access codes so every browser re-enters
 
 export default function BetaGate({ children }) {
   const [unlocked, setUnlocked] = useState(() => {
