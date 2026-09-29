@@ -28,16 +28,41 @@ const PARAM_KEYS = [
 
 let loaded = false;
 
-export function initMeasure() {
-  if (typeof window === 'undefined') return;
-  window.dataLayer = window.dataLayer || [];
-  if (!GTM_ID || loaded) return;
+function loadGtm() {
+  if (loaded) return;
   loaded = true;
   window.dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
   const s = document.createElement('script');
   s.async = true;
   s.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(GTM_ID)}`;
   document.head.appendChild(s);
+}
+
+// GTM (and through it GA4 + Clarity) is started OFF the critical path: on the
+// visitor's first interaction, or shortly after the page has loaded,
+// whichever comes first. Keeps ~300 ms of third-party script work out of
+// first paint on phones. Nothing is lost: track() pushes into the
+// dataLayer array right away and GTM replays the queue when it starts.
+const INTERACTION_EVENTS = ['pointerdown', 'keydown', 'scroll', 'touchstart'];
+const IDLE_DELAY_MS = 1500;
+
+export function initMeasure() {
+  if (typeof window === 'undefined') return;
+  window.dataLayer = window.dataLayer || [];
+  if (!GTM_ID || loaded) return;
+
+  const start = () => {
+    INTERACTION_EVENTS.forEach((e) => window.removeEventListener(e, start, true));
+    loadGtm();
+  };
+  INTERACTION_EVENTS.forEach((e) => window.addEventListener(e, start, { capture: true, once: true, passive: true }));
+
+  const afterLoad = () => {
+    const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
+    setTimeout(() => idle(start, { timeout: 1000 }), IDLE_DELAY_MS);
+  };
+  if (document.readyState === 'complete') afterLoad();
+  else window.addEventListener('load', afterLoad, { once: true });
 }
 
 export function track(event, params = {}) {
