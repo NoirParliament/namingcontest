@@ -1346,25 +1346,41 @@ function FAQ() {
   const items = [
     {
       q: "Who’s behind NamingContest?",
+      text: 'We’re Catchword Branding—a leading naming agency with 25+ years of experience creating names for companies and products around the world. We’ve worked with brands like Starbucks, Volkswagen, Asana, TikTok, and Corning. We created this platform to make running your own naming contest simple, social, and fun.',
       a: <p className="faq-a"><strong>We’re Catchword Branding</strong>—a leading naming agency with 25+ years of experience creating names for companies and products around the world. We’ve worked with brands like Starbucks, Volkswagen, Asana, TikTok, and Corning. We created this platform to make running your own naming contest simple, social, and fun.</p>
     },
     {
       q: 'How long does a contest take?',
+      text: 'You set the deadline, but most contests wrap up in under a week.',
       a: <p className="faq-a"><strong>You set the deadline,</strong> but most contests wrap up in under a week.</p>
     },
     {
       q: 'How do participants contribute and vote?',
+      text: 'They open your link and drop in their email—that’s the whole setup. A magic link signs them in and takes them straight to the contest. You’re the only one who builds and runs it.',
       a: <p className="faq-a"><strong>They open your link and drop in their email</strong>—that’s the whole setup. A magic link signs them in and takes them straight to the contest. You’re the only one who builds and runs it.</p>
     },
     {
       q: 'How does the voting work?',
+      text: 'One simple vote—no clunky ballots. Everyone opens your link, sees all the suggested names, and taps up to three favorites. Votes tally as they come in, and you crown the winner.',
       a: <p className="faq-a"><strong>One simple vote—no clunky ballots.</strong> Everyone opens your link, sees all the suggested names, and taps up to three favorites. Votes tally as they come in, and you crown the winner.</p>
     },
     {
       q: 'What does it cost?',
+      text: PRICING_EXPLANATION,
       a: <p className="faq-a">{PRICING_EXPLANATION}</p>
     },
   ];
+  // FAQPage structured data (Google rich results). Built from the same items
+  // rendered below, so the schema can never drift from the visible answers.
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map((it) => ({
+      '@type': 'Question',
+      name: it.q,
+      acceptedAnswer: { '@type': 'Answer', text: it.text },
+    })),
+  };
   // The pricing strip's "More in the FAQ" link opens the cost question as it
   // scrolls here, so the answer is already expanded on arrival.
   useEffect(() => {
@@ -1375,6 +1391,7 @@ function FAQ() {
   }, []);
   return (
     <section className="section" id="faq">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <div className="section-head">
         <p className="eyebrow">From the inbox</p>
         <h2 className="h-display h2">Questions, answered</h2>

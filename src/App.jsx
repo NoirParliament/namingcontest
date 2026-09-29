@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import PageMeta from './components/PageMeta';
 import '@styles/tokens.css';
 import '@styles/globals.css';
 // Mobile/tablet layer — every rule inside @media queries, so the
@@ -473,6 +474,7 @@ function AppInner() {
 export default function App() {
   return (
     <BrowserRouter>
+      <PageMeta />
       <BetaGate>
         <AppInner />
       </BetaGate>
