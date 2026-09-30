@@ -88,15 +88,20 @@ function fetchBreakdown(token, breakdown) {
   const out = [];
   JSON.parse(res.getContentText()).forEach((metric) => {
     (metric.information || []).forEach((info) => {
-      const segment = breakdown.dimension ? String(info[breakdown.dimension] ?? '') : 'All';
+      // The response key doesn't always match the requested dimension's
+      // spelling (URL comes back as "Url"), so match it case-insensitively.
+      const dimKey = breakdown.dimension
+        ? Object.keys(info).find((k) => k.toLowerCase() === breakdown.dimension.toLowerCase())
+        : null;
+      const segment = !breakdown.dimension ? 'All' : dimKey ? String(info[dimKey]) : '';
       // Text fields (a page URL in "Popular pages", a title...) become Detail;
       // every numeric field becomes its own row.
       const detail = Object.keys(info)
-        .filter((k) => k !== breakdown.dimension && !isNumeric(info[k]))
+        .filter((k) => k !== dimKey && !isNumeric(info[k]))
         .map((k) => String(info[k]))
         .join(' ');
       Object.keys(info)
-        .filter((k) => k !== breakdown.dimension && isNumeric(info[k]))
+        .filter((k) => k !== dimKey && isNumeric(info[k]))
         .forEach((k) => out.push([segment, detail, metric.metricName, k, Number(info[k])]));
     });
   });
@@ -117,14 +122,19 @@ function sheetWithHeader(ss, name, header) {
   return sh;
 }
 
-// Sheets turns the written yyyy-MM-dd text into a real date, so compare both forms.
+// Rewrites the tab without that date's rows in one go (deleting row by row is
+// far too slow). Sheets turns the written yyyy-MM-dd text into a real date, so
+// compare both forms.
 function removeRowsForDate(sh, date, tz) {
   const last = sh.getLastRow();
   if (last < 2) return;
-  const dates = sh.getRange(2, 1, last - 1, 1).getValues();
-  for (let i = dates.length - 1; i >= 0; i--) {
-    const v = dates[i][0];
-    const s = v instanceof Date ? Utilities.formatDate(v, tz, 'yyyy-MM-dd') : String(v);
-    if (s === date) sh.deleteRow(i + 2);
-  }
+  const range = sh.getRange(2, 1, last - 1, HEADER.length);
+  const rows = range.getValues();
+  const keep = rows.filter((r) => {
+    const v = r[0];
+    return (v instanceof Date ? Utilities.formatDate(v, tz, 'yyyy-MM-dd') : String(v)) !== date;
+  });
+  if (keep.length === rows.length) return;
+  range.clearContent();
+  if (keep.length) sh.getRange(2, 1, keep.length, HEADER.length).setValues(keep);
 }
