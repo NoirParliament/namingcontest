@@ -23,7 +23,7 @@ const PARAM_KEYS = [
   'contest_id',
   'value',       // USD amount for checkout / payment events
   'currency',
-  'count',       // names submitted / votes cast in one action
+  'count',       // joins (always 1) / names submitted / votes cast in one action
 ];
 
 let loaded = false;

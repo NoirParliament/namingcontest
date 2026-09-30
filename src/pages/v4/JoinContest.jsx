@@ -371,7 +371,7 @@ export default function JoinContest() {
       setPhase('cta');
       return;
     }
-    track('participant_joined', { contest_id: realContest.id });
+    track('participant_joined', { contest_id: realContest.id, count: 1 });
     // Land where the stage actually is — during voting you can't submit.
     const base = `/v4/contest/${realContest.id}`;
     const dest = realContest.status === 'voting' ? `${base}/vote`
@@ -426,7 +426,7 @@ export default function JoinContest() {
     // (empty submittedNames) state. In production this would only
     // seed for genuinely-new participants.
     joinContest(contestId, { name: displayName, email: cleanEmail });
-    track('participant_joined', { contest_id: contestId });
+    track('participant_joined', { contest_id: contestId, count: 1 });
     setTimeout(() => {
       navigate(`/v4/contest/${contestId}/submit`);
     }, 700);
