@@ -168,24 +168,37 @@ export default function ComposedBrief({ doc, subId, questions, tone, editable = 
     </ul>
   );
 
-  const renderLineList = (key, placeholder, extraClass = '') => {
+  // Plain lines, one per entry, no glyphs: the row label already says what
+  // the list is. "Open" is a state word, muted, with Add beside it.
+  const renderLines = (key, placeholder, addLabel) => {
     const list = lists[key].get();
-    if (isOpen(list) && !editable) return <p className="v4-cbrief-open">Open</p>;
+    const open = isOpen(list);
+    if (open || list.length === 0) {
+      return (
+        <div className="v4-cbrief-inline">
+          <span className="v4-cbrief-open">{open ? 'Open' : 'None'}</span>
+          {editable && <AddLine onClick={() => add(key)}>{addLabel}</AddLine>}
+        </div>
+      );
+    }
     return (
-      <ul className={`v4-cbrief-lines ${extraClass}`}>
-        {list.map((s, i) => (
-          <li key={i} className={isOpen(list) ? 'is-open' : ''}>
-            <Text
-              value={s}
-              placeholder={placeholder}
-              editable={editable}
-              autoFocus={isFresh(key, i)}
-              onCommit={(v) => commitBlankAware(key, i, v)}
-            />
-            {editable && !isOpen(list) && <RemoveButton label={s} onClick={() => remove(key, i)} />}
-          </li>
-        ))}
-      </ul>
+      <>
+        <ul className="v4-cbrief-lines">
+          {list.map((s, i) => (
+            <li key={i}>
+              <Text
+                value={s}
+                placeholder={placeholder}
+                editable={editable}
+                autoFocus={isFresh(key, i)}
+                onCommit={(v) => commitBlankAware(key, i, v)}
+              />
+              {editable && <RemoveButton label={s} onClick={() => remove(key, i)} />}
+            </li>
+          ))}
+        </ul>
+        {editable && <AddLine onClick={() => add(key)}>{addLabel}</AddLine>}
+      </>
     );
   };
 
@@ -224,23 +237,22 @@ export default function ComposedBrief({ doc, subId, questions, tone, editable = 
           <BriefSectionHead title={meta.exploreAvoid.title} icon={meta.exploreAvoid.icon} tone={tone} />
           {bothOpen && !editable ? (
             /* Nothing to lean toward and nothing off-limits: one sentence,
-               not two empty columns. */
+               not two empty rows. */
             <p className="v4-cbrief-open-both">
               Nothing is ruled in or out. Explore freely, and let the sections above guide you.
             </p>
           ) : (
-            <div className="v4-cbrief-dirs">
-              <div className="v4-cbrief-dir">
-                <span className="v4-cbrief-dir-label">Lean toward</span>
-                {renderLineList('explore', 'Something to lean toward')}
-                {editable && <AddLine onClick={() => add('explore')}>Add</AddLine>}
-              </div>
-              <div className="v4-cbrief-dir v4-cbrief-dir-avoid">
-                <span className="v4-cbrief-dir-label">Steer clear of</span>
-                {renderLineList('avoid', 'Something off-limits')}
-                {editable && <AddLine onClick={() => add('avoid')}>Add</AddLine>}
-              </div>
-            </div>
+            /* Same grid as the rows above: label left, content right. */
+            <ul className="v4-cbrief-list">
+              <li className="v4-cbrief-item v4-cbrief-item-static">
+                <strong className="v4-cbrief-item-label">Lean toward</strong>
+                <div className="v4-cbrief-item-body">{renderLines('explore', 'Something to lean toward', 'Add')}</div>
+              </li>
+              <li className="v4-cbrief-item v4-cbrief-item-static">
+                <strong className="v4-cbrief-item-label">Steer clear of</strong>
+                <div className="v4-cbrief-item-body">{renderLines('avoid', 'Something off-limits', 'Add')}</div>
+              </li>
+            </ul>
           )}
           {(lists.watchouts.get().length > 0 || editable) && (
             <div className="v4-cbrief-watch">
@@ -255,11 +267,12 @@ export default function ComposedBrief({ doc, subId, questions, tone, editable = 
       {(lists.constraints.get().length > 0 || editable) && (
         <div className="v4-brief-group">
           <BriefSectionHead title={meta.constraints.title} icon={meta.constraints.icon} tone={tone} />
-          {lists.constraints.get().length === 0 && editable && (
-            <p className="v4-cbrief-open">None</p>
-          )}
-          {renderLineList('constraints', 'A requirement every name must meet', 'v4-cbrief-constraints')}
-          {editable && <AddLine onClick={() => add('constraints')}>Add a requirement</AddLine>}
+          <ul className="v4-cbrief-list">
+            <li className="v4-cbrief-item v4-cbrief-item-static">
+              <strong className="v4-cbrief-item-label">Every name must</strong>
+              <div className="v4-cbrief-item-body">{renderLines('constraints', 'A requirement every name must meet', 'Add a requirement')}</div>
+            </li>
+          </ul>
         </div>
       )}
 

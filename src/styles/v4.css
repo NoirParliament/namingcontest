@@ -12501,11 +12501,19 @@ button.v4-exit {
   color: var(--v4-fg);
   opacity: 0.86;
 }
-/* Lean toward / steer clear of: stacked, each a labelled list. */
-.v4-cbrief-dirs {
-  display: grid;
-  gap: 16px;
+/* Rows whose right column is a list (lean toward / steer clear of / every
+   name must): same grid as the instruction rows, the lines are plain text,
+   one per line, no glyphs. */
+.v4-cbrief-item-body {
+  min-width: 0;
 }
+.v4-cbrief-inline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.v4-cbrief-inline .v4-cbrief-add { margin-top: 0; }
 .v4-cbrief-dir-label {
   display: block;
   font-size: 11px;
@@ -12524,36 +12532,17 @@ button.v4-exit {
 }
 .v4-cbrief-lines li {
   position: relative;
-  padding-left: 14px;
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.55;
   color: var(--v4-fg);
+  opacity: 0.86;
 }
-.v4-cbrief-lines li::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0.62em;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--sec-accent, var(--v4-fg));
-  opacity: 0.55;
-}
-.v4-cbrief-dir-avoid .v4-cbrief-lines li::before {
-  border-radius: 1px;
-  transform: rotate(45deg);
-}
-/* "Open" / "None" are states, not bullets. */
-.v4-cbrief-open,
-.v4-cbrief-lines li.is-open {
-  margin: 0;
-  padding-left: 0;
+/* "Open" / "None" are states, in the muted ink. */
+.v4-cbrief-open {
   font-size: 14px;
   line-height: 1.5;
   color: var(--v4-muted);
 }
-.v4-cbrief-lines li.is-open::before { display: none; }
 .v4-cbrief-open-both {
   margin: 0;
   font-size: 14px;
@@ -12563,7 +12552,6 @@ button.v4-exit {
 }
 .v4-cbrief-watch { margin-top: 18px; }
 .v4-cbrief-watch .v4-cbrief-dir-label { margin-bottom: 2px; }
-.v4-cbrief-constraints li { font-weight: 500; }
 
 /* ── Editing ──
    The text itself is the field. Quiet until hovered, a soft tint while
@@ -12592,7 +12580,7 @@ button.v4-exit {
   opacity: 0.7;
   pointer-events: none;
 }
-.v4-cbrief.is-editable .v4-cbrief-item,
+.v4-cbrief.is-editable .v4-cbrief-item:not(.v4-cbrief-item-static),
 .v4-cbrief.is-editable .v4-cbrief-lines li {
   padding-right: 32px;
 }
@@ -12752,5 +12740,5 @@ button.v4-exit {
   .v4-cbrief-skeleton-pen { animation: none; }
 }
 @media (max-width: 640px) {
-  .v4-cbrief-item { grid-template-columns: 1fr; gap: 1px; }
+  .v4-cbrief-item { grid-template-columns: 1fr; gap: 3px; }
 }
