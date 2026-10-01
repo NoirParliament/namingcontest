@@ -12477,31 +12477,40 @@ button.v4-exit {
 .v4-pchat-brief > .v4-hostnote + .v4-cbrief { margin-top: 4px; }
 /* More air between the brief's parts than between the Q&A groups: each
    part is read, not scanned past. */
-.v4-cbrief > .v4-brief-group { margin-bottom: 34px; }
+.v4-cbrief {
+  --sec-tint: var(--v4-bubble-bg);
+  --sec-accent: var(--v4-fg);
+}
+.v4-cbrief > .v4-brief-group { margin-bottom: 36px; }
 .v4-cbrief > .v4-brief-group:last-child { margin-bottom: 0; }
 .v4-cbrief-para {
   margin: 0;
-  font-size: 15px;
+  font-size: 15.5px;
   line-height: 1.65;
   color: var(--v4-fg);
   white-space: pre-wrap;
 }
 /* The one-line aim the criteria hang from. */
-.v4-cbrief-lead { margin-bottom: 16px; }
+.v4-cbrief-lead { margin-bottom: 18px; }
 
-/* ── Label + text items (criteria, names, rules) ──
-   Label on its own line, the explanation a step softer underneath. One
-   weight change per item instead of a bold run-in inside every line. */
+/* ── Label + text items ──
+   Label on its own line, the explanation a step softer underneath. */
 .v4-cbrief-points {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 14px;
+  gap: 16px;
 }
 .v4-cbrief-point {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.v4-cbrief-point-body {
   display: grid;
-  gap: 2px;
+  gap: 3px;
+  min-width: 0;
 }
 .v4-cbrief-point-lead {
   font-size: 15px;
@@ -12513,13 +12522,51 @@ button.v4-exit {
 .v4-cbrief-point-text {
   font-size: 14.5px;
   line-height: 1.55;
-  color: rgba(3, 3, 2, 0.62);
+  color: rgba(3, 3, 2, 0.64);
+}
+/* Criteria: numbered in the section icon tile's style (tinted circle,
+   accent figure), so the list reads as "the things to get right". */
+.v4-cbrief-point-num {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-top: -1px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--sec-accent) 14%, #fff);
+  color: var(--sec-accent);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+/* Names the host mentioned: the name itself in the display serif. */
+.v4-cbrief-points.is-names .v4-cbrief-point-lead {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+/* Rules: one bordered card, rows split by hairlines (the Schedule rows'
+   card language on the same page). */
+.v4-cbrief-points.is-rules {
+  gap: 0;
+  border: 1px solid var(--v4-faint);
+  border-radius: 14px;
+  background: #fff;
+  overflow: hidden;
+}
+.v4-cbrief-points.is-rules .v4-cbrief-point {
+  padding: 13px 16px;
+}
+.v4-cbrief-points.is-rules .v4-cbrief-point + .v4-cbrief-point {
+  border-top: 1px solid var(--v4-faint);
 }
 
 /* ── Fact sheet (about) ──
-   The specifics as pills, the page's own "Up to 10 participants" pill: a
-   muted label, the value in ink. They wrap in a line or two instead of a
-   grid of cells. */
+   The specifics as pills, the page's own "Up to 10 participants" pill. */
 .v4-cbrief-facts {
   list-style: none;
   display: flex;
@@ -12549,23 +12596,51 @@ button.v4-exit {
   color: var(--v4-fg);
 }
 
-/* ── Sub-labels inside a section ("Lean toward") ── */
+/* ── Sub-labels inside a section ("Names already mentioned") ── */
 .v4-cbrief-sublabel {
-  margin: 0 0 8px;
+  margin: 0 0 10px;
   font-size: 13px;
   font-weight: 600;
   color: var(--v4-muted);
 }
 
 /* ── Lean toward / steer clear of ──
-   Two columns when both have lines. Each line a small dot in the
-   section's accent. */
+   Two soft panels in the host note's tint, side by side when both have
+   lines. A check or x tile heads each. */
 .v4-cbrief-cols {
   display: grid;
-  gap: 20px 32px;
+  gap: 12px;
 }
 .v4-cbrief-cols.is-two { grid-template-columns: 1fr 1fr; }
-.v4-cbrief-col { min-width: 0; }
+.v4-cbrief-col {
+  min-width: 0;
+  padding: 14px 16px 15px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--sec-tint) 30%, #fff);
+}
+.v4-cbrief-col-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--v4-fg);
+}
+.v4-cbrief-col-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--sec-accent) 16%, #fff);
+  color: var(--sec-accent);
+}
+.v4-cbrief-col.is-avoid .v4-cbrief-col-icon {
+  background: color-mix(in srgb, var(--v4-fg) 8%, #fff);
+  color: var(--v4-fg);
+}
 .v4-cbrief-lines {
   list-style: none;
   margin: 0;
@@ -12575,8 +12650,8 @@ button.v4-exit {
 }
 .v4-cbrief-lines li {
   position: relative;
-  padding-left: 16px;
-  font-size: 15px;
+  padding-left: 14px;
+  font-size: 14.5px;
   line-height: 1.5;
   color: var(--v4-fg);
 }
@@ -12585,16 +12660,15 @@ button.v4-exit {
   position: absolute;
   left: 1px;
   top: 0.62em;
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background: var(--sec-accent, var(--v4-fg));
-  opacity: 0.45;
+  background: var(--v4-fg);
+  opacity: 0.35;
 }
 .v4-cbrief-cols + .v4-cbrief-names,
 .v4-cbrief-para + .v4-cbrief-cols,
-.v4-cbrief-para + .v4-cbrief-names { margin-top: 22px; }
-.v4-brief-group { --sec-accent: var(--v4-fg); }
+.v4-cbrief-para + .v4-cbrief-names { margin-top: 24px; }
 
 @media (max-width: 640px) {
   .v4-cbrief-cols.is-two { grid-template-columns: 1fr; }

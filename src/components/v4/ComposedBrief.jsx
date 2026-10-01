@@ -17,6 +17,7 @@
 // say. Settings rows, the host's note and the guides stay outside.
 
 import { useEffect, useState } from 'react';
+import { Check, X } from '@phosphor-icons/react';
 import BriefSectionHead from './BriefSectionHead';
 import { composedSectionMeta } from '../../data/v4/briefRoles';
 import { normalizeBriefDoc } from '../../utils/composeBrief';
@@ -26,15 +27,18 @@ const isBlank = (v) => !String(v ?? '').trim();
 // Label + text items (the criteria, the names the host mentioned, the
 // rules), stacked: the label on its own line, the explanation softer below,
 // so the eye can run down the labels alone.
-function Points({ items, leadKey = 'label', textKey = 'text' }) {
+function Points({ items, leadKey = 'label', textKey = 'text', numbered = false, variant = '' }) {
   const rows = items.filter((it) => !isBlank(it[textKey]) || !isBlank(it[leadKey]));
   if (!rows.length) return null;
   return (
-    <ul className="v4-cbrief-points">
+    <ul className={`v4-cbrief-points${numbered ? ' is-numbered' : ''}${variant ? ` is-${variant}` : ''}`}>
       {rows.map((it, i) => (
         <li key={i} className="v4-cbrief-point">
-          {!isBlank(it[leadKey]) && <span className="v4-cbrief-point-lead">{it[leadKey]}</span>}
-          {!isBlank(it[textKey]) && <span className="v4-cbrief-point-text">{it[textKey]}</span>}
+          {numbered && <span className="v4-cbrief-point-num" aria-hidden="true">{i + 1}</span>}
+          <span className="v4-cbrief-point-body">
+            {!isBlank(it[leadKey]) && <span className="v4-cbrief-point-lead">{it[leadKey]}</span>}
+            {!isBlank(it[textKey]) && <span className="v4-cbrief-point-text">{it[textKey]}</span>}
+          </span>
         </li>
       ))}
     </ul>
@@ -66,8 +70,12 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
   const hasRules = rules.points.length > 0;
   const twoCols = dir.explore.length > 0 && dir.avoid.length > 0;
 
+  // The segment's tone reaches the panels and number tiles the same way it
+  // reaches the section heads.
+  const toneVars = tone ? { '--sec-tint': tone.bg, '--sec-accent': tone.fg } : undefined;
+
   return (
-    <div className="v4-cbrief">
+    <div className="v4-cbrief" style={toneVars}>
       {hasAbout && (
         <div className="v4-brief-group">
           <BriefSectionHead title={meta.about.title} icon={meta.about.icon} tone={tone} />
@@ -89,7 +97,7 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
         <div className="v4-brief-group">
           <BriefSectionHead title={meta.shouldDo.title} icon={meta.shouldDo.icon} tone={tone} />
           {!isBlank(aim.lead) && <p className="v4-cbrief-para v4-cbrief-lead">{aim.lead}</p>}
-          <Points items={aim.points} />
+          <Points items={aim.points} numbered />
         </div>
       )}
 
@@ -101,13 +109,19 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
             <div className={`v4-cbrief-cols${twoCols ? ' is-two' : ''}`}>
               {dir.explore.length > 0 && (
                 <div className="v4-cbrief-col">
-                  <SubLabel>Lean toward</SubLabel>
+                  <div className="v4-cbrief-col-head">
+                    <span className="v4-cbrief-col-icon" aria-hidden="true"><Check size={12} weight="bold" /></span>
+                    Lean toward
+                  </div>
                   <Lines items={dir.explore} />
                 </div>
               )}
               {dir.avoid.length > 0 && (
                 <div className="v4-cbrief-col is-avoid">
-                  <SubLabel>Steer clear of</SubLabel>
+                  <div className="v4-cbrief-col-head">
+                    <span className="v4-cbrief-col-icon" aria-hidden="true"><X size={12} weight="bold" /></span>
+                    Steer clear of
+                  </div>
                   <Lines items={dir.avoid} />
                 </div>
               )}
@@ -116,7 +130,7 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
           {dir.names.length > 0 && (
             <div className="v4-cbrief-names">
               <SubLabel>Names already mentioned</SubLabel>
-              <Points items={dir.names} leadKey="name" textKey="note" />
+              <Points items={dir.names} leadKey="name" textKey="note" variant="names" />
             </div>
           )}
         </div>
@@ -125,7 +139,7 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
       {hasRules && (
         <div className="v4-brief-group">
           <BriefSectionHead title={meta.constraints.title} icon={meta.constraints.icon} tone={tone} />
-          <Points items={rules.points} />
+          <Points items={rules.points} variant="rules" />
         </div>
       )}
     </div>
