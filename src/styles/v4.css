@@ -12704,9 +12704,8 @@ button.v4-exit {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--v4-fg);
+  color: var(--sec-accent, var(--v4-fg));
 }
-.v4-cbrief-namegroup.is-liked .v4-cbrief-namegroup-label { color: var(--sec-accent, var(--v4-fg)); }
 
 @media (max-width: 640px) {
   .v4-cbrief-cols.is-two { grid-template-columns: 1fr; }
