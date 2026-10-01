@@ -75,24 +75,13 @@ const SCHEMA = {
         additionalProperties: false,
       },
     },
-    explore: { type: 'array', items: { type: 'string' }, description: 'Short phrases to lean toward, or exactly ["Open"].' },
-    avoid: { type: 'array', items: { type: 'string' }, description: 'Short phrases that are off-limits, or exactly ["Open"].' },
-    watchouts: {
-      type: 'array',
-      description: 'Reference names the host mentioned, each with the host\'s reason.',
-      items: {
-        type: 'object',
-        properties: {
-          name: { type: 'string' },
-          note: { type: 'string', description: 'One sentence: what the host said about it and what to take from that.' },
-        },
-        required: ['name', 'note'],
-        additionalProperties: false,
-      },
+    directions: {
+      type: 'string',
+      description: 'One paragraph, 2 to 5 sentences, addressed to participants: what to lean toward, what is off-limits, and each reference name with the host\'s own reason. Prose, no labels, no lists.',
     },
-    constraints: { type: 'array', items: { type: 'string' }, description: 'Hard requirements, only from constraint answers. Empty when there are none.' },
+    constraints: { type: 'array', items: { type: 'string' }, description: 'Hard requirements as full sentences, only from constraint answers. Empty when there are none.' },
   },
-  required: ['about', 'shouldDo', 'explore', 'avoid', 'watchouts', 'constraints'],
+  required: ['about', 'shouldDo', 'directions', 'constraints'],
   additionalProperties: false,
 };
 
@@ -103,7 +92,7 @@ Rules:
 2. Every answer carries a role that says how it may be used: fact (background, state it plainly), direction (turn it into an instruction for participants), explore (lean toward), avoid (off-limits), exploreAvoid (split into lean toward and avoid), reference (keep the name and the host's own reason), constraint (hard requirement, a name that fails it is out).
 3. Voice: warm, plain and confident, like a good creative brief written by a friend who knows the host. Address participants as "you". Refer to the host by the name given, in the third person. Follow the host's own spelling (British or American) and write in the language the host answered in.
 4. The host's own note to participants is shown directly above your brief. Do not greet, do not repeat or paraphrase that note; start where it stops.
-5. about: 2 to 4 sentences of background written as flowing prose about the host and what they are naming, facts only, no advice. Never list fields ("The sibling name listed is Theo"); say it the way a friend would ("She will be a little sister to Theo"). shouldDo: 3 to 6 items, each a short label plus one instruction sentence. explore and avoid: short phrases; when the material says the host left it open, the single item is exactly "Open". watchouts: one entry per reference name, in the host's words. constraints: only from constraint answers, otherwise an empty array.
+5. about: 2 to 4 sentences of background written as flowing prose about the host and what they are naming, facts only, no advice. Never list fields ("The sibling name listed is Theo"); say it the way a friend would ("She will be a little sister to Theo"). shouldDo: 3 to 6 items, each a short label plus one instruction sentence. directions: one paragraph of prose, 2 to 5 sentences, that tells participants what to lean toward, what is off-limits, and what to make of each reference name the host mentioned (keep the host's reason, e.g. "They love Lucy but worry about the Lucifer association, so aim for that feel without the awkward link"). When the host left both open and named no names, the paragraph is one sentence saying nothing is ruled in or out and they should explore freely within the brief above. Never write labels like "Lean toward:" inside it; write sentences. constraints: full sentences, only from constraint answers, otherwise an empty array.
 6. Under 300 words in total. No em dashes (the character "—"): use commas, colons or full stops. No markdown, no emoji, no headings or labels inside the strings.`;
 
 function render(source: Source): string {
@@ -117,8 +106,8 @@ function render(source: Source): string {
     const rule = ROLE_RULES[it.role] ? ` {${ROLE_RULES[it.role]}}` : '';
     lines.push(`- [${it.role}]${rule} ${it.question}: ${it.answer}${it.note ? ` (note: ${it.note})` : ''}`);
   }
-  if (source.openExplore) lines.push('- [explore] The host gave nothing specific to explore: write exactly "Open".');
-  if (source.openAvoid) lines.push('- [avoid] The host gave nothing to avoid: write exactly "Open".');
+  if (source.openExplore) lines.push('- [explore] The host gave nothing specific to explore (say so in the directions paragraph).');
+  if (source.openAvoid) lines.push('- [avoid] The host gave nothing to avoid (say so in the directions paragraph).');
   return lines.join('\n');
 }
 
@@ -136,11 +125,7 @@ function cleanDoc(doc: Record<string, unknown>) {
     shouldDo: Array.isArray(doc.shouldDo)
       ? doc.shouldDo.map((b: Record<string, unknown>) => ({ label: str(b?.label).replace(/[.:]$/, ''), text: str(b?.text) })).filter((b) => b.text)
       : [],
-    explore: list(doc.explore),
-    avoid: list(doc.avoid),
-    watchouts: Array.isArray(doc.watchouts)
-      ? doc.watchouts.map((w: Record<string, unknown>) => ({ name: str(w?.name), note: str(w?.note) })).filter((w) => w.name)
-      : [],
+    directions: str(doc.directions),
     constraints: list(doc.constraints),
   };
 }
@@ -154,8 +139,7 @@ function unverifiedNames(doc: ReturnType<typeof cleanDoc>, source: Source): stri
   const text = [
     doc.about,
     ...doc.shouldDo.map((b) => `${b.label}. ${b.text}`),
-    ...doc.explore, ...doc.avoid,
-    ...doc.watchouts.map((w) => `${w.name}. ${w.note}`),
+    doc.directions,
     ...doc.constraints,
   ].join('\n');
   const out = new Set<string>();

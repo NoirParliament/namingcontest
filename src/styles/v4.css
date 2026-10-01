@@ -12454,104 +12454,57 @@ button.v4-exit {
 
 /* ── Composed brief ───────────────────────────────────────────────────
    The written brief (compose-brief) under the same section heads as the
-   Q&A card. One block of styles for the creator's review (editable), the
-   participant cards and the dashboard recap. */
+   Q&A card. Reads top to bottom like a brief: paragraphs, and instruction
+   lines with a bold lead. One block of styles for the creator's review
+   (editable), the participant cards and the dashboard recap. */
 .v4-cbrief { position: relative; }
 /* Inside the participant card the header (eyebrow + name) and the host's
    note sit above; breathe before the first section head. */
 .v4-pchat-brief > .v4-cbrief { margin-top: 18px; }
 .v4-pchat-brief > .v4-hostnote + .v4-cbrief { margin-top: 4px; }
-.v4-cbrief-about {
+.v4-cbrief-para {
   margin: 0;
   font-size: 15px;
   line-height: 1.6;
   color: var(--v4-fg);
   white-space: pre-wrap;
 }
-.v4-cbrief-list {
+.v4-cbrief-points {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0;
+  gap: 9px;
 }
-.v4-cbrief-item {
+.v4-cbrief-point {
   position: relative;
-  display: grid;
-  grid-template-columns: 180px 1fr;
-  gap: 2px 20px;
-  align-items: start;
-  padding: 11px 0;
-  border-top: 1px solid rgba(3, 3, 2, 0.1);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--v4-fg);
 }
-.v4-cbrief-list > .v4-cbrief-item:first-child {
-  border-top: none;
-  padding-top: 0;
-}
-.v4-cbrief-item-label {
-  font-size: 14px;
-  font-weight: 600;
+.v4-cbrief-point-lead {
+  font-weight: 650;
   letter-spacing: -0.005em;
-  color: var(--v4-fg);
-  line-height: 1.5;
 }
-.v4-cbrief-item-text {
-  font-size: 14px;
-  line-height: 1.55;
-  color: var(--v4-fg);
-  opacity: 0.86;
-}
-/* Rows whose right column is a list (lean toward / steer clear of / every
-   name must): same grid as the instruction rows, the lines are plain text,
-   one per line, no glyphs. */
-.v4-cbrief-item-body {
-  min-width: 0;
-}
-.v4-cbrief-dir-label {
-  display: block;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--v4-muted);
-  margin-bottom: 6px;
-}
-.v4-cbrief-lines {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 5px;
-}
-.v4-cbrief-lines li {
-  position: relative;
-  font-size: 14px;
-  line-height: 1.55;
-  color: var(--v4-fg);
-  opacity: 0.86;
-}
-/* "Open" / "None" are states, in the muted ink. */
+.v4-cbrief-point-dot { font-weight: 650; }
+.v4-cbrief-point-text { opacity: 0.88; }
+/* Empty state words ("None") in the muted ink. */
 .v4-cbrief-open {
-  font-size: 14px;
-  line-height: 1.55;
+  font-size: 15px;
+  line-height: 1.6;
   color: var(--v4-muted);
+}
+.v4-cbrief-open.v4-cbrief-editable {
+  display: inline-block;
+  min-width: 12ch;
 }
 .v4-cbrief-open.v4-cbrief-editable:focus { color: var(--v4-fg); }
-.v4-cbrief-open-both {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.55;
-  color: var(--v4-fg);
-  opacity: 0.86;
-}
-.v4-cbrief-watch { margin-top: 18px; }
-.v4-cbrief-watch .v4-cbrief-dir-label { margin-bottom: 2px; }
 
 /* ── Editing ──
    The text itself is the field. Quiet until hovered, a soft tint while
    typing, same language as the intro preview above it. Each line carries
-   its own remove button (hover to reveal, always there on touch screens),
-   Undo appears for a few seconds, and "Add" lives under each list. */
+   its own remove button (hover to reveal, always there on touch screens);
+   Undo appears for a few seconds. */
 .v4-cbrief-editable {
   border-radius: 6px;
   outline: none;
@@ -12574,15 +12527,11 @@ button.v4-exit {
   opacity: 0.7;
   pointer-events: none;
 }
-.v4-cbrief.is-editable .v4-cbrief-item:not(.v4-cbrief-item-static),
-.v4-cbrief.is-editable .v4-cbrief-lines li {
-  padding-right: 32px;
-}
+.v4-cbrief.is-editable .v4-cbrief-point { padding-right: 32px; }
 .v4-cbrief-remove {
   position: absolute;
   right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 0.1em;
   width: 24px;
   height: 24px;
   display: inline-flex;
@@ -12596,11 +12545,9 @@ button.v4-exit {
   opacity: 0;
   transition: opacity 120ms ease, background-color 120ms ease, color 120ms ease;
 }
-.v4-cbrief-item:hover .v4-cbrief-remove,
-.v4-cbrief-lines li:hover .v4-cbrief-remove,
-.v4-cbrief-remove:focus-visible,
-.v4-cbrief-item:focus-within .v4-cbrief-remove,
-.v4-cbrief-lines li:focus-within .v4-cbrief-remove {
+.v4-cbrief-point:hover .v4-cbrief-remove,
+.v4-cbrief-point:focus-within .v4-cbrief-remove,
+.v4-cbrief-remove:focus-visible {
   opacity: 1;
 }
 .v4-cbrief-remove:hover {
@@ -12609,12 +12556,6 @@ button.v4-exit {
 }
 @media (hover: none) {
   .v4-cbrief-remove { opacity: 0.6; }
-}
-/* The editable "Open" / "None" word: a real field, so it takes a caret and
-   a minimum width even while empty. */
-.v4-cbrief-open.v4-cbrief-editable {
-  display: inline-block;
-  min-width: 12ch;
 }
 .v4-cbrief-undo {
   position: sticky;
@@ -12717,7 +12658,4 @@ button.v4-exit {
 @media (prefers-reduced-motion: reduce) {
   .v4-cbrief-skeleton-lines span,
   .v4-cbrief-skeleton-pen { animation: none; }
-}
-@media (max-width: 640px) {
-  .v4-cbrief-item { grid-template-columns: 1fr; gap: 3px; }
 }

@@ -67,19 +67,49 @@ export async function composeBriefDoc() {
   return saveBriefDoc({ ...data.doc, sourceHash: briefSourceHash(source), edited: false });
 }
 
+// The doc in its current shape: { about, shouldDo[{label,text}], directions,
+// constraints[] }. Docs written by the first version of compose-brief carried
+// explore / avoid / watchouts lists instead of the directions paragraph;
+// those are folded into one paragraph here so they still read.
+export function normalizeBriefDoc(doc) {
+  if (!doc) return null;
+  const str = (v) => (typeof v === 'string' ? v : '');
+  const open = (l) => !l?.length || (l.length === 1 && /^open$/i.test(l[0]));
+  let directions = str(doc.directions);
+  if (!directions && (doc.explore || doc.avoid || doc.watchouts)) {
+    const parts = [];
+    if (open(doc.explore) && open(doc.avoid)) {
+      parts.push('Nothing is ruled in or out, so explore freely within the brief above.');
+    } else {
+      if (!open(doc.explore)) parts.push(`Lean toward ${doc.explore.join(', ')}.`);
+      if (!open(doc.avoid)) parts.push(`Steer clear of ${doc.avoid.join(', ')}.`);
+    }
+    (doc.watchouts || []).forEach((w) => { if (w?.note) parts.push(w.note); else if (w?.name) parts.push(w.name); });
+    directions = parts.join(' ');
+  }
+  return {
+    ...doc,
+    about: str(doc.about),
+    shouldDo: Array.isArray(doc.shouldDo) ? doc.shouldDo.map((b) => ({ label: str(b?.label), text: str(b?.text) })) : [],
+    directions,
+    constraints: Array.isArray(doc.constraints) ? doc.constraints.map(str) : [],
+  };
+}
+
 // The doc without blank lines (a line added on the review page and never
 // filled in). Used at launch, so what is saved is exactly what reads.
 export function cleanBriefDoc(doc) {
-  if (!doc) return doc;
+  const d = normalizeBriefDoc(doc);
+  if (!d) return d;
   const t = (v) => (typeof v === 'string' ? v.trim() : '');
+  const { explore, avoid, watchouts, ...rest } = d;
+  void explore; void avoid; void watchouts;
   return {
-    ...doc,
-    about: t(doc.about),
-    shouldDo: (doc.shouldDo || []).map((b) => ({ label: t(b.label), text: t(b.text) })).filter((b) => b.label || b.text),
-    explore: (doc.explore || []).map(t).filter(Boolean),
-    avoid: (doc.avoid || []).map(t).filter(Boolean),
-    watchouts: (doc.watchouts || []).map((w) => ({ name: t(w.name), note: t(w.note) })).filter((w) => w.name || w.note),
-    constraints: (doc.constraints || []).map(t).filter(Boolean),
+    ...rest,
+    about: t(d.about),
+    shouldDo: d.shouldDo.map((b) => ({ label: t(b.label), text: t(b.text) })).filter((b) => b.label || b.text),
+    directions: t(d.directions),
+    constraints: d.constraints.map(t).filter(Boolean),
   };
 }
 
@@ -88,6 +118,5 @@ export function cleanBriefDoc(doc) {
 export function briefDocHasContent(doc) {
   if (!doc) return false;
   const d = cleanBriefDoc(doc);
-  return !!(d.about || d.shouldDo.length || d.explore.length || d.avoid.length
-    || d.watchouts.length || d.constraints.length);
+  return !!(d.about || d.shouldDo.length || d.directions || d.constraints.length);
 }
