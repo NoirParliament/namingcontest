@@ -57,13 +57,24 @@ function Names({ names, labels }) {
   const split = names.some((n) => n.kind);
   const groups = split
     ? [
-      { label: labels.liked, items: names.filter((n) => n.kind !== 'missed') },
-      { label: labels.missed, items: names.filter((n) => n.kind === 'missed') },
+      { kind: 'liked', label: labels.liked, items: names.filter((n) => n.kind !== 'missed') },
+      { kind: 'missed', label: labels.missed, items: names.filter((n) => n.kind === 'missed') },
     ].filter((g) => g.items.length)
-    : [{ label: 'Names already mentioned', items: names }];
+    : [{ kind: '', label: 'Names already mentioned', items: names }];
+  // The same check / x tiles as Lean toward / Steer clear of, so the whole
+  // brief speaks one language: check = this way, x = not this.
   return groups.map((g) => (
-    <div key={g.label} className="v4-cbrief-names">
-      <SubLabel>{g.label}</SubLabel>
+    <div key={g.label} className={`v4-cbrief-names${g.kind ? ` is-${g.kind}` : ''}`}>
+      {g.kind ? (
+        <div className="v4-cbrief-col-head">
+          <span className="v4-cbrief-col-icon" aria-hidden="true">
+            {g.kind === 'missed' ? <X size={12} weight="bold" /> : <Check size={12} weight="bold" />}
+          </span>
+          {g.label}
+        </div>
+      ) : (
+        <SubLabel>{g.label}</SubLabel>
+      )}
       <Points items={g.items} leadKey="name" textKey="note" variant="names" />
     </div>
   ));

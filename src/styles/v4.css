@@ -12689,13 +12689,17 @@ button.v4-exit {
 .v4-cbrief-cols + .v4-cbrief-names,
 .v4-cbrief-para + .v4-cbrief-cols,
 .v4-cbrief-para + .v4-cbrief-names { margin-top: 24px; }
-/* One hairline between groups of names (after the shortlist, before ruled
-   out), never above the first group. */
-.v4-cbrief-names + .v4-cbrief-names {
-  border-top: 1px solid var(--v4-faint);
-  padding-top: 18px;
-}
+/* Groups of names (shortlist, ruled out...) open with the panels' check / x
+   head, no rules between them, just air. Ruled-out names sit a shade
+   lighter: they are there to learn from, not to aim at. */
+.v4-cbrief-names + .v4-cbrief-names { margin-top: 28px; }
 .v4-cbrief-names .v4-cbrief-sublabel { margin-bottom: 12px; }
+.v4-cbrief-names .v4-cbrief-col-head { margin-bottom: 12px; }
+.v4-cbrief-names.is-missed .v4-cbrief-col-icon {
+  background: color-mix(in srgb, var(--v4-fg) 10%, #fff);
+  color: var(--v4-fg);
+}
+.v4-cbrief-names.is-missed .v4-cbrief-point-lead { color: rgba(3, 3, 2, 0.72); }
 
 @media (max-width: 640px) {
   .v4-cbrief-cols.is-two { grid-template-columns: 1fr; }
