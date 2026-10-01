@@ -11,6 +11,7 @@ export default function PrivacyPolicy() {
       <h2>1. Who we are</h2>
       <p>The Service is operated by The Cypher Group, LLC, a limited liability company organised under the laws of the State of California, United States, at 3645 Grand Avenue, Suite 206, Oakland, CA 94610, USA. For the purposes of the EU and UK General Data Protection Regulation (“GDPR”), The Cypher Group, LLC is the controller of the personal data described in this Policy.</p>
       <p>For any privacy question or request, email <a href="mailto:hello@namingcontest.com">hello@namingcontest.com</a>.</p>
+
       <h2>2. What we collect</h2>
       <h3>2.1 Information you give us</h3>
       <ul>
@@ -103,7 +104,7 @@ export default function PrivacyPolicy() {
       <p>We use reasonable technical and organisational measures to protect personal information, including encrypted connections, access rules in our database that limit each person to their own data, and limits on how often public actions can be used. No system is completely secure, and we cannot guarantee absolute security.</p>
 
       <h2>12. Children</h2>
-      <p>The Service is not directed to children under 13, and you must not use it if you are under 13. Where you live in a country with a higher age for agreeing to the use of personal data online, you must be that age or have a parent’s or guardian’s permission. If you believe a child has given us personal information, contact us and we will delete it.</p>
+      <p>The Service is not directed to children. The same age rules apply as in our Terms of Service: everyone must be at least 13 years old, or older where local law sets a higher age for agreeing to the use of personal data online, unless a parent or guardian gives permission; Hosts, who pay for contests, must be at least 18 years old, or the age of majority where they live if that is higher; and Participants under 18 need a parent’s or guardian’s permission. We do not knowingly collect personal information from children under 13. If you believe a child has given us personal information, contact us and we will delete it.</p>
 
       <h2>13. Changes to this Policy</h2>
       <p>We may update this Policy from time to time. The “Last updated” date shows when it last changed. We will tell you about significant changes through the Service or by email.</p>

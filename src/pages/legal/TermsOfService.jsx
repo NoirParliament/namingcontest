@@ -18,7 +18,12 @@ export default function TermsOfService() {
       </ul>
 
       <h2>2. Eligibility and accounts</h2>
-      <p>You must be able to form a binding contract where you live to use the Service. The Service is not for children under 13. Where you live in a country with a higher age for agreeing to the use of personal data online, you must be that age or have a parent’s or guardian’s permission. To buy a contest you must be at least 18 years old, or the age of majority where you live if higher.</p>
+      <p>The same age rules apply in all our documents:</p>
+      <ul>
+      <li><strong>Everyone</strong> must be at least 13 years old. Where you live in a country with a higher age for agreeing to the use of personal data online, you must be that age or have a parent’s or guardian’s permission.</li>
+      <li><strong>Hosts</strong>, who pay for contests, must be at least 18 years old, or the age of majority where they live if that is higher.</li>
+      <li><strong>Participants under 18</strong> may take part only with a parent’s or guardian’s permission.</li>
+      </ul>
       <p>The Service signs you in with a one-time link sent to your email address; there are no passwords. You are responsible for the security of your email account and for activity under your account. Please give accurate information and keep it up to date.</p>
 
       <h2>3. How the Service works</h2>
@@ -39,8 +44,10 @@ export default function TermsOfService() {
       <h2>5. Prizes</h2>
       <p>Any prize is offered by the Host alone. Cypher is not a party to it, does not hold or deliver prizes and is not responsible if a prize is not provided. Hosts are responsible for describing their prize accurately, delivering it to the winner and complying with any laws that apply to prizes, contests or promotions where they and their Participants live.</p>
       <h2>6. Your content and our licence to use it</h2>
-      <p>You keep ownership of your User Content. You give Cypher a worldwide, non-exclusive, royalty-free licence to host, store, copy, display, adapt and use it only to run and provide the Service. This includes showing a contest’s brief and suggestions to its Host and Participants, and sending your brief answers to our AI provider so it can write the brief.</p>
+      <p>You keep ownership of your User Content, except for suggested names, which pass to the Host as described below. You give Cypher a worldwide, non-exclusive, royalty-free licence to host, store, copy, display, adapt and use it only to run and provide the Service. This includes showing a contest’s brief and suggestions to its Host and Participants, and sending your brief answers to our AI provider so it can write the brief.</p>
       <p>You confirm that you have the rights needed to submit your User Content, that it does not infringe anyone else’s rights or break any law, and that you are entitled to share any information about other people it contains, such as family members or children.</p>
+      <p><strong>Suggested names belong to the Host.</strong> When a contest closes, each Participant transfers to the Host, without payment, any rights they have in the names they suggested in that contest, together with any explanation given with them. The Host may then use, change, register or set aside any of those names, whether or not a name won, and Participants agree not to claim those names or object to the Host’s use of them. If you want to keep a name for yourself, do not suggest it in a contest.</p>
+
       <h2>7. No promise that a name is available</h2>
       <p>Names suggested, generated or chosen through the Service are for ideas only. Neither Cypher nor NamingContest promises that any name is available, can be registered as a trademark or domain, is free of other people’s rights or is lawful to use anywhere. You are solely responsible for your own trademark, legal and availability checks before using a name, and you use any name at your own risk.</p>
 
