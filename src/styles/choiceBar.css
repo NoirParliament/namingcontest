@@ -99,6 +99,9 @@
   transition: background 0.15s ease, color 0.15s ease;
 }
 .nc-choice-close:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+/* The "Continue where you left off" pill shares the bottom of the screen;
+   it steps aside while the bar is open (one click away). */
+body:has(.nc-choice) .v4-resume-pill { visibility: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .nc-choice { animation: none; }
 }

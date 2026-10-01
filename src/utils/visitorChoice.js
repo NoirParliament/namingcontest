@@ -147,7 +147,7 @@ export function openChoiceSettings() {
 // _clsk. Cleared on the bare host and on the registrable domain, since GA
 // sets them on the latter.
 const ANALYTICS_COOKIE = /^(_ga|_gid|_gat|_clck|_clsk)/;
-function clearAnalyticsCookies() {
+export function clearAnalyticsCookies() {
   const host = window.location.hostname;
   const parts = host.split('.');
   const domains = [host, parts.length > 1 ? `.${parts.slice(-2).join('.')}` : null, `.${host}`].filter(Boolean);

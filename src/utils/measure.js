@@ -14,7 +14,7 @@
 // Privacy Control. Until then track() only fills the dataLayer array in the
 // page, which never leaves the browser.
 
-import { decide, onChoice, readChoice } from './visitorChoice';
+import { clearAnalyticsCookies, decide, onChoice, readChoice } from './visitorChoice';
 
 const GTM_ID = import.meta.env.VITE_GTM_ID;
 const DEV = import.meta.env.DEV;
@@ -75,6 +75,11 @@ let scheduled = false;
 export function initMeasure() {
   if (typeof window === 'undefined') return;
   window.dataLayer = window.dataLayer || [];
+
+  // No yes (yet): remove analytics cookies left from visits before the
+  // cookie bar existed, or from a yes since withdrawn on another tab.
+  decide().then((d) => { if (!d.analytics) clearAnalyticsCookies(); });
+
   if (!GTM_ID || loaded) return;
 
   // Start once the visitor's choice allows it: now (stored yes, or a region
