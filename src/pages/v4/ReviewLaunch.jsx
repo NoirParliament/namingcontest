@@ -712,9 +712,6 @@ export default function ReviewLaunch() {
               )}
               {showComposed && (
                 <>
-                  <p className="v4-cbrief-hint">
-                    Written for your participants from your answers.
-                  </p>
                   <ComposedBrief
                     doc={briefDoc}
                     subId={subId}
