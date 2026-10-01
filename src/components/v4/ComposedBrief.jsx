@@ -105,7 +105,7 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
   const hasDir = true;
   const openExplore = { tag: 'Open.', text: 'Range as widely as you like.' };
   const openAvoid = hasRules
-    ? { tag: 'Open,', text: `apart from the ${meta.constraints.title.toLowerCase()} below.` }
+    ? { tag: 'Open.', text: `Just stick to the ${meta.constraints.title.toLowerCase()} below.` }
     : { tag: 'Open.', text: 'Nothing is off-limits.' };
 
   // The segment's tone reaches the panels and number tiles the same way it
