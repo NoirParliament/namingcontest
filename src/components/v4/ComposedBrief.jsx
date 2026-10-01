@@ -18,7 +18,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { Check, X } from '@phosphor-icons/react';
-import BriefSectionHead from './BriefSectionHead';
+import BriefSectionHead, { SectionIcon } from './BriefSectionHead';
 import { composedSectionMeta } from '../../data/v4/briefRoles';
 import { getBriefSections } from '../../data/v4/briefExpansions';
 import { formatDateAnswer } from '../../utils/v4Brief';
@@ -247,43 +247,82 @@ const STAGE_MS = 3200;
 //   phase 'reveal'   the brief was already written when the page opened
 export function BriefProgressLine({ phase, stage, partial, subId, questions, answers, tone }) {
   const meta = composedSectionMeta(subId, questions);
-  const [quotes] = useState(() => buildStages(subId, questions, answers).filter((s) => s.quote));
+  // The creator's own words for each part (the quotes under each step).
+  const [quotes] = useState(() => {
+    const stages = buildStages(subId, questions, answers);
+    const find = (re) => stages.find((s) => re.test(s.text))?.quote || '';
+    return {
+      list: stages.filter((s) => s.quote).map((s) => s.quote),
+      about: find(/^Getting to know/), aim: find(/should do/), directions: find(/lean toward/),
+      names: find(/names you mentioned/), rules: find(/must have/),
+    };
+  });
   const [qi, setQi] = useState(0);
-  const reading = phase === 'working' && !partial && stage !== 'checking';
+  const working = phase === 'working';
+  const reading = working && !partial && stage !== 'checking' && stage !== 'redrafting';
   useEffect(() => {
-    if (!reading || quotes.length < 2) return undefined;
-    const t = setInterval(() => setQi((n) => (n + 1) % quotes.length), STAGE_MS);
+    if (!reading || quotes.list.length < 2) return undefined;
+    const t = setInterval(() => setQi((n) => (n + 1) % quotes.list.length), STAGE_MS);
     return () => clearInterval(t);
-  }, [reading, quotes.length]);
+  }, [reading, quotes.list.length]);
 
-  // Which part of the brief the writer has reached.
-  const part = !partial ? null
-    : partial.rules ? meta.constraints.title
-    : partial.directions ? meta.exploreAvoid.title
-    : partial.aim ? meta.shouldDo.title
-    : meta.about.title;
-  const partPct = !partial ? 0 : partial.rules ? 68 : partial.directions ? 56 : partial.aim ? 40 : 22;
+  // The step, its quote, and where the progress should be, from the real
+  // state of the writer.
+  let step; let sub = ''; let target;
+  if (!working) { step = phase === 'reveal' ? 'Written from your answers' : 'Done'; target = 100; }
+  else if (stage === 'checking') { step = 'Double-checking every line against your answers'; sub = 'Making sure every line comes from what you wrote'; target = 72; }
+  else if (stage === 'redrafting') { step = 'Tightening a few lines'; sub = 'A second pass to keep it exact'; target = 60; }
+  else if (partial?.rules) { step = 'Noting what every name must have'; sub = quotes.rules; target = 66; }
+  else if (partial?.directions?.names) { step = 'Gathering the names you mentioned'; sub = quotes.names; target = 60; }
+  else if (partial?.directions) { step = 'Mapping where to look and what to steer clear of'; sub = quotes.directions; target = 52; }
+  else if (partial?.aim) { step = 'Setting out what the name should do'; sub = quotes.aim; target = 38; }
+  else if (partial) { step = 'Shaping the background'; sub = quotes.about; target = 22; }
+  else { step = 'Reading your answers'; sub = quotes.list[qi] || ''; target = 6; }
 
-  let text; let quote = ''; let pct; let slow = false;
-  if (phase !== 'working') { text = 'Written from your answers'; pct = 100; }
-  else if (stage === 'checking') { text = 'Checking every line against your answers'; pct = 96; slow = true; }
-  else if (stage === 'redrafting') { text = 'Tightening a few lines'; pct = 30; }
-  else if (partial) { text = `Writing · ${part}`; pct = partPct; }
-  else {
-    text = 'Reading your answers';
-    quote = quotes[qi]?.quote || '';
-    pct = 8;
-  }
+  // The number counts toward the target; while reading and during the
+  // check it keeps creeping (to 18, and 72 to 96) so it never looks stuck,
+  // and it never reaches 100 before the brief has landed.
+  const [shown, setShown] = useState(working ? 0 : 100);
+  const [checkStart, setCheckStart] = useState(null);
+  const [readStart] = useState(() => Date.now());
+  useEffect(() => {
+    if (stage === 'checking' && working) setCheckStart((t) => t ?? Date.now());
+  }, [stage, working]);
+  useEffect(() => {
+    const t = setInterval(() => {
+      let goal = target;
+      if (checkStart && working && stage === 'checking') goal = Math.min(96, 72 + ((Date.now() - checkStart) / 1000) * 1.5);
+      // Before the first words, it creeps too (up to 18), never sitting still.
+      else if (reading) goal = Math.min(18, 2 + ((Date.now() - readStart) / 1000) * 2);
+      setShown((v) => (Math.abs(goal - v) < 0.6 ? goal : v + (goal - v) * 0.18));
+    }, 60);
+    return () => clearInterval(t);
+  }, [target, checkStart, working, stage, reading, readStart]);
+  const pct = Math.round(shown);
+
   const toneVars = tone ? { '--sec-tint': tone.bg, '--sec-accent': tone.fg } : undefined;
+  const R = 16;
+  const C = 2 * Math.PI * R;
   return (
-    <div className={`v4-cbrief-progressline is-${phase}`} style={toneVars} aria-live="polite">
-      <div key={text + quote} className="v4-cbrief-skeleton-row">
-        <span className={`v4-cbrief-skeleton-pen${phase === 'working' ? '' : ' is-still'}`} aria-hidden="true" />
-        <span className="v4-cbrief-skeleton-stage">{text}</span>
-        {quote && <span className="v4-cbrief-skeleton-quote">“{quote}”</span>}
+    <div className={`v4-bpl is-${phase}`} style={toneVars} aria-live="polite">
+      <div className="v4-bpl-row">
+        <span className="v4-bpl-icon" aria-hidden="true">
+          <svg viewBox="0 0 36 36" width="36" height="36">
+            <circle className="v4-bpl-track" cx="18" cy="18" r={R} />
+            <circle className="v4-bpl-ring" cx="18" cy="18" r={R} strokeDasharray={C} strokeDashoffset={C * (1 - shown / 100)} />
+          </svg>
+          <span className="v4-bpl-glyph">
+            {working ? <SectionIcon name={meta.about.icon} size={15} /> : <Check size={15} weight="bold" />}
+          </span>
+        </span>
+        <span className="v4-bpl-text">
+          <span key={step} className="v4-bpl-step">{step}</span>
+          {sub && <span key={sub} className="v4-bpl-sub">{working && !/^Making|^A second/.test(sub) ? `“${sub}”` : sub}</span>}
+        </span>
+        <span className="v4-bpl-pct">{pct}%</span>
       </div>
       <div className="v4-cbrief-skeleton-progress" aria-hidden="true">
-        <span style={{ width: `${pct}%`, transitionDuration: slow ? '18s' : '0.8s' }} />
+        <span style={{ width: `${shown}%`, transitionDuration: '0.2s' }} />
       </div>
     </div>
   );

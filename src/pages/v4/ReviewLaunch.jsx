@@ -180,7 +180,8 @@ export default function ReviewLaunch() {
   const [fixedTexts, setFixedTexts] = useState(null);
   useEffect(() => {
     if (!flash) return undefined;
-    const t = setTimeout(() => setFlash(null), 1700);
+    // Long enough for the line to finish folding away (see .v4-bpl).
+    const t = setTimeout(() => setFlash(null), 2200);
     return () => clearTimeout(t);
   }, [flash]);
   useEffect(() => {
@@ -709,10 +710,10 @@ export default function ReviewLaunch() {
                   <button type="button" onClick={writeBrief}>Try again</button>
                 </p>
               )}
-              {(briefState === 'writing' || briefState === 'rewriting' || showComposed) && (
+              {(briefState === 'writing' || briefState === 'rewriting' || flash) && (
                 <BriefProgressLine
-                  key={briefState === 'writing' || briefState === 'rewriting' ? 'working' : 'written'}
-                  phase={briefState === 'writing' || briefState === 'rewriting' ? 'working' : (flash || 'written')}
+                  key={briefState === 'writing' || briefState === 'rewriting' ? 'working' : flash}
+                  phase={briefState === 'writing' || briefState === 'rewriting' ? 'working' : flash}
                   stage={live.stage}
                   partial={live.partial}
                   subId={subId}
