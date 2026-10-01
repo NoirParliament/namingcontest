@@ -3,9 +3,9 @@
 // answers differ from what the brief was written from, or while an update
 // is running / has just landed / has just failed. One sentence, one button.
 //
-// The button is the site's own .btn with the primary button's motion (a
-// colour wipe from the bottom, same timing and easing), inverted for a dark
-// surface. The bar enters like the resume-draft pill.
+// The button follows the site's CTA convention ("Start a contest →"): the
+// site's .btn with an arrow that nudges right on hover, white on the dark
+// bar. The bar enters like the resume-draft pill.
 //
 // The rule it makes visible: the answers are the source, the brief is
 // written from them, and nothing rewrites until the creator asks (at most
@@ -16,9 +16,9 @@ import { CheckCircle } from '@phosphor-icons/react';
 import { MAX_REWRITES } from '../../utils/composeBrief';
 
 const plural = (n, one, many) => (n === 1 ? one : many);
-const leftText = (left) => (left === 0 ? 'No rewrites left' : `${left} ${plural(left, 'rewrite', 'rewrites')} left`);
+const leftText = (left) => (left === 0 ? 'No updates left' : `${left} ${plural(left, 'update', 'updates')} left`);
 
-export default function BriefUpdateBar({ count, left, edited, state, nudge, onUpdate }) {
+export default function BriefUpdateBar({ count, left, state, nudge, onUpdate }) {
   // state: 'pending' | 'updating' | 'done' | 'failed'
   let lead = null;
   let text;
@@ -31,21 +31,20 @@ export default function BriefUpdateBar({ count, left, edited, state, nudge, onUp
   } else if (state === 'done') {
     lead = <CheckCircle size={18} weight="fill" className="v4-bupd-ok" aria-hidden="true" />;
     text = 'Your brief is up to date.';
-    sub = left === 0 ? 'That was your last rewrite.' : `${leftText(left)}.`;
+    sub = left === 0 ? 'That was your last update, so your brief is final.' : `${leftText(left)}.`;
   } else if (state === 'failed') {
     text = 'The update didn’t go through, so your brief is unchanged.';
-    sub = `No rewrite was used. ${leftText(left)}.`;
+    sub = `It didn’t use an update. ${leftText(left)}.`;
   } else {
     text = count > 0
       ? `You’ve changed ${count} ${plural(count, 'answer', 'answers')} since your brief was written.`
       : 'Your answers have changed since your brief was written.';
     if (left === 0) {
-      sub = `You’ve used all ${MAX_REWRITES} rewrites, so reword the brief yourself to match.`;
+      sub = `You’ve used all ${MAX_REWRITES} updates, so participants will see the brief as it is.`;
     } else {
-      const extra = nudge
-        ? 'Launch now and the brief goes out without these changes.'
-        : edited ? 'Updating replaces wording you changed yourself.' : null;
-      sub = extra ? `${leftText(left)} · ${extra}` : leftText(left);
+      sub = nudge
+        ? `Launch now and the brief goes out without these changes. ${leftText(left)}.`
+        : leftText(left);
     }
   }
 
@@ -64,7 +63,7 @@ export default function BriefUpdateBar({ count, left, edited, state, nudge, onUp
         </div>
         {canUpdate && (
           <button type="button" className="btn v4-bupd-btn" onClick={onUpdate}>
-            {state === 'failed' ? 'Try again' : 'Update brief'}
+            {state === 'failed' ? 'Try again' : 'Update brief'} <span className="arrow">→</span>
           </button>
         )}
       </div>

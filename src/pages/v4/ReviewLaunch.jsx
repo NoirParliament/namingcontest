@@ -27,7 +27,7 @@ import { getBriefLabel, getBriefSections } from '../../data/v4/briefExpansions';
 import GuideExpandable from '../../components/v4/GuideExpandable';
 import BriefSectionHead from '../../components/v4/BriefSectionHead';
 import ComposedBrief, { ComposedBriefSkeleton } from '../../components/v4/ComposedBrief';
-import { currentBriefDoc, composeBriefDoc, saveBriefDoc, briefDocHasContent, cleanBriefDoc, briefChanges, rewritesLeft } from '../../utils/composeBrief';
+import { currentBriefDoc, composeBriefDoc, briefDocHasContent, cleanBriefDoc, briefChanges, rewritesLeft } from '../../utils/composeBrief';
 import BriefUpdateBar from '../../components/v4/BriefUpdate';
 import { ContestScheduleInput } from '../../components/v4/QuestionInput';
 import ExitLink from '../../components/v4/ExitLink';
@@ -231,15 +231,13 @@ export default function ReviewLaunch() {
     const kick = setTimeout(() => { clearInterval(poll); if (!cancelled && !currentBriefDoc()) writeBrief(); }, 4000);
     return () => { cancelled = true; clearInterval(poll); clearTimeout(kick); };
   }, []);
-  const editBrief = (patch) => {
-    const next = saveBriefDoc({ ...briefDoc, ...patch, edited: true });
-    setBriefDoc(next);
-  };
   const showComposed = briefState === 'ready' && briefDocHasContent(briefDoc);
   // Recomputed every render (answer edits bump editTick): which answers no
   // longer match the brief, and how many rewrites are left.
   const pendingChanges = briefDoc && briefState !== 'writing' ? briefChanges() : [];
   const rewritesLeftNow = rewritesLeft();
+  // No rewrites left and nothing waiting: the brief is final.
+  const answersLocked = rewritesLeftNow === 0 && pendingChanges.length === 0;
   // The bottom bar's state; null = no bar.
   const changedCount = pendingChanges.filter((c) => c !== '*').length;
   const updateBarState = briefState === 'rewriting' ? 'updating'
@@ -285,6 +283,20 @@ export default function ReviewLaunch() {
   const renderBriefRow = (q) => {
     const val = briefAnswers[q.id];
     const skipped = !isAnswered(val);
+    // All rewrites used: the brief is final, so changing an answer would do
+    // nothing. The answers stay readable but stop being buttons.
+    if (briefDoc && answersLocked) {
+      return (
+        <li key={q.id}>
+          <div className={`v4-review-row v4-review-row-edit is-locked${skipped ? ' is-skipped' : ''}`}>
+            <span className="v4-review-row-label">{questionAsAsked(q)}</span>
+            <span className={`v4-review-row-value${skipped ? ' v4-review-row-skipped' : ''}`}>
+              {skipped ? 'Skipped' : <BriefRowValue id={q.id} value={val} fallback={formatAnswer} subId={subId} />}
+            </span>
+          </div>
+        </li>
+      );
+    }
     return (
       <li key={q.id}>
         <button
@@ -701,16 +713,15 @@ export default function ReviewLaunch() {
               {showComposed && (
                 <>
                   <p className="v4-cbrief-hint">
-                    <PencilSimple size={12} weight="bold" aria-hidden="true" />
-                    This is what participants read, written from your answers. Click any text to reword it; clear a line to remove it.
+                    {answersLocked
+                      ? 'Written for your participants from your answers.'
+                      : 'Written for your participants from your answers. To change it, change an answer below.'}
                   </p>
                   <ComposedBrief
                     doc={briefDoc}
                     subId={subId}
                     questions={briefQuestions}
                     tone={segmentTone}
-                    editable
-                    onChange={editBrief}
                   />
                 </>
               )}
@@ -782,22 +793,28 @@ export default function ReviewLaunch() {
               {!answersOpen ? (
                 <button type="button" className="v4-qa-open" onClick={() => setAnswersOpen(true)}>
                   <span className="v4-qa-open-text">
-                    Missed a question, or want to change an answer?
-                    {skippedCount > 0 && (
+                    {answersLocked
+                      ? 'Your brief is final.'
+                      : 'Missed a question, or want to change an answer?'}
+                    {answersLocked ? (
+                      <span className="v4-qa-open-meta">You’ve used all 3 updates, so your answers can no longer change it.</span>
+                    ) : skippedCount > 0 && (
                       <span className="v4-qa-open-meta">
                         {skippedCount} {skippedCount === 1 ? 'question is' : 'questions are'} still unanswered.
                       </span>
                     )}
                   </span>
                   <span className="v4-qa-open-cta">
-                    Show all questions
+                    {answersLocked ? 'Show your answers' : 'Show all questions'}
                     <CaretDown size={12} weight="bold" aria-hidden="true" />
                   </span>
                 </button>
               ) : (
                 <div className="v4-qa-body">
                   <p className="v4-qa-sub">
-                    Only you see these. Click a question to change your answer or answer it.
+                    {answersLocked
+                      ? 'Only you see these. Your brief was written from them.'
+                      : 'Only you see these. Click a question to change your answer or answer it.'}
                   </p>
                   {(briefGroups || [{ title: null, items: answerQuestions }]).map((group, gi) => {
                     const items = group.items.filter((q) => q.id !== 'intro');
@@ -869,7 +886,6 @@ export default function ReviewLaunch() {
               state={updateBarState}
               count={changedCount}
               left={rewritesLeftNow}
-              edited={!!briefDoc?.edited}
               nudge={staleNudge}
               onUpdate={rewriteBrief}
             />
