@@ -53,7 +53,7 @@ export default function CookiePolicy() {
       <p>We keep an anonymous record of each answer to the bar (a random identifier stored only in your browser, your answer, the version of the bar, your country and the time) so we can show that consent was given.</p>
 
       <h2>4. Changing your mind</h2>
-      <p>Choose <a href="#cookie-settings" onClick={openSettings}>Cookie settings</a> (also in the footer of the website) at any time to see your current choice and change it. If you turn analytics off, we delete the analytics cookies on our website and stop the tools straight away. You can also delete cookies or block them in your browser settings, though blocking essential ones may stop the website from working.</p>
+      <p>Choose <a href="#cookie-settings" onClick={openSettings}>Cookie settings</a> in the footer of the website at any time to see your current choice and change it. If you turn analytics off, we delete the analytics cookies on our website and stop the tools straight away. You can also delete cookies or block them in your browser settings, though blocking essential ones may stop the website from working.</p>
 
       <h2>5. Changes to this policy</h2>
       <p>If we add new tools or uses, such as advertising, we will update this policy and ask for your choice again where the law requires.</p>
