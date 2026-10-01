@@ -22,6 +22,7 @@ import { uploadUserFile } from '../../lib/uploads';
 import AvatarMenu from '../../components/v4/AvatarMenu';
 import { supabase } from '../../lib/supabaseClient';
 import EditQuestionModal from '../../components/v4/EditQuestionModal';
+import HostNote from '../../components/v4/HostNote';
 import BriefRowValue from '../../components/v4/BriefRowValue';
 import { getBriefLabel, getBriefSections } from '../../data/v4/briefExpansions';
 import GuideExpandable from '../../components/v4/GuideExpandable';
@@ -127,26 +128,17 @@ export default function ReviewLaunch() {
   const setup = readSetup();
   void editTick; // keep eslint quiet, used as the re-read trigger
 
-  // ── Intro to participants ─────────────────────────────────────────
+  // ── Note to participants ──────────────────────────────────────────
   // Written here, on review, rather than in the chat: a cover letter is
-  // written after you know what's in the package. Saved to brief.intro on
-  // blur; required to launch (soft gate — the Launch click nudges and
-  // scrolls here instead of a mute disabled button).
+  // written after you know what's in the package. Shown at the top of the
+  // brief card exactly as participants will see it, and edited through the
+  // same modal as every other answer (click the note, or its row under
+  // "Your answers"). Saved at brief.intro; required to launch (soft gate:
+  // the Launch click nudges and opens the editor instead of a mute
+  // disabled button).
   const [intro, setIntro] = useState(() => readSetup().brief?.intro || '');
   const [introNudge, setIntroNudge] = useState(false);
-  // With text present the card renders as a preview of the invitation
-  // greeting (message, not form field); clicking it flips back to the
-  // textarea. Empty always shows the textarea.
-  const [introEditing, setIntroEditing] = useState(false);
   const introRef = useRef(null);
-  const saveIntro = (value) => {
-    const cur = readSetup();
-    const brief = { ...(cur.brief || {}) };
-    const trimmed = value.trim();
-    if (trimmed) brief.intro = trimmed;
-    else delete brief.intro;
-    writeSetup({ brief });
-  };
 
   // Track scroll for the glass nav state (matches BriefChat behavior)
   const scrollRef = useRef(null);
@@ -285,7 +277,7 @@ export default function ReviewLaunch() {
     const skipped = !isAnswered(val);
     // All rewrites used: the brief is final, so changing an answer would do
     // nothing. The answers stay readable but stop being buttons.
-    if (briefDoc && answersLocked) {
+    if (briefDoc && answersLocked && q.id !== 'intro') {
       return (
         <li key={q.id}>
           <div className={`v4-review-row v4-review-row-edit is-locked${skipped ? ' is-skipped' : ''}`}>
@@ -307,7 +299,7 @@ export default function ReviewLaunch() {
           <span className="v4-review-row-label">
             {/* Once a brief exists, the list is "the questions you were
                 asked", so show each exactly as the chat asked it. */}
-            {briefDoc ? questionAsAsked(q) : getBriefLabel(q)}
+            {q.id === 'intro' ? 'Your note to participants' : briefDoc ? questionAsAsked(q) : getBriefLabel(q)}
           </span>
           <span className={`v4-review-row-value${skipped ? ' v4-review-row-skipped' : ''}`}>
             {skipped
@@ -328,6 +320,11 @@ export default function ReviewLaunch() {
       writeSetup({ workingName: newValue });
     } else if (section === 'brief') {
       writeSetup({ brief: { ...(cur.brief || {}), [question.id]: newValue } });
+      if (question.id === 'intro') {
+        const text = String(newValue || '');
+        setIntro(text);
+        if (text.trim()) setIntroNudge(false);
+      }
     } else if (section === 'settings') {
       // The schedule answers both windows at once — spread into real keys.
       if (question.type === 'contestSchedule') {
@@ -371,6 +368,16 @@ export default function ReviewLaunch() {
     track('review_viewed', { tier: s.group, category: s.subSegmentId });
   }, []);
 
+  const introQuestion = getIntroQuestionFor(subId);
+  const openIntroEdit = () => setEditingQuestion({ question: introQuestion, section: 'brief' });
+  // Who the note is from, as participants will see it (the same rule as
+  // the live card: the creator's first name, or "the organizer" when they
+  // chose to stay anonymous).
+  const hostFirstName = (setup.userName || profile?.display_name || '').trim().split(/\s+/)[0] || 'you';
+  const noteHost = setup.settings?.creatorAnonymous === true
+    ? { name: 'the organizer', seed: 'host_preview', photoUrl: null }
+    : { name: hostFirstName, seed: user?.id || hostFirstName, photoUrl: profile?.avatar_url || null };
+
   const handleLaunch = () => {
     if (launching) return;
     // The intro is the one thing participants read first — a contest
@@ -380,7 +387,7 @@ export default function ReviewLaunch() {
     if (!intro.trim()) {
       setIntroNudge(true);
       introRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      introRef.current?.querySelector('textarea')?.focus();
+      openIntroEdit();
       return;
     }
     // The brief is behind the answers: point at it once. A second press
@@ -659,46 +666,6 @@ export default function ReviewLaunch() {
             </p>
           </div>
 
-          {/* Intro to participants — the creator's own words, shown first
-              on the invitation and both participant pages. Inline textarea
-              (not a modal row): writing a paragraph wants a real field. */}
-          <section className="v4-review-section" ref={introRef}>
-            <header className="v4-review-section-head">
-              <h2>A note from you</h2>
-            </header>
-            {intro.trim() && !introEditing ? (
-              /* Preview: just the words, as typography — no inner box.
-                 Click anywhere to edit (same affordance as the brief rows). */
-              <button
-                type="button"
-                className="v4-review-intro-preview"
-                onClick={() => setIntroEditing(true)}
-                aria-label="Edit your intro"
-              >
-                <span className="v4-review-intro-text">{intro}</span>
-                <PencilSimple size={13} weight="bold" className="v4-review-intro-edit" aria-hidden="true" />
-              </button>
-            ) : (
-              <textarea
-                className="v4-input v4-textarea"
-                style={{ width: '100%', boxSizing: 'border-box' }}
-                rows={INTRO_QUESTION.rows}
-                maxLength={600}
-                value={intro}
-                autoFocus={introEditing}
-                placeholder={getIntroQuestionFor(subId).placeholder}
-                onChange={(e) => { setIntro(e.target.value); if (e.target.value.trim()) setIntroNudge(false); }}
-                onBlur={(e) => { saveIntro(e.target.value); if (e.target.value.trim()) setIntroEditing(false); }}
-                aria-label={INTRO_QUESTION.label}
-              />
-            )}
-            {introNudge && (
-              <span className="v4-settings-field-hint" style={{ color: '#a8321f' }} role="alert">
-                Write a quick hello before launching; it’s the first thing your participants read.
-              </span>
-            )}
-          </section>
-
           {/* The brief — each row is now a button that opens the
               EditQuestionModal in place. The old "Edit" section link
               that bounced back to the full chat is gone. */}
@@ -707,6 +674,33 @@ export default function ReviewLaunch() {
               <header className="v4-review-section-head">
                 <h2>Your brief</h2>
               </header>
+
+              {/* The creator's note, exactly as participants see it at the
+                  top of the brief. The whole panel is the edit control: it
+                  opens the same modal as every answer row. */}
+              <div
+                role="button"
+                tabIndex={0}
+                ref={introRef}
+                className={`v4-review-note${intro.trim() ? '' : ' is-empty'}${introNudge ? ' is-nudged' : ''}`}
+                onClick={openIntroEdit}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openIntroEdit(); } }}
+                aria-label={intro.trim() ? 'Edit your note to participants' : 'Write a note to your participants'}
+              >
+                <HostNote
+                  intro={intro.trim() || 'Write a short welcome for your participants. It is the first thing they read.'}
+                  name={noteHost.name}
+                  seed={noteHost.seed}
+                  photoUrl={noteHost.photoUrl}
+                  tone={segmentTone}
+                />
+                <PencilSimple size={13} weight="bold" className="v4-review-note-edit" aria-hidden="true" />
+              </div>
+              {introNudge && (
+                <span className="v4-settings-field-hint v4-review-note-nudge" style={{ color: '#a8321f' }} role="alert">
+                  Write a quick hello before launching; it’s the first thing your participants read.
+                </span>
+              )}
               {(briefState === 'writing' || briefState === 'rewriting') && (
                 <ComposedBriefSkeleton subId={subId} questions={briefQuestions} tone={segmentTone} />
               )}
@@ -811,6 +805,11 @@ export default function ReviewLaunch() {
                       ? 'Only you see these. Your brief was written from them.'
                       : 'Only you see these. Click a question to change your answer or answer it.'}
                   </p>
+                  <div className="v4-qa-group">
+                    <ul className="v4-review-list v4-review-list-editable">
+                      {renderBriefRow(introQuestion)}
+                    </ul>
+                  </div>
                   {(briefGroups || [{ title: null, items: answerQuestions }]).map((group, gi) => {
                     const items = group.items.filter((q) => q.id !== 'intro');
                     if (!items.length) return null;

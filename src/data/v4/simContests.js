@@ -48,6 +48,7 @@ export const SIM_CONTESTS = {
       customRequirements: { enabled: true, text: 'Nothing too trendy — it should still suit a grown adult. No family names already taken.' },
     }),
     brief: {
+      intro: 'Dan and I are expecting our first baby in spring and we would love your help. Suggest the names you would be proud to call across a playground!',
       projectSummary: 'Dan and I are expecting our first baby in spring. We want something warm and timeless that works on a CV and a playground alike, and travels across both sides of the family.',
       gender: 'Surprise',
       lastName: 'Hartley',
@@ -60,19 +61,35 @@ export const SIM_CONTESTS = {
     // The written brief participants read, in the current shape (sections
     // the writer composes), written strictly from the answers above.
     briefDoc: {
-      sections: [
-        { kind: 'about', heading: 'A spring baby for Emma and Dan', points: [],
-          body: 'Emma and Dan are expecting their first baby in spring, and the gender is staying a surprise, so names for a girl or a boy are both welcome. The baby will be a Hartley. Both sides of the family have British and Irish roots.' },
-        { kind: 'aim', heading: 'Warm, timeless and easy to carry', points: [],
-          body: 'They want something warm and timeless that works on a CV and a playground alike, and travels across both sides of the family. Two to three syllables suits them best, with or without an obvious nickname. A nod to the British and Irish roots is welcome, as long as it is not hard to spell abroad.' },
-        { kind: 'directions', heading: 'Family echoes, not top 10 hits', points: [],
-          body: 'There is no strict rule, but Emma would love a name that has been in the family in some form. Steer clear of anything in this year’s top 10: she does not want three of them in the class.' },
-        { kind: 'rules', heading: 'Before you suggest', body: '',
-          points: [
-            { label: 'Not too trendy', text: 'It should still suit a grown adult.' },
-            { label: 'No taken family names', text: 'Skip any family name that is already in use.' },
-          ] },
-      ],
+      about: {
+        story: 'Emma and Dan are expecting their first baby in spring, and the gender is staying a surprise, so names for a girl or a boy are both welcome. The baby will be a Hartley.',
+        facts: [
+          { label: 'Due', value: 'Spring' },
+          { label: 'Gender', value: 'A surprise' },
+          { label: 'Surname', value: 'Hartley' },
+          { label: 'Roots', value: 'British and Irish' },
+        ],
+      },
+      aim: {
+        lead: 'You are looking for a warm, timeless name that works on a CV and a playground alike.',
+        points: [
+          { label: 'Keep it to two or three syllables', text: 'With or without an obvious nickname.' },
+          { label: 'Travel across the family', text: 'It should sit comfortably on both the British and the Irish side.' },
+          { label: 'Nod to the roots', text: 'British or Irish touches are welcome, as long as the spelling is not hard abroad.' },
+        ],
+      },
+      directions: {
+        explore: ['Names that have been in the family in some form', 'Classic names with a soft, lived-in feel'],
+        avoid: ['Anything in this year’s top 10: Emma does not want three of them in the class', 'Spellings that need explaining'],
+        names: [],
+        prose: '',
+      },
+      rules: {
+        points: [
+          { label: 'Skip anything too trendy', text: 'It should still suit a grown adult.' },
+          { label: 'Leave used family names alone', text: 'Any name already carried by someone in the family is out.' },
+        ],
+      },
       edited: false,
       generatedAt: '2026-10-01T09:00:00.000Z',
       model: 'claude-opus-5-5',

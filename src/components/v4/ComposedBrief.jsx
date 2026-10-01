@@ -1,13 +1,15 @@
 // The composed brief: the participant-facing document written from the
 // creator's answers (compose-brief).
 //
-// It reads like a brief written for this one contest: 3 to 5 sections the
-// writer composes, each with its own heading drawn from the contest's facts
-// ("A little sister for Theo", "No bread puns, no Britpop"), flowing prose,
-// and bold-lead points only where the content really is a list. A section's
-// kind (about / aim / directions / references / rules) only picks its icon.
-// Older saved briefs are converted on read (normalizeBriefDoc) and fall back
-// to the category's authored section titles.
+// Four parts under the category's own authored headings (About the baby,
+// What the name should do, Directions to explore and avoid, Must-haves or
+// Practical requirements), each with the structure a real brief gives it:
+//   about       a short story, then a fact sheet of the specifics
+//   aim         one line that says the whole ask, then the criteria
+//   directions  lean-toward and steer-clear lists, then the names the host
+//               mentioned with what to make of each
+//   rules       the hard rules, one bold-lead line each
+// Older saved briefs are converted on read (normalizeBriefDoc).
 //
 // Read-only everywhere: the creator's review, the participant submit/vote
 // cards and the dashboard recap. The brief changes only by changing an
@@ -22,22 +24,38 @@ import { normalizeBriefDoc } from '../../utils/composeBrief';
 const isBlank = (v) => !String(v ?? '').trim();
 
 // Lines with a bold lead ("Keep it short. Suggest first names of one or two
-// syllables..."), Mark's own brief format, for the one section (if any) that
-// is genuinely a list.
-function Points({ items }) {
+// syllables..."), Mark's own brief format: the criteria, the names the host
+// mentioned and the rules all read this way.
+function Points({ items, leadKey = 'label', textKey = 'text' }) {
+  const rows = items.filter((it) => !isBlank(it[textKey]) || !isBlank(it[leadKey]));
+  if (!rows.length) return null;
   return (
     <ul className="v4-cbrief-points">
-      {items.filter((it) => !isBlank(it.text) || !isBlank(it.label)).map((it, i) => (
+      {rows.map((it, i) => (
         <li key={i} className="v4-cbrief-point">
-          {!isBlank(it.label) && (
+          {!isBlank(it[leadKey]) && (
             <>
-              <strong className="v4-cbrief-point-lead">{it.label}</strong>
-              <span className="v4-cbrief-point-dot">.</span>{' '}
+              <strong className="v4-cbrief-point-lead">{it[leadKey]}</strong>
+              {!isBlank(it[textKey]) && <span className="v4-cbrief-point-dot">.</span>}{' '}
             </>
           )}
-          <span className="v4-cbrief-point-text">{it.text}</span>
+          <span className="v4-cbrief-point-text">{it[textKey]}</span>
         </li>
       ))}
+    </ul>
+  );
+}
+
+// A small uppercase label over a block inside a section, same type as the
+// card eyebrows ("YOUR BRIEF", "A NOTE FROM EMMA").
+function SubLabel({ children }) {
+  return <div className="v4-cbrief-sublabel">{children}</div>;
+}
+
+function Lines({ items }) {
+  return (
+    <ul className="v4-cbrief-lines">
+      {items.map((t, i) => <li key={i}>{t}</li>)}
     </ul>
   );
 }
@@ -46,29 +64,76 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
   const doc = normalizeBriefDoc(rawDoc);
   if (!doc) return null;
   const meta = composedSectionMeta(subId, questions);
-  // Icon per kind; the heading fallback (legacy docs) is the category's own
-  // authored title for that part of the brief.
-  const look = {
-    about: meta.about,
-    aim: meta.shouldDo,
-    directions: meta.exploreAvoid,
-    references: { title: 'Names already in the picture', icon: 'Sparkle' },
-    rules: meta.constraints,
-  };
-  const sections = doc.sections.filter((sec) => !isBlank(sec.body) || sec.points.some((p) => !isBlank(p.text)));
+  const { about, aim, directions: dir, rules } = doc;
+
+  const hasAbout = !isBlank(about.story) || about.facts.length > 0;
+  const hasAim = !isBlank(aim.lead) || aim.points.length > 0;
+  const hasDir = dir.explore.length > 0 || dir.avoid.length > 0 || dir.names.length > 0 || !isBlank(dir.prose);
+  const hasRules = rules.points.length > 0;
+  const twoCols = dir.explore.length > 0 && dir.avoid.length > 0;
 
   return (
     <div className="v4-cbrief">
-      {sections.map((sec, i) => {
-        const l = look[sec.kind] || look.aim;
-        return (
-          <div key={i} className="v4-brief-group">
-            <BriefSectionHead title={isBlank(sec.heading) ? l.title : sec.heading} icon={l.icon} tone={tone} />
-            {!isBlank(sec.body) && <p className="v4-cbrief-para">{sec.body}</p>}
-            {sec.points.length > 0 && <Points items={sec.points} />}
-          </div>
-        );
-      })}
+      {hasAbout && (
+        <div className="v4-brief-group">
+          <BriefSectionHead title={meta.about.title} icon={meta.about.icon} tone={tone} />
+          {!isBlank(about.story) && <p className="v4-cbrief-para">{about.story}</p>}
+          {about.facts.length > 0 && (
+            <dl className="v4-cbrief-facts">
+              {about.facts.map((f, i) => (
+                <div key={i} className="v4-cbrief-fact">
+                  <dt>{f.label}</dt>
+                  <dd>{f.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+        </div>
+      )}
+
+      {hasAim && (
+        <div className="v4-brief-group">
+          <BriefSectionHead title={meta.shouldDo.title} icon={meta.shouldDo.icon} tone={tone} />
+          {!isBlank(aim.lead) && <p className="v4-cbrief-para v4-cbrief-lead">{aim.lead}</p>}
+          <Points items={aim.points} />
+        </div>
+      )}
+
+      {hasDir && (
+        <div className="v4-brief-group">
+          <BriefSectionHead title={meta.exploreAvoid.title} icon={meta.exploreAvoid.icon} tone={tone} />
+          {!isBlank(dir.prose) && <p className="v4-cbrief-para">{dir.prose}</p>}
+          {(dir.explore.length > 0 || dir.avoid.length > 0) && (
+            <div className={`v4-cbrief-cols${twoCols ? ' is-two' : ''}`}>
+              {dir.explore.length > 0 && (
+                <div className="v4-cbrief-col">
+                  <SubLabel>Lean toward</SubLabel>
+                  <Lines items={dir.explore} />
+                </div>
+              )}
+              {dir.avoid.length > 0 && (
+                <div className="v4-cbrief-col is-avoid">
+                  <SubLabel>Steer clear of</SubLabel>
+                  <Lines items={dir.avoid} />
+                </div>
+              )}
+            </div>
+          )}
+          {dir.names.length > 0 && (
+            <div className="v4-cbrief-names">
+              <SubLabel>Names already mentioned</SubLabel>
+              <Points items={dir.names} leadKey="name" textKey="note" />
+            </div>
+          )}
+        </div>
+      )}
+
+      {hasRules && (
+        <div className="v4-brief-group">
+          <BriefSectionHead title={meta.constraints.title} icon={meta.constraints.icon} tone={tone} />
+          <Points items={rules.points} />
+        </div>
+      )}
     </div>
   );
 }

@@ -11201,38 +11201,49 @@ select.v4-pvote-sort-select:hover {
   line-height: 1.5;
 }
 
-/* ── Review · intro preview ──────────────────────────────────────────
-   The "A note from you" card shows the greeting as plain typography —
-   no inner box. Click anywhere flips to the textarea. */
-.v4-review-intro-preview {
-  display: block;
-  width: 100%;
-  text-align: left;
-  border: 0;
-  background: transparent;
-  border-radius: 10px;
-  padding: 2px 34px 2px 0;
-  cursor: pointer;
+/* ── Review · the note inside the brief card ──────────────────────
+   The creator's note sits where participants will read it, at the top of
+   the brief, in the same panel. The whole panel is the edit control: the
+   pencil shows on hover, the click opens the answer modal. */
+.v4-review-note {
   position: relative;
-  font-family: var(--font-text);
+  cursor: pointer;
+  border-radius: 14px;
+  outline: none;
 }
-.v4-review-intro-text {
-  display: block;
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--v4-fg);
-  opacity: 0.8;
-  white-space: pre-wrap;
+.v4-review-note .v4-hostnote {
+  margin: 0 0 22px;
+  transition: background-color 0.15s ease;
 }
-.v4-review-intro-preview:hover .v4-review-intro-text { opacity: 1; }
-.v4-review-intro-edit {
+.v4-review-note:hover .v4-hostnote,
+.v4-review-note:focus-visible .v4-hostnote {
+  background: color-mix(in srgb, var(--note-tint) 44%, #fff);
+}
+.v4-review-note:focus-visible .v4-hostnote {
+  box-shadow: 0 0 0 2px var(--v4-ring);
+}
+.v4-review-note-edit {
   position: absolute;
-  top: 4px;
-  right: 8px;
+  top: 14px;
+  right: 16px;
   opacity: 0.35;
   color: var(--v4-fg);
+  transition: opacity 0.15s ease;
 }
-.v4-review-intro-preview:hover .v4-review-intro-edit { opacity: 0.8; }
+.v4-review-note:hover .v4-review-note-edit,
+.v4-review-note:focus-visible .v4-review-note-edit { opacity: 0.8; }
+/* Nothing written yet: the placeholder reads as a placeholder. */
+.v4-review-note.is-empty .v4-hostnote-text {
+  color: var(--v4-muted);
+  opacity: 0.85;
+}
+.v4-review-note.is-nudged .v4-hostnote {
+  box-shadow: 0 0 0 1.5px rgba(168, 50, 31, 0.45);
+}
+.v4-review-note-nudge {
+  display: block;
+  margin: -12px 0 18px;
+}
 
 /* ── Review · congrats lead-in ───────────────────────────────────────
    "You've completed your brief" moment under the hero pill — first
@@ -12492,6 +12503,105 @@ button.v4-exit {
 }
 .v4-cbrief-point-dot { font-weight: 650; }
 .v4-cbrief-point-text { opacity: 0.88; }
+
+/* The one-line aim sits a touch heavier than body prose: it is the
+   sentence the criteria below hang from. */
+.v4-cbrief-lead {
+  font-weight: 500;
+  color: var(--v4-fg);
+}
+.v4-cbrief-lead + .v4-cbrief-points { margin-top: 12px; }
+
+/* ── Fact sheet (about) ──
+   The specifics a participant checks names against, as label-over-value
+   cells: the Schedule and Settings rows' type (muted 13px label, 14px
+   value), laid out in a grid so six facts take two lines, not six rows. */
+.v4-cbrief-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px 20px;
+  margin: 14px 0 0;
+}
+.v4-cbrief-fact {
+  min-width: 0;
+}
+.v4-cbrief-fact dt {
+  margin: 0 0 2px;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--v4-muted);
+}
+.v4-cbrief-fact dd {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  line-height: 1.45;
+  color: var(--v4-fg);
+  overflow-wrap: break-word;
+}
+
+/* ── Sub-labels inside a section ──
+   The card eyebrow's type ("YOUR BRIEF", "A NOTE FROM EMMA"), a step
+   smaller, over the lean-toward / steer-clear lists and the names. */
+.v4-cbrief-sublabel {
+  margin: 0 0 7px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+}
+
+/* ── Lean toward / steer clear of (directions) ──
+   Two columns when both have lines, one otherwise. Each line carries a
+   small dot in the section's accent; the steer-clear column's dot is a
+   short dash, so the two lists read apart at a glance. */
+.v4-cbrief-cols {
+  display: grid;
+  gap: 18px 28px;
+}
+.v4-cbrief-cols.is-two {
+  grid-template-columns: 1fr 1fr;
+}
+.v4-cbrief-col { min-width: 0; }
+.v4-cbrief-lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 7px;
+}
+.v4-cbrief-lines li {
+  position: relative;
+  padding-left: 16px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--v4-fg);
+}
+.v4-cbrief-lines li::before {
+  content: '';
+  position: absolute;
+  left: 1px;
+  top: 0.72em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--sec-accent, var(--v4-fg));
+  opacity: 0.45;
+}
+.v4-cbrief-cols + .v4-cbrief-names,
+.v4-cbrief-para + .v4-cbrief-cols,
+.v4-cbrief-para + .v4-cbrief-names { margin-top: 18px; }
+
+/* The section's accent reaches the lists from the head's tone vars. */
+.v4-brief-group { --sec-accent: var(--v4-fg); }
+
+@media (max-width: 640px) {
+  .v4-cbrief-cols.is-two { grid-template-columns: 1fr; }
+  .v4-cbrief-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 
 /* ── Editing ──
    The text itself is the field. Quiet until hovered, a soft tint while

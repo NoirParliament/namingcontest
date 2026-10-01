@@ -116,67 +116,111 @@ export async function composeBriefDoc({ rewrite = false } = {}) {
 //           requirements | constraints[] , notes[] }
 // become sections in the same reading order, with an empty heading (the
 // renderer falls back to the category's authored section title).
-const SECTION_KINDS = ['about', 'aim', 'directions', 'references', 'rules'];
+// The brief's shape (v6): four fixed parts, each with its own structure.
+//   about       { story, facts: [{ label, value }] }
+//   aim         { lead, points: [{ label, text }] }
+//   directions  { explore: [line], avoid: [line], names: [{ name, note }], prose }
+//   rules       { points: [{ label, text }] }
+// `prose` under directions only ever holds an older brief's paragraph; the
+// writer never produces it. Every older saved shape (the sections list, the
+// first about/shouldDo/explore/avoid/watchouts object) converts on read, so
+// a contest launched under an older writer still renders.
+const str = (v) => (typeof v === 'string' ? v : '');
+const arr = (v) => (Array.isArray(v) ? v : []);
+const pts = (list) => arr(list)
+  .map((b) => (typeof b === 'string' ? { label: '', text: b } : { label: str(b?.label), text: str(b?.text) }));
+const lines = (list) => arr(list).map((l) => (typeof l === 'string' ? l : str(l?.text))).filter(Boolean);
+
+function emptyParts() {
+  return {
+    about: { story: '', facts: [] },
+    aim: { lead: '', points: [] },
+    directions: { explore: [], avoid: [], names: [], prose: '' },
+    rules: { points: [] },
+  };
+}
 
 export function normalizeBriefDoc(doc) {
   if (!doc) return null;
-  const str = (v) => (typeof v === 'string' ? v : '');
-  const pts = (list) => (Array.isArray(list) ? list : [])
-    .map((b) => (typeof b === 'string' ? { label: '', text: b } : { label: str(b?.label), text: str(b?.text) }));
+  const parts = emptyParts();
+
+  if (doc.about && typeof doc.about === 'object') {
+    // v6, straight through with every field made safe.
+    parts.about.story = str(doc.about.story);
+    parts.about.facts = arr(doc.about.facts).map((f) => ({ label: str(f?.label), value: str(f?.value) }));
+    parts.aim.lead = str(doc.aim?.lead);
+    parts.aim.points = pts(doc.aim?.points);
+    parts.directions.explore = lines(doc.directions?.explore);
+    parts.directions.avoid = lines(doc.directions?.avoid);
+    parts.directions.names = arr(doc.directions?.names).map((n) => ({ name: str(n?.name), note: str(n?.note) }));
+    parts.directions.prose = str(doc.directions?.prose);
+    parts.rules.points = pts(doc.rules?.points);
+    const { about, aim, directions, rules, ...rest } = doc;
+    void about; void aim; void directions; void rules;
+    return { ...rest, v: 6, ...parts };
+  }
 
   if (Array.isArray(doc.sections)) {
-    return {
-      ...doc,
-      sections: doc.sections.map((sec) => ({
-        kind: SECTION_KINDS.includes(sec?.kind) ? sec.kind : 'aim',
-        heading: str(sec?.heading),
-        body: str(sec?.body),
-        points: pts(sec?.points),
-      })),
-    };
+    // The sections list (one prose body plus optional points per kind).
+    for (const sec of doc.sections) {
+      const body = str(sec?.body);
+      const points = pts(sec?.points);
+      switch (sec?.kind) {
+        case 'about': parts.about.story = [parts.about.story, body].filter(Boolean).join(' '); break;
+        case 'directions':
+        case 'references':
+          parts.directions.prose = [parts.directions.prose, body].filter(Boolean).join(' ');
+          parts.directions.names.push(...points.map((p) => ({ name: p.label, note: p.text })));
+          break;
+        case 'rules':
+          parts.rules.points.push(...points);
+          if (body) parts.rules.points.push({ label: '', text: body });
+          break;
+        default:
+          parts.aim.lead = [parts.aim.lead, body].filter(Boolean).join(' ');
+          parts.aim.points.push(...points);
+      }
+    }
+    const { sections, ...rest } = doc;
+    void sections;
+    return { ...rest, v: 6, ...parts };
   }
 
-  // Legacy shapes.
+  // The first shape: about / shouldDo / explore / avoid / watchouts / constraints.
   const open = (l) => !l?.length || (l.length === 1 && /^open$/i.test(l[0]));
-  let directions = str(doc.directions);
-  if (!directions && (doc.explore || doc.avoid || doc.watchouts)) {
-    const parts = [];
-    if (open(doc.explore) && open(doc.avoid)) {
-      parts.push('Nothing is ruled in or out, so explore freely within the brief above.');
-    } else {
-      if (!open(doc.explore)) parts.push(`Lean toward ${doc.explore.join(', ')}.`);
-      if (!open(doc.avoid)) parts.push(`Steer clear of ${doc.avoid.join(', ')}.`);
-    }
-    (doc.watchouts || []).forEach((w) => { if (w?.note) parts.push(w.note); else if (w?.name) parts.push(w.name); });
-    directions = parts.join(' ');
-  }
-  const requirements = str(doc.requirements) || pts(doc.constraints).map((c) => c.text).filter(Boolean).join(' ');
-  const sections = [
-    { kind: 'about', heading: '', body: str(doc.about), points: [] },
-    { kind: 'aim', heading: '', body: '', points: pts(doc.shouldDo) },
-    { kind: 'directions', heading: '', body: directions, points: [] },
-    { kind: 'rules', heading: '', body: requirements, points: [] },
-  ];
-  const { about, shouldDo, explore, avoid, watchouts, constraints, notes, ...rest } = doc;
-  void about; void shouldDo; void explore; void avoid; void watchouts; void constraints; void notes;
-  return { ...rest, sections };
+  parts.about.story = str(doc.about);
+  parts.aim.points = pts(doc.shouldDo);
+  if (!open(doc.explore)) parts.directions.explore = lines(doc.explore);
+  if (!open(doc.avoid)) parts.directions.avoid = lines(doc.avoid);
+  parts.directions.names = arr(doc.watchouts).map((w) => ({ name: str(w?.name), note: str(w?.note) }));
+  parts.directions.prose = str(doc.directions);
+  parts.rules.points = pts(doc.constraints);
+  if (str(doc.requirements)) parts.rules.points.push({ label: '', text: str(doc.requirements) });
+  const { about, shouldDo, explore, avoid, watchouts, constraints, notes, directions, requirements, ...rest } = doc;
+  void about; void shouldDo; void explore; void avoid; void watchouts; void constraints; void notes; void directions; void requirements;
+  return { ...rest, v: 6, ...parts };
 }
 
-// The doc as saved at launch: trimmed, empty points and sections dropped.
+// The doc as saved at launch: trimmed, empty lines and points dropped.
 export function cleanBriefDoc(doc) {
   const d = normalizeBriefDoc(doc);
   if (!d) return d;
-  const t = (v) => (typeof v === 'string' ? v.trim() : '');
+  const t = (v) => str(v).trim();
+  const cleanPts = (list) => list.map((p) => ({ label: t(p.label), text: t(p.text) })).filter((p) => p.label || p.text);
   return {
     ...d,
-    sections: d.sections
-      .map((sec) => ({
-        kind: sec.kind,
-        heading: t(sec.heading),
-        body: t(sec.body),
-        points: sec.points.map((p) => ({ label: t(p.label), text: t(p.text) })).filter((p) => p.label || p.text),
-      }))
-      .filter((sec) => sec.body || sec.points.length),
+    about: {
+      story: t(d.about.story),
+      facts: d.about.facts.map((f) => ({ label: t(f.label), value: t(f.value) })).filter((f) => f.label && f.value),
+    },
+    aim: { lead: t(d.aim.lead), points: cleanPts(d.aim.points) },
+    directions: {
+      explore: d.directions.explore.map(t).filter(Boolean),
+      avoid: d.directions.avoid.map(t).filter(Boolean),
+      names: d.directions.names.map((n) => ({ name: t(n.name), note: t(n.note) })).filter((n) => n.name || n.note),
+      prose: t(d.directions.prose),
+    },
+    rules: { points: cleanPts(d.rules.points) },
   };
 }
 
@@ -184,5 +228,8 @@ export function cleanBriefDoc(doc) {
 // given almost nothing) falls back to the Q&A.
 export function briefDocHasContent(doc) {
   if (!doc) return false;
-  return cleanBriefDoc(doc).sections.length > 0;
+  const d = cleanBriefDoc(doc);
+  return Boolean(d.about.story || d.about.facts.length || d.aim.lead || d.aim.points.length
+    || d.directions.explore.length || d.directions.avoid.length || d.directions.names.length || d.directions.prose
+    || d.rules.points.length);
 }
