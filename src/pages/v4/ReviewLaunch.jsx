@@ -702,7 +702,7 @@ export default function ReviewLaunch() {
                 </span>
               )}
               {(briefState === 'writing' || briefState === 'rewriting') && (
-                <ComposedBriefSkeleton subId={subId} questions={briefQuestions} tone={segmentTone} />
+                <ComposedBriefSkeleton subId={subId} questions={briefQuestions} tone={segmentTone} answers={briefAnswers} />
               )}
               {showComposed && (
                 <>

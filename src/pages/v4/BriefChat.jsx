@@ -28,7 +28,7 @@ import {
   Confetti,
 } from '@phosphor-icons/react';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
-import { currentBriefDoc, composeBriefDoc, RESET_BRIEF_PATCH } from '../../utils/composeBrief';
+import { currentBriefDoc, composeBriefDoc, briefChanges, RESET_BRIEF_PATCH } from '../../utils/composeBrief';
 import { useAuth } from '../../lib/AuthContext';
 import { useProfile } from '../../lib/useProfile';
 import AvatarMenu from '../../components/v4/AvatarMenu';
@@ -571,15 +571,24 @@ export default function BriefChat() {
     setEditingIndex(null);
   };
 
-  // After every question answered, head to review. The written brief takes
-  // the model ~15s, so start it here, before the hand-off: by the time the
-  // review page renders it is usually ready. The review page shows a
-  // skeleton and finishes the wait if not (and it just asks again on a
-  // failure here, so this is fire-and-forget).
+  // Start the written brief the moment the brief questions are done: the
+  // settings that follow (credit, prize, schedule, note) never change it, and
+  // the brief takes the writer 20 to 40 seconds, so it is usually ready by
+  // the time the creator reaches review. Fire-and-forget: the review page
+  // shares the same request, or asks again on a failure.
+  useEffect(() => {
+    const settingsStart = questions.indexOf(SECTION_BREAK);
+    if (isEditing || isDone || settingsStart === -1 || idx < settingsStart) return;
+    if (!currentBriefDoc()) composeBriefDoc().catch(() => {});
+  }, [idx, isDone, isEditing, questions]);
+
+  // After every question answered, head to review. A brief started early is
+  // usually ready; if a brief answer was edited after it started, write it
+  // again now (a fresh write, not one of the creator's updates).
   useEffect(() => {
     if (isDone && history.length > 0 && !isEditing) {
       track('brief_completed', { tier: initial.group, category: subId });
-      if (!currentBriefDoc()) composeBriefDoc().catch(() => {});
+      if (!currentBriefDoc() || briefChanges().length > 0) composeBriefDoc().catch(() => {});
       const t = setTimeout(() => navigate('/v4/setup/review'), 1400);
       return () => clearTimeout(t);
     }

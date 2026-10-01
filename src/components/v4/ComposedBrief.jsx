@@ -20,6 +20,8 @@ import { useEffect, useState } from 'react';
 import { Check, X } from '@phosphor-icons/react';
 import BriefSectionHead from './BriefSectionHead';
 import { composedSectionMeta } from '../../data/v4/briefRoles';
+import { getBriefSections } from '../../data/v4/briefExpansions';
+import { formatDateAnswer } from '../../utils/v4Brief';
 import { normalizeBriefDoc } from '../../utils/composeBrief';
 
 const isBlank = (v) => !String(v ?? '').trim();
@@ -208,25 +210,73 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
   );
 }
 
-// Shown while compose-brief is writing. It should feel like writing, not
-// like a loading spinner: a status line that moves through the stages, and
-// grey lines that fill in one after another under the real section heads
-// so the card is the right shape when the text lands.
-const STAGES = [
-  'Reading your answers',
-  'Writing the background',
-  'Working out what the name should do',
-  'Sorting what to explore and what to avoid',
-  'Checking every line against your answers',
+// Shown while compose-brief is writing (20 to 40 seconds with the line
+// check). It should feel like the brief being written from the creator's
+// own answers, because it is: each stage names what the writer is doing and
+// quotes what they wrote for that part, then the check and the polish. A
+// slow progress line underneath; grey lines under the real section heads
+// keep the card the right shape for when the text lands.
+const STAGE_MS = 4200;
+const FALLBACK_STAGES = [
+  { text: 'Reading your answers' },
+  { text: 'Writing the background' },
+  { text: 'Working out what the name should do' },
+  { text: 'Sorting what to explore and what to avoid' },
 ];
 
-export function ComposedBriefSkeleton({ subId, questions, tone }) {
+// One answer as a short quotable line.
+function quoteOf(q, v) {
+  if (v === undefined || v === null || v === '' || v === false) return '';
+  let t;
+  if (Array.isArray(v)) t = v.join(', ');
+  else if (typeof v === 'object') t = v.enabled ? (v.text || v.name || '') : '';
+  else t = q?.type === 'date' ? formatDateAnswer(v) : String(v);
+  t = t.replace(/\s+/g, ' ').trim();
+  return t.length > 90 ? `${t.slice(0, 88).replace(/[\s,.;:]+\S*$/, '')}…` : t;
+}
+
+// The stages for this brief: one per section the creator answered, each
+// with a quote from their first answer there, then the writing steps.
+function buildStages(subId, questions, answers) {
+  const sections = answers ? getBriefSections(subId, questions) : null;
+  if (!sections) return [...FALLBACK_STAGES, { text: 'Checking every line against your answers' }, { text: 'Final polish' }];
+  const about = sections[0]?.title?.replace(/^About\s+/i, '') || 'it';
+  const label = (title, i) => {
+    if (i === 0) return `Getting to know ${about}`;
+    if (/should do/i.test(title)) return 'Working out what the name should do';
+    if (/names/i.test(title)) return 'Looking at the names you mentioned';
+    if (/explore/i.test(title)) return 'Sorting what to lean toward and steer clear of';
+    if (/practical|must/i.test(title)) return 'Noting what every name must have';
+    return `Reading ${title.toLowerCase()}`;
+  };
+  const stages = [{ text: 'Writing your brief from your answers' }];
+  // Each part quotes its most telling answer: the longest written one,
+  // never a bare date or pick when there is something the creator wrote.
+  sections.forEach((sec, i) => {
+    const quotes = sec.items
+      .filter((q) => q.id !== 'intro')
+      .map((q) => ({ q, t: quoteOf(q, answers[q.id]) }))
+      .filter((x) => x.t);
+    if (!quotes.length) return;
+    const written = quotes.filter((x) => x.q.type === 'text' || x.q.type === 'textarea' || x.q.type === 'toggleTextarea');
+    const best = (written.length ? written : quotes).reduce((a, b) => (b.t.length > a.t.length ? b : a));
+    stages.push({ text: label(sec.title, i), quote: best.t });
+  });
+  if (stages.length === 1) stages.push(...FALLBACK_STAGES);
+  stages.push({ text: 'Checking every line against your answers' });
+  stages.push({ text: 'Final polish' });
+  return stages;
+}
+
+export function ComposedBriefSkeleton({ subId, questions, tone, answers }) {
   const meta = composedSectionMeta(subId, questions);
+  const [stages] = useState(() => buildStages(subId, questions, answers));
   const [stage, setStage] = useState(0);
   useEffect(() => {
-    const t = setInterval(() => setStage((n) => Math.min(n + 1, STAGES.length - 1)), 3200);
+    const t = setInterval(() => setStage((n) => Math.min(n + 1, stages.length - 1)), STAGE_MS);
     return () => clearInterval(t);
-  }, []);
+  }, [stages.length]);
+  const current = stages[stage];
   const toneVars = tone ? { '--sec-tint': tone.bg, '--sec-accent': tone.fg } : undefined;
   // Each bar inks in after the one before it, top to bottom.
   let n = 0;
@@ -234,8 +284,14 @@ export function ComposedBriefSkeleton({ subId, questions, tone }) {
   return (
     <div className="v4-cbrief v4-cbrief-skeleton" style={toneVars} aria-busy="true" aria-live="polite">
       <div className="v4-cbrief-skeleton-status">
-        <span className="v4-cbrief-skeleton-pen" aria-hidden="true" />
-        <span key={stage} className="v4-cbrief-skeleton-stage">{STAGES[stage]}</span>
+        <div key={stage} className="v4-cbrief-skeleton-row">
+          <span className="v4-cbrief-skeleton-pen" aria-hidden="true" />
+          <span className="v4-cbrief-skeleton-stage">{current.text}</span>
+          {current.quote && <span className="v4-cbrief-skeleton-quote">“{current.quote}”</span>}
+        </div>
+        <div className="v4-cbrief-skeleton-progress" aria-hidden="true">
+          <span style={{ animationDuration: `${Math.max(stages.length * STAGE_MS, 24000) + 8000}ms` }} />
+        </div>
       </div>
 
       <div className="v4-brief-group">

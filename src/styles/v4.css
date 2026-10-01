@@ -12842,10 +12842,53 @@ button.v4-exit {
 /* ── Writing (skeleton) ──
    A pen-nib dot that breathes, a status line that cross-fades through the
    stages, and lines that ink in one after another. */
-.v4-cbrief-skeleton-status {
+/* The wait, on one top line: what the writer is doing, then a quote from
+   the creator's own answer for that part (the host note's serif), cut to
+   one line; a slow progress line right under it. */
+.v4-cbrief-skeleton-row {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 10px;
+  min-width: 0;
+  white-space: nowrap;
+  animation: v4-fade-in 0.5s ease both;
+}
+.v4-cbrief-skeleton-row .v4-cbrief-skeleton-pen { align-self: center; }
+.v4-cbrief-skeleton-stage { flex: none; }
+.v4-cbrief-skeleton-quote {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: 'Fraunces', Georgia, serif;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--v4-muted);
+  opacity: 0.85;
+}
+.v4-cbrief-skeleton-progress {
+  position: relative;
+  height: 2px;
+  margin: 10px 0 0;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--v4-fg) 7%, #fff);
+  overflow: hidden;
+}
+.v4-cbrief-skeleton-progress span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 92%;
+  border-radius: 3px;
+  background: var(--sec-accent, var(--v4-fg));
+  opacity: 0.55;
+  transform-origin: left center;
+  animation: v4-cbrief-progress 40s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+@keyframes v4-cbrief-progress {
+  from { transform: scaleX(0.04); }
+  to { transform: scaleX(1); }
+}
+.v4-cbrief-skeleton-status {
+  display: block;
   margin: -4px 0 20px;
   font-size: 13.5px;
   color: var(--v4-muted);
@@ -12895,7 +12938,7 @@ button.v4-exit {
   border-radius: 999px;
   animation-delay: 0.4s;
 }
-.v4-cbrief-skeleton .v4-cbrief-point-body { padding-top: 6px; }
+.v4-cbrief-skeleton .v4-cbrief-point-body { padding-top: 6px; flex: 1; }
 @media (prefers-reduced-motion: reduce) {
   .v4-cbrief-sk-bar,
   .v4-cbrief-sk-pill { animation: none; }
@@ -12911,6 +12954,8 @@ button.v4-exit {
 @media (prefers-reduced-motion: reduce) {
   .v4-cbrief-skeleton-lines span,
   .v4-cbrief-skeleton-pen { animation: none; }
+  .v4-cbrief-skeleton-progress span { animation: none; transform: scaleX(0.6); }
+  .v4-cbrief-skeleton-quote { animation: none; }
 }
 
 .v4-review-row-edit.is-locked { cursor: default; }

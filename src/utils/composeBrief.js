@@ -93,11 +93,28 @@ export function rewritesLeft(setup = readSetup()) {
 // Ask the edge function. Resolves to the doc, or throws; the caller keeps
 // whatever was on screen before. A rewrite counts against MAX_REWRITES only
 // when it succeeds. Never called for participants.
-export async function composeBriefDoc({ rewrite = false } = {}) {
+// One request at a time per set of answers: the chat starts the brief early,
+// the hand-off and the review page may ask again while it is still being
+// written, and all of them get the same answer from the one request.
+let inflight = null;
+let inflightKey = null;
+
+export function composeBriefDoc({ rewrite = false } = {}) {
   const setup = readSetup();
-  if (rewrite && rewritesLeft(setup) <= 0) throw new Error('No rewrites left.');
+  if (rewrite && rewritesLeft(setup) <= 0) return Promise.reject(new Error('No rewrites left.'));
   const source = buildSourceFromSetup(setup);
-  if (!source || source.items.length === 0) throw new Error('Nothing to write from yet.');
+  if (!source || source.items.length === 0) return Promise.reject(new Error('Nothing to write from yet.'));
+  const key = briefSourceHash(source);
+  if (!rewrite && inflight && inflightKey === key) return inflight;
+  const run = writeBriefDoc(setup, source, rewrite).finally(() => {
+    if (inflight === run) { inflight = null; inflightKey = null; }
+  });
+  inflight = run;
+  inflightKey = key;
+  return run;
+}
+
+async function writeBriefDoc(setup, source, rewrite) {
   const { data, error } = await supabase.functions.invoke('compose-brief', { body: { source, draftId: draftIdFor(setup) } });
   if (error) throw new Error(error.message || 'Could not write the brief.');
   if (!data?.doc) throw new Error(data?.error || 'Could not write the brief.');

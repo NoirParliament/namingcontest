@@ -550,11 +550,14 @@ Deno.serve(async (req) => {
         if (!v && !line.deletable) continue;
         line.set(next, v);
       }
-      // A criterion whose text only echoes its own label keeps the label
-      // alone ("Convey care that comes to you"), never the echo.
+      // A criterion or rule whose text only echoes its own label keeps the
+      // label alone ("Convey care that comes to you", "Keep to two syllables
+      // or fewer"), never the echo.
       next.aim.points = next.aim.points
         .map((pt) => (echoesLabel(pt.label, pt.text, source.host) ? { ...pt, text: '' } : pt))
         .filter((pt) => pt.text || pt.label);
+      next.rules.points = next.rules.points
+        .map((pt) => (echoesLabel(pt.label, pt.text, source.host) ? { ...pt, text: '' } : pt));
       next.directions.explore = next.directions.explore.filter(Boolean);
       next.directions.avoid = next.directions.avoid.filter(Boolean);
       return dropRepeatedFacts(next);
