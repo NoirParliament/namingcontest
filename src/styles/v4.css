@@ -4530,6 +4530,9 @@ input.v4-results-search-input::placeholder {
   overflow-y: auto;
   overflow-x: hidden;
   scroll-behavior: smooth;
+  /* The brief grows while it is written (skeleton, then live text): without
+     this the browser's scroll anchoring slides the page down as it grows. */
+  overflow-anchor: none;
   position: relative;
   z-index: 5;
 }
@@ -12823,7 +12826,7 @@ button.v4-exit {
   color: var(--v4-muted);
 }
 .v4-cbrief-fallback {
-  margin: -6px 0 16px;
+  margin: -2px 0 16px;
   font-size: 13px;
   line-height: 1.5;
   color: var(--v4-muted);
@@ -12876,12 +12879,97 @@ button.v4-exit {
 .v4-cbrief-skeleton-progress span {
   position: absolute;
   inset: 0 auto 0 0;
-  width: 92%;
+  width: 0;
   border-radius: 3px;
   background: var(--sec-accent, var(--v4-fg));
   opacity: 0.55;
-  transform-origin: left center;
-  animation: v4-cbrief-progress 40s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  transition-property: width;
+  transition-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+/* The top line of the brief card, above the note. */
+.v4-cbrief-progressline {
+  margin: -2px 0 16px;
+  font-size: 13.5px;
+  color: var(--v4-muted);
+  animation: v4-fade-in 0.4s ease both;
+}
+/* Once written, the line stays as a quiet note of where the brief came
+   from; only the progress bar fades, so nothing below moves. */
+.v4-cbrief-progressline.is-done .v4-cbrief-skeleton-progress,
+.v4-cbrief-progressline.is-reveal .v4-cbrief-skeleton-progress { animation: v4-cbrief-line-out 1.6s ease both; }
+.v4-cbrief-progressline.is-written .v4-cbrief-skeleton-progress { opacity: 0; }
+@keyframes v4-cbrief-line-out {
+  0%, 70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.v4-cbrief-skeleton-pen.is-still { animation: none; opacity: 0.8; }
+
+/* While it is written, the draft streams in soft: blurred and faded, so
+   the brief can be seen taking shape without the unchecked text being read
+   as final. It sharpens into focus when the checked brief lands. */
+.v4-cbrief.is-live {
+  /* Holds the skeleton's height while it grows, so the page below stays put. */
+  min-height: 620px;
+  filter: blur(2.5px);
+  opacity: 0.55;
+  user-select: none;
+  pointer-events: none;
+}
+.v4-cbrief.is-focus-in { animation: v4-cbrief-focus 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+/* The whole card is in one state while it is written: the note and the
+   guides go soft with the brief, only the progress line stays crisp, and
+   all of it comes into focus together. */
+.v4-review-section--brief.is-writing .v4-review-note,
+.v4-review-section--brief.is-writing .v4-brief-guides {
+  filter: blur(2.5px);
+  opacity: 0.55;
+  pointer-events: none;
+  transition: filter 0.4s ease, opacity 0.4s ease;
+}
+.v4-review-section--brief.is-focusing .v4-review-note,
+.v4-review-section--brief.is-focusing .v4-brief-guides {
+  animation: v4-cbrief-focus 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes v4-cbrief-focus {
+  from { filter: blur(2.5px); opacity: 0.55; }
+  to { filter: blur(0); opacity: 1; }
+}
+
+/* While it streams, new text fades in as it lands. */
+.v4-cbrief.is-live .v4-cbrief-para,
+.v4-cbrief.is-live .v4-cbrief-point,
+.v4-cbrief.is-live .v4-cbrief-lines li,
+.v4-cbrief.is-live .v4-cbrief-fact { animation: v4-fade-in 0.4s ease both; }
+
+/* A finished brief already there when the page opens: its parts rise in,
+   one after another, about a second and a half in all. */
+.v4-cbrief.is-reveal > .v4-brief-group { animation: v4-cbrief-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.v4-cbrief.is-reveal > .v4-brief-group:nth-child(2) { animation-delay: 0.15s; }
+.v4-cbrief.is-reveal > .v4-brief-group:nth-child(3) { animation-delay: 0.3s; }
+.v4-cbrief.is-reveal > .v4-brief-group:nth-child(4) { animation-delay: 0.45s; }
+.v4-cbrief.is-reveal > .v4-brief-group:nth-child(5) { animation-delay: 0.6s; }
+@keyframes v4-cbrief-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* A line the check just fixed glows in the category tint, then settles. */
+.v4-cbrief .is-fixed {
+  border-radius: 4px;
+  animation: v4-cbrief-fixed 2.6s ease both;
+}
+@keyframes v4-cbrief-fixed {
+  0%, 35% { background: color-mix(in srgb, var(--sec-accent, var(--v4-fg)) 16%, transparent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--sec-accent, var(--v4-fg)) 16%, transparent); }
+  100% { background: transparent; box-shadow: 0 0 0 3px transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .v4-cbrief.is-reveal > .v4-brief-group,
+  .v4-cbrief.is-live .v4-cbrief-para,
+  .v4-cbrief.is-live .v4-cbrief-point,
+  .v4-cbrief.is-live .v4-cbrief-lines li,
+  .v4-cbrief .is-fixed,
+  .v4-cbrief.is-focus-in { animation: none; }
+  .v4-cbrief.is-live { filter: none; }
 }
 @keyframes v4-cbrief-progress {
   from { transform: scaleX(0.04); }

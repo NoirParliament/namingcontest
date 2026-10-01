@@ -16,7 +16,7 @@
 // answer and updating it (review page), so it always says what the answers
 // say. Settings rows, the host's note and the guides stay outside.
 
-import { useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { Check, X } from '@phosphor-icons/react';
 import BriefSectionHead from './BriefSectionHead';
 import { composedSectionMeta } from '../../data/v4/briefRoles';
@@ -26,10 +26,19 @@ import { normalizeBriefDoc } from '../../utils/composeBrief';
 
 const isBlank = (v) => !String(v ?? '').trim();
 
+// Texts the line check just changed glow softly for a moment (the review
+// page passes them right after a write lands).
+const FixedContext = createContext(null);
+function useGlow() {
+  const fixed = useContext(FixedContext);
+  return (t) => (fixed && t && fixed.has(t) ? ' is-fixed' : '');
+}
+
 // Label + text items (the criteria, the names the host mentioned, the
 // rules), stacked: the label on its own line, the explanation softer below,
 // so the eye can run down the labels alone.
 function Points({ items, leadKey = 'label', textKey = 'text', numbered = false, variant = '' }) {
+  const glow = useGlow();
   const rows = items.filter((it) => !isBlank(it[textKey]) || !isBlank(it[leadKey]));
   if (!rows.length) return null;
   return (
@@ -38,8 +47,8 @@ function Points({ items, leadKey = 'label', textKey = 'text', numbered = false, 
         <li key={i} className="v4-cbrief-point">
           {numbered && <span className="v4-cbrief-point-num" aria-hidden="true">{i + 1}</span>}
           <span className="v4-cbrief-point-body">
-            {!isBlank(it[leadKey]) && <span className="v4-cbrief-point-lead">{it[leadKey]}</span>}
-            {!isBlank(it[textKey]) && <span className="v4-cbrief-point-text">{it[textKey]}</span>}
+            {!isBlank(it[leadKey]) && <span className={`v4-cbrief-point-lead${glow(it[leadKey])}`}>{it[leadKey]}</span>}
+            {!isBlank(it[textKey]) && <span className={`v4-cbrief-point-text${glow(it[textKey])}`}>{it[textKey]}</span>}
           </span>
         </li>
       ))}
@@ -89,20 +98,28 @@ function Names({ names, labels }) {
 // A side the host gave nothing for: one plain line that finishes the
 // panel's own label ("Steer clear of: anything that breaks the must-haves").
 function OpenLine({ text }) {
-  return <p className="v4-cbrief-open">{text}</p>;
+  return text ? <p className="v4-cbrief-open">{text}</p> : null;
 }
 
 function Lines({ items }) {
+  const glow = useGlow();
   return (
     <ul className="v4-cbrief-lines">
-      {items.map((t, i) => <li key={i}>{t}</li>)}
+      {items.map((t, i) => <li key={i} className={glow(t).trim() || undefined}>{t}</li>)}
     </ul>
   );
 }
 
-export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
+export default function ComposedBrief({ doc: rawDoc, subId, questions, tone, live = false, fixed = null, reveal = false, focusIn = false }) {
   const doc = normalizeBriefDoc(rawDoc);
   if (!doc) return null;
+  const glow = (t) => (fixed && t && fixed.has(t) ? ' is-fixed' : '');
+  // While streaming, half-written pills and names stay hidden until they
+  // have a value, and a part shows only once the writer has reached it.
+  if (live) {
+    doc.about.facts = doc.about.facts.filter((f) => !isBlank(f.label) && !isBlank(f.value));
+    doc.directions.names = doc.directions.names.filter((n) => !isBlank(n.name));
+  }
   const meta = composedSectionMeta(subId, questions);
   const { about, aim, directions: dir, rules } = doc;
 
@@ -115,9 +132,10 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
   // the writer's, read as the end of its label ("Steer clear of: nothing in
   // particular"). Older briefs written as one paragraph keep their paragraph.
   const legacyProse = !isBlank(dir.prose) && dir.explore.length === 0 && dir.avoid.length === 0;
-  const hasDir = true;
-  const openExplore = 'Nothing specific, so range as widely as you like.';
-  const openAvoid = 'Nothing in particular. Every idea is welcome.';
+  const hasDir = !live || Boolean(rawDoc?.directions);
+  // Never while it streams: the writer may not have reached that side yet.
+  const openExplore = live ? '' : 'Nothing specific, so range as widely as you like.';
+  const openAvoid = live ? '' : 'Nothing in particular. Every idea is welcome.';
   // A category whose chat never asks what to avoid (the pet) shows no avoid
   // side when nothing to avoid came up elsewhere: the heading trims to
   // "Directions to explore" and the lone panel needs no label.
@@ -131,17 +149,18 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
   const toneVars = tone ? { '--sec-tint': tone.bg, '--sec-accent': tone.fg } : undefined;
 
   return (
-    <div className="v4-cbrief" style={toneVars}>
+    <FixedContext.Provider value={fixed}>
+    <div className={`v4-cbrief${live ? ' is-live' : ''}${reveal ? ' is-reveal' : ''}${focusIn ? ' is-focus-in' : ''}`} style={toneVars} aria-hidden={live || undefined}>
       {hasAbout && (
         <div className="v4-brief-group">
           <BriefSectionHead title={meta.about.title} icon={meta.about.icon} tone={tone} />
-          {!isBlank(about.story) && <p className="v4-cbrief-para">{about.story}</p>}
+          {!isBlank(about.story) && <p className={`v4-cbrief-para${glow(about.story)}`}>{about.story}</p>}
           {about.facts.length > 0 && (
             <ul className="v4-cbrief-facts">
               {about.facts.map((f, i) => (
                 <li key={i} className="v4-cbrief-fact">
                   <span className="v4-cbrief-fact-label">{f.label}</span>
-                  <span className="v4-cbrief-fact-value">{f.value}</span>
+                  <span className={`v4-cbrief-fact-value${glow(f.value)}`}>{f.value}</span>
                 </li>
               ))}
             </ul>
@@ -152,7 +171,7 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
       {hasAim && (
         <div className="v4-brief-group">
           <BriefSectionHead title={meta.shouldDo.title} icon={meta.shouldDo.icon} tone={tone} />
-          {!isBlank(aim.lead) && <p className="v4-cbrief-para v4-cbrief-lead">{aim.lead}</p>}
+          {!isBlank(aim.lead) && <p className={`v4-cbrief-para v4-cbrief-lead${glow(aim.lead)}`}>{aim.lead}</p>}
           <Points items={aim.points} numbered />
         </div>
       )}
@@ -207,6 +226,7 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
         </div>
       )}
     </div>
+    </FixedContext.Provider>
   );
 }
 
@@ -216,7 +236,58 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
 // quotes what they wrote for that part, then the check and the polish. A
 // slow progress line underneath; grey lines under the real section heads
 // keep the card the right shape for when the text lands.
-const STAGE_MS = 4200;
+const STAGE_MS = 3200;
+
+// The top line of the brief card, above the note: what the writer is
+// really doing, with a progress line tied to it.
+//   phase 'working'  live: before the first words it quotes the creator's
+//                    answers one part at a time; then "Writing · <part>" as
+//                    the brief reaches each part; then the check
+//   phase 'done'     just finished (shown for a moment)
+//   phase 'reveal'   the brief was already written when the page opened
+export function BriefProgressLine({ phase, stage, partial, subId, questions, answers, tone }) {
+  const meta = composedSectionMeta(subId, questions);
+  const [quotes] = useState(() => buildStages(subId, questions, answers).filter((s) => s.quote));
+  const [qi, setQi] = useState(0);
+  const reading = phase === 'working' && !partial && stage !== 'checking';
+  useEffect(() => {
+    if (!reading || quotes.length < 2) return undefined;
+    const t = setInterval(() => setQi((n) => (n + 1) % quotes.length), STAGE_MS);
+    return () => clearInterval(t);
+  }, [reading, quotes.length]);
+
+  // Which part of the brief the writer has reached.
+  const part = !partial ? null
+    : partial.rules ? meta.constraints.title
+    : partial.directions ? meta.exploreAvoid.title
+    : partial.aim ? meta.shouldDo.title
+    : meta.about.title;
+  const partPct = !partial ? 0 : partial.rules ? 68 : partial.directions ? 56 : partial.aim ? 40 : 22;
+
+  let text; let quote = ''; let pct; let slow = false;
+  if (phase !== 'working') { text = 'Written from your answers'; pct = 100; }
+  else if (stage === 'checking') { text = 'Checking every line against your answers'; pct = 96; slow = true; }
+  else if (stage === 'redrafting') { text = 'Tightening a few lines'; pct = 30; }
+  else if (partial) { text = `Writing · ${part}`; pct = partPct; }
+  else {
+    text = 'Reading your answers';
+    quote = quotes[qi]?.quote || '';
+    pct = 8;
+  }
+  const toneVars = tone ? { '--sec-tint': tone.bg, '--sec-accent': tone.fg } : undefined;
+  return (
+    <div className={`v4-cbrief-progressline is-${phase}`} style={toneVars} aria-live="polite">
+      <div key={text + quote} className="v4-cbrief-skeleton-row">
+        <span className={`v4-cbrief-skeleton-pen${phase === 'working' ? '' : ' is-still'}`} aria-hidden="true" />
+        <span className="v4-cbrief-skeleton-stage">{text}</span>
+        {quote && <span className="v4-cbrief-skeleton-quote">“{quote}”</span>}
+      </div>
+      <div className="v4-cbrief-skeleton-progress" aria-hidden="true">
+        <span style={{ width: `${pct}%`, transitionDuration: slow ? '18s' : '0.8s' }} />
+      </div>
+    </div>
+  );
+}
 const FALLBACK_STAGES = [
   { text: 'Reading your answers' },
   { text: 'Writing the background' },
@@ -268,31 +339,14 @@ function buildStages(subId, questions, answers) {
   return stages;
 }
 
-export function ComposedBriefSkeleton({ subId, questions, tone, answers }) {
+export function ComposedBriefSkeleton({ subId, questions, tone }) {
   const meta = composedSectionMeta(subId, questions);
-  const [stages] = useState(() => buildStages(subId, questions, answers));
-  const [stage, setStage] = useState(0);
-  useEffect(() => {
-    const t = setInterval(() => setStage((n) => Math.min(n + 1, stages.length - 1)), STAGE_MS);
-    return () => clearInterval(t);
-  }, [stages.length]);
-  const current = stages[stage];
   const toneVars = tone ? { '--sec-tint': tone.bg, '--sec-accent': tone.fg } : undefined;
   // Each bar inks in after the one before it, top to bottom.
   let n = 0;
   const bar = (w) => <span key={n} className="v4-cbrief-sk-bar" style={{ width: w, animationDelay: `${(n++) * 0.12}s` }} />;
   return (
-    <div className="v4-cbrief v4-cbrief-skeleton" style={toneVars} aria-busy="true" aria-live="polite">
-      <div className="v4-cbrief-skeleton-status">
-        <div key={stage} className="v4-cbrief-skeleton-row">
-          <span className="v4-cbrief-skeleton-pen" aria-hidden="true" />
-          <span className="v4-cbrief-skeleton-stage">{current.text}</span>
-          {current.quote && <span className="v4-cbrief-skeleton-quote">“{current.quote}”</span>}
-        </div>
-        <div className="v4-cbrief-skeleton-progress" aria-hidden="true">
-          <span style={{ animationDuration: `${Math.max(stages.length * STAGE_MS, 24000) + 8000}ms` }} />
-        </div>
-      </div>
+    <div className="v4-cbrief v4-cbrief-skeleton" style={toneVars} aria-busy="true">
 
       <div className="v4-brief-group">
         <BriefSectionHead title={meta.about.title} icon={meta.about.icon} tone={tone} />

@@ -499,8 +499,11 @@ Deno.serve(async (req) => {
     }
 
     const client = new Anthropic({ apiKey });
-    const ask = async (extra?: string) => {
-      const res = await client.beta.messages.create({
+    // Live mode: events go to the page as they happen; plain mode ignores them.
+    const live = body?.stream === true;
+    type Emit = (e: Record<string, unknown>) => void;
+    const ask = async (extra?: string, emit?: Emit) => {
+      const params = {
         model: MODEL,
         max_tokens: 4000,
         // The job is wording, not reasoning: low effort reads the same and
@@ -511,8 +514,31 @@ Deno.serve(async (req) => {
         betas: ['server-side-fallback-2026-07-01'],
         fallbacks: 'default',
         system: SYSTEM,
-        messages: [{ role: 'user', content: render(source) + (extra ? `\n\n${extra}` : '') }],
-      });
+        messages: [{ role: 'user' as const, content: render(source) + (extra ? `\n\n${extra}` : '') }],
+      };
+      let res;
+      if (emit) {
+        // The draft streams to the page as it is written, a few times a
+        // second (the page rebuilds the brief from the partial JSON).
+        let acc = '';
+        let sent = 0;
+        try {
+          const stream = client.beta.messages.stream(params);
+          for await (const event of stream) {
+            if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+              acc += event.delta.text;
+              if (Date.now() - sent > 120) { sent = Date.now(); emit({ type: 'draft', text: acc }); }
+            }
+          }
+          res = await stream.finalMessage();
+        } catch (e) {
+          if (acc) throw e;
+          console.warn('[compose-brief] stream failed before any text, plain call instead:', String(e));
+          res = await client.beta.messages.create(params);
+        }
+      } else {
+        res = await client.beta.messages.create(params);
+      }
       if (res.stop_reason === 'refusal') throw new Error('refused');
       const text = res.content.find((b) => b.type === 'text');
       if (!text || text.type !== 'text') throw new Error('empty');
@@ -563,7 +589,9 @@ Deno.serve(async (req) => {
       return dropRepeatedFacts(next);
     };
 
-    let doc = await ask();
+    const produce = async (emit?: Emit) => {
+    emit?.({ type: 'stage', stage: 'drafting' });
+    let doc = await ask(undefined, emit);
     let flagged = unverifiedNames(doc, source);
     const missing = missingParts(doc, source);
     const echo = noteEcho(doc, source);
@@ -576,9 +604,11 @@ Deno.serve(async (req) => {
         missing.length ? `Your previous draft left out ${missing.join('; and ')}. Include it.` : '',
         echo.length ? 'Your previous story or lead repeated the host\'s own note, which participants read right above the brief. Say none of what the note says, and nothing about the search for the name; start where the note stops.' : '',
       ].filter(Boolean).join(' ');
-      doc = await ask(`${notes} Rewrite the whole brief using only the material above.`);
+      emit?.({ type: 'stage', stage: 'redrafting' });
+      doc = await ask(`${notes} Rewrite the whole brief using only the material above.`, emit);
       flagged = unverifiedNames(doc, source);
     }
+    emit?.({ type: 'stage', stage: 'checking', draft: doc });
 
     // Line-by-line check. Kept only if it lost no name or part and brought
     // in no word the host never wrote; otherwise the draft stands.
@@ -594,9 +624,31 @@ Deno.serve(async (req) => {
       console.warn('[compose-brief] check failed, keeping the draft:', String(e));
     }
 
-    return json({
+    return {
       doc: { ...doc, generatedAt: new Date().toISOString(), model: MODEL, edited: false },
       ...(flagged.length ? { warnings: flagged } : {}),
+    };
+    };
+
+    if (!live) return json(await produce());
+
+    // Live: Server-Sent Events, one JSON object per event.
+    const enc = new TextEncoder();
+    const streamBody = new ReadableStream({
+      async start(controller) {
+        const send: Emit = (e) => controller.enqueue(enc.encode(`data: ${JSON.stringify(e)}\n\n`));
+        try {
+          const out = await produce(send);
+          send({ type: 'done', ...out });
+        } catch (e) {
+          console.error('[compose-brief] live', e);
+          send({ type: 'error', error: 'The brief could not be written right now.' });
+        }
+        controller.close();
+      },
+    });
+    return new Response(streamBody, {
+      headers: { ...cors, 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache' },
     });
   } catch (e) {
     console.error('[compose-brief]', e);

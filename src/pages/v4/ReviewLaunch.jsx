@@ -27,8 +27,8 @@ import BriefRowValue from '../../components/v4/BriefRowValue';
 import { getBriefLabel, getBriefSections } from '../../data/v4/briefExpansions';
 import GuideExpandable from '../../components/v4/GuideExpandable';
 import BriefSectionHead from '../../components/v4/BriefSectionHead';
-import ComposedBrief, { ComposedBriefSkeleton } from '../../components/v4/ComposedBrief';
-import { currentBriefDoc, composeBriefDoc, briefDocHasContent, cleanBriefDoc, briefChanges, rewritesLeft } from '../../utils/composeBrief';
+import ComposedBrief, { ComposedBriefSkeleton, BriefProgressLine } from '../../components/v4/ComposedBrief';
+import { currentBriefDoc, composeBriefDoc, briefDocHasContent, cleanBriefDoc, briefChanges, rewritesLeft, subscribeBriefProgress, briefProgress, changedTexts } from '../../utils/composeBrief';
 import BriefUpdateBar from '../../components/v4/BriefUpdate';
 import { ContestScheduleInput } from '../../components/v4/QuestionInput';
 import ExitLink from '../../components/v4/ExitLink';
@@ -170,6 +170,28 @@ export default function ReviewLaunch() {
   //               'failed' (first brief couldn't be written: the answer rows
   //               stand in, with a retry link)
   const [briefDoc, setBriefDoc] = useState(() => currentBriefDoc());
+  // The writer's live progress (the chat may have started it), and the
+  // moments around it: 'reveal' when the brief was already written as the
+  // page opened, 'done' right after one lands; fixed = lines the check
+  // changed, glowing for a moment.
+  const [live, setLive] = useState(() => briefProgress());
+  useEffect(() => subscribeBriefProgress(setLive), []);
+  const [flash, setFlash] = useState(() => (currentBriefDoc() ? 'reveal' : null));
+  const [fixedTexts, setFixedTexts] = useState(null);
+  useEffect(() => {
+    if (!flash) return undefined;
+    const t = setTimeout(() => setFlash(null), 1700);
+    return () => clearTimeout(t);
+  }, [flash]);
+  useEffect(() => {
+    if (!fixedTexts) return undefined;
+    const t = setTimeout(() => setFixedTexts(null), 2800);
+    return () => clearTimeout(t);
+  }, [fixedTexts]);
+  const landed = (doc) => {
+    setFlash('done');
+    setFixedTexts(changedTexts(briefProgress().draft, doc));
+  };
   const [briefState, setBriefState] = useState(() => (currentBriefDoc() ? 'ready' : 'writing'));
   const [rewriteFailed, setRewriteFailed] = useState(false);
   const [justRewritten, setJustRewritten] = useState(false);
@@ -181,7 +203,7 @@ export default function ReviewLaunch() {
   const writeBrief = () => {
     setBriefState('writing');
     composeBriefDoc()
-      .then((doc) => { setBriefDoc(doc); setBriefState('ready'); })
+      .then((doc) => { setBriefDoc(doc); setBriefState('ready'); landed(doc); })
       .catch((e) => { console.error('[review] brief not written:', e); setBriefState('failed'); });
   };
   const rewriteBrief = () => {
@@ -194,6 +216,7 @@ export default function ReviewLaunch() {
       .then((doc) => {
         setBriefDoc(doc);
         setBriefState('ready');
+        landed(doc);
         setJustRewritten(true);
         setStaleNudge(false);
         // Back to the brief: fold the questions away and show the new text.
@@ -218,7 +241,7 @@ export default function ReviewLaunch() {
     let cancelled = false;
     const poll = setInterval(() => {
       const d = currentBriefDoc();
-      if (d) { clearInterval(poll); if (!cancelled) { setBriefDoc(d); setBriefState('ready'); } }
+      if (d) { clearInterval(poll); if (!cancelled) { setBriefDoc(d); setBriefState('ready'); landed(d); } }
     }, 400);
     const kick = setTimeout(() => { clearInterval(poll); if (!cancelled && !currentBriefDoc()) writeBrief(); }, 4000);
     return () => { cancelled = true; clearInterval(poll); clearTimeout(kick); };
@@ -670,10 +693,34 @@ export default function ReviewLaunch() {
               EditQuestionModal in place. The old "Edit" section link
               that bounced back to the full chat is gone. */}
           {briefQuestions.length > 0 && (
-            <section className="v4-review-section v4-review-section--brief" ref={briefRef}>
+            <section className={`v4-review-section v4-review-section--brief${briefState === 'writing' || briefState === 'rewriting' ? ' is-writing' : ''}${flash === 'done' ? ' is-focusing' : ''}`} ref={briefRef}>
               <header className="v4-review-section-head">
                 <h2>Your brief</h2>
               </header>
+
+              {/* The writer's progress, the top line of the card: live while
+                  the brief is written, a moment after it lands or when the
+                  page opens on a finished one. */}
+              {/* The writer could not write it: said at the top, where the
+                  progress line was, with a way to try again. */}
+              {briefState === 'failed' && (
+                <p className="v4-cbrief-fallback" role="status">
+                  We couldn’t write your brief just now, so your answers are shown as they are.{' '}
+                  <button type="button" onClick={writeBrief}>Try again</button>
+                </p>
+              )}
+              {(briefState === 'writing' || briefState === 'rewriting' || showComposed) && (
+                <BriefProgressLine
+                  key={briefState === 'writing' || briefState === 'rewriting' ? 'working' : 'written'}
+                  phase={briefState === 'writing' || briefState === 'rewriting' ? 'working' : (flash || 'written')}
+                  stage={live.stage}
+                  partial={live.partial}
+                  subId={subId}
+                  questions={briefQuestions}
+                  answers={briefAnswers}
+                  tone={segmentTone}
+                />
+              )}
 
               {/* The creator's note, exactly as participants see it at the
                   top of the brief. The whole panel is the edit control: it
@@ -702,7 +749,9 @@ export default function ReviewLaunch() {
                 </span>
               )}
               {(briefState === 'writing' || briefState === 'rewriting') && (
-                <ComposedBriefSkeleton subId={subId} questions={briefQuestions} tone={segmentTone} answers={briefAnswers} />
+                live.partial
+                  ? <ComposedBrief doc={live.partial} subId={subId} questions={briefQuestions} tone={segmentTone} live />
+                  : <ComposedBriefSkeleton subId={subId} questions={briefQuestions} tone={segmentTone} />
               )}
               {showComposed && (
                 <>
@@ -711,16 +760,12 @@ export default function ReviewLaunch() {
                     subId={subId}
                     questions={briefQuestions}
                     tone={segmentTone}
+                    reveal={flash === 'reveal'}
+                    focusIn={flash === 'done'}
                   />
                 </>
               )}
 
-              {briefState === 'failed' && (
-                <p className="v4-cbrief-fallback" role="status">
-                  We couldn’t write your brief just now, so your answers are shown as they are.{' '}
-                  <button type="button" onClick={writeBrief}>Try again</button>
-                </p>
-              )}
               {briefState === 'writing' || briefState === 'rewriting' || showComposed ? null : briefGroups ? (
                 briefGroups.map((group) => (
                   <div key={group.title} className="v4-brief-group">
