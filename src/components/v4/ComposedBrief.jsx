@@ -116,6 +116,13 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
   const hasDir = true;
   const openExplore = 'Nothing specific, so range as widely as you like.';
   const openAvoid = 'Nothing in particular. Every idea is welcome.';
+  // A category whose chat never asks what to avoid (the pet) shows no avoid
+  // side when nothing to avoid came up elsewhere: the heading trims to
+  // "Directions to explore" and the lone panel needs no label.
+  const exploreOnly = dir.avoid.length === 0 && meta.asksAvoid === false;
+  const dirTitle = exploreOnly
+    ? meta.exploreAvoid.title.replace(/\s+and avoid/i, '')
+    : meta.exploreAvoid.title;
 
   // The segment's tone reaches the panels and number tiles the same way it
   // reaches the section heads.
@@ -160,9 +167,15 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
 
       {hasDir && (
         <div className="v4-brief-group">
-          <BriefSectionHead title={meta.exploreAvoid.title} icon={meta.exploreAvoid.icon} tone={tone} />
+          <BriefSectionHead title={dirTitle} icon={meta.exploreAvoid.icon} tone={tone} />
           {legacyProse ? (
             <p className="v4-cbrief-para">{dir.prose}</p>
+          ) : exploreOnly ? (
+            <div className="v4-cbrief-cols">
+              <div className="v4-cbrief-col">
+                {dir.explore.length > 0 ? <Lines items={dir.explore} /> : <OpenLine text={openExplore} />}
+              </div>
+            </div>
           ) : (
             <div className="v4-cbrief-cols is-two">
               <div className="v4-cbrief-col">

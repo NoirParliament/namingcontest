@@ -1400,17 +1400,6 @@ export const BRIEF_QUESTIONS = {
         placeholder: 'e.g. We’re big Star Wars people, and everyone in the house plays chess',
       },
       {
-        // 2026-10-01 (Matt): every other category asks what to avoid; the pet
-        // brief had nothing to put under "Steer clear of".
-        id: 'avoidNames',
-        label: 'Anything to avoid',
-        prompt: 'Are there any names, sounds, or ideas you’d like people to avoid? For example, a past pet’s name, names that sound like a command (“Kit” and “sit”), or anything else that’s off the table.',
-        type: 'textarea',
-        rows: 2,
-        required: false,
-        placeholder: 'e.g. Not Max, that was our last dog. Nothing too close to the cat’s name.',
-      },
-      {
         id: 'admiredNames',
         label: 'Pet names you’ve loved',
         prompt: 'What are a few pet names you’ve loved (yours or anyone’s), and why?',
