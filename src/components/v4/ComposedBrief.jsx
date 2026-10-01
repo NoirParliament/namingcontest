@@ -45,7 +45,7 @@ function Points({ items, leadKey = 'label', textKey = 'text', numbered = false, 
   );
 }
 
-// A small label over a block inside a section ("Lean toward").
+// A small label over a block inside a section ("Names they love").
 function SubLabel({ children }) {
   return <div className="v4-cbrief-sublabel">{children}</div>;
 }
@@ -159,14 +159,14 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
               <div className="v4-cbrief-col">
                 <div className="v4-cbrief-col-head">
                   <span className="v4-cbrief-col-icon" aria-hidden="true"><Check size={12} weight="bold" /></span>
-                  Lean toward
+                  Explore
                 </div>
                 {dir.explore.length > 0 ? <Lines items={dir.explore} /> : <OpenLine line={openExplore} />}
               </div>
               <div className="v4-cbrief-col is-avoid">
                 <div className="v4-cbrief-col-head">
                   <span className="v4-cbrief-col-icon" aria-hidden="true"><X size={12} weight="bold" /></span>
-                  Steer clear of
+                  Avoid
                 </div>
                 {dir.avoid.length > 0 ? <Lines items={dir.avoid} /> : <OpenLine line={openAvoid} />}
               </div>
