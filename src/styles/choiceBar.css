@@ -54,6 +54,7 @@
   text-underline-offset: 3px;
 }
 .nc-choice-link:hover { color: #fff; }
+.nc-choice-links { white-space: nowrap; color: rgba(255, 255, 255, 0.7); }
 .nc-choice-btns { display: flex; gap: 8px; }
 /* Both answers wear the same button: equal weight is the rule. */
 .nc-choice-btn {

@@ -58,18 +58,30 @@ export default function ChoiceBar() {
     }
   };
 
+  // A policy link opened from "Cookie settings" closes the bar; on a first
+  // ask it stays, since no answer has been given yet.
+  const close = () => { if (mode === 'settings') setMode(null); };
+
   return createPortal(
     <section className={`nc-choice${mode === 'settings' ? ' is-settings' : ''}`} role="region" aria-label="Cookie choices">
       <div className="nc-choice-copy">
         <p className="nc-choice-title">Cookies on NamingContest</p>
+        {/* First-layer notice (GDPR art. 7 and 13, EDPB guidance): what is
+            essential, what we ask permission for, who provides it, why, how
+            to change your mind, and where to read more. The Terms of Service
+            stay off the bar on purpose: consent must not look tied to
+            accepting terms. */}
         <p className="nc-choice-text">
-          We use essential storage to keep you signed in and save your drafts.
-          With your OK, we also use Google Analytics and Microsoft Clarity to see
-          how people use the site, including recordings of clicks and scrolling,
-          with what you type hidden. None of it is used for ads.{' '}
-          <Link to="/cookies" className="nc-choice-link" onClick={() => mode === 'settings' && setMode(null)}>
-            Cookie policy
-          </Link>
+          We use essential cookies to run the site, such as keeping you signed in.
+          With your permission, we would also like to use analytics cookies from
+          Google Analytics and Microsoft Clarity to understand how the site is used,
+          including session recordings, so we can improve it. You can change your
+          choice at any time under Cookie settings in the footer.{' '}
+          <span className="nc-choice-links">
+            <Link to="/cookies" className="nc-choice-link" onClick={close}>Cookie policy</Link>
+            <span aria-hidden="true"> · </span>
+            <Link to="/privacy" className="nc-choice-link" onClick={close}>Privacy policy</Link>
+          </span>
         </p>
         {mode === 'settings' && current !== null && (
           <p className="nc-choice-state">

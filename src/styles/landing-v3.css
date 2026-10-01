@@ -840,3 +840,10 @@
 
 .lp-v3 .price-note-link{color:inherit;text-decoration:underline;text-underline-offset:2px;text-decoration-color:rgba(3,3,2,.3);transition:color .2s ease,text-decoration-color .2s ease}
 .lp-v3 .price-note-link:hover{color:var(--fg);text-decoration-color:currentColor}
+
+/* Footer bottom row: "Cookie settings" sits opposite the copyright line and
+   wears its text (12px, on-ink muted), brightening on hover like the footer
+   links. */
+.footer-choice{appearance:none;background:none;border:0;padding:0;font:inherit;font-size:12px;color:var(--fg-on-ink-muted);cursor:pointer;transition:color .2s ease}
+.footer-choice:hover{color:var(--fg-on-ink)}
+.footer-choice:focus-visible{outline:2px solid var(--fg-on-ink);outline-offset:3px;border-radius:4px}

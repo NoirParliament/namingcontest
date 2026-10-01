@@ -1534,16 +1534,16 @@ export function Footer() {
             {legalLink('/privacy', 'Privacy policy')}
             {legalLink('/terms', 'Terms of service')}
             {legalLink('/cookies', 'Cookie policy')}
-            <li>
-              <a href="#cookie-settings" onClick={(e) => { e.preventDefault(); openChoiceSettings(); }}>
-                Cookie settings
-              </a>
-            </li>
           </ul>
         </div>
       </div>
       <div className="footer-bottom">
         <span>© 2026 NamingContest.com</span>
+        {/* Reopens the cookie bar (components/ChoiceBar). A button, since it
+            acts rather than goes somewhere; styled as this row's own text. */}
+        <button type="button" className="footer-choice" onClick={openChoiceSettings}>
+          Cookie settings
+        </button>
       </div>
     </footer>
   );
