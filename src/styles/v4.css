@@ -12488,23 +12488,11 @@ button.v4-exit {
 }
 .v4-cbrief-point-dot { font-weight: 650; }
 .v4-cbrief-point-text { opacity: 0.88; }
-/* Empty state words ("None") in the muted ink. */
-.v4-cbrief-open {
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--v4-muted);
-}
-.v4-cbrief-open.v4-cbrief-editable {
-  display: inline-block;
-  min-width: 12ch;
-}
-.v4-cbrief-open.v4-cbrief-editable:focus { color: var(--v4-fg); }
 
 /* ── Editing ──
    The text itself is the field. Quiet until hovered, a soft tint while
-   typing, same language as the intro preview above it. Each line carries
-   its own remove button (hover to reveal, always there on touch screens);
-   Undo appears for a few seconds. */
+   typing, same language as the intro preview above it. Clearing a line removes
+   it; Undo appears for a few seconds. */
 .v4-cbrief-editable {
   border-radius: 6px;
   outline: none;
@@ -12526,36 +12514,6 @@ button.v4-exit {
   color: var(--v4-muted);
   opacity: 0.7;
   pointer-events: none;
-}
-.v4-cbrief.is-editable .v4-cbrief-point { padding-right: 32px; }
-.v4-cbrief-remove {
-  position: absolute;
-  right: 0;
-  top: 0.1em;
-  width: 24px;
-  height: 24px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--v4-muted);
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 120ms ease, background-color 120ms ease, color 120ms ease;
-}
-.v4-cbrief-point:hover .v4-cbrief-remove,
-.v4-cbrief-point:focus-within .v4-cbrief-remove,
-.v4-cbrief-remove:focus-visible {
-  opacity: 1;
-}
-.v4-cbrief-remove:hover {
-  background: rgba(168, 50, 31, 0.1);
-  color: #a8321f;
-}
-@media (hover: none) {
-  .v4-cbrief-remove { opacity: 0.6; }
 }
 .v4-cbrief-undo {
   position: sticky;

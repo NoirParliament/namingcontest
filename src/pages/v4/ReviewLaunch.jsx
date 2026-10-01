@@ -630,7 +630,7 @@ export default function ReviewLaunch() {
                 <>
                   <p className="v4-cbrief-hint">
                     <PencilSimple size={12} weight="bold" aria-hidden="true" />
-                    Written from your answers. Click any text to edit it; Enter starts a new line.
+                    Written from your answers. Click any text to edit it; clear a line to remove it.
                   </p>
                   <ComposedBrief
                     doc={briefDoc}
