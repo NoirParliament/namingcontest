@@ -386,6 +386,7 @@ export default function ReviewLaunch() {
     // happen).
     if (!intro.trim()) {
       setIntroNudge(true);
+      setAnswersOpen(true);
       introRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       openIntroEdit();
       return;
@@ -676,25 +677,19 @@ export default function ReviewLaunch() {
               </header>
 
               {/* The creator's note, exactly as participants see it at the
-                  top of the brief. The whole panel is the edit control: it
-                  opens the same modal as every answer row. */}
+                  top of the brief. A preview only: like every other answer
+                  it is changed from its row under "Your answers". */}
               <div
-                role="button"
-                tabIndex={0}
                 ref={introRef}
                 className={`v4-review-note${intro.trim() ? '' : ' is-empty'}${introNudge ? ' is-nudged' : ''}`}
-                onClick={openIntroEdit}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openIntroEdit(); } }}
-                aria-label={intro.trim() ? 'Edit your note to participants' : 'Write a note to your participants'}
               >
                 <HostNote
-                  intro={intro.trim() || 'Write a short welcome for your participants. It is the first thing they read.'}
+                  intro={intro.trim() || 'Your welcome note to participants will appear here. Write it under Your answers below.'}
                   name={noteHost.name}
                   seed={noteHost.seed}
                   photoUrl={noteHost.photoUrl}
                   tone={segmentTone}
                 />
-                <PencilSimple size={13} weight="bold" className="v4-review-note-edit" aria-hidden="true" />
               </div>
               {introNudge && (
                 <span className="v4-settings-field-hint v4-review-note-nudge" style={{ color: '#a8321f' }} role="alert">
