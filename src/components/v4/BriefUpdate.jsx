@@ -3,16 +3,16 @@
 // answers differ from what the brief was written from, or while an update
 // is running / has just landed / has just failed. One sentence, one button.
 //
-// The button follows the site's CTA convention ("Start a contest →"): the
-// site's .btn with an arrow that nudges right on hover, white on the dark
-// bar. The bar enters like the resume-draft pill.
+// The button takes the site's only control on a dark surface, the footer's
+// social buttons: translucent white that brightens on hover, nothing moves.
+// The bar enters like the resume-draft pill.
 //
 // The rule it makes visible: the answers are the source, the brief is
 // written from them, and nothing rewrites until the creator asks (at most
 // MAX_REWRITES times per contest).
 
 import { createPortal } from 'react-dom';
-import { CheckCircle } from '@phosphor-icons/react';
+import { CheckCircle, ArrowClockwise } from '@phosphor-icons/react';
 import { MAX_REWRITES } from '../../utils/composeBrief';
 
 const plural = (n, one, many) => (n === 1 ? one : many);
@@ -62,8 +62,9 @@ export default function BriefUpdateBar({ count, left, state, nudge, onUpdate }) 
           </span>
         </div>
         {canUpdate && (
-          <button type="button" className="btn v4-bupd-btn" onClick={onUpdate}>
-            {state === 'failed' ? 'Try again' : 'Update brief'} <span className="arrow">→</span>
+          <button type="button" className="v4-bupd-btn" onClick={onUpdate}>
+            <ArrowClockwise size={14} weight="bold" aria-hidden="true" />
+            {state === 'failed' ? 'Try again' : 'Update brief'}
           </button>
         )}
       </div>
