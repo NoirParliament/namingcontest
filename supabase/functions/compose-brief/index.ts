@@ -210,7 +210,7 @@ Deno.serve(async (req) => {
     // Unauthenticated (guests write briefs before they have an account) and
     // it spends money, so a per-IP cap. 20 an hour is far above honest use:
     // one brief per set of answers, cached in the browser.
-    if (!await rateLimitOk(admin, req, 'compose-ip', 20, '1 hour')) {
+    if (!await rateLimitOk(admin, req, 'compose-ip', 100, '1 hour')) {
       return json({ error: 'Too many briefs from here. Please try again in an hour.' }, 429);
     }
 
