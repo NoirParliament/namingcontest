@@ -48,6 +48,8 @@ import WinnerHero from '../../components/v4/WinnerHero';
 import CatchwordConsultBlock from '../../components/v4/CatchwordConsultBlock';
 import PdfReport from '../../components/v4/PdfReport';
 import ComposedBrief from '../../components/v4/ComposedBrief';
+import HostNote from '../../components/v4/HostNote';
+import { hostIdentity } from '../../utils/v4Anonymity';
 import { briefDocHasContent } from '../../utils/composeBrief';
 // downloadShareCard still exists in v4ContestExport for future use — nothing
 // calls it now that Instagram's button is gone (it downloaded a card while
@@ -1333,6 +1335,12 @@ export default function ContestManage() {
               briefAnswers={liveBriefAnswers}
               settingsAnswers={liveSettingsAnswers}
               tone={segmentTone}
+              workingName={setup.workingName}
+              host={hostIdentity({
+                id: setup.contestId,
+                settings: setup.settings,
+                creator: profile ? { id: user?.id, name: profile.display_name, avatar_url: profile.avatar_url } : null,
+              })}
             />
 
             {/* ── Footer actions ────────────────────────────────────
@@ -1516,7 +1524,7 @@ export default function ContestManage() {
 // so with a lock glyph, and every row is a plain read-only reference line
 // (no pencils, no hover, no edit paths).
 function BriefRecapCollapser({
-  subId, briefDoc, filledBrief, filledSettings, briefAnswers, settingsAnswers, tone,
+  subId, briefDoc, filledBrief, filledSettings, briefAnswers, settingsAnswers, tone, workingName, host,
 }) {
   const [open, setOpen] = useState(false);
 
@@ -1553,19 +1561,37 @@ function BriefRecapCollapser({
 
       {open && (
         <div className="v4-manage-recap-body">
-          {briefAnswers.intro && (
+          {/* The brief exactly as participants read it: the same white card,
+              host note panel and colours. Only the marker in its corner says
+              it is locked. */}
+          {briefDocHasContent(briefDoc) && (
+            <section className="v4-pchat-brief v4-manage-recap-brief">
+              <header className="v4-pchat-brief-head">
+                <div className="v4-manage-recap-brief-top">
+                  <div className="v4-pchat-brief-eyebrow" style={tone ? { color: tone.fg } : undefined}>
+                    The brief
+                  </div>
+                  <span className="v4-manage-recap-lock">
+                    <LockSimple weight="bold" size={11} aria-hidden="true" />
+                    Locked at launch
+                  </span>
+                </div>
+                <h2 className="v4-pchat-brief-name">{workingName || 'Your contest'}</h2>
+              </header>
+              <HostNote
+                intro={briefAnswers.intro}
+                name={host?.name}
+                seed={host?.seed}
+                photoUrl={host?.photoUrl}
+                tone={tone}
+              />
+              <ComposedBrief doc={briefDoc} subId={subId} questions={filledBrief} tone={tone} />
+            </section>
+          )}
+          {!briefDocHasContent(briefDoc) && briefAnswers.intro && (
             <div className="v4-manage-recap-group">
               <h3 className="v4-manage-recap-group-title">A note from you</h3>
               <p className="v4-manage-recap-intro">{briefAnswers.intro}</p>
-            </div>
-          )}
-          {/* The written brief participants read, when the contest has one;
-              the raw answers otherwise (older contests, or the writer was
-              down at launch). */}
-          {briefDocHasContent(briefDoc) && (
-            <div className="v4-manage-recap-group">
-              <h3 className="v4-manage-recap-group-title">Brief</h3>
-              <ComposedBrief doc={briefDoc} subId={subId} questions={filledBrief} tone={tone} />
             </div>
           )}
           {!briefDocHasContent(briefDoc) && briefRows.length > 0 && (

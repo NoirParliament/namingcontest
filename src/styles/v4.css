@@ -2782,6 +2782,34 @@ input.v4-launch-email-input::placeholder {
 .v4-manage-recap-group {
   margin-top: 18px;
 }
+/* The locked brief inside the recap: the participant card itself (white,
+   rounded, the same host note and colours), shown at once (no entrance
+   animation) with a quiet lock marker opposite its eyebrow. */
+.v4-manage-recap-brief {
+  margin: 18px 0 0;
+  opacity: 1;
+  animation: none;
+}
+.v4-manage-recap-brief-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.v4-manage-recap-brief-top .v4-pchat-brief-eyebrow { margin-bottom: 0; }
+.v4-manage-recap-lock {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--v4-fg) 6%, #fff);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--v4-muted);
+  white-space: nowrap;
+}
 .v4-manage-recap-group-title {
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 11px;
