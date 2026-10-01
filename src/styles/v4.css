@@ -12755,18 +12755,28 @@ button.v4-exit {
   animation: v4-bupd-turn 0.8s linear infinite;
 }
 @keyframes v4-bupd-turn { to { transform: rotate(360deg); } }
-/* The site's primary button as is (ink, white fills up from the bottom on
-   hover, text turns ink); only the border is lightened so the button's
-   edge reads on the ink bar. */
-.lp-v3 .btn.btn-primary.v4-bupd-btn {
+/* The footer's dark-surface control reversed: solid white at rest, a soft
+   warm grey on hover, nothing moves. */
+.v4-bupd-btn {
   flex: none;
-  padding: 10px 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 40px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--fg, #030302);
+  font-family: var(--font-text);
+  font-size: 14px;
   font-weight: 600;
-  border-color: rgba(255, 255, 255, 0.45);
-  box-shadow: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color .2s ease;
 }
-.lp-v3 .btn.btn-primary.v4-bupd-btn:hover { border-color: #fff; }
-.lp-v3 .btn.btn-primary.v4-bupd-btn:focus-visible {
+.v4-bupd-btn:hover { background: #e6e2db; }
+.v4-bupd-btn:focus-visible {
   outline: 2px solid #fff;
   outline-offset: 2px;
 }
@@ -12784,7 +12794,7 @@ button.v4-exit {
     gap: 12px;
     padding: 14px;
   }
-  .lp-v3 .btn.btn-primary.v4-bupd-btn { justify-content: center; }
+  .v4-bupd-btn { justify-content: center; }
   .v4-qa-open { flex-direction: column; align-items: stretch; gap: 12px; }
   .v4-qa-open-cta { justify-content: center; }
 }
