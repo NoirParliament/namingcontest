@@ -12475,116 +12475,116 @@ button.v4-exit {
    note sit above; breathe before the first section head. */
 .v4-pchat-brief > .v4-cbrief { margin-top: 18px; }
 .v4-pchat-brief > .v4-hostnote + .v4-cbrief { margin-top: 4px; }
+/* More air between the brief's parts than between the Q&A groups: each
+   part is read, not scanned past. */
+.v4-cbrief > .v4-brief-group { margin-bottom: 34px; }
+.v4-cbrief > .v4-brief-group:last-child { margin-bottom: 0; }
 .v4-cbrief-para {
   margin: 0;
   font-size: 15px;
-  line-height: 1.6;
+  line-height: 1.65;
   color: var(--v4-fg);
   white-space: pre-wrap;
 }
-/* Prose then points in one section: a little air between them. */
-.v4-cbrief-para + .v4-cbrief-points { margin-top: 10px; }
+/* The one-line aim the criteria hang from. */
+.v4-cbrief-lead { margin-bottom: 16px; }
+
+/* ── Label + text items (criteria, names, rules) ──
+   Label on its own line, the explanation a step softer underneath. One
+   weight change per item instead of a bold run-in inside every line. */
 .v4-cbrief-points {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 9px;
+  gap: 14px;
 }
 .v4-cbrief-point {
-  position: relative;
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--v4-fg);
+  display: grid;
+  gap: 2px;
 }
 .v4-cbrief-point-lead {
-  font-weight: 650;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
   letter-spacing: -0.005em;
-}
-.v4-cbrief-point-dot { font-weight: 650; }
-.v4-cbrief-point-text { opacity: 0.88; }
-
-/* The one-line aim sits a touch heavier than body prose: it is the
-   sentence the criteria below hang from. */
-.v4-cbrief-lead {
-  font-weight: 500;
   color: var(--v4-fg);
 }
-.v4-cbrief-lead + .v4-cbrief-points { margin-top: 12px; }
+.v4-cbrief-point-text {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: rgba(3, 3, 2, 0.62);
+}
 
 /* ── Fact sheet (about) ──
-   The specifics a participant checks names against, as label-over-value
-   cells: the Schedule and Settings rows' type (muted 13px label, 14px
-   value), laid out in a grid so six facts take two lines, not six rows. */
+   The specifics as pills, the page's own "Up to 10 participants" pill: a
+   muted label, the value in ink. They wrap in a line or two instead of a
+   grid of cells. */
 .v4-cbrief-facts {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 10px 20px;
-  margin: 14px 0 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 0;
 }
 .v4-cbrief-fact {
-  min-width: 0;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 6px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--v4-faint);
+  background: #fff;
+  font-size: 13.5px;
+  letter-spacing: 0.01em;
+  line-height: 1.35;
 }
-.v4-cbrief-fact dt {
-  margin: 0 0 2px;
-  font-size: 12.5px;
+.v4-cbrief-fact-label {
   font-weight: 500;
-  letter-spacing: -0.005em;
   color: var(--v4-muted);
 }
-.v4-cbrief-fact dd {
-  margin: 0;
-  font-size: 14.5px;
-  font-weight: 500;
-  letter-spacing: -0.005em;
-  line-height: 1.45;
-  color: var(--v4-fg);
-  overflow-wrap: break-word;
-}
-
-/* ── Sub-labels inside a section ──
-   The card eyebrow's type ("YOUR BRIEF", "A NOTE FROM EMMA"), a step
-   smaller, over the lean-toward / steer-clear lists and the names. */
-.v4-cbrief-sublabel {
-  margin: 0 0 7px;
-  font-size: 11px;
+.v4-cbrief-fact-value {
   font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  color: var(--v4-fg);
+}
+
+/* ── Sub-labels inside a section ("Lean toward") ── */
+.v4-cbrief-sublabel {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--v4-muted);
 }
 
-/* ── Lean toward / steer clear of (directions) ──
-   Two columns when both have lines, one otherwise. Each line carries a
-   small dot in the section's accent; the steer-clear column's dot is a
-   short dash, so the two lists read apart at a glance. */
+/* ── Lean toward / steer clear of ──
+   Two columns when both have lines. Each line a small dot in the
+   section's accent. */
 .v4-cbrief-cols {
   display: grid;
-  gap: 18px 28px;
+  gap: 20px 32px;
 }
-.v4-cbrief-cols.is-two {
-  grid-template-columns: 1fr 1fr;
-}
+.v4-cbrief-cols.is-two { grid-template-columns: 1fr 1fr; }
 .v4-cbrief-col { min-width: 0; }
 .v4-cbrief-lines {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 7px;
+  gap: 8px;
 }
 .v4-cbrief-lines li {
   position: relative;
   padding-left: 16px;
   font-size: 15px;
-  line-height: 1.55;
+  line-height: 1.5;
   color: var(--v4-fg);
 }
 .v4-cbrief-lines li::before {
   content: '';
   position: absolute;
   left: 1px;
-  top: 0.72em;
+  top: 0.62em;
   width: 6px;
   height: 6px;
   border-radius: 50%;
@@ -12593,14 +12593,11 @@ button.v4-exit {
 }
 .v4-cbrief-cols + .v4-cbrief-names,
 .v4-cbrief-para + .v4-cbrief-cols,
-.v4-cbrief-para + .v4-cbrief-names { margin-top: 18px; }
-
-/* The section's accent reaches the lists from the head's tone vars. */
+.v4-cbrief-para + .v4-cbrief-names { margin-top: 22px; }
 .v4-brief-group { --sec-accent: var(--v4-fg); }
 
 @media (max-width: 640px) {
   .v4-cbrief-cols.is-two { grid-template-columns: 1fr; }
-  .v4-cbrief-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* ── Editing ──

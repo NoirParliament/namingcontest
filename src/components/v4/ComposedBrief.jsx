@@ -23,9 +23,9 @@ import { normalizeBriefDoc } from '../../utils/composeBrief';
 
 const isBlank = (v) => !String(v ?? '').trim();
 
-// Lines with a bold lead ("Keep it short. Suggest first names of one or two
-// syllables..."), Mark's own brief format: the criteria, the names the host
-// mentioned and the rules all read this way.
+// Label + text items (the criteria, the names the host mentioned, the
+// rules), stacked: the label on its own line, the explanation softer below,
+// so the eye can run down the labels alone.
 function Points({ items, leadKey = 'label', textKey = 'text' }) {
   const rows = items.filter((it) => !isBlank(it[textKey]) || !isBlank(it[leadKey]));
   if (!rows.length) return null;
@@ -33,21 +33,15 @@ function Points({ items, leadKey = 'label', textKey = 'text' }) {
     <ul className="v4-cbrief-points">
       {rows.map((it, i) => (
         <li key={i} className="v4-cbrief-point">
-          {!isBlank(it[leadKey]) && (
-            <>
-              <strong className="v4-cbrief-point-lead">{it[leadKey]}</strong>
-              {!isBlank(it[textKey]) && <span className="v4-cbrief-point-dot">.</span>}{' '}
-            </>
-          )}
-          <span className="v4-cbrief-point-text">{it[textKey]}</span>
+          {!isBlank(it[leadKey]) && <span className="v4-cbrief-point-lead">{it[leadKey]}</span>}
+          {!isBlank(it[textKey]) && <span className="v4-cbrief-point-text">{it[textKey]}</span>}
         </li>
       ))}
     </ul>
   );
 }
 
-// A small uppercase label over a block inside a section, same type as the
-// card eyebrows ("YOUR BRIEF", "A NOTE FROM EMMA").
+// A small label over a block inside a section ("Lean toward").
 function SubLabel({ children }) {
   return <div className="v4-cbrief-sublabel">{children}</div>;
 }
@@ -79,14 +73,14 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
           <BriefSectionHead title={meta.about.title} icon={meta.about.icon} tone={tone} />
           {!isBlank(about.story) && <p className="v4-cbrief-para">{about.story}</p>}
           {about.facts.length > 0 && (
-            <dl className="v4-cbrief-facts">
+            <ul className="v4-cbrief-facts">
               {about.facts.map((f, i) => (
-                <div key={i} className="v4-cbrief-fact">
-                  <dt>{f.label}</dt>
-                  <dd>{f.value}</dd>
-                </div>
+                <li key={i} className="v4-cbrief-fact">
+                  <span className="v4-cbrief-fact-label">{f.label}</span>
+                  <span className="v4-cbrief-fact-value">{f.value}</span>
+                </li>
               ))}
-            </dl>
+            </ul>
           )}
         </div>
       )}

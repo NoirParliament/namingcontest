@@ -68,7 +68,7 @@ const POINT = {
   type: 'object',
   properties: {
     label: { type: 'string', description: 'A short instruction, verb first, 2 to 5 words, no trailing punctuation.' },
-    text: { type: 'string', description: 'One sentence.' },
+    text: { type: 'string', description: 'One short sentence, at most 14 words.' },
   },
   required: ['label', 'text'],
   additionalProperties: false,
@@ -80,7 +80,7 @@ const SCHEMA = {
       type: 'object',
       description: 'Background about the host and what is being named.',
       properties: {
-        story: { type: 'string', description: 'The background told as a short story, 2 to 3 sentences, facts only, no advice.' },
+        story: { type: 'string', description: 'The background told as a short story, 2 sentences (3 at most), facts only, no advice.' },
         facts: {
           type: 'array',
           description: 'A fact sheet of 3 to 5 specifics a participant will check names against (a date, a surname, a middle name, a sibling, roots, a breed, an audience, a launch, a place). Only facts the host gave; an empty array when there are none.',
@@ -88,7 +88,7 @@ const SCHEMA = {
             type: 'object',
             properties: {
               label: { type: 'string', description: '1 to 3 words: "Due", "Surname", "Middle name", "Big brother", "Roots", "Launching", "Customers".' },
-              value: { type: 'string', description: 'Short, copied from the answer: "March 14, 2027", "Kowalski", "Polish and Irish".' },
+              value: { type: 'string', description: 'Short, 1 to 4 words, copied from the answer: "March 14, 2027", "Kowalski", "Polish and Irish".' },
             },
             required: ['label', 'value'],
             additionalProperties: false,
@@ -154,16 +154,16 @@ Facts (strict):
 4. Constraint answers are a mixed bag; put each point where it belongs. A hard rule that rules a name out (a syllable limit, a domain that must be free, no family names, no names starting with a letter) goes in rules. A wish that shapes the names ("we'd love it to work in French") belongs in the aim or in explore. Context ("Anna's grandma is from Lyon") goes in the about part or with the wish it explains. Pleasantries and encouragement ("have fun with it!", "thanks everyone") are left out.
 
 Shape (the app shows each part under a fixed heading, so never write headings or restate them):
-5. about.story tells the background the way a friend would, 2 to 3 sentences: who the host is, what they are naming, the moment they are in. Never list fields ("The sibling name listed is Theo"); say "She will be a little sister to Theo". about.facts is the fact sheet beside it: 3 to 5 specifics with a short label and a short value, for things a participant will check a name against. The fact sheet carries the specifics; the story carries the people and the moment. The story may use a specific where the sentence needs it ("She will be a little sister to Theo"), but it never runs through the fact sheet, and it never talks around a fact to avoid naming it. Plain and true beats clever.
+5. about.story tells the background the way a friend would, 2 to 3 sentences: who the host is, what they are naming, the moment they are in. Never list fields ("The sibling name listed is Theo"); say "She will be a little sister to Theo". about.facts is the fact sheet beside it: 3 to 5 specifics with a short label and a short value, for things a participant will check a name against. The fact sheet carries the specifics; the story carries the people and the moment, and is read right above the fact sheet. So the story does not restate fact-sheet values (no middle name, surname, roots or dates in the story when they are in the facts); one specific is fine only where the sentence cannot stand without it ("a little sister for Theo"). Never talk around a fact to avoid naming it. Plain and true beats clever.
 6. aim.lead is one sentence that captures the whole ask. aim.points are the criteria, 2 to 5 bold-lead points, one distinct thing each (length, familiarity, feel, how it pairs with a sibling or surname, how it travels across languages, what it should say to customers). Each label is a short instruction that answers the heading "What the name should do": a verb first, 2 to 5 words ("Keep it short", "Stay familiar but uncommon", "Pair well with Theo", "Travel across languages", "Earn trust fast"); never a bare noun phrase ("Two to three syllables" is wrong, "Keep it to two or three syllables" is right). The text then says how or why in one sentence. Use a different verb for each point. Criteria say what the name should do or feel like; the themes and sources to draw on (loons, canoe trips, Glasgow slang) belong under explore, not in a criterion.
-7. directions.explore and directions.avoid are short lines, one idea each, no labels inside the line ("Lean toward:" is wrong). Explore holds styles, feels, themes and sources to draw on; avoid holds styles, feels, associations and trends to steer clear of. Hard disqualifiers go in rules, not in avoid. If everything the host asked to avoid is a hard rule, avoid stays empty; never invent a soft one to fill it. When the host left explore open, the explore list is one line only, saying nothing is ruled in and participants can range widely; when they left avoid open, the avoid list is one line saying nothing is off-limits. Never restate an aim criterion as a direction, in either form ("easy to spell" in the aim is not also "hard spellings" under avoid). directions.names lists the names the host mentioned with the host's own reason and what to take from it; names the host grouped under one reason share one entry ("Thunder, Blaze and Storm" with one note), and the openings vary (never a run of "Liked for", "Disliked as") ("They love it, but worry about the Lucifer association, so aim for that bright classic feel without the awkward link").
+7. directions.explore and directions.avoid are short lines of 2 to 7 words, one idea each, no labels inside the line ("Lean toward:" is wrong). Explore holds styles, feels, themes and sources to draw on; avoid holds styles, feels, associations and trends to steer clear of. Hard disqualifiers go in rules, not in avoid. If everything the host asked to avoid is a hard rule, avoid stays empty; never invent a soft one to fill it. When the host left explore open, the explore list is one line only, saying nothing is ruled in and participants can range widely; when they left avoid open, the avoid list is one line saying nothing is off-limits. Never restate an aim criterion as a direction, in either form ("easy to spell" in the aim is not also "hard spellings" under avoid). directions.names lists the names the host mentioned with the host's own reason and what to take from it; names the host grouped under one reason share one entry ("Thunder, Blaze and Storm" with one note), and the openings vary (never a run of "Liked for", "Disliked as") ("They love it, but worry about the Lucifer association, so aim for that bright classic feel without the awkward link").
 8. rules.points are the hard rules only, one bold-lead point each. Labels are instructions too, a verb first ("Skip K names", "Leave Barbara out", "Keep the .com free", "Stay under three syllables"), a different verb each time. Empty when there are none.
 9. Never say the same thing in two parts. A fact lives in about, a wish in aim or explore, a name in names, a disqualifier in rules.
 
 Voice:
 10. Plain, warm and confident, in the register the framing line gives (warm and personal for a baby or a pet, energetic for a team, professional and concise for a business). The framing is for voice only; it is never a source of facts or requirements. Address participants as "you". Refer to the host by the name given, in the third person, and never write as the host: no "we", "us" or "our" for the host. Pronouns for the host: when the first name is clearly male or female (Matt, Emma), use he or she; when it could be either (Sam, Dana, Alex), or the host is a company, team or group, use the name or "they". People the host mentions keep the pronouns the host used for them. Follow the host's own spelling (British or American) and write in the language the host answered in.
 11. The host's own note to participants is shown directly above your brief. Do not greet, do not repeat or paraphrase that note, and do not reuse what it says (if the note says they are stuck, the brief does not); start where it stops.
-12. Under 280 words in total. No em dashes (the character "—"): use commas, colons or full stops. No stock endings ("however good it sounds", "out of the question"); say it once, plainly. No markdown, no emoji, and no brackets, placeholders or template text (never write "[first]" or "[name]").`;
+12. Under 240 words in total; every line short enough to read at a glance. No em dashes (the character "—"): use commas, colons or full stops. No stock endings ("however good it sounds", "out of the question"); say it once, plainly. No markdown, no emoji, and no brackets, placeholders or template text (never write "[first]" or "[name]").`;
 
 function render(source: Source): string {
   const lines: string[] = [];
