@@ -27,6 +27,7 @@ import { getSegmentTone, SEGMENT_THEME, SegmentThemeBackdrop } from '../../data/
 import { readSetup } from '../../utils/v4Brief';
 import { readParticipation } from '../../utils/v4Participant';
 import useCountdown, { pad2 } from '../../utils/useCountdown';
+import { resolvePhaseEnd } from '../../utils/contestDeadline';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -79,6 +80,7 @@ export default function ParticipantThanks() {
     subSegmentId: dbContest.sub_segment_id,
     settings: dbContest.settings || {},
     launchedAt: dbContest.launched_at ? new Date(dbContest.launched_at).getTime() : null,
+    submissionEndsAt: dbContest.submission_ends_at || null,
     creator: {},
   } : null);
   const participation = mockContest
@@ -101,11 +103,9 @@ export default function ParticipantThanks() {
   const userName = setup.userName || (userEmail.split('@')[0] || 'You');
   const userPhoto = setup.userPhoto || null;
 
-  const day = 86400000;
-  const voteOpensAt =
-    Number.isFinite(contest?.launchedAt) && Number.isFinite(submissionDays)
-      ? contest.launchedAt + submissionDays * day
-      : null;
+  // Voting opens the instant submissions close: the real submission_ends_at
+  // (the cron's own trigger), or launch + day count for a mock.
+  const voteOpensAt = resolvePhaseEnd(contest?.submissionEndsAt, contest?.launchedAt, submissionDays);
   const c = useCountdown(voteOpensAt);
   const voteOpensDateStr = voteOpensAt
     ? new Date(voteOpensAt).toLocaleDateString('en-US', {

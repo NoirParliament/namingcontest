@@ -11,6 +11,7 @@ import {
   ArrowRight, ListBullets, Trophy, Clock, CheckCircle, PaperPlaneTilt,
 } from '@phosphor-icons/react';
 import useCountdown, { pad2 } from '../../utils/useCountdown';
+import { resolvePhaseEnd } from '../../utils/contestDeadline';
 import participantProfile from '../../assets/participant-profile.webp';
 import creatorProfile from '../../assets/creator-profile.webp';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
@@ -1354,18 +1355,11 @@ function JoinedContestRow({ participation, contest, row, navigate }) {
   // contest reads green, a business one periwinkle, etc.) — not the
   // pricing tier, which made the stripe look random vs. the segment.
   const segTone = getSegmentTone(contest.subSegmentId);
-  const day = 86400000;
-  const votingOpensAt =
-    Number.isFinite(contest.launchedAt) && Number.isFinite(contest.submissionDays)
-      ? contest.launchedAt + contest.submissionDays * day
-      : null;
+  const votingOpensAt = resolvePhaseEnd(null, contest.launchedAt, contest.submissionDays);
   // Winner announced when the full submit+vote window has passed.
-  const winnerAnnouncedAt =
-    Number.isFinite(contest.launchedAt)
-      && Number.isFinite(contest.submissionDays)
-      && Number.isFinite(contest.votingDays)
-      ? contest.launchedAt + (contest.submissionDays + contest.votingDays) * day
-      : null;
+  const winnerAnnouncedAt = resolvePhaseEnd(
+    null, contest.launchedAt, contest.submissionDays + contest.votingDays,
+  );
   const voteCountdown = useCountdown(votingOpensAt);
   const winnerCountdown = useCountdown(winnerAnnouncedAt);
   const submittedCount = participation?.submittedNames?.length || 0;

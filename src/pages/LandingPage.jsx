@@ -30,6 +30,7 @@ import UserAvatar from '../components/v4/UserAvatar';
 import SignInModal from '../components/v4/SignInModal';
 import { useAuth } from '../lib/AuthContext';
 import { supabase } from '../lib/supabaseClient';
+import { resolvePhaseEnd, calendarDaysUntil } from '../utils/contestDeadline';
 
 /* ========== ICONS ========== */
 const Star = () => <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.2 4.5 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7L8 1z"/></svg>;
@@ -197,7 +198,15 @@ export function Nav() {
         id: setup.contestId,
         name: setup.workingName || 'Your contest',
         phase: 'Voting',
-        daysLeft: setup.settings?.votingDays || 3,
+        // Same calendar-day count as the manage page's own menu card.
+        daysLeft: (() => {
+          const d = calendarDaysUntil(resolvePhaseEnd(
+            setup.settings?.votingEndsAt,
+            setup.launchedAt,
+            (setup.settings?.submissionDays || 7) + (setup.settings?.votingDays || 3),
+          ));
+          return d != null && d >= 0 ? d : null;
+        })(),
         tone: segmentTone,
       }
     : null;

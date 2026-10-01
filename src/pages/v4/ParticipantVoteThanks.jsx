@@ -23,6 +23,7 @@ import { useAuth } from '../../lib/AuthContext';
 import { readProfileCache } from '../../lib/useProfile';
 import { supabase } from '../../lib/supabaseClient';
 import useCountdown, { pad2 } from '../../utils/useCountdown';
+import { resolvePhaseEnd } from '../../utils/contestDeadline';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -85,6 +86,7 @@ export default function ParticipantVoteThanks() {
     subSegmentId: dbContest.sub_segment_id,
     settings: dbContest.settings || {},
     launchedAt: dbContest.launched_at ? new Date(dbContest.launched_at).getTime() : null,
+    votingEndsAt: dbContest.voting_ends_at || null,
     creator: {},
   } : null);
   const participation = mockContest ? readParticipation(contestId) : null;
@@ -126,14 +128,13 @@ export default function ParticipantVoteThanks() {
   const votedCount = votedSubs.length;
   const submittedCount = mockContest ? (participation?.submittedNames?.length || 0) : mySubCount;
 
-  // Winner-announced = launchedAt + (submissionDays + votingDays).
-  const day = 86400000;
-  const winnerAt =
-    Number.isFinite(contest?.launchedAt)
-      && Number.isFinite(contest?.settings?.submissionDays)
-      && Number.isFinite(contest?.settings?.votingDays)
-      ? contest.launchedAt + (contest.settings.submissionDays + contest.settings.votingDays) * day
-      : null;
+  // Winner announced once voting closes: the real voting_ends_at, or
+  // launch + (submissionDays + votingDays) for a mock.
+  const winnerAt = resolvePhaseEnd(
+    contest?.votingEndsAt,
+    contest?.launchedAt,
+    contest?.settings?.submissionDays + contest?.settings?.votingDays,
+  );
   const c = useCountdown(winnerAt);
   const winnerDateStr = winnerAt
     ? new Date(winnerAt).toLocaleDateString('en-US', {

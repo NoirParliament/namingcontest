@@ -45,19 +45,12 @@ import { useAuth } from '../../lib/AuthContext';
 import {
   readParticipation, joinContest, getParticipantRow,
 } from '../../utils/v4Participant';
+import { resolvePhaseEnd, formatTimeUntil } from '../../utils/contestDeadline';
 // Import landing-v3 styles so we can use the EXACT homepage primary
 // button (`.btn.btn-primary.btn-lg`) — guarantees identical animation
 // and sizing without maintaining a parallel copy in v4.css.
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
-
-// Format relative-time strings for the deadline pills.
-function formatDeadline(daysAhead) {
-  if (!Number.isFinite(daysAhead) || daysAhead < 0) return null;
-  if (daysAhead === 0) return 'today';
-  if (daysAhead === 1) return 'tomorrow';
-  return `in ${daysAhead} days`;
-}
 
 export default function JoinContest() {
   const { contestId } = useParams();
@@ -307,21 +300,24 @@ export default function JoinContest() {
       : contest.phase?.toLowerCase() === 'winner' ? 'closed' : 'submission')
     : (contest.status || 'submission');
 
-  // Phase-aware deadline pill: submissions vs voting close, from the contest's
-  // real end timestamps (mock falls back to its settings day count).
-  const daysUntil = (ts) => (ts ? Math.max(0, Math.ceil((ts - Date.now()) / 86400000)) : null);
+  // Phase-aware deadline pill: submissions vs voting close, counted in
+  // calendar days to the contest's real end timestamps (utils/contestDeadline,
+  // the same count the host dashboard shows). Mock demos resolve launch +
+  // their settings day counts the same way the manage page does. Past the end
+  // but not yet flipped by the cron → the pill drops out.
+  const sched = contest.settings || {};
   let deadlineLabel = null;
   let deadlineWhen = null;
   if (stage === 'submission') {
     deadlineLabel = 'Submissions close';
-    deadlineWhen = mockContest
-      ? formatDeadline(contest.settings?.submissionDays)
-      : formatDeadline(daysUntil(contest.submissionEndsAt));
+    deadlineWhen = formatTimeUntil(
+      resolvePhaseEnd(contest.submissionEndsAt, contest.launchedAt, sched.submissionDays),
+    );
   } else if (stage === 'voting') {
     deadlineLabel = 'Voting closes';
-    deadlineWhen = mockContest
-      ? formatDeadline(contest.settings?.votingDays)
-      : formatDeadline(daysUntil(contest.votingEndsAt));
+    deadlineWhen = formatTimeUntil(
+      resolvePhaseEnd(contest.votingEndsAt, contest.launchedAt, sched.submissionDays + sched.votingDays),
+    );
   }
 
   // Stage-aware entry copy. A signed-out visitor here is EITHER a participant

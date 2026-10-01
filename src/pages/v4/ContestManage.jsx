@@ -55,6 +55,7 @@ import { briefDocHasContent } from '../../utils/composeBrief';
 // calls it now that Instagram's button is gone (it downloaded a card while
 // claiming to share) and the share-card button was replaced by Copy link.
 import { downloadFullReport } from '../../utils/v4ContestExport';
+import { resolvePhaseEnd, calendarDaysUntil, formatTimeUntil } from '../../utils/contestDeadline';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -88,22 +89,15 @@ function formatAnswer(value) {
   return String(value);
 }
 
-// Days from "now" to a target date — used for phase countdowns
-function formatDaysFrom(launchedAt, daysOffset) {
-  const target = new Date(launchedAt);
-  target.setDate(target.getDate() + daysOffset);
-  const diffMs = target.getTime() - Date.now();
-  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-  if (diffDays < 0) return 'Closed';
-  if (diffDays === 0) return 'Today';
-  if (diffDays === 1) return 'Tomorrow';
-  return `in ${diffDays} days`;
+// "Closes in 5 days" wording for a phase end. Shared with the join page and
+// the account menu (utils/contestDeadline) so every surface counts the same
+// calendar days. Past the end but not yet flipped by the cron → "shortly".
+function formatCloses(endsAt) {
+  return formatTimeUntil(endsAt) || 'shortly';
 }
 
-function formatDate(launchedAt, daysOffset) {
-  const target = new Date(launchedAt);
-  target.setDate(target.getDate() + daysOffset);
-  return target.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+function formatDate(endsAt) {
+  return new Date(endsAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 // Two-corner confetti burst for the winner reveal. Shared by the
@@ -379,6 +373,17 @@ export default function ContestManage() {
   const voteEndsAt = !mockContest && dbContest?.voting_ends_at ? new Date(dbContest.voting_ends_at).getTime() : null;
   const submissionDays = subEndsAt ? Math.max(1, Math.round((subEndsAt - launchedAt) / MS_DAY)) : (settingsAnswers.submissionDays || 7);
   const votingDays = (voteEndsAt && subEndsAt) ? Math.max(1, Math.round((voteEndsAt - subEndsAt) / MS_DAY)) : (settingsAnswers.votingDays || 3);
+  // The instants each phase ends, for every countdown on the page.
+  const submissionEnd = resolvePhaseEnd(subEndsAt, launchedAt, submissionDays);
+  const votingEnd = resolvePhaseEnd(voteEndsAt, launchedAt, submissionDays + votingDays);
+  // Days left in the phase on screen, for the account menu's contest card
+  // (mock demos sit in voting). null once there's no countdown to show.
+  const menuDaysLeft = (() => {
+    const end = mockContest || phase === 'voting' ? votingEnd
+      : phase === 'submission' ? submissionEnd : null;
+    const d = calendarDaysUntil(end);
+    return d != null && d >= 0 ? d : null;
+  })();
 
   const [copied, setCopied] = useState(false);
   // Separate from `copied`: the invite link and the winner link can both be
@@ -633,7 +638,7 @@ export default function ContestManage() {
                         // Real contests show their actual phase; mock demos
                         // stay on the page's (voting) demo phase.
                         phase: mockContest ? 'Voting' : (phase === 'submission' ? 'Submissions' : phase === 'winner' ? 'Winner' : 'Voting'),
-                        daysLeft: votingDays,
+                        daysLeft: menuDaysLeft,
                         tone: segmentTone,
                       }
                     : null
@@ -687,14 +692,14 @@ export default function ContestManage() {
                     <span className="v4-manage-status-sep">·</span>
                     <span>{stats.submissions} names so far</span>
                     <span className="v4-manage-status-sep">·</span>
-                    <span>Closes {formatDaysFrom(launchedAt, submissionDays)}</span>
+                    <span>Closes {formatCloses(submissionEnd)}</span>
                   </>
                 )}
                 {phase === 'voting' && (
                   <>
                     <span className="v4-manage-status-label">VOTING</span>
                     <span className="v4-manage-status-sep">·</span>
-                    <span>Closes {formatDaysFrom(launchedAt, submissionDays + votingDays)}</span>
+                    <span>Closes {formatCloses(votingEnd)}</span>
                     <span className="v4-manage-status-sep">·</span>
                     <span>
                       {stats.votes > 0
@@ -1216,7 +1221,7 @@ export default function ContestManage() {
                       {phase === 'submission' ? 'Now' : 'Done'}
                       <span className="v4-manage-wait-step-meta">
                         {phase === 'submission'
-                          ? `${stats.submissions} names so far · Closes ${formatDaysFrom(launchedAt, submissionDays)}`
+                          ? `${stats.submissions} names so far · Closes ${formatCloses(submissionEnd)}`
                           : `${stats.submissions} names · ${stats.participants} joined`}
                       </span>
                     </div>
@@ -1250,9 +1255,9 @@ export default function ContestManage() {
                         : 'Done'}
                       <span className="v4-manage-wait-step-meta">
                         {phase === 'voting'
-                          ? `Voting ends ${formatDaysFrom(launchedAt, submissionDays + votingDays)} (${formatDate(launchedAt, submissionDays + votingDays)})`
+                          ? `Voting ends ${formatCloses(votingEnd)} (${formatDate(votingEnd)})`
                           : phase === 'submission'
-                          ? `Opens ${formatDate(launchedAt, submissionDays)}`
+                          ? `Opens ${formatDate(submissionEnd)}`
                           : `${stats.votes} votes cast`}
                       </span>
                     </div>
@@ -1289,7 +1294,7 @@ export default function ContestManage() {
                       <span className="v4-manage-wait-step-meta">
                         {isWinnerPicked
                           ? 'Winner picked · share the results'
-                          : formatDate(launchedAt, submissionDays + votingDays)}
+                          : formatDate(votingEnd)}
                       </span>
                     </div>
                     <h3>Winner</h3>

@@ -28,6 +28,7 @@ import AvatarMenu from '../../components/v4/AvatarMenu';
 import { useAuth } from '../../lib/AuthContext';
 import { useProfile } from '../../lib/useProfile';
 import useCountdown, { pad2 } from '../../utils/useCountdown';
+import { resolvePhaseEnd } from '../../utils/contestDeadline';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -55,10 +56,7 @@ export default function ParticipantStatus() {
   // Compute voting-opens timestamp from launch + submissionDays.
   const launchedAt = contest?.launchedAt;
   const submissionDays = contest?.settings?.submissionDays;
-  const votingOpensAt =
-    Number.isFinite(launchedAt) && Number.isFinite(submissionDays)
-      ? launchedAt + submissionDays * 86400000
-      : null;
+  const votingOpensAt = resolvePhaseEnd(contest?.submissionEndsAt, launchedAt, submissionDays);
   const countdown = useCountdown(votingOpensAt);
 
   // Guards
