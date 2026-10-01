@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/((?!\\.well-known/)(?!.*\\.[A-Za-z0-9]{1,8}$).*)",
+      "source": "/((?!\\.well-known/)(?!api/)(?!.*\\.[A-Za-z0-9]{1,8}$).*)",
       "destination": "/"
     }
   ],

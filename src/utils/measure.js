@@ -7,6 +7,14 @@
 //
 // Nothing loads unless VITE_GTM_ID is set (prod only), so local dev and
 // preview deploys stay silent. In dev, every event is echoed to the console.
+//
+// Nothing loads without the visitor's yes either (utils/visitorChoice): in
+// the EEA, UK and Switzerland GTM stays off until "Accept all"; elsewhere it
+// is on unless the visitor turned it off or their browser sends Global
+// Privacy Control. Until then track() only fills the dataLayer array in the
+// page, which never leaves the browser.
+
+import { decide, onChoice, readChoice } from './visitorChoice';
 
 const GTM_ID = import.meta.env.VITE_GTM_ID;
 const DEV = import.meta.env.DEV;
@@ -28,9 +36,25 @@ const PARAM_KEYS = [
 
 let loaded = false;
 
+// Told to the tools before GTM starts: analytics yes, every advertising use
+// no (Google Consent Mode v2), and Clarity's own consent call (it reads
+// consentv2, queued here and replayed when its script arrives).
+function signalConsent() {
+  window.gtag = window.gtag || function gtag() { window.dataLayer.push(arguments); };
+  window.gtag('consent', 'default', {
+    analytics_storage: 'granted',
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+  });
+  window.clarity = window.clarity || function clarity() { (window.clarity.q = window.clarity.q || []).push(arguments); };
+  window.clarity('consentv2', { ad_Storage: 'denied', analytics_Storage: 'granted' });
+}
+
 function loadGtm() {
   if (loaded) return;
   loaded = true;
+  signalConsent();
   window.dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
   const s = document.createElement('script');
   s.async = true;
@@ -46,10 +70,25 @@ function loadGtm() {
 const INTERACTION_EVENTS = ['pointerdown', 'keydown', 'scroll', 'touchstart'];
 const IDLE_DELAY_MS = 1500;
 
+let scheduled = false;
+
 export function initMeasure() {
   if (typeof window === 'undefined') return;
   window.dataLayer = window.dataLayer || [];
   if (!GTM_ID || loaded) return;
+
+  // Start once the visitor's choice allows it: now (stored yes, or a region
+  // where it's on by default) or the moment they press "Accept all".
+  decide().then((d) => { if (d.analytics) scheduleGtm(); });
+  onChoice((c) => { if (c.analytics) scheduleGtm(); });
+}
+
+function scheduleGtm() {
+  if (scheduled || loaded) return;
+  // A fresh yes from the bar starts right away: the visitor has just
+  // interacted, and the delay below only exists to protect first paint.
+  if (readChoice()?.analytics && document.readyState === 'complete') { scheduled = true; loadGtm(); return; }
+  scheduled = true;
 
   const start = () => {
     INTERACTION_EVENTS.forEach((e) => window.removeEventListener(e, start, true));

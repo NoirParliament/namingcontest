@@ -3,7 +3,10 @@
    Color system based on Linktree palette
    ═══════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+/* Fonts are self-hosted (styles/fonts.css). The old Google Fonts import was
+   removed: it sent every visitor's IP address to Google before any consent,
+   and its extra families (Crimson Pro, JetBrains Mono) are only used by
+   retired components. */
 
 :root {
 

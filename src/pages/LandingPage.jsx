@@ -31,6 +31,7 @@ import SignInModal from '../components/v4/SignInModal';
 import { useAuth } from '../lib/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 import { resolvePhaseEnd, calendarDaysUntil } from '../utils/contestDeadline';
+import { openChoiceSettings } from '../utils/visitorChoice';
 
 /* ========== ICONS ========== */
 const Star = () => <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.2 4.5 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7L8 1z"/></svg>;
@@ -1533,6 +1534,11 @@ export function Footer() {
             {legalLink('/privacy', 'Privacy policy')}
             {legalLink('/terms', 'Terms of service')}
             {legalLink('/cookies', 'Cookie policy')}
+            <li>
+              <a href="#cookie-settings" onClick={(e) => { e.preventDefault(); openChoiceSettings(); }}>
+                Cookie settings
+              </a>
+            </li>
           </ul>
         </div>
       </div>

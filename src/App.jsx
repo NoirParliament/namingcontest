@@ -42,6 +42,7 @@ import { Analytics } from '@vercel/analytics/react';
 const ErrorState = lazy(() => import('@pages/system/ErrorState'));
 const ContactPage = lazy(() => import('@pages/system/ContactPage'));
 import BetaGate            from './components/BetaGate';
+import ChoiceBar           from './components/ChoiceBar';
 
 // ─── FloatingNav ─────────────────────────────────────────────────────────────
 
@@ -488,6 +489,9 @@ export default function App() {
           needed. Data appears in Vercel -> project -> Analytics once enabled
           there. */}
       <Analytics />
+      {/* Cookie choice bar: outside the BetaGate too, so the gate page asks
+          like every other page (utils/visitorChoice decides where). */}
+      <ChoiceBar />
     </BrowserRouter>
   );
 }
