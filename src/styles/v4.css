@@ -12692,106 +12692,102 @@ button.v4-exit {
   color: var(--v4-fg);
 }
 
-/* ── Update pill ──
-   Built from the resume-draft pill: white, faint border, soft shadow,
-   eyebrow + display-serif title, dark pill CTA, lift on hover, same
-   entrance. Bottom-right on desktop, full width on phones. */
+/* ── Update bar ──
+   Dark bar centred at the bottom of the screen. Enters like the resume
+   pill; its button is the site's .btn with the primary button's wipe
+   (background slides up from the bottom, .55s, same easing), inverted for
+   the dark surface: white at rest, ink on hover. */
 .v4-bupd {
   position: fixed;
-  right: 22px;
-  bottom: 22px;
+  left: 50%;
+  bottom: 20px;
   z-index: 900;
-  display: inline-flex;
+  width: min(640px, calc(100vw - 32px));
+  translate: -50% 0;
+  display: flex;
   align-items: center;
-  gap: 14px;
-  max-width: min(460px, calc(100vw - 44px));
-  padding: 12px 12px 12px 18px;
-  border: 1.5px solid rgba(3, 3, 2, 0.1);
-  border-radius: 20px;
-  background: #fff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 10px 28px -8px rgba(0, 0, 0, 0.16);
-  font: inherit;
-  text-align: left;
-  color: var(--v4-fg);
+  justify-content: space-between;
+  gap: 18px;
+  padding: 12px 12px 12px 20px;
+  border-radius: 999px;
+  background: var(--bg-ink, #030302);
+  color: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 16px 40px -12px rgba(0, 0, 0, 0.45);
   animation: v4-resume-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease;
 }
-button.v4-bupd { cursor: pointer; }
-button.v4-bupd:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 14px 34px -8px rgba(0, 0, 0, 0.2);
-}
-button.v4-bupd:active { transform: translateY(0); }
-/* Launch pressed with changes pending: the pill hops once to say "this". */
+/* Launch pressed with changes pending: the bar hops once to say "this". */
 .v4-bupd.is-nudged { animation: v4-bupd-hop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
 @keyframes v4-bupd-hop {
   0% { transform: translateY(0); }
   35% { transform: translateY(-10px); }
   100% { transform: translateY(0); }
 }
-.v4-bupd-text {
+.v4-bupd-msg {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1px;
-  min-width: 0;
-  line-height: 1.25;
-}
-.v4-bupd-eyebrow {
-  font-family: var(--font-text);
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--v4-muted);
-}
-.v4-bupd-title {
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--v4-fg);
-}
-.v4-bupd-note {
-  margin-top: 2px;
-  font-size: 12.5px;
-  line-height: 1.4;
-  color: var(--v4-muted);
-}
-.v4-bupd-cta {
-  flex: none;
-  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background: var(--v4-fg);
-  color: #fff;
-  font-family: var(--font-text);
-  font-size: 12.5px;
-  font-weight: 600;
-  padding: 8px 14px;
-  border-radius: 999px;
-  white-space: nowrap;
+  gap: 10px;
+  min-width: 0;
 }
-.v4-bupd-ok { flex: none; color: #2f8a46; margin-right: 4px; }
+.v4-bupd-copy { display: grid; gap: 1px; min-width: 0; }
+.v4-bupd-text {
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: #fff;
+}
+.v4-bupd-sub {
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.58);
+}
+.v4-bupd-ok { flex: none; color: #8fd9a0; }
 .v4-bupd-spin {
   flex: none;
-  width: 18px;
-  height: 18px;
-  margin-right: 6px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  border: 2px solid rgba(3, 3, 2, 0.12);
-  border-top-color: var(--v4-fg);
+  border: 2px solid rgba(255, 255, 255, 0.22);
+  border-top-color: #fff;
   animation: v4-bupd-turn 0.8s linear infinite;
 }
 @keyframes v4-bupd-turn { to { transform: rotate(360deg); } }
-/* Room under the launch button so the pill never covers it. */
-.v4-review-launch { padding-bottom: 80px; }
+.lp-v3 .btn.v4-bupd-btn {
+  flex: none;
+  padding: 10px 18px;
+  font-weight: 600;
+  border: 1px solid #fff;
+  background: linear-gradient(to top, var(--bg-ink, #030302) 50%, #fff 50%);
+  background-size: 100% 200%;
+  background-position: top;
+  color: var(--fg, #030302);
+  box-shadow: none;
+  transition: background-position .55s cubic-bezier(0.65, 0, 0.35, 1), color .35s ease, border-color .35s ease;
+}
+.lp-v3 .btn.v4-bupd-btn:hover {
+  background-position: bottom;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.55);
+}
+.lp-v3 .btn.v4-bupd-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+/* Room under the launch button so the bar never covers it. */
+.v4-review-launch { padding-bottom: 84px; }
 @media (prefers-reduced-motion: reduce) {
   .v4-bupd, .v4-bupd.is-nudged, .v4-bupd-spin { animation: none; }
 }
 @media (max-width: 560px) {
-  .v4-bupd { left: 16px; right: 16px; bottom: 16px; max-width: none; }
-  .v4-bupd-text { flex: 1; }
+  .v4-bupd {
+    bottom: 14px;
+    border-radius: 20px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px;
+  }
+  .lp-v3 .btn.v4-bupd-btn { justify-content: center; }
   .v4-qa-open { flex-direction: column; align-items: stretch; gap: 12px; }
   .v4-qa-open-cta { justify-content: center; }
 }
