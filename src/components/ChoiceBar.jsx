@@ -9,8 +9,9 @@
 //
 // Look: the site's dark bottom bar (the review page's "Update brief" bar):
 // ink surface, white text, solid white buttons with the ink hover wash.
-// 880px wide, the top navigation pill's width, with the text on the left
-// and the two answers on the right; stacked on narrow screens.
+// As wide as the page's content column (the hero card's edges), with the
+// text on the left and the two answers on the right; stacked on narrow
+// screens.
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
@@ -68,20 +69,17 @@ export default function ChoiceBar() {
         <p className="nc-choice-title">Cookies on NamingContest</p>
         {/* First-layer notice (GDPR art. 7 and 13, EDPB guidance): what is
             essential, what we ask permission for, who provides it, why, how
-            to change your mind, and where to read more. The Terms of Service
-            stay off the bar on purpose: consent must not look tied to
-            accepting terms. */}
+            to change your mind, and where to read more. One link, to the
+            Cookie policy, which names the company and links the Privacy
+            policy. The Terms of Service stay off the bar on purpose: consent
+            must not look tied to accepting terms. */}
         <p className="nc-choice-text">
           We use essential cookies to run the site, such as keeping you signed in.
           With your permission, we would also like to use analytics cookies from
           Google Analytics and Microsoft Clarity to understand how the site is used,
           including session recordings, so we can improve it. You can change your
           choice at any time under Cookie settings in the footer.{' '}
-          <span className="nc-choice-links">
-            <Link to="/cookies" className="nc-choice-link" onClick={close}>Cookie policy</Link>
-            <span aria-hidden="true"> · </span>
-            <Link to="/privacy" className="nc-choice-link" onClick={close}>Privacy policy</Link>
-          </span>
+          <Link to="/cookies" className="nc-choice-link" onClick={close}>Cookie policy</Link>
         </p>
         {mode === 'settings' && current !== null && (
           <p className="nc-choice-state">

@@ -2,8 +2,9 @@
    The review page's dark "Update brief" bar (.v4-bupd), in its card form
    (the phone shape: 20px corners) because it carries a paragraph: ink
    surface, white text, solid white buttons with the site's ink hover wash.
-   880px wide, the landing page's navigation pill width: text on the left,
-   the two answers on the right. Stacks below 760px.
+   As wide as the page's content column: the hero card's edges (the 1280px
+   page minus its 24px gutters, and 88px narrower than the screen below
+   that). Text on the left, the two answers on the right. Stacks below 760px.
    Self-contained: it renders on every page, including ones that don't load
    v4.css or landing-v3.css, so the values are written out here. */
 .nc-choice {
@@ -11,7 +12,7 @@
   left: 50%;
   bottom: 20px;
   z-index: 10100;
-  width: min(880px, calc(100vw - 32px));
+  width: min(1232px, calc(100vw - 88px));
   translate: -50% 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -54,7 +55,6 @@
   text-underline-offset: 3px;
 }
 .nc-choice-link:hover { color: #fff; }
-.nc-choice-links { white-space: nowrap; color: rgba(255, 255, 255, 0.7); }
 .nc-choice-btns { display: flex; gap: 8px; }
 /* Both answers wear the same button: equal weight is the rule. */
 .nc-choice-btn {
