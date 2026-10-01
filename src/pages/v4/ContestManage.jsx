@@ -1332,6 +1332,7 @@ export default function ContestManage() {
               filledSettings={filledSettings}
               briefAnswers={liveBriefAnswers}
               settingsAnswers={liveSettingsAnswers}
+              tone={segmentTone}
             />
 
             {/* ── Footer actions ────────────────────────────────────
@@ -1515,7 +1516,7 @@ export default function ContestManage() {
 // so with a lock glyph, and every row is a plain read-only reference line
 // (no pencils, no hover, no edit paths).
 function BriefRecapCollapser({
-  subId, briefDoc, filledBrief, filledSettings, briefAnswers, settingsAnswers,
+  subId, briefDoc, filledBrief, filledSettings, briefAnswers, settingsAnswers, tone,
 }) {
   const [open, setOpen] = useState(false);
 
@@ -1564,7 +1565,7 @@ function BriefRecapCollapser({
           {briefDocHasContent(briefDoc) && (
             <div className="v4-manage-recap-group">
               <h3 className="v4-manage-recap-group-title">Brief</h3>
-              <ComposedBrief doc={briefDoc} subId={subId} questions={filledBrief} />
+              <ComposedBrief doc={briefDoc} subId={subId} questions={filledBrief} tone={tone} />
             </div>
           )}
           {!briefDocHasContent(briefDoc) && briefRows.length > 0 && (

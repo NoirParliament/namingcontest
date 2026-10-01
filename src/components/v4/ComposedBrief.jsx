@@ -50,6 +50,25 @@ function SubLabel({ children }) {
   return <div className="v4-cbrief-sublabel">{children}</div>;
 }
 
+// The names the host mentioned, split into the ones they like and the ones
+// that missed, under the category's own labels. Briefs written before the
+// split (no kind) show as one list.
+function Names({ names, labels }) {
+  const split = names.some((n) => n.kind);
+  const groups = split
+    ? [
+      { label: labels.liked, items: names.filter((n) => n.kind !== 'missed') },
+      { label: labels.missed, items: names.filter((n) => n.kind === 'missed') },
+    ].filter((g) => g.items.length)
+    : [{ label: 'Names already mentioned', items: names }];
+  return groups.map((g) => (
+    <div key={g.label} className="v4-cbrief-names">
+      <SubLabel>{g.label}</SubLabel>
+      <Points items={g.items} leadKey="name" textKey="note" variant="names" />
+    </div>
+  ));
+}
+
 function Lines({ items }) {
   return (
     <ul className="v4-cbrief-lines">
@@ -66,9 +85,17 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
 
   const hasAbout = !isBlank(about.story) || about.facts.length > 0;
   const hasAim = !isBlank(aim.lead) || aim.points.length > 0;
-  const hasDir = dir.explore.length > 0 || dir.avoid.length > 0 || dir.names.length > 0 || !isBlank(dir.prose);
+  const hasDir = dir.explore.length > 0 || dir.avoid.length > 0 || !isBlank(dir.prose)
+    || (dir.names.length > 0 && !meta.names.section);
   const hasRules = rules.points.length > 0;
   const twoCols = dir.explore.length > 0 && dir.avoid.length > 0;
+  // The heading says what is there: "Directions to explore and avoid" when
+  // the host gave both sides, trimmed to "Directions to explore" (or "to
+  // avoid") when they gave one. A lone panel then needs no label of its own.
+  const oneSide = !twoCols && (dir.explore.length > 0 || dir.avoid.length > 0);
+  const dirTitle = oneSide && /explore and avoid/i.test(meta.exploreAvoid.title)
+    ? meta.exploreAvoid.title.replace(/explore and avoid/i, dir.explore.length > 0 ? 'explore' : 'avoid')
+    : meta.exploreAvoid.title;
 
   // The segment's tone reaches the panels and number tiles the same way it
   // reaches the section heads.
@@ -101,38 +128,47 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
         </div>
       )}
 
+      {/* A category that authors its own names section (band: "Names to
+          learn from") keeps it where its chat asks it: before the
+          directions. */}
+      {dir.names.length > 0 && meta.names.section && (
+        <div className="v4-brief-group">
+          <BriefSectionHead title={meta.names.section.title} icon={meta.names.section.icon} tone={tone} />
+          <Names names={dir.names} labels={meta.names} />
+        </div>
+      )}
+
       {hasDir && (
         <div className="v4-brief-group">
-          <BriefSectionHead title={meta.exploreAvoid.title} icon={meta.exploreAvoid.icon} tone={tone} />
+          <BriefSectionHead title={dirTitle} icon={meta.exploreAvoid.icon} tone={tone} />
           {!isBlank(dir.prose) && <p className="v4-cbrief-para">{dir.prose}</p>}
           {(dir.explore.length > 0 || dir.avoid.length > 0) && (
             <div className={`v4-cbrief-cols${twoCols ? ' is-two' : ''}`}>
               {dir.explore.length > 0 && (
                 <div className="v4-cbrief-col">
-                  <div className="v4-cbrief-col-head">
-                    <span className="v4-cbrief-col-icon" aria-hidden="true"><Check size={12} weight="bold" /></span>
-                    Lean toward
-                  </div>
+                  {!oneSide && (
+                    <div className="v4-cbrief-col-head">
+                      <span className="v4-cbrief-col-icon" aria-hidden="true"><Check size={12} weight="bold" /></span>
+                      Lean toward
+                    </div>
+                  )}
                   <Lines items={dir.explore} />
                 </div>
               )}
               {dir.avoid.length > 0 && (
                 <div className="v4-cbrief-col is-avoid">
-                  <div className="v4-cbrief-col-head">
-                    <span className="v4-cbrief-col-icon" aria-hidden="true"><X size={12} weight="bold" /></span>
-                    Steer clear of
-                  </div>
+                  {!oneSide && (
+                    <div className="v4-cbrief-col-head">
+                      <span className="v4-cbrief-col-icon" aria-hidden="true"><X size={12} weight="bold" /></span>
+                      Steer clear of
+                    </div>
+                  )}
                   <Lines items={dir.avoid} />
                 </div>
               )}
             </div>
           )}
-          {dir.names.length > 0 && (
-            <div className="v4-cbrief-names">
-              <SubLabel>Names already mentioned</SubLabel>
-              <Points items={dir.names} leadKey="name" textKey="note" variant="names" />
-            </div>
-          )}
+          {dir.names.length > 0 && !meta.names.section && <Names names={dir.names} labels={meta.names} />}
         </div>
       )}
 
@@ -162,30 +198,48 @@ export function ComposedBriefSkeleton({ subId, questions, tone }) {
   const meta = composedSectionMeta(subId, questions);
   const [stage, setStage] = useState(0);
   useEffect(() => {
-    const t = setInterval(() => setStage((s) => Math.min(s + 1, STAGES.length - 1)), 3200);
+    const t = setInterval(() => setStage((n) => Math.min(n + 1, STAGES.length - 1)), 3200);
     return () => clearInterval(t);
   }, []);
-  const groups = [
-    { ...meta.about, lines: ['94%', '88%', '61%'] },
-    { ...meta.shouldDo, lines: ['72%', '80%', '66%', '76%'] },
-    { ...meta.exploreAvoid, lines: ['90%', '84%', '47%'] },
-  ];
+  const toneVars = tone ? { '--sec-tint': tone.bg, '--sec-accent': tone.fg } : undefined;
+  // Each bar inks in after the one before it, top to bottom.
+  let n = 0;
+  const bar = (w) => <span key={n} className="v4-cbrief-sk-bar" style={{ width: w, animationDelay: `${(n++) * 0.12}s` }} />;
   return (
-    <div className="v4-cbrief v4-cbrief-skeleton" aria-busy="true" aria-live="polite">
+    <div className="v4-cbrief v4-cbrief-skeleton" style={toneVars} aria-busy="true" aria-live="polite">
       <div className="v4-cbrief-skeleton-status">
         <span className="v4-cbrief-skeleton-pen" aria-hidden="true" />
         <span key={stage} className="v4-cbrief-skeleton-stage">{STAGES[stage]}</span>
       </div>
-      {groups.map((g, gi) => (
-        <div key={g.title} className="v4-brief-group">
-          <BriefSectionHead title={g.title} icon={g.icon} tone={tone} />
-          <div className="v4-cbrief-skeleton-lines">
-            {g.lines.map((w, li) => (
-              <span key={li} style={{ width: w, animationDelay: `${(gi * 4 + li) * 0.28}s` }} />
-            ))}
-          </div>
+
+      <div className="v4-brief-group">
+        <BriefSectionHead title={meta.about.title} icon={meta.about.icon} tone={tone} />
+        <div className="v4-cbrief-sk-lines">{bar('94%')}{bar('88%')}{bar('52%')}</div>
+        <div className="v4-cbrief-facts">
+          {['132px', '120px', '128px', '116px'].map((w) => <span key={w} className="v4-cbrief-sk-pill" style={{ width: w }} />)}
         </div>
-      ))}
+      </div>
+
+      <div className="v4-brief-group">
+        <BriefSectionHead title={meta.shouldDo.title} icon={meta.shouldDo.icon} tone={tone} />
+        <div className="v4-cbrief-sk-lines v4-cbrief-lead">{bar('86%')}</div>
+        <ul className="v4-cbrief-points is-numbered">
+          {[1, 2, 3].map((i) => (
+            <li key={i} className="v4-cbrief-point">
+              <span className="v4-cbrief-point-num" aria-hidden="true">{i}</span>
+              <span className="v4-cbrief-point-body v4-cbrief-sk-lines">{bar('38%')}{bar('72%')}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="v4-brief-group">
+        <BriefSectionHead title={meta.exploreAvoid.title} icon={meta.exploreAvoid.icon} tone={tone} />
+        <div className="v4-cbrief-cols is-two">
+          <div className="v4-cbrief-col"><div className="v4-cbrief-sk-lines">{bar('40%')}{bar('84%')}{bar('70%')}</div></div>
+          <div className="v4-cbrief-col is-avoid"><div className="v4-cbrief-sk-lines">{bar('44%')}{bar('78%')}</div></div>
+        </div>
+      </div>
     </div>
   );
 }

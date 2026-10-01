@@ -12666,6 +12666,7 @@ button.v4-exit {
   background: var(--v4-fg);
   opacity: 0.35;
 }
+.v4-cbrief-names + .v4-cbrief-names,
 .v4-cbrief-cols + .v4-cbrief-names,
 .v4-cbrief-para + .v4-cbrief-cols,
 .v4-cbrief-para + .v4-cbrief-names { margin-top: 24px; }
@@ -12789,6 +12790,32 @@ button.v4-exit {
   background-size: 200% 100%;
   background-position: 100% 0;
   animation: v4-cbrief-ink 1.1s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+/* Skeleton in the brief's real shape: the same groups, pills, numbered
+   rows and panels, with bars that ink in where the text will land. */
+.v4-cbrief-sk-lines {
+  display: grid;
+  gap: 9px;
+}
+.v4-cbrief-sk-bar,
+.v4-cbrief-sk-pill {
+  display: block;
+  height: 11px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, rgba(3, 3, 2, 0.11) 0 50%, rgba(3, 3, 2, 0.045) 50% 100%);
+  background-size: 200% 100%;
+  background-position: 100% 0;
+  animation: v4-cbrief-ink 1.1s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+.v4-cbrief-sk-pill {
+  height: 30px;
+  border-radius: 999px;
+  animation-delay: 0.4s;
+}
+.v4-cbrief-skeleton .v4-cbrief-point-body { padding-top: 6px; }
+@media (prefers-reduced-motion: reduce) {
+  .v4-cbrief-sk-bar,
+  .v4-cbrief-sk-pill { animation: none; }
 }
 @keyframes v4-cbrief-ink {
   from { background-position: 100% 0; }

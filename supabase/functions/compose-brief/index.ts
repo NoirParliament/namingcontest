@@ -42,7 +42,7 @@ function json(body: unknown, status = 200) {
 type Item = { id: string; role: string; question: string; answer: string; note?: string };
 type Source = {
   v: number; subId: string; segment: string; aboutTitle: string; thing: string; framing?: string;
-  workingName: string; host: string; hostAnonymous: boolean; intro: string;
+  workingName: string; host: string; hostAnonymous: boolean; intro: string; shape?: string;
   items: Item[]; openExplore: boolean; openAvoid: boolean;
 };
 
@@ -53,7 +53,7 @@ const ROLE_RULES: Record<string, string> = {
   avoid: 'off-limits',
   exploreAvoid: 'contains both, split it into what to lean toward and what to avoid',
   reference: 'reference names, keep each name and the host\'s own reason; if the host wants to avoid sounding like some of them, say which',
-  antiReference: 'names of other things the host dislikes or does not want to be mistaken for, with reasons; say what style to steer away from and why, never call them banned words',
+  antiReference: 'things the host dislikes or does not want to be mistaken for, with reasons; each NAME goes in names as missed with the host\'s reason (not also an avoid line); a style or kind with no name ("anything that sounds like a tribute act") is one avoid line; never call them banned words',
   constraint: 'a mixed bag ("anything else"): put each point where it belongs, see rule 4',
 };
 
@@ -80,10 +80,9 @@ const SCHEMA = {
       type: 'object',
       description: 'Background about the host and what is being named.',
       properties: {
-        story: { type: 'string', description: 'The background told as a short story, 2 to 3 sentences, facts only, no advice.' },
         facts: {
           type: 'array',
-          description: 'A fact sheet of 3 to 5 specifics a participant will check names against (a date, a surname, a middle name, a sibling, roots, a breed, an audience, a launch, a place). Only facts the host gave; an empty array when there are none.',
+          description: 'Written first. A fact sheet of 2 to 5 specifics a participant will check names against (a date, a surname, a middle name, a sibling, a breed, a place, a naming convention). Only facts the host gave; an empty array when there are none.',
           items: {
             type: 'object',
             properties: {
@@ -94,16 +93,17 @@ const SCHEMA = {
             additionalProperties: false,
           },
         },
+        story: { type: 'string', description: 'Written after the facts. The background as a short story, 2 to 3 sentences: the people, the thing and the moment. It contains none of the fact-sheet values.' },
       },
-      required: ['story', 'facts'],
+      required: ['facts', 'story'],
       additionalProperties: false,
     },
     aim: {
       type: 'object',
       description: 'What the name should do or feel like.',
       properties: {
-        lead: { type: 'string', description: 'One sentence that captures the whole ask.' },
-        points: { type: 'array', description: 'The criteria, 2 to 5 bold-lead points, one distinct thing each. Empty only when the host gave a single wish, which the lead then carries alone.', items: POINT },
+        lead: { type: 'string', description: 'One short line (under 16 words) that sums up the ask in broad strokes. The specifics belong to the criteria, not the lead.' },
+        points: { type: 'array', description: 'The criteria, 0 to 5 bold-lead points, one distinct thing each, only as many as the material supports.', items: POINT },
       },
       required: ['lead', 'points'],
       additionalProperties: false,
@@ -121,9 +121,10 @@ const SCHEMA = {
             type: 'object',
             properties: {
               name: { type: 'string', description: 'The name exactly as the host wrote it.' },
+              kind: { type: 'string', enum: ['liked', 'missed'], description: 'liked = the host likes it or it is still in the running (even with a worry); missed = disliked, rejected, taken, or a name to stand apart from.' },
               note: { type: 'string', description: 'One sentence: the host\'s own reason and what participants should take from it.' },
             },
-            required: ['name', 'note'],
+            required: ['name', 'kind', 'note'],
             additionalProperties: false,
           },
         },
@@ -150,25 +151,28 @@ const SYSTEM = `You write naming briefs for NamingContest.com. A host has answer
 Facts (strict):
 1. Use only what the host wrote. Never invent facts, preferences, names, people, places or reasons. Every line must trace back to an answer. Copy names, places and people exactly as written. If an answer is thin, write less; never pad, never fill a list to make it look complete.
 2. Every answer carries a role that says how it may be used: fact (background), direction (what the name should do or feel like), explore (lean toward), avoid (steer clear of), exploreAvoid (split into lean toward and steer clear of), reference (names the host likes or considered: keep each name and the host's own reason), antiReference (names of other things the host dislikes or does not want to be mistaken for: say what style to steer away from and why, never call them banned words), constraint (a mixed bag from "anything else" or practical requirements: see rule 4).
-3. Never suggest names yourself; participants supply the names. Names quoted from the host's answers are fine.
+3. Never suggest names yourself; participants supply the names. Names quoted from the host's answers are fine. Never add colour, imagery, detail or explanation the host did not write: if they said "eagles and salmon", write eagles and salmon, not "salmon and their upstream fight"; if they said "rural", write rural, not "far from big hospitals".
 4. Constraint answers are a mixed bag; put each point where it belongs. A hard rule that rules a name out (a syllable limit, a domain that must be free, no family names, no names starting with a letter) goes in rules. A wish that shapes the names ("we'd love it to work in French") belongs in the aim or in explore. Context ("Anna's grandma is from Lyon") goes in the about part or with the wish it explains. Pleasantries and encouragement ("have fun with it!", "thanks everyone") are left out.
 
 Shape (the app shows each part under a fixed heading, so never write headings or restate them):
-5. about.story tells the background the way a friend would, 2 to 3 sentences: who the host is, what they are naming, the moment they are in. Never list fields ("The sibling name listed is Theo"); say "She will be a little sister to Theo". about.facts is the fact sheet beside it: 3 to 5 specifics with a short label and a short value, for things a participant will check a name against. The fact sheet carries the specifics; the story carries the people and the moment, and is read right above the fact sheet. So the story does not restate fact-sheet values (no middle name, surname, roots or dates in the story when they are in the facts); one specific is fine only where the sentence cannot stand without it ("a little sister for Theo"). Never talk around a fact to avoid naming it. Plain and true beats clever.
-6. aim.lead is one sentence that captures the whole ask. aim.points are the criteria, 2 to 5 bold-lead points, one distinct thing each (length, familiarity, feel, how it pairs with a sibling or surname, how it travels across languages, what it should say to customers). Each label is a short instruction that answers the heading "What the name should do": a verb first, 2 to 5 words ("Keep it short", "Stay familiar but uncommon", "Pair well with Theo", "Travel across languages", "Earn trust fast"); never a bare noun phrase ("Two to three syllables" is wrong, "Keep it to two or three syllables" is right). The text then says how or why in one sentence. Use a different verb for each point. Criteria say what the name should do or feel like; the themes and sources to draw on (loons, canoe trips, Glasgow slang) belong under explore, not in a criterion.
-7. directions.explore and directions.avoid are short lines of 3 to 12 words, one idea each, keeping the host's own specifics and reasons ("Soft names that go with Rose", "Names that also work in French, for Anna's grandma"), no labels inside the line ("Lean toward:" is wrong). Explore holds styles, feels, themes and sources to draw on; avoid holds styles, feels, associations and trends to steer clear of. Hard disqualifiers go in rules, not in avoid. If everything the host asked to avoid is a hard rule, avoid stays empty; never invent a soft one to fill it. When the host left explore open, the explore list is one line only, saying nothing is ruled in and participants can range widely; when they left avoid open, the avoid list is one line saying nothing is off-limits. Never restate an aim criterion as a direction, in either form ("easy to spell" in the aim is not also "hard spellings" under avoid). directions.names lists the names the host mentioned with the host's own reason and what to take from it; names the host grouped under one reason share one entry ("Thunder, Blaze and Storm" with one note), and the openings vary (never a run of "Liked for", "Disliked as") ("They love it, but worry about the Lucifer association, so aim for that bright classic feel without the awkward link").
-8. rules.points are the hard rules only, one bold-lead point each. Labels are instructions too, a verb first ("Skip K names", "Leave Barbara out", "Keep the .com free", "Stay under three syllables"), a different verb each time. Empty when there are none.
-9. Never say the same thing in two parts. A fact lives in about, a wish in aim or explore, a name in names, a disqualifier in rules.
+5. One home per point. Every point the host made lands in exactly one place in the brief. Before writing any line, check that the brief does not already say it somewhere else, in any words. Fact sheet, story, lead, criteria, directions, names and rules never repeat each other.
+6. about.facts first: 2 to 5 specifics with a 1 to 3 word label and a 1 to 5 word value copied from the answers, the things a participant checks a name against. Then about.story: 2 to 3 sentences the way a friend would tell it (who the host is, what they are naming, the moment they are in), and it never covers a topic the fact sheet covers (if roots, looks or a breed are in the facts, the story does not mention them at all); one specific is fine only where a sentence cannot stand without it ("a little sister for Theo"), and then it stays out of the fact sheet. Fact labels only name what the value is ("Lives with", "Surname"); they never add a fact the host did not give ("Big sister" for a cat is an invention). Never list fields ("The sibling name listed is Theo"). Never talk around a fact to avoid naming it.
+7. aim.lead is one short line in broad strokes. aim.points are the criteria, only as many as the material supports: one point per distinct thing the host asked for (length, familiarity, feel, how it sits with a surname or siblings, what it should say to customers, how it will be used). Never split one answer into several points or pad a list; when the host gave one or two directions, write one or two points, or none and let the lead carry them. Labels are short instructions, verb first, a different verb each ("Keep it short", "Pair well with Theo", "Earn trust fast"), never a bare noun phrase. The text is one or two sentences carrying the host's own detail and reason. A criterion never repeats the lead's words, and never restates a direction line or a name's lesson: criteria say how the name should work or feel, directions say what to draw on.
+8. directions.explore and directions.avoid come only from what the host explicitly offered to draw on or steer clear of (explore, avoid, references, local inspiration, quirks, interests, things the name should reflect, and themes or ideas named inside any other answer, such as "themes: roads, bridges, lanterns" in what the name should communicate): short lines of 3 to 12 words, one idea each, the host's own specifics, no labels inside a line. A lesson that comes from a name the host mentioned lives in that name's entry only, never also as a direction line or a criterion. Hard disqualifiers go in rules, never in avoid. Write the "nothing is ruled in" or "nothing is off-limits" line only when the material has a line saying the host gave nothing; otherwise an empty list stays empty.
+9. directions.names lists every name the host mentioned, each with kind (liked, or missed) and a one-sentence note: the host's own reason, then what to take from it only when the reason itself points somewhere concrete ("so steer away from telecom-style blends"). When it does not, the note is just the reason; never a vague tail like "it shows the feel they are after". Names the host grouped under one reason share one entry ("Thunder, Blaze and Storm"). Vary the openings.
+10. rules.points are the hard rules only, one bold-lead point each, verb-first labels, a different verb each. A rule is never also a criterion or a direction, and a wish and its opposite never land in both ("Use real words" as a criterion and "No invented words" as a rule is one point said twice: a hard ban belongs in rules, so keep it there only). Empty when there are none.
+11. Some answers are picks from a list, with our explanation of the option in brackets after the pick ("Silly (names with a little mischief in them...)"). That explanation describes the option; it is not the host's words. Never quote examples from it, and never present it as the host's view.
 
 Voice:
-10. Plain, warm and confident, in the register the framing line gives (warm and personal for a baby or a pet, energetic for a team, professional and concise for a business). The framing is for voice only; it is never a source of facts or requirements. Address participants as "you". Refer to the host by the name given, in the third person, and never write as the host: no "we", "us" or "our" for the host. Pronouns for the host: when the first name is clearly male or female (Matt, Emma), use he or she; when it could be either (Sam, Dana, Alex), or the host is a company, team or group, use the name or "they". People the host mentions keep the pronouns the host used for them. Follow the host's own spelling (British or American) and write in the language the host answered in.
-11. The host's own note to participants is shown directly above your brief. Do not greet, do not repeat or paraphrase that note, and do not reuse what it says (if the note says they are stuck, the brief does not); start where it stops.
-12. Under 320 words in total. Use the room to carry every detail and reason the host gave; never to pad, repeat or add anything the answers do not say. No em dashes (the character "—"): use commas, colons or full stops. No stock endings ("however good it sounds", "out of the question"); say it once, plainly. No markdown, no emoji, and no brackets, placeholders or template text (never write "[first]" or "[name]").`;
+12. Plain, warm and confident, in the register the framing line gives (warm and personal for a baby or a pet, energetic for a team, professional and concise for a business). The framing is for voice only; it is never a source of facts or requirements. Address participants as "you". Refer to the host by the name given, in the third person, and never write as the host: no "we", "us" or "our" for the host. Pronouns for the host: when the first name is clearly male or female (Matt, Emma), use he or she; when it could be either (Sam, Dana, Alex), or the host is a company, team or group, use the name or "they". People the host mentions keep the pronouns the host used for them. Follow the host's own spelling (British or American) and write in the language the host answered in.
+13. The host's own note to participants is shown directly above your brief. Do not greet, do not repeat or paraphrase that note, and do not reuse what it says (if the note says they are stuck, the brief does not); start where it stops.
+14. Under 320 words in total. Use the room to carry every detail and reason the host gave; never to pad, repeat or add anything the answers do not say. No em dashes (the character "—"): use commas, colons or full stops. No stock endings ("however good it sounds", "out of the question"); say it once, plainly. No markdown, no emoji, and no brackets, placeholders or template text (never write "[first]" or "[name]").`;
 
 function render(source: Source): string {
   const lines: string[] = [];
   lines.push(`Contest type: ${source.segment}.`);
   if (source.framing) lines.push(`Framing (voice only): ${source.framing}`);
+  if (source.shape) lines.push(`How this category's brief is laid out (where each answer goes, never a source of facts): ${source.shape}`);
   lines.push(`What is being named: ${source.thing}.`);
   // The contest name is a label the host typed for the contest ("Baby
   // Kowalski", "Our band"), not necessarily a name in use.
@@ -192,13 +196,25 @@ function stripDashes(s: string): string {
 }
 
 type Point = { label: string; text: string };
+type Name = { name: string; kind: 'liked' | 'missed'; note: string };
 type Doc = {
   v: 6;
   about: { story: string; facts: { label: string; value: string }[] };
   aim: { lead: string; points: Point[] };
-  directions: { explore: string[]; avoid: string[]; names: { name: string; note: string }[] };
+  directions: { explore: string[]; avoid: string[]; names: Name[] };
   rules: { points: Point[] };
 };
+
+// One home per fact: a pill whose value the story already says is dropped
+// (the writer is told the same; this catches the misses).
+function dropRepeatedFacts(doc: Doc): Doc {
+  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+  const story = ` ${norm(doc.about.story)} `;
+  return {
+    ...doc,
+    about: { ...doc.about, facts: doc.about.facts.filter((f) => !story.includes(` ${norm(f.value)} `)) },
+  };
+}
 
 function cleanDoc(raw: Record<string, unknown>): Doc {
   const str = (v: unknown) => stripDashes(String(v ?? '')).replace(/\s*\n\s*/g, ' ').trim();
@@ -222,11 +238,29 @@ function cleanDoc(raw: Record<string, unknown>): Doc {
       explore: lines(dir.explore),
       avoid: lines(dir.avoid),
       names: arr(dir.names)
-        .map((n) => ({ name: str(obj(n).name).replace(/[.:]$/, ''), note: str(obj(n).note) }))
+        .map((n) => ({ name: str(obj(n).name).replace(/[.:]$/, ''), kind: (obj(n).kind === 'missed' ? 'missed' : 'liked') as Name['kind'], note: str(obj(n).note) }))
         .filter((n) => n.name),
     },
     rules: { points: points(rules.points) },
   };
+}
+
+// Completeness check: a part of the material the draft left out entirely
+// (the host named names, or gave things to avoid, and none of it shows up).
+// Reported back to the writer for one rewrite, like an invented name.
+function missingParts(doc: Doc, source: Source): string[] {
+  const has = (...roles: string[]) => source.items.some((i) => roles.includes(i.role));
+  const out: string[] = [];
+  if (has('reference', 'antiReference') && doc.directions.names.length === 0) {
+    out.push('the names the host mentioned (list every one in names, liked or missed, with the host\'s reason)');
+  }
+  if (has('avoid') && doc.rules.points.length === 0 && doc.directions.avoid.length === 0) {
+    out.push('what the host asked to avoid (as rules, or as steer-clear lines when they are not hard bans)');
+  }
+  if (has('explore', 'exploreAvoid') && doc.directions.explore.length === 0) {
+    out.push('what the host asked participants to explore');
+  }
+  return out;
 }
 
 // Fidelity check: a capitalised word inside a sentence that appears nowhere
@@ -307,16 +341,21 @@ Deno.serve(async (req) => {
       const text = res.content.find((b) => b.type === 'text');
       if (!text || text.type !== 'text') throw new Error('empty');
       console.log('[compose-brief]', source.subId, 'usage', JSON.stringify(res.usage));
-      return cleanDoc(JSON.parse(text.text));
+      return dropRepeatedFacts(cleanDoc(JSON.parse(text.text)));
     };
 
     let doc = await ask();
     let flagged = unverifiedNames(doc, source);
-    if (flagged.length) {
-      // One rewrite with the offenders named; cheaper than shipping an
-      // invented place name into a brief.
-      console.warn('[compose-brief] unverified names, retrying once:', flagged.join(', '));
-      doc = await ask(`Your previous draft used these words that the host never wrote: ${flagged.join(', ')}. Rewrite without them, using only the material above.`);
+    const missing = missingParts(doc, source);
+    if (flagged.length || missing.length) {
+      // One rewrite with the problems named; cheaper than shipping an
+      // invented place name, or a brief that drops the host's names.
+      console.warn('[compose-brief] retrying once:', JSON.stringify({ flagged, missing }));
+      const notes = [
+        flagged.length ? `Your previous draft used these words that the host never wrote: ${flagged.join(', ')}. Leave them out.` : '',
+        missing.length ? `Your previous draft left out ${missing.join('; and ')}. Include it.` : '',
+      ].filter(Boolean).join(' ');
+      doc = await ask(`${notes} Rewrite the whole brief using only the material above.`);
       flagged = unverifiedNames(doc, source);
     }
 

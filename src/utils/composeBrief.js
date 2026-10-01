@@ -152,7 +152,9 @@ export function normalizeBriefDoc(doc) {
     parts.aim.points = pts(doc.aim?.points);
     parts.directions.explore = lines(doc.directions?.explore);
     parts.directions.avoid = lines(doc.directions?.avoid);
-    parts.directions.names = arr(doc.directions?.names).map((n) => ({ name: str(n?.name), note: str(n?.note) }));
+    parts.directions.names = arr(doc.directions?.names).map((n) => ({
+      name: str(n?.name), note: str(n?.note), ...(n?.kind === 'liked' || n?.kind === 'missed' ? { kind: n.kind } : {}),
+    }));
     parts.directions.prose = str(doc.directions?.prose);
     parts.rules.points = pts(doc.rules?.points);
     const { about, aim, directions, rules, ...rest } = doc;
@@ -217,7 +219,7 @@ export function cleanBriefDoc(doc) {
     directions: {
       explore: d.directions.explore.map(t).filter(Boolean),
       avoid: d.directions.avoid.map(t).filter(Boolean),
-      names: d.directions.names.map((n) => ({ name: t(n.name), note: t(n.note) })).filter((n) => n.name || n.note),
+      names: d.directions.names.map((n) => ({ name: t(n.name), note: t(n.note), ...(n.kind ? { kind: n.kind } : {}) })).filter((n) => n.name || n.note),
       prose: t(d.directions.prose),
     },
     rules: { points: cleanPts(d.rules.points) },

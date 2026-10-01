@@ -87,7 +87,11 @@ function answerText(q, value, subId) {
   return list
     .map((v) => {
       const s = q.type === 'date' ? formatDateAnswer(v) : String(v);
-      const exp = typeof v === 'string' ? getExpansion(q.id, v, subId) : null;
+      // The explanation of a picked option, minus its example names ("like
+      // Bella, Charlie, or Milo"): those are ours, not the host's, and the
+      // writer would otherwise quote them as the host's taste.
+      const raw = typeof v === 'string' ? getExpansion(q.id, v, subId) : null;
+      const exp = raw ? raw.replace(/,?\s+(?:like|such as|e\.g\.)\s+[A-Z][^;]*$/, '').replace(/\.?$/, '') : null;
       return exp ? `${s} (${exp})` : s;
     })
     .join('; ');
@@ -141,6 +145,8 @@ export function buildBriefSource({ subId, segmentLabel, questions, answers, sett
     v: 2,
     subId,
     framing: CATEGORY_FRAMING[subId] || CATEGORY_FRAMING[subId?.[0]] || '',
+    // How this category's brief is laid out (writer guidance, not material).
+    shape: shapeFor(subId).writer,
     segment: segmentLabel || subId,
     aboutTitle,
     thing: aboutTitle.replace(/^About\s+/i, '') || 'it',
@@ -179,12 +185,61 @@ const CATEGORY_FRAMING = {
   b: 'A business name. Participants may be colleagues or customers. Professional and clear.',
 };
 
+// The shape of each category's brief. Every category asks different
+// questions under different sections, so the same four parts fill
+// differently: what the fact pills pin, which answers become criteria and
+// which become directions, and how the names the host mentioned are split
+// (names they like vs names that missed) and labelled. writer = guidance
+// sent to compose-brief; the labels are what the brief shows.
+const CATEGORY_SHAPE = {
+  p1: {
+    liked: 'On the shortlist', missed: 'Ruled out',
+    writer: 'Baby. Fact pills: due date, surname, middle name (if given), siblings by name, gender only when it is a surprise. The story: who is expecting and the family the baby joins, in a sentence or two; heritage lives in the story or in one criterion, never both, and never as a pill as well. Criteria come from length, familiarity and personality answers, plus how the name sits with the surname, middle name and siblings. Shortlist names the host still loves are liked even when they carry a worry (the worry goes in the note); names taken by someone else or dropped are missed.',
+  },
+  p2: {
+    liked: 'Names they love', missed: 'Names that did not fit',
+    writer: 'Pet. Fact pills: the animal and breed or mix, sex and age, a short look ("white, brown ear patch"), other pets by name under the label "Lives with". The story: only how the pet arrived and what they are like, in the owner\'s words; breed, size and looks stay in the pills. The story opens with the pet as the host\'s ("Jess\'s new pup"), never a bare "He". Criteria come from the kind of name the host picked (a human name, silly, regal...) and how the new name should sit beside the other pets\' names (the new name differs in style from theirs, not the other way round). Explore holds only the quirks and the household\'s interests, in the host\'s own details (the sneezes, the kettle), never the personality or the arrival already told in the story. Admired names are liked.',
+  },
+  p4: {
+    liked: 'Names they like', missed: 'Names they do not',
+    writer: 'Something personal (a home, a boat, a blog, a tradition). Fact pills: what it is, where it is, how long it has been theirs or how often it happens, where the name will appear (a sign, a hull, a website), the old name if replacing. The story: what the thing means to them. Criteria come from the vibe, the feeling, describe-or-suggest, name types and who will see it. What it should reflect (hobbies, people, jokes) goes under explore. Admired names are liked; disliked names are missed, each with the host\'s reason.',
+  },
+  t1: {
+    liked: 'Team names they love', missed: 'Names to stay clear of',
+    writer: 'Sports team. Fact pills: sport and level or age group, where they are based, colours or mascot already fixed. The story: who the team is and what it is about (fun, competitive, friendship). Criteria come from how intimidating or playful it should be and who it is for (players, parents, league). Local inspiration (landmarks, wildlife, history) goes under explore, in the host\'s own words only. Other teams in the league the host wants to stand apart from, terrible names and names already rejected are missed; names admired from any sport are liked. The lesson of the league names (stand apart from them) lives in their entry only: no avoid line or criterion repeats it.',
+  },
+  t2: {
+    liked: 'Names they admire', missed: 'Considered and ruled out', namesSection: true,
+    writer: 'Band or club. Fact pills: style or genre, line-up or size, home turf. The story: how they formed (the origin story) and what they are like. The personality words (how the name should feel) usually make the lead on their own; write criteria only for other distinct asks the host made, and none at all when there are none. References that feel true to them (slang, ballads, books, places) go under explore. Bands or clubs they do not want to be confused with go under avoid as the style to steer away from. Admired and similar bands are liked, with what their names do well; names considered and rejected are missed.',
+  },
+  t6: {
+    liked: 'Names they like', missed: 'Names they do not',
+    writer: 'A group thing (a podcast, a group chat, a committee, a tradition). Fact pills: what it is, how often or when, who it is for, the current name if replacing. The story: what it is and why it exists. Criteria come from the vibe, the feeling, describe-or-suggest, name types and the audience. What it should reflect (running jokes, people, hobbies) goes under explore. Admired names are liked; disliked names are missed, each with the host\'s reason.',
+  },
+  b1: {
+    liked: 'Names they are drawn to', missed: 'Considered and rejected',
+    writer: 'Company. Fact pills: what is being named (company, first product), customers, the offer, what sets it apart. The story: what the company does and for whom, in two plain sentences, like the opening of an agency brief, using the host\'s words only. Themes the host lists in what the name should communicate go under explore; the criterion keeps only the message (trust, reach). Criteria come from what the name should communicate, the brand personality, name styles, describe-or-suggest and language openness. Words or ideas to explore and avoid go under the panels. Existing names they are drawn to are liked (with what they like about them); names considered and rejected are missed. Practical requirements (domains, trademarks, pronunciation, length) are rules.',
+  },
+  b2: {
+    liked: 'Names to learn from', missed: 'Considered and rejected',
+    writer: 'Product. Fact pills: the product, the brand or family it belongs to, what is coming next in the line, the naming convention (if any), whether it is shown with the company name. The story: what the product is and where it fits in the range. Criteria come from the features or benefits to convey, how the name will appear and be used, name styles, describe-or-suggest and language openness. Existing product names in the range and names they are drawn to are liked (what to learn from them); names considered and rejected are missed. A naming convention the product must follow is also a rule, and practical requirements are rules.',
+  },
+  b5: {
+    liked: 'Names they like', missed: 'Names they do not',
+    writer: 'Something for a business (an event, a programme, a store, a room). Fact pills: what it is, where, when or how often, who it is for, the current name if replacing. The story: what it is and what it is for, plainly. Criteria come from the vibe, the feeling, describe-or-suggest, name types and the audience. What it should reflect goes under explore. Admired names are liked; disliked names are missed, each with the host\'s reason.',
+  },
+};
+const DEFAULT_SHAPE = { liked: 'Names they like', missed: 'Names that missed', writer: '' };
+export function shapeFor(subId) {
+  return CATEGORY_SHAPE[subId] || DEFAULT_SHAPE;
+}
+
 // Stable hash of the material (not the intro, which never changes the brief,
 // and not the host name, which only changes the wording). Same answers, same
 // hash, no second call. FNV-1a over the JSON is plenty for a cache key.
 export function briefSourceHash(source) {
-  const { intro, host, hostAnonymous, ...rest } = source;
-  void intro; void host; void hostAnonymous;
+  const { intro, host, hostAnonymous, shape, ...rest } = source;
+  void intro; void host; void hostAnonymous; void shape;
   const s = JSON.stringify(rest);
   let h = 0x811c9dc5;
   for (let i = 0; i < s.length; i++) {
@@ -205,7 +260,17 @@ export function composedSectionMeta(subId, questions) {
   // (company, product); elsewhere they come from "Anything else you'd like
   // to add?", and "Must-haves" fits a baby or a band better.
   const practical = find(/practical/i);
+  const shape = shapeFor(subId);
+  // A category that authors its own names section (band: "Names to learn
+  // from") shows the names under that heading instead of inside the
+  // directions.
+  const namesSec = shape.namesSection ? find(/names/i) : null;
   return {
+    names: {
+      liked: shape.liked,
+      missed: shape.missed,
+      section: namesSec ? { title: namesSec.title, icon: namesSec.icon || 'Sparkle' } : null,
+    },
     about: { title: sections[0]?.title || 'About it', icon: sections[0]?.icon || 'Sparkle' },
     shouldDo: { title: find(/should do/i)?.title || 'What the name should do', icon: find(/should do/i)?.icon || 'Target' },
     exploreAvoid: { title: find(/explore/i)?.title || 'Directions to explore and avoid', icon: find(/explore/i)?.icon || 'Compass' },
