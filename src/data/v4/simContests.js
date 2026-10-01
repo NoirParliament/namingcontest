@@ -48,7 +48,7 @@ export const SIM_CONTESTS = {
       customRequirements: { enabled: true, text: 'Nothing too trendy — it should still suit a grown adult. No family names already taken.' },
     }),
     brief: {
-      projectSummary: 'First baby, due in spring. We want something warm and timeless that works on a CV and a playground alike — and travels across both sides of the family.',
+      projectSummary: 'Dan and I are expecting our first baby in spring. We want something warm and timeless that works on a CV and a playground alike, and travels across both sides of the family.',
       gender: 'Surprise',
       lastName: 'Hartley',
       heritage: 'British and Irish on both sides — names that nod to that without being hard to spell abroad.',
@@ -56,6 +56,24 @@ export const SIM_CONTESTS = {
       nicknamePreference: 'Flexible either way',
       traditions: 'No strict rule, but we love a name that has been in the family in some form.',
       avoidNames: "Nothing in this year’s top 10 — we don’t want three of them in the class.",
+    },
+    // The written brief participants read (what compose-brief produced from
+    // the answers above, kept verbatim so the demo matches a real contest).
+    briefDoc: {
+      about: 'Emma is expecting her first baby in spring, and the gender is staying a surprise. The baby will carry the surname Hartley, so the first name needs to flow with it. Both sides of the family have British and Irish roots, and Emma would like a name that nods to that heritage without being hard to spell abroad. She is after something warm and timeless that works on a CV and a playground alike, and travels across both sides of the family.',
+      shouldDo: [
+        { label: 'Aim for medium length', text: 'Suggest names of two to three syllables that sit comfortably in front of Hartley.' },
+        { label: 'Nicknames are optional', text: 'You can suggest names with or without an obvious nickname, as Emma is flexible either way.' },
+        { label: 'Look to family history', text: 'There is no strict rule, but Emma would love a name that has been in the family in some form, so variations of family names are welcome.' },
+        { label: 'Honour the roots', text: 'Lean on British and Irish names that are still easy to spell abroad.' },
+      ],
+      explore: ['Open'],
+      avoid: ['Anything in this year’s top 10'],
+      watchouts: [],
+      constraints: ['Nothing too trendy, it should still suit a grown adult', 'No family names already taken'],
+      edited: false,
+      generatedAt: '2026-10-01T09:00:00.000Z',
+      model: 'claude-opus-5-5',
     },
     allSubmissions: [
       { id: 'sim_p1_1',  text: 'Eleanor',  whyItFits: 'Classic and warm, shortens to Nell or Ellie without trying too hard.', submitterName: 'Grandma Sue' },

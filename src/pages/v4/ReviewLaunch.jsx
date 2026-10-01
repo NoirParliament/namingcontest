@@ -27,7 +27,7 @@ import { getBriefLabel, getBriefSections } from '../../data/v4/briefExpansions';
 import GuideExpandable from '../../components/v4/GuideExpandable';
 import BriefSectionHead from '../../components/v4/BriefSectionHead';
 import ComposedBrief, { ComposedBriefSkeleton } from '../../components/v4/ComposedBrief';
-import { currentBriefDoc, composeBriefDoc, saveBriefDoc, briefDocHasContent } from '../../utils/composeBrief';
+import { currentBriefDoc, composeBriefDoc, saveBriefDoc, briefDocHasContent, cleanBriefDoc } from '../../utils/composeBrief';
 import { ContestScheduleInput } from '../../components/v4/QuestionInput';
 import ExitLink from '../../components/v4/ExitLink';
 import '../../styles/landing-v3.css';
@@ -331,7 +331,7 @@ export default function ReviewLaunch() {
       // The written brief as it stands on screen (with the creator's edits),
       // frozen from here on. Null when it was never written: participants
       // then get the answers, exactly as before.
-      brief_doc: briefDocHasContent(currentBriefDoc(cur)) ? currentBriefDoc(cur) : null,
+      brief_doc: briefDocHasContent(currentBriefDoc(cur)) ? cleanBriefDoc(currentBriefDoc(cur)) : null,
       // Creator identity from the opening step rides in settings (jsonb, no
       // migration): the anonymity choice participants must respect, and the
       // display name so it survives the guest path to launch.
@@ -630,7 +630,7 @@ export default function ReviewLaunch() {
                 <>
                   <p className="v4-cbrief-hint">
                     <PencilSimple size={12} weight="bold" aria-hidden="true" />
-                    Written from your answers. Click any text to change it.
+                    Written from your answers. Click any text to edit it, or hover a line to remove it.
                   </p>
                   <ComposedBrief
                     doc={briefDoc}

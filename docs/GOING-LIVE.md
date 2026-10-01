@@ -84,6 +84,7 @@ Run after any significant change, and after any environment work:
 | `NOTIFY_SECRET` | Supabase secrets **and** Vault | Self-generated random string — both copies must match or `notify` returns 401 |
 | `SITE_URL` | Supabase secrets | `https://namingcontest.com` (base for links in emails) |
 | `CONTACT_TO` | Supabase secrets | Inbox that receives contact-form messages |
+| `ANTHROPIC_API_KEY` | Supabase secrets | Anthropic Console → API keys. Read only by `compose-brief` (the written brief). Create it in a workspace with a monthly spend limit; one brief costs about $0.03. Without it the function returns 503 and creators get the Q&A brief |
 | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | — | Injected into edge functions automatically; never set by hand, never in the client |
 
 Setting a function secret:
@@ -177,13 +178,14 @@ lifecycle emails will be delivered to production's notify function.
 **5. Vault** — `select vault.create_secret('<random string>', 'notify_secret');`
 and set the same string as the `NOTIFY_SECRET` function secret.
 
-**6. Edge functions** — deploy all six; the JWT flag is part of the design:
+**6. Edge functions** — deploy all seven; the JWT flag is part of the design:
 
 ```bash
 npx supabase functions deploy launch-contest  --no-verify-jwt --project-ref <REF>
 npx supabase functions deploy notify          --no-verify-jwt --project-ref <REF>
 npx supabase functions deploy contact         --no-verify-jwt --project-ref <REF>
 npx supabase functions deploy stripe-webhook  --no-verify-jwt --project-ref <REF>
+npx supabase functions deploy compose-brief   --no-verify-jwt --project-ref <REF>
 npx supabase functions deploy create-payment-intent --project-ref <REF>
 npx supabase functions deploy confirm-launch        --project-ref <REF>
 ```

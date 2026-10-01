@@ -168,6 +168,7 @@ Deploy: `npx supabase functions deploy <name> [--no-verify-jwt] --project-ref kg
 | `notify` | **no** (secret header) | Lifecycle emails, called by DB trigger via pg_net with `x-notify-secret` (Vault). Dedupe stamps written BEFORE sending. Resend batch endpoint (100/call) |
 | `stripe-webhook` | **no** (signature) | Backstop for `payment_intent.succeeded`. Verifies the Stripe signature with `constructEventAsync` (the sync variant needs Node crypto), then delegates to confirm-launch. Fails closed: with no `STRIPE_WEBHOOK_SECRET` it rejects everything |
 | `contact` | **no** | Contact form → team inbox (reply_to = visitor) + visitor receipt. Rate-limited, escaped, field caps |
+| `compose-brief` | **no** | The written brief: the app sends the answers tagged by role (`src/data/v4/briefRoles.js`), Claude (`claude-opus-5-5`, structured output) returns the brief as JSON. Called once per set of answers from the chat hand-off / review page, cached in the draft, saved to `contests.brief_doc` at launch. Rate-limited 20/h per IP, input capped, fails soft (the app shows the Q&A rows) |
 
 Shared modules: `_shared/email.ts` (design system + `esc` + `sendEmail` +
 `FROM`), `_shared/rateLimit.ts` (IP hashing + fail-open take).

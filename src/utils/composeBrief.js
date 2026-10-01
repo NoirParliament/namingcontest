@@ -67,10 +67,27 @@ export async function composeBriefDoc() {
   return saveBriefDoc({ ...data.doc, sourceHash: briefSourceHash(source), edited: false });
 }
 
+// The doc without blank lines (a line added on the review page and never
+// filled in). Used at launch, so what is saved is exactly what reads.
+export function cleanBriefDoc(doc) {
+  if (!doc) return doc;
+  const t = (v) => (typeof v === 'string' ? v.trim() : '');
+  return {
+    ...doc,
+    about: t(doc.about),
+    shouldDo: (doc.shouldDo || []).map((b) => ({ label: t(b.label), text: t(b.text) })).filter((b) => b.label || b.text),
+    explore: (doc.explore || []).map(t).filter(Boolean),
+    avoid: (doc.avoid || []).map(t).filter(Boolean),
+    watchouts: (doc.watchouts || []).map((w) => ({ name: t(w.name), note: t(w.note) })).filter((w) => w.name || w.note),
+    constraints: (doc.constraints || []).map(t).filter(Boolean),
+  };
+}
+
 // True when the doc has anything worth rendering. A doc of empty arrays and
 // an empty paragraph (the model given almost nothing) falls back to the Q&A.
 export function briefDocHasContent(doc) {
   if (!doc) return false;
-  return !!(doc.about || doc.shouldDo?.length || doc.explore?.length || doc.avoid?.length
-    || doc.watchouts?.length || doc.constraints?.length);
+  const d = cleanBriefDoc(doc);
+  return !!(d.about || d.shouldDo.length || d.explore.length || d.avoid.length
+    || d.watchouts.length || d.constraints.length);
 }
