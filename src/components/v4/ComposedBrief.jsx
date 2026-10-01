@@ -69,18 +69,14 @@ function Names({ names, labels }) {
       </div>
     );
   }
-  // The same pair as Lean toward / Steer clear of: the names they like in
-  // the tinted panel, the ones that missed in the grey one, side by side.
+  // Each group's label in a left column, its names on the right (the
+  // label-left rows of Schedule and Settings on the same page): the column
+  // says which group a name is in, no rules, icons or tints needed.
   return (
-    <div className={`v4-cbrief-cols v4-cbrief-names-cols${groups.length > 1 ? ' is-two' : ''}`}>
+    <div className="v4-cbrief-namegroups">
       {groups.map((g) => (
-        <div key={g.label} className={`v4-cbrief-col${g.kind === 'missed' ? ' is-avoid' : ''}`}>
-          <div className="v4-cbrief-col-head">
-            <span className="v4-cbrief-col-icon" aria-hidden="true">
-              {g.kind === 'missed' ? <X size={12} weight="bold" /> : <Check size={12} weight="bold" />}
-            </span>
-            {g.label}
-          </div>
+        <div key={g.label} className="v4-cbrief-namegroup">
+          <div className="v4-cbrief-namegroup-label">{g.label}</div>
           <Points items={g.items} leadKey="name" textKey="note" variant="names" />
         </div>
       ))}

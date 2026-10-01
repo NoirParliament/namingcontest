@@ -12689,15 +12689,31 @@ button.v4-exit {
 .v4-cbrief-cols + .v4-cbrief-names,
 .v4-cbrief-para + .v4-cbrief-cols,
 .v4-cbrief-para + .v4-cbrief-names { margin-top: 24px; }
-/* Names the host mentioned, as the same pair of panels as the directions:
-   liked in the tint, missed in the grey. Under the directions panels with
-   the same gap they keep between themselves. */
+/* Names the host mentioned, by group: the group label in a left column,
+   its names on the right (the label-left rows of Schedule and Settings). */
 .v4-cbrief-names .v4-cbrief-sublabel { margin-bottom: 12px; }
-.v4-cbrief-cols + .v4-cbrief-names-cols { margin-top: 12px; }
-.v4-brief-group-head + .v4-cbrief-names-cols { margin-top: 0; }
-.v4-cbrief-col .v4-cbrief-points.is-names { gap: 12px; }
-.v4-cbrief-col .v4-cbrief-points.is-names .v4-cbrief-point-lead { font-size: 17px; }
-.v4-cbrief-col .v4-cbrief-points.is-names .v4-cbrief-point-text { font-size: 14px; }
+.v4-cbrief-namegroups {
+  display: grid;
+  gap: 22px;
+}
+.v4-cbrief-cols + .v4-cbrief-namegroups { margin-top: 26px; }
+.v4-cbrief-namegroup {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 4px 20px;
+  align-items: start;
+}
+.v4-cbrief-namegroup-label {
+  padding-top: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--v4-muted);
+}
+@media (max-width: 640px) {
+  .v4-cbrief-namegroup { grid-template-columns: 1fr; }
+  .v4-cbrief-namegroup-label { padding-top: 0; margin-bottom: 6px; }
+}
 
 @media (max-width: 640px) {
   .v4-cbrief-cols.is-two { grid-template-columns: 1fr; }
