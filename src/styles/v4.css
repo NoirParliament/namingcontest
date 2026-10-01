@@ -12507,13 +12507,6 @@ button.v4-exit {
 .v4-cbrief-item-body {
   min-width: 0;
 }
-.v4-cbrief-inline {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.v4-cbrief-inline .v4-cbrief-add { margin-top: 0; }
 .v4-cbrief-dir-label {
   display: block;
   font-size: 11px;
@@ -12540,9 +12533,10 @@ button.v4-exit {
 /* "Open" / "None" are states, in the muted ink. */
 .v4-cbrief-open {
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.55;
   color: var(--v4-muted);
 }
+.v4-cbrief-open.v4-cbrief-editable:focus { color: var(--v4-fg); }
 .v4-cbrief-open-both {
   margin: 0;
   font-size: 14px;
@@ -12616,26 +12610,11 @@ button.v4-exit {
 @media (hover: none) {
   .v4-cbrief-remove { opacity: 0.6; }
 }
-.v4-cbrief-add {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  margin-top: 8px;
-  padding: 4px 9px 4px 7px;
-  border: 1px dashed rgba(3, 3, 2, 0.18);
-  border-radius: 999px;
-  background: transparent;
-  font: inherit;
-  font-size: 12.5px;
-  font-weight: 500;
-  color: var(--v4-muted);
-  cursor: pointer;
-  transition: border-color 120ms ease, color 120ms ease, background-color 120ms ease;
-}
-.v4-cbrief-add:hover {
-  border-color: rgba(3, 3, 2, 0.4);
-  color: var(--v4-fg);
-  background: rgba(3, 3, 2, 0.03);
+/* The editable "Open" / "None" word: a real field, so it takes a caret and
+   a minimum width even while empty. */
+.v4-cbrief-open.v4-cbrief-editable {
+  display: inline-block;
+  min-width: 12ch;
 }
 .v4-cbrief-undo {
   position: sticky;

@@ -2,32 +2,42 @@
 // creator's answers (compose-brief), rendered under the same section heads
 // as the Q&A card it replaces so it reads as the same brief, just finished.
 //
-// One component, three places: the creator's review (editable: click any
-// text and type; every line has its own remove button, with Undo; "Add a
-// line" under each list), the participant submit/vote cards and the locked
-// dashboard recap (read-only). Settings rows, the host's note and the guides
-// stay outside; this is only the written part.
+// One component, three places: the creator's review (editable), the
+// participant submit/vote cards and the locked dashboard recap (read-only).
+// Settings rows, the host's note and the guides stay outside; this is only
+// the written part.
+//
+// Editing is a document, not a form: click text and type. Enter at the end
+// of a line starts the next one; Backspace on an empty line removes it; the
+// × on hover removes a line too (with Undo). "Open" and "None" are editable
+// like any other line, so a question skipped in the chat can still be
+// filled in here. Nothing is added unless the creator types it.
 
 import { useEffect, useRef, useState } from 'react';
-import { X, Plus, ArrowCounterClockwise } from '@phosphor-icons/react';
+import { X, ArrowCounterClockwise } from '@phosphor-icons/react';
 import BriefSectionHead from './BriefSectionHead';
 import { composedSectionMeta } from '../../data/v4/briefRoles';
 
-const isOpen = (list) => list?.length === 1 && /^open$/i.test(list[0]);
+const isOpen = (list) => list?.length === 1 && /^(open|none)$/i.test(list[0]);
+const isBlank = (v) => !String(v ?? '').trim();
 
 // Plain-text inline editor. contentEditable on the element itself, commit on
-// blur, Enter commits (a brief line is one line; Shift+Enter in the
-// paragraph breaks a line), Escape puts the old text back. Emptying a line
-// never deletes it: the old text comes back, and the remove button is the
-// one way to take a line out, so nothing vanishes by accident.
-function Text({ value, as: Tag = 'span', className = '', placeholder, editable, onCommit, multiline = false, autoFocus = false }) {
+// blur; Enter commits and hands over to `onEnter` (next field or new line);
+// Shift+Enter breaks a line in the paragraph; Escape puts the old text back;
+// Backspace on an empty field calls `onEmptyBackspace`. Emptying an existing
+// line and clicking away brings the old text back: the remove button and
+// Backspace are the two ways to take a line out, so nothing vanishes by
+// accident.
+function Text({
+  value, as: Tag = 'span', className = '', placeholder, editable, onCommit,
+  multiline = false, autoFocus = false, onEnter, onEmptyBackspace, keepBlank = false,
+}) {
   const ref = useRef(null);
   useEffect(() => {
-    if (autoFocus && ref.current) {
-      ref.current.focus();
-    }
+    if (autoFocus && ref.current) ref.current.focus();
   }, [autoFocus]);
   if (!editable) return <Tag className={className}>{value}</Tag>;
+  const read = (el) => el.innerText.replace(/[ \t]+\n/g, '\n').trim();
   return (
     <Tag
       ref={ref}
@@ -37,8 +47,8 @@ function Text({ value, as: Tag = 'span', className = '', placeholder, editable, 
       spellCheck
       data-placeholder={placeholder}
       onBlur={(e) => {
-        const next = e.currentTarget.innerText.replace(/[ \t]+\n/g, '\n').trim();
-        if (!next && value) {
+        const next = read(e.currentTarget);
+        if (!next && value && !keepBlank) {
           e.currentTarget.innerText = value;
           return;
         }
@@ -47,11 +57,16 @@ function Text({ value, as: Tag = 'span', className = '', placeholder, editable, 
       onKeyDown={(e) => {
         if (e.key === 'Enter' && !(multiline && e.shiftKey)) {
           e.preventDefault();
-          e.currentTarget.blur();
-        }
-        if (e.key === 'Escape') {
+          const next = read(e.currentTarget);
+          if (next !== value) onCommit(next);
+          if (onEnter) onEnter(next);
+          else e.currentTarget.blur();
+        } else if (e.key === 'Escape') {
           e.currentTarget.innerText = value;
           e.currentTarget.blur();
+        } else if (e.key === 'Backspace' && onEmptyBackspace && !read(e.currentTarget)) {
+          e.preventDefault();
+          onEmptyBackspace();
         }
       }}
     >
@@ -66,19 +81,10 @@ function RemoveButton({ onClick, label }) {
       type="button"
       className="v4-cbrief-remove"
       onClick={onClick}
-      aria-label={`Remove ${label}`}
+      aria-label={`Remove ${label || 'this line'}`}
       title="Remove this line"
     >
       <X size={12} weight="bold" />
-    </button>
-  );
-}
-
-function AddLine({ onClick, children }) {
-  return (
-    <button type="button" className="v4-cbrief-add" onClick={onClick}>
-      <Plus size={12} weight="bold" aria-hidden="true" />
-      {children}
     </button>
   );
 }
@@ -87,60 +93,75 @@ export default function ComposedBrief({ doc, subId, questions, tone, editable = 
   // Undo for the last removed line: one slot, cleared after a few seconds
   // or on the next removal.
   const [removed, setRemoved] = useState(null); // { key, index, item, label }
-  // The line just added, so its first field takes focus.
-  const [fresh, setFresh] = useState(null); // { key, index }
+  // Where the caret should go after Enter / Backspace: { key, index, field }.
+  const [focusAt, setFocusAt] = useState(null);
   useEffect(() => {
     if (!removed) return undefined;
     const t = setTimeout(() => setRemoved(null), 7000);
     return () => clearTimeout(t);
   }, [removed]);
+  useEffect(() => {
+    if (focusAt) setFocusAt(null);
+  }, [focusAt]);
 
   if (!doc) return null;
   const meta = composedSectionMeta(subId, questions);
   const set = (patch) => onChange && onChange(patch);
   const lists = {
-    shouldDo: { get: () => doc.shouldDo || [], blank: () => ({ label: '', text: '' }), name: (it) => it.label || it.text },
-    watchouts: { get: () => doc.watchouts || [], blank: () => ({ name: '', note: '' }), name: (it) => it.name || it.note },
-    explore: { get: () => doc.explore || [], blank: () => '', name: (it) => it },
-    avoid: { get: () => doc.avoid || [], blank: () => '', name: (it) => it },
-    constraints: { get: () => doc.constraints || [], blank: () => '', name: (it) => it },
+    shouldDo: { get: () => doc.shouldDo || [], blank: () => ({ label: '', text: '' }), name: (it) => it.label || it.text, empty: (it) => isBlank(it.label) && isBlank(it.text) },
+    watchouts: { get: () => doc.watchouts || [], blank: () => ({ name: '', note: '' }), name: (it) => it.name || it.note, empty: (it) => isBlank(it.name) && isBlank(it.note) },
+    explore: { get: () => doc.explore || [], blank: () => '', name: (it) => it, empty: isBlank },
+    avoid: { get: () => doc.avoid || [], blank: () => '', name: (it) => it, empty: isBlank },
+    constraints: { get: () => doc.constraints || [], blank: () => '', name: (it) => it, empty: isBlank },
   };
+  const setList = (key, list) => set({ [key]: list });
   const update = (key, i, next) => {
     const list = [...lists[key].get()];
     list[i] = next;
-    set({ [key]: list });
+    setList(key, list);
   };
   const updateField = (key, i, field, next) => update(key, i, { ...lists[key].get()[i], [field]: next });
+  // Silent drop for blank lines (never had content, nothing to undo).
+  const drop = (key, i) => {
+    const list = [...lists[key].get()];
+    list.splice(i, 1);
+    setList(key, list);
+  };
   const remove = (key, i) => {
     const list = [...lists[key].get()];
     const [item] = list.splice(i, 1);
+    if (lists[key].empty(item)) {
+      setList(key, list);
+      return;
+    }
     setRemoved({ key, index: i, item, label: lists[key].name(item) });
-    set({ [key]: list });
+    setList(key, list);
   };
   const undo = () => {
     if (!removed) return;
     const list = [...lists[removed.key].get()];
     list.splice(Math.min(removed.index, list.length), 0, removed.item);
-    set({ [removed.key]: list });
+    setList(removed.key, list);
     setRemoved(null);
   };
-  const add = (key) => {
-    // An "Open" placeholder gives way to the first real line.
-    const cur = lists[key].get();
-    const list = isOpen(cur) ? [] : [...cur];
-    list.push(lists[key].blank());
-    setFresh({ key, index: list.length });
-    set({ [key]: list });
+  // Enter at the end of line i: a new line under it, caret in it. On a line
+  // that is still blank, Enter just leaves (no stacking empties).
+  const lineAfter = (key, i, current, firstField) => {
+    if (isBlank(current) && lists[key].empty(lists[key].get()[i])) {
+      drop(key, i);
+      return;
+    }
+    const list = [...lists[key].get()];
+    list.splice(i + 1, 0, lists[key].blank());
+    setList(key, list);
+    setFocusAt({ key, index: i + 1, field: firstField });
   };
-  // A line left blank stays on screen with its placeholder (so nothing
-  // disappears under the creator's cursor while they tab between the two
-  // fields); the remove button takes it out, and launch strips any blanks
-  // (cleanBriefDoc in utils/composeBrief).
-  const commitBlankAware = (key, i, next, field) => {
-    if (field) updateField(key, i, field, next);
-    else update(key, i, next);
+  // Backspace on an empty line: remove it, caret to the line above.
+  const backOut = (key, i, lastField) => {
+    drop(key, i);
+    if (i > 0) setFocusAt({ key, index: i - 1, field: lastField });
   };
-  const isFresh = (key, i) => fresh && fresh.key === key && fresh.index === i + 1;
+  const wants = (key, i, field) => !!focusAt && focusAt.key === key && focusAt.index === i && (focusAt.field || null) === (field || null);
 
   const renderPairList = (key, fields, placeholders) => (
     <ul className="v4-cbrief-list">
@@ -152,59 +173,72 @@ export default function ComposedBrief({ doc, subId, questions, tone, editable = 
             value={it[fields[0]]}
             placeholder={placeholders[0]}
             editable={editable}
-            autoFocus={isFresh(key, i)}
-            onCommit={(v) => commitBlankAware(key, i, v, fields[0])}
+            keepBlank
+            autoFocus={wants(key, i, fields[0])}
+            onCommit={(v) => updateField(key, i, fields[0], v)}
+            onEnter={() => setFocusAt({ key, index: i, field: fields[1] })}
+            onEmptyBackspace={() => { if (isBlank(it[fields[1]])) backOut(key, i, fields[1]); }}
           />
           <Text
             className="v4-cbrief-item-text"
             value={it[fields[1]]}
             placeholder={placeholders[1]}
             editable={editable}
-            onCommit={(v) => commitBlankAware(key, i, v, fields[1])}
+            keepBlank
+            autoFocus={wants(key, i, fields[1])}
+            onCommit={(v) => updateField(key, i, fields[1], v)}
+            onEnter={(v) => lineAfter(key, i, v, fields[0])}
+            onEmptyBackspace={() => { if (isBlank(it[fields[0]])) backOut(key, i, fields[1]); else setFocusAt({ key, index: i, field: fields[0] }); }}
           />
-          {editable && <RemoveButton label={lists[key].name(it) || 'this line'} onClick={() => remove(key, i)} />}
+          {editable && <RemoveButton label={lists[key].name(it)} onClick={() => remove(key, i)} />}
         </li>
       ))}
     </ul>
   );
 
-  // Plain lines, one per entry, no glyphs: the row label already says what
-  // the list is. "Open" is a state word, muted, with Add beside it.
-  const renderLines = (key, placeholder, addLabel) => {
+  // One line per entry, no glyphs: the row label says what the list is.
+  // An empty list (or the model's "Open") is one muted, editable word.
+  const renderLines = (key, placeholder, emptyWord) => {
     const list = lists[key].get();
-    const open = isOpen(list);
-    if (open || list.length === 0) {
+    const open = isOpen(list) || list.length === 0;
+    if (open) {
+      if (!editable) return <span className="v4-cbrief-open">{emptyWord}</span>;
       return (
-        <div className="v4-cbrief-inline">
-          <span className="v4-cbrief-open">{open ? 'Open' : 'None'}</span>
-          {editable && <AddLine onClick={() => add(key)}>{addLabel}</AddLine>}
-        </div>
+        <Text
+          className="v4-cbrief-open"
+          value=""
+          placeholder={emptyWord}
+          editable
+          keepBlank
+          onCommit={(v) => { if (v) setList(key, [v]); }}
+          onEnter={(v) => { if (v) { setList(key, [v, '']); setFocusAt({ key, index: 1 }); } }}
+        />
       );
     }
     return (
-      <>
-        <ul className="v4-cbrief-lines">
-          {list.map((s, i) => (
-            <li key={i}>
-              <Text
-                value={s}
-                placeholder={placeholder}
-                editable={editable}
-                autoFocus={isFresh(key, i)}
-                onCommit={(v) => commitBlankAware(key, i, v)}
-              />
-              {editable && <RemoveButton label={s} onClick={() => remove(key, i)} />}
-            </li>
-          ))}
-        </ul>
-        {editable && <AddLine onClick={() => add(key)}>{addLabel}</AddLine>}
-      </>
+      <ul className="v4-cbrief-lines">
+        {list.map((s, i) => (
+          <li key={i}>
+            <Text
+              value={s}
+              placeholder={placeholder}
+              editable={editable}
+              keepBlank
+              autoFocus={wants(key, i)}
+              onCommit={(v) => update(key, i, v)}
+              onEnter={(v) => lineAfter(key, i, v)}
+              onEmptyBackspace={() => backOut(key, i)}
+            />
+            {editable && <RemoveButton label={s} onClick={() => remove(key, i)} />}
+          </li>
+        ))}
+      </ul>
     );
   };
 
   const explore = lists.explore.get();
   const avoid = lists.avoid.get();
-  const bothOpen = isOpen(explore) && isOpen(avoid);
+  const bothOpen = (isOpen(explore) || explore.length === 0) && (isOpen(avoid) || avoid.length === 0);
   const hasDirections = explore.length > 0 || avoid.length > 0 || lists.watchouts.get().length > 0 || editable;
 
   return (
@@ -228,7 +262,6 @@ export default function ComposedBrief({ doc, subId, questions, tone, editable = 
         <div className="v4-brief-group">
           <BriefSectionHead title={meta.shouldDo.title} icon={meta.shouldDo.icon} tone={tone} />
           {renderPairList('shouldDo', ['label', 'text'], ['Short label', 'What participants should do'])}
-          {editable && <AddLine onClick={() => add('shouldDo')}>Add a point</AddLine>}
         </div>
       )}
 
@@ -246,19 +279,30 @@ export default function ComposedBrief({ doc, subId, questions, tone, editable = 
             <ul className="v4-cbrief-list">
               <li className="v4-cbrief-item v4-cbrief-item-static">
                 <strong className="v4-cbrief-item-label">Lean toward</strong>
-                <div className="v4-cbrief-item-body">{renderLines('explore', 'Something to lean toward', 'Add')}</div>
+                <div className="v4-cbrief-item-body">{renderLines('explore', 'Something to lean toward', 'Anything that fits the brief above')}</div>
               </li>
               <li className="v4-cbrief-item v4-cbrief-item-static">
                 <strong className="v4-cbrief-item-label">Steer clear of</strong>
-                <div className="v4-cbrief-item-body">{renderLines('avoid', 'Something off-limits', 'Add')}</div>
+                <div className="v4-cbrief-item-body">{renderLines('avoid', 'Something off-limits', 'Nothing is off-limits')}</div>
               </li>
             </ul>
           )}
           {(lists.watchouts.get().length > 0 || editable) && (
             <div className="v4-cbrief-watch">
               <span className="v4-cbrief-dir-label">Names already in the picture</span>
-              {renderPairList('watchouts', ['name', 'note'], ['Name', 'What the host said about it'])}
-              {editable && <AddLine onClick={() => add('watchouts')}>Add a name</AddLine>}
+              {lists.watchouts.get().length === 0 && editable ? (
+                <Text
+                  className="v4-cbrief-open"
+                  value=""
+                  placeholder="None yet"
+                  editable
+                  keepBlank
+                  onCommit={(v) => { if (v) setList('watchouts', [{ name: v, note: '' }]); }}
+                  onEnter={(v) => { if (v) { setList('watchouts', [{ name: v, note: '' }]); setFocusAt({ key: 'watchouts', index: 0, field: 'note' }); } }}
+                />
+              ) : (
+                renderPairList('watchouts', ['name', 'note'], ['Name', 'What the host said about it'])
+              )}
             </div>
           )}
         </div>
@@ -270,7 +314,7 @@ export default function ComposedBrief({ doc, subId, questions, tone, editable = 
           <ul className="v4-cbrief-list">
             <li className="v4-cbrief-item v4-cbrief-item-static">
               <strong className="v4-cbrief-item-label">Every name must</strong>
-              <div className="v4-cbrief-item-body">{renderLines('constraints', 'A requirement every name must meet', 'Add a requirement')}</div>
+              <div className="v4-cbrief-item-body">{renderLines('constraints', 'A requirement every name must meet', 'No hard requirements')}</div>
             </li>
           </ul>
         </div>
