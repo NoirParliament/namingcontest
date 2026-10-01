@@ -12660,10 +12660,6 @@ button.v4-exit {
   line-height: 1.5;
   color: var(--v4-muted);
 }
-.v4-cbrief-open-tag {
-  font-weight: 600;
-  color: var(--v4-fg);
-}
 .v4-cbrief-lines {
   list-style: none;
   margin: 0;

@@ -69,13 +69,10 @@ function Names({ names, labels }) {
   ));
 }
 
-// A side the host left open: "Open." then what that means here.
-function OpenLine({ line }) {
-  return (
-    <p className="v4-cbrief-open">
-      <span className="v4-cbrief-open-tag">{line.tag}</span> {line.text}
-    </p>
-  );
+// A side the host gave nothing for: one plain line that finishes the
+// panel's own label ("Steer clear of: anything that breaks the must-haves").
+function OpenLine({ text }) {
+  return <p className="v4-cbrief-open">{text}</p>;
 }
 
 function Lines({ items }) {
@@ -95,18 +92,18 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
   const hasAbout = !isBlank(about.story) || about.facts.length > 0;
   const hasAim = !isBlank(aim.lead) || aim.points.length > 0;
   const hasRules = rules.points.length > 0;
-  // Explore and avoid always show as a pair (Mark's brief: "Directions to
-  // Avoid: Open..."). A side the host gave nothing for says so in the app's
-  // own words, never the writer's, so it reads the same in every brief and
-  // never contradicts the rules: when the avoids all became hard rules, the
-  // avoid side points at them instead of claiming nothing is off-limits.
-  // Older briefs written as one paragraph keep their paragraph.
+  // Lean toward and steer clear of always show as a pair. A side the host
+  // gave nothing for says so in the app's own words, never the writer's, so
+  // it reads the same in every brief and never contradicts the rules: when
+  // the avoids all became hard rules, the avoid side points at them instead
+  // of claiming nothing is off-limits. Older briefs written as one
+  // paragraph keep their paragraph.
   const legacyProse = !isBlank(dir.prose) && dir.explore.length === 0 && dir.avoid.length === 0;
   const hasDir = true;
-  const openExplore = { tag: 'Open.', text: 'Range as widely as you like.' };
+  const openExplore = 'Anything goes, so range as widely as you like.';
   const openAvoid = hasRules
-    ? { tag: 'Open.', text: `Just stick to the ${meta.constraints.title.toLowerCase()} below.` }
-    : { tag: 'Open.', text: 'Nothing is off-limits.' };
+    ? `Anything that breaks the ${meta.constraints.title.toLowerCase()} below.`
+    : 'Nothing is off-limits.';
 
   // The segment's tone reaches the panels and number tiles the same way it
   // reaches the section heads.
@@ -161,14 +158,14 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
                   <span className="v4-cbrief-col-icon" aria-hidden="true"><Check size={12} weight="bold" /></span>
                   Lean toward
                 </div>
-                {dir.explore.length > 0 ? <Lines items={dir.explore} /> : <OpenLine line={openExplore} />}
+                {dir.explore.length > 0 ? <Lines items={dir.explore} /> : <OpenLine text={openExplore} />}
               </div>
               <div className="v4-cbrief-col is-avoid">
                 <div className="v4-cbrief-col-head">
                   <span className="v4-cbrief-col-icon" aria-hidden="true"><X size={12} weight="bold" /></span>
                   Steer clear of
                 </div>
-                {dir.avoid.length > 0 ? <Lines items={dir.avoid} /> : <OpenLine line={openAvoid} />}
+                {dir.avoid.length > 0 ? <Lines items={dir.avoid} /> : <OpenLine text={openAvoid} />}
               </div>
             </div>
           )}
