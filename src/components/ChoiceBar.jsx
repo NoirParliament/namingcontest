@@ -9,6 +9,8 @@
 //
 // Look: the site's dark bottom bar (the review page's "Update brief" bar):
 // ink surface, white text, solid white buttons with the ink hover wash.
+// 880px wide, the top navigation pill's width, with the text on the left
+// and the two answers on the right; stacked on narrow screens.
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
@@ -57,14 +59,17 @@ export default function ChoiceBar() {
   };
 
   return createPortal(
-    <section className="nc-choice" role="region" aria-label="Cookie choices">
+    <section className={`nc-choice${mode === 'settings' ? ' is-settings' : ''}`} role="region" aria-label="Cookie choices">
       <div className="nc-choice-copy">
         <p className="nc-choice-title">Cookies on NamingContest</p>
         <p className="nc-choice-text">
           We use essential storage to keep you signed in and save your drafts.
           With your OK, we also use Google Analytics and Microsoft Clarity to see
           how people use the site, including recordings of clicks and scrolling,
-          with what you type hidden. None of it is used for ads.
+          with what you type hidden. None of it is used for ads.{' '}
+          <Link to="/cookies" className="nc-choice-link" onClick={() => mode === 'settings' && setMode(null)}>
+            Cookie policy
+          </Link>
         </p>
         {mode === 'settings' && current !== null && (
           <p className="nc-choice-state">
@@ -72,18 +77,13 @@ export default function ChoiceBar() {
           </p>
         )}
       </div>
-      <div className="nc-choice-actions">
-        <Link to="/cookies" className="nc-choice-link" onClick={() => mode === 'settings' && setMode(null)}>
-          Cookie policy
-        </Link>
-        <div className="nc-choice-btns">
-          <button type="button" className="nc-choice-btn" onClick={() => choose(false)} disabled={saving}>
-            Reject all
-          </button>
-          <button type="button" className="nc-choice-btn" onClick={() => choose(true)} disabled={saving}>
-            Accept all
-          </button>
-        </div>
+      <div className="nc-choice-btns">
+        <button type="button" className="nc-choice-btn" onClick={() => choose(false)} disabled={saving}>
+          Reject all
+        </button>
+        <button type="button" className="nc-choice-btn" onClick={() => choose(true)} disabled={saving}>
+          Accept all
+        </button>
       </div>
       {mode === 'settings' && (
         <button type="button" className="nc-choice-close" aria-label="Close" onClick={() => setMode(null)}>

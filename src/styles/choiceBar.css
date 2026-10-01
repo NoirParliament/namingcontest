@@ -2,6 +2,8 @@
    The review page's dark "Update brief" bar (.v4-bupd), in its card form
    (the phone shape: 20px corners) because it carries a paragraph: ink
    surface, white text, solid white buttons with the site's ink hover wash.
+   880px wide, the landing page's navigation pill width: text on the left,
+   the two answers on the right. Stacks below 760px.
    Self-contained: it renders on every page, including ones that don't load
    v4.css or landing-v3.css, so the values are written out here. */
 .nc-choice {
@@ -9,11 +11,13 @@
   left: 50%;
   bottom: 20px;
   z-index: 10100;
-  width: min(600px, calc(100vw - 32px));
+  width: min(880px, calc(100vw - 32px));
   translate: -50% 0;
   display: grid;
-  gap: 14px;
-  padding: 18px 18px 14px 20px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 28px;
+  padding: 18px 18px 18px 24px;
   border-radius: 20px;
   background: #030302;
   color: #fff;
@@ -25,7 +29,9 @@
   from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.nc-choice-copy { display: grid; gap: 4px; padding-right: 22px; }
+.nc-choice-copy { display: grid; gap: 4px; min-width: 0; }
+/* Opened from "Cookie settings": room for the close button on the right. */
+.nc-choice.is-settings { padding-right: 56px; }
 .nc-choice-title {
   margin: 0;
   font-size: 14px;
@@ -41,15 +47,9 @@
   color: rgba(255, 255, 255, 0.7);
 }
 .nc-choice-state { color: #fff; }
-.nc-choice-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
 .nc-choice-link {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.7);
+  color: #fff;
+  white-space: nowrap;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -83,8 +83,9 @@
 .nc-choice-btn:disabled { opacity: 0.7; cursor: default; }
 .nc-choice-close {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 50%;
+  right: 14px;
+  translate: 0 -50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -101,9 +102,19 @@
 @media (prefers-reduced-motion: reduce) {
   .nc-choice { animation: none; }
 }
+@media (max-width: 760px) {
+  .nc-choice {
+    width: min(640px, calc(100vw - 32px));
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    padding: 16px 16px 16px 20px;
+  }
+  .nc-choice.is-settings { padding-right: 16px; }
+  .nc-choice.is-settings .nc-choice-copy { padding-right: 32px; }
+  .nc-choice-btns { justify-content: flex-end; }
+  .nc-choice-close { top: 10px; right: 10px; translate: none; }
+}
 @media (max-width: 560px) {
   .nc-choice { bottom: 14px; padding: 16px 14px 14px; }
-  .nc-choice-actions { flex-direction: column-reverse; align-items: stretch; }
   .nc-choice-btns > .nc-choice-btn { flex: 1; }
-  .nc-choice-link { align-self: center; }
 }
