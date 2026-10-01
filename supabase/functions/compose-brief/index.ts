@@ -41,7 +41,7 @@ function json(body: unknown, status = 200) {
 
 type Item = { id: string; role: string; question: string; answer: string; note?: string };
 type Source = {
-  v: number; subId: string; segment: string; aboutTitle: string; thing: string;
+  v: number; subId: string; segment: string; aboutTitle: string; thing: string; framing?: string;
   workingName: string; host: string; hostAnonymous: boolean; intro: string;
   items: Item[]; openExplore: boolean; openAvoid: boolean;
 };
@@ -52,7 +52,8 @@ const ROLE_RULES: Record<string, string> = {
   explore: 'something to lean toward',
   avoid: 'off-limits',
   exploreAvoid: 'contains both, split it into what to lean toward and what to avoid',
-  reference: 'reference names, keep each name and the host\'s own reason for it',
+  reference: 'reference names, keep each name and the host\'s own reason; if the host wants to avoid sounding like some of them, say which',
+  antiReference: 'names of other things the host dislikes or does not want to be mistaken for, with reasons; say what style to steer away from, never call them banned words',
   constraint: 'hard requirement, a name that fails it is out',
 };
 
@@ -89,15 +90,17 @@ const SYSTEM = `You write naming briefs for NamingContest.com. A host has answer
 
 Rules:
 1. Use only what the host wrote. Never invent facts, preferences, names, people or reasons. Every sentence must trace back to an answer. Copy names, places and people exactly as written. If an answer is thin, write less; never pad.
-2. Every answer carries a role that says how it may be used: fact (background, state it plainly), direction (turn it into an instruction for participants), explore (lean toward), avoid (off-limits), exploreAvoid (split into lean toward and avoid), reference (keep the name and the host's own reason), constraint (hard requirement, a name that fails it is out).
-3. Voice: warm, plain and confident, like a good creative brief written by a friend who knows the host. Address participants as "you". Refer to the host by the name given, in the third person. Follow the host's own spelling (British or American) and write in the language the host answered in.
+2. Every answer carries a role that says how it may be used: fact (background, state it plainly), direction (turn it into an instruction for participants), explore (lean toward), avoid (off-limits), exploreAvoid (split into lean toward and avoid), reference (keep the name and the host's own reason), antiReference (names of other things the host dislikes: say what style to steer away from and why, in the directions paragraph), constraint (hard requirement, a name that fails it is out).
+3. Voice: plain and confident, like a good creative brief, in the register the framing line gives (warm and personal for a baby or a pet, energetic for a team, professional and concise for a business). The framing is for voice only; it is never a source of requirements. Address participants as "you". Refer to the host by the name given, in the third person. Follow the host's own spelling (British or American) and write in the language the host answered in.
 4. The host's own note to participants is shown directly above your brief. Do not greet, do not repeat or paraphrase that note; start where it stops.
 5. about: 2 to 4 sentences of background written as flowing prose about the host and what they are naming, facts only, no advice. Never list fields ("The sibling name listed is Theo"); say it the way a friend would ("She will be a little sister to Theo"). shouldDo: 3 to 6 items, each a short label plus one instruction sentence. directions: one paragraph of prose, 2 to 5 sentences, that tells participants what to lean toward, what is off-limits, and what to make of each reference name the host mentioned (keep the host's reason, e.g. "They love Lucy but worry about the Lucifer association, so aim for that feel without the awkward link"). When the host left both open and named no names, the paragraph is one sentence saying nothing is ruled in or out and they should explore freely within the brief above. Never write labels like "Lean toward:" inside it; write sentences. constraints: full sentences, only from constraint answers, otherwise an empty array.
-6. Under 300 words in total. No em dashes (the character "—"): use commas, colons or full stops. No markdown, no emoji, no headings or labels inside the strings.`;
+6. Never suggest names yourself; the brief describes what to aim for, participants supply the names. Names quoted from the host's answers are fine.
+7. Under 300 words in total. No em dashes (the character "—"): use commas, colons or full stops. No markdown, no emoji, no headings or labels inside the strings.`;
 
 function render(source: Source): string {
   const lines: string[] = [];
   lines.push(`Contest type: ${source.segment}.`);
+  if (source.framing) lines.push(`Framing (voice only): ${source.framing}`);
   lines.push(`What is being named: ${source.thing}${source.workingName ? ` (working name: ${source.workingName})` : ''}.`);
   lines.push(`Host: ${source.host}${source.hostAnonymous ? ' (stays anonymous, so say "the host")' : ''}.`);
   if (source.intro) lines.push(`Host's own note to participants (already shown above the brief, do not repeat it):\n"${source.intro}"`);
@@ -146,7 +149,8 @@ function unverifiedNames(doc: ReturnType<typeof cleanDoc>, source: Source): stri
   for (const sentence of text.split(/(?<=[.!?:])\s+|\n/)) {
     const words = sentence.trim().split(/\s+/);
     words.slice(1).forEach((w) => {
-      const clean = w.replace(/^[("'“‘]+|[)"'”’.,;:!?]+$/g, '');
+      // Strip quotes, trailing punctuation and a possessive ("Dana's" is Dana).
+      const clean = w.replace(/^[("'“‘]+|[)"'”’.,;:!?]+$/g, '').replace(/['’]s$/i, '');
       if (/^[A-Z][a-zA-Z'’-]{2,}$/.test(clean) && !material.includes(clean.toLowerCase())) out.add(clean);
     });
   }

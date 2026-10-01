@@ -24,8 +24,8 @@ const ROLE_BY_ID = {
   projectSummary: 'fact', namingTarget: 'fact', purpose: 'fact', newOrReplacing: 'fact',
   dueDate: 'fact', gender: 'fact', lastName: 'fact', siblingNames: 'fact', heritage: 'fact',
   petType: 'fact', origin: 'fact', sexAge: 'fact', breed: 'fact', petPersonality: 'fact', otherPets: 'fact',
-  based: 'fact', teamColors: 'fact', originStory: 'fact', localConnection: 'fact', personalityWords: 'fact',
-  brandFamily: 'fact', productLine: 'fact', namingConventions: 'fact', pairedWithCompany: 'fact',
+  based: 'fact', teamColors: 'fact', originStory: 'fact', localConnection: 'fact',
+  brandFamily: 'fact', productLine: 'fact', pairedWithCompany: 'fact',
   // b4 rebrand + b3 project (retired cards, old contests still render)
   currentName: 'fact', rebrandReason: 'fact', companyDesc: 'fact', projDesc: 'fact', projDuration: 'fact',
   orgType: 'fact', story: 'fact', showDesc: 'fact', propDesc: 'fact', location: 'fact',
@@ -37,10 +37,16 @@ const ROLE_BY_ID = {
   nameUsage: 'direction', vibe: 'direction', feeling: 'direction', nameTypes: 'direction', reflect: 'direction',
   localInspiration: 'direction', references: 'direction', namingStyle: 'direction', targetAudience: 'direction',
   projNameType: 'direction', namingDirection: 'direction', tone: 'direction',
+  // t2: "what does your band or club feel like" is how the name should feel,
+  // not background.
+  personalityWords: 'direction',
   // explore / avoid / both
   exploreDirections: 'explore',
-  avoidDirections: 'avoid', avoidNames: 'avoid', confusedWith: 'avoid', dislikedNames: 'avoid',
-  terribleNames: 'avoid', competitors: 'avoid',
+  avoidDirections: 'avoid', avoidNames: 'avoid', competitors: 'avoid',
+  // antiReference: names of OTHER things the host dislikes or doesn't want
+  // to be mistaken for, with reasons. Not off-limits words: they show which
+  // style to steer away from ("three terrible team names, and why").
+  dislikedNames: 'antiReference', terribleNames: 'antiReference', confusedWith: 'antiReference',
   includeAvoid: 'exploreAvoid', keepOrLeave: 'exploreAvoid',
   // reference: names with the host's reason, kept verbatim (shortlist and
   // watchouts in Mark's example: "Lucy, but worried about Lucifer").
@@ -48,6 +54,8 @@ const ROLE_BY_ID = {
   leagueNames: 'reference', compShows: 'reference',
   // constraint: hard requirements, a name that fails these is out.
   practicalReqs: 'constraint', customRequirements: 'constraint', languagePref: 'constraint',
+  // b2: a convention the product name has to follow is a hard rule.
+  namingConventions: 'constraint',
   signDisplay: 'constraint',
 };
 
@@ -120,10 +128,19 @@ export function buildBriefSource({ subId, segmentLabel, questions, answers, sett
       answer: answerText({ id: 'customRequirements', type: 'toggleTextarea' }, settings.customRequirements, subId),
     });
   }
-  const has = (role) => items.some((i) => i.role === role || i.role === 'exploreAvoid');
+  // Does this category ask a question of that kind at all?
+  const asks = (role) => questions.some((q) => {
+    const r = roleFor(q.id);
+    return r === role || r === 'exploreAvoid';
+  });
+  const has = (role) => items.some((i) => i.role === role || i.role === 'exploreAvoid'
+    // Names the host dislikes are something to steer away from, so the
+    // avoid side isn't "open" when they gave any.
+    || (role === 'avoid' && i.role === 'antiReference'));
   return {
-    v: 1,
+    v: 2,
     subId,
+    framing: CATEGORY_FRAMING[subId] || CATEGORY_FRAMING[subId?.[0]] || '',
     segment: segmentLabel || subId,
     aboutTitle,
     thing: aboutTitle.replace(/^About\s+/i, '') || 'it',
@@ -134,10 +151,33 @@ export function buildBriefSource({ subId, segmentLabel, questions, answers, sett
     items,
     // Mark's example writes "Open" when nothing was given, so participants
     // know there are no restrictions rather than wondering.
-    openExplore: !has('explore'),
-    openAvoid: !has('avoid'),
+    // "Open" only when the category asks the question and the host left it
+    // blank. A category with no explore question (a band, a team) isn't
+    // "open"; it just never asked, and saying so would contradict answers
+    // like "references that feel true to you".
+    openExplore: asks('explore') && !has('explore'),
+    openAvoid: asks('avoid') && !has('avoid'),
   };
 }
+
+// Framing per category: who reads the brief, what the thing is, and the
+// register to write in. Voice only: it never adds a requirement the host
+// didn't give (the writer is told the same). Keyed by category, falling back
+// to the tier letter for retired categories.
+const CATEGORY_FRAMING = {
+  p1: 'A first name for a baby. Participants are family and close friends. Warm, personal and light, never clinical. The name has to work with the surname and any middle name the host gave. If the gender is a surprise, say names for either are welcome.',
+  p2: 'A name for a pet. Participants are family and friends. Playful and affectionate. Describe the animal the way an owner would, with the personality and quirks the host gave.',
+  p4: 'Something personal the host is naming (it could be a home, a boat, a blog, a tradition). Participants are friends and family. Friendly and personal.',
+  t1: 'A name for a sports team. Participants are teammates, parents or fans. Energetic and team-spirited, in plain sports language.',
+  t2: 'A name for a band or a club. Participants are members and friends. Creative and characterful; let the host’s own words about the group carry the voice.',
+  t6: 'A name for a group (it could be a podcast, a group chat, a committee). Participants are its members and friends. Friendly and clear.',
+  b1: 'A company or startup name. Participants may be colleagues, founders, advisors or customers. Professional, clear and concise, like a short agency naming brief.',
+  b2: 'A product or service name. Participants may be colleagues, the product team or customers. Professional, clear and concise, like a short agency naming brief; make the product’s place in the brand family clear.',
+  b5: 'Something for a business (it could be an event, a programme, a store). Participants may be colleagues or customers. Professional and clear.',
+  p: 'Something personal. Participants are friends and family. Warm and personal.',
+  t: 'A name for a group. Participants are its members and friends. Friendly and clear.',
+  b: 'A business name. Participants may be colleagues or customers. Professional and clear.',
+};
 
 // Stable hash of the material (not the intro, which never changes the brief,
 // and not the host name, which only changes the wording). Same answers, same
@@ -159,10 +199,18 @@ export function briefSourceHash(source) {
 export function composedSectionMeta(subId, questions) {
   const sections = getBriefSections(subId, questions) || [];
   const find = (re) => sections.find((s) => re.test(s.title));
+  // Headings are the category's own authored section titles (Maria's), so
+  // the written brief and the answer list use the same words. Requirements
+  // read "Practical requirements" where the category has that section
+  // (company, product); elsewhere they come from "Anything else you'd like
+  // to add?", and "Must-haves" fits a baby or a band better.
+  const practical = find(/practical/i);
   return {
     about: { title: sections[0]?.title || 'About it', icon: sections[0]?.icon || 'Sparkle' },
-    shouldDo: { title: 'What the name should do', icon: find(/should do/i)?.icon || 'Target' },
-    exploreAvoid: { title: 'Explore and avoid', icon: find(/explore/i)?.icon || 'Compass' },
-    constraints: { title: 'Practical requirements', icon: find(/practical/i)?.icon || 'ListChecks' },
+    shouldDo: { title: find(/should do/i)?.title || 'What the name should do', icon: find(/should do/i)?.icon || 'Target' },
+    exploreAvoid: { title: find(/explore/i)?.title || 'Directions to explore and avoid', icon: find(/explore/i)?.icon || 'Compass' },
+    constraints: practical
+      ? { title: practical.title, icon: practical.icon || 'ListChecks' }
+      : { title: 'Must-haves', icon: 'ListChecks' },
   };
 }
