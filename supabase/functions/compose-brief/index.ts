@@ -186,14 +186,113 @@ Voice:
 13. The host's own note to participants is shown directly above your brief. Do not greet, do not repeat or paraphrase that note, and do not reuse what it says (if the note says they are stuck, the brief does not). The brief never talks about the search for the name itself (being stuck, looking for one they both love, hoping for help): the note already says that. Start where it stops.
 14. Under 320 words in total. Use the room to carry every detail and reason the host gave; never to pad, repeat or add anything the answers do not say. No em dashes (the character "—"): use commas, colons or full stops. No stock endings ("however good it sounds", "out of the question"); say it once, plainly. No markdown, no emoji, and no brackets, placeholders or template text (never write "[first]" or "[name]").`;
 
-// The editor's checklist: a second read of the finished draft. The draft
-// rules above still apply; this pass only removes and repairs.
-const EDITOR = `You are now the editor. Below the material is a draft brief another writer produced from it, as JSON in the output shape. Return the same brief, changed only where one of these applies:
-1. Unsupported: every clause must be backed by the material. Delete or rewrite any phrase that adds a fact, number, image, feeling, reason or interpretation the host did not give (examples of what to cut: "eleven and twelve year olds" from "U12", "shouted across a park", "chaos merchant", "may set the tone for the pieces that follow", "made to work where others do not", "chosen" for a name the host only liked).
-2. Grammar: fix grammar, agreement and typos ("which the band have heard them all" becomes "which the band have heard many times").
-3. Filler: cut sentences or tails that say nothing specific, and anything about the search for the name itself ("her first name is the last piece still to settle").
-4. Repeats: if a point, fact or name appears in two places, keep it only where the rules put it.
-Keep everything else exactly: the structure, the order, every name and its kind, every fact pill, every avoid line and rule, and wording that is already fine. Never add anything new. When nothing needs changing, return the draft unchanged.`;
+// ── Line-by-line check ──────────────────────────────────────────────────
+// A second read of the finished draft, one line at a time: each story
+// sentence, pill, criterion, direction line, name note and rule is checked
+// on its own against the material, which is far stricter than rereading the
+// whole brief. Only failing lines come back, with their fix.
+const CHECKER = `You are now checking a finished brief line by line against the host's material above. The lines are numbered below. Return a fix only for lines that fail one of these tests:
+1. Supported: the line states nothing the material does not give. No number, age, date, place, person, feeling, image, reason, quality or interpretation the host did not write. "U12" does not say the players are eleven or twelve. "Rural" does not say "far from hospitals". A name the host only liked was not "chosen".
+2. Grammar: no grammar, agreement or spelling errors.
+3. Not filler: the line gives participants something they can use. A summing-up tail ("built around the communities it serves"), a line about the search for the name ("the last piece still to settle") or a line that only restates its own label is filler.
+4. Not repeated: the line does not say again what another line already says, in any words, and does not repeat itself ("sounds like broadband, so avoid names that sound like broadband").
+5. Reads well: clear and natural.
+To fix a line, change as little as possible: remove the unsupported or filler part, correct the grammar, cut the repeat, keep the host's own words. Never add information. Labels stay short (2 to 5 words; criteria and rules start with a verb). Return an empty fixed text to delete a line that is entirely filler or entirely repeated, except for name notes, rules and pill values, which are never deleted. Lines marked "known problem" have a problem found by code; fix it.`;
+
+const CHECK_SCHEMA = {
+  type: 'object',
+  properties: {
+    fixes: {
+      type: 'array',
+      description: 'Only the lines that fail a test. An empty array when every line passes.',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'string', description: 'The line id, e.g. "L7".' },
+          problem: { type: 'string', description: 'Which test it fails, in a few words.' },
+          fixed: { type: 'string', description: 'The corrected line, or an empty string to delete it.' },
+        },
+        required: ['id', 'problem', 'fixed'],
+        additionalProperties: false,
+      },
+    },
+  },
+  required: ['fixes'],
+  additionalProperties: false,
+};
+
+type Line = { id: string; kind: string; text: string; get: (d: Doc) => string; set: (d: Doc, v: string) => void; deletable: boolean };
+
+// Every editable line of the doc, with how to read and write it back.
+function briefLines(doc: Doc): Line[] {
+  const out: Line[] = [];
+  let n = 0;
+  const add = (kind: string, text: string, set: (d: Doc, v: string) => void, deletable: boolean) => {
+    if (!text) return;
+    n += 1;
+    out.push({ id: `L${n}`, kind, text, get: () => text, set, deletable });
+  };
+  splitSentences(doc.about.story).forEach((t, i) => add('story sentence', t, (d, v) => {
+    const parts = splitSentences(d.about.story);
+    parts[i] = v;
+    d.about.story = parts.filter(Boolean).join(' ');
+  }, true));
+  doc.about.facts.forEach((f, i) => {
+    add('fact pill label', f.label, (d, v) => { if (v) d.about.facts[i].label = v; }, false);
+    add('fact pill value', f.value, (d, v) => { if (v) d.about.facts[i].value = v; }, false);
+  });
+  add('aim lead', doc.aim.lead, (d, v) => { d.aim.lead = v; }, false);
+  doc.aim.points.forEach((pt, i) => {
+    add('criterion label', pt.label, (d, v) => { if (v) d.aim.points[i].label = v; }, false);
+    add('criterion text', pt.text, (d, v) => { d.aim.points[i].text = v; }, true);
+  });
+  doc.directions.explore.forEach((t, i) => add('lean toward line', t, (d, v) => { d.directions.explore[i] = v; }, true));
+  doc.directions.avoid.forEach((t, i) => add('steer clear of line', t, (d, v) => { d.directions.avoid[i] = v; }, true));
+  doc.directions.names.forEach((nm, i) => add(`note on the name "${nm.name}"`, nm.note, (d, v) => { if (v) d.directions.names[i].note = v; }, false));
+  doc.rules.points.forEach((pt, i) => {
+    add('rule label', pt.label, (d, v) => { if (v) d.rules.points[i].label = v; }, false);
+    add('rule text', pt.text, (d, v) => { if (v) d.rules.points[i].text = v; }, false);
+  });
+  return out;
+}
+
+const FILLER_WORDS = new Set(['the', 'a', 'an', 'name', 'names', 'should', 'say', 'says', 'it', 'its', 'to', 'be', 'and', 'of', 'that', 'this', 'is', 'are', 'with', 'for', 'feel', 'feels', 'will', 'want', 'wants']);
+function echoesLabel(label: string, text: string): boolean {
+  if (!label || !text) return false;
+  const words = (x: string) => x.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter((w) => w && !FILLER_WORDS.has(w));
+  const own = new Set(words(label));
+  return words(text).every((w) => own.has(w));
+}
+
+function splitSentences(t: string): string[] {
+  return t ? t.split(/(?<=[.!?])\s+(?=[A-Z"“])/).map((x) => x.trim()).filter(Boolean) : [];
+}
+
+// Problems code can see for itself, handed to the checker as known.
+const NUMBER_WORDS = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty', 'thirty', 'forty', 'fifty', 'hundred', 'dozen'];
+function knownProblems(lines: Line[], source: Source): Record<string, string> {
+  const material = JSON.stringify(source).toLowerCase();
+  const out: Record<string, string> = {};
+  for (const l of lines) {
+    const t = l.text.toLowerCase();
+    const issues: string[] = [];
+    // Numbers: a digit run or a number word the material never contains.
+    for (const m of t.match(/\d+/g) || []) if (!material.includes(m)) issues.push(`the number "${m}" is not in the material`);
+    for (const w of NUMBER_WORDS) {
+      if (new RegExp(`\\b${w}\\b`).test(t) && !new RegExp(`\\b${w}\\b`).test(material)) issues.push(`"${w}" is not in the material`);
+    }
+    // A line repeating its own phrase (three words or more).
+    const words = t.replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean);
+    const seen = new Set<string>();
+    for (let i = 0; i + 3 <= words.length; i++) {
+      const g = words.slice(i, i + 3).join(' ');
+      if (seen.has(g)) { issues.push(`repeats "${g}" within the line`); break; }
+      seen.add(g);
+    }
+    if (issues.length) out[l.id] = issues.join('; ');
+  }
+  return out;
+}
 
 function render(source: Source): string {
   const lines: string[] = [];
@@ -403,25 +502,44 @@ Deno.serve(async (req) => {
       return dropRepeatedFacts(cleanDoc(JSON.parse(text.text)));
     };
 
-    // The editor: the same model, the same rules, the draft to repair.
-    const polish = async (draft: Doc): Promise<Doc> => {
+    // The line-by-line check: the same model and rules, one line at a time.
+    const verify = async (draft: Doc): Promise<Doc> => {
+      const lines = briefLines(draft);
+      const known = knownProblems(lines, source);
+      const listing = lines.map((l) => `${l.id} [${l.kind}]${known[l.id] ? ` (known problem: ${known[l.id]})` : ''}: ${l.text}`).join('\n');
       const res = await client.beta.messages.create({
         model: MODEL,
         max_tokens: 4000,
-        output_config: { effort: 'low', format: { type: 'json_schema', schema: SCHEMA } },
+        output_config: { effort: 'medium', format: { type: 'json_schema', schema: CHECK_SCHEMA } },
         betas: ['server-side-fallback-2026-07-01'],
         fallbacks: 'default',
         system: SYSTEM,
-        messages: [{
-          role: 'user',
-          content: `${render(source)}\n\n${EDITOR}\n\nDraft brief:\n${JSON.stringify({ about: draft.about, aim: draft.aim, directions: draft.directions, rules: draft.rules })}`,
-        }],
+        messages: [{ role: 'user', content: `${render(source)}\n\n${CHECKER}\n\nLines:\n${listing}` }],
       });
       if (res.stop_reason === 'refusal') throw new Error('refused');
       const text = res.content.find((b) => b.type === 'text');
       if (!text || text.type !== 'text') throw new Error('empty');
-      console.log('[compose-brief]', source.subId, 'editor usage', JSON.stringify(res.usage));
-      return dropRepeatedFacts(cleanDoc(JSON.parse(text.text)));
+      const { fixes } = JSON.parse(text.text) as { fixes: { id: string; problem: string; fixed: string }[] };
+      console.log('[compose-brief]', source.subId, 'check usage', JSON.stringify(res.usage), 'fixes', JSON.stringify(fixes));
+      // Apply from a fresh copy; lines are addressed by their position in
+      // the draft, so later lines are written before earlier story ones.
+      const next: Doc = JSON.parse(JSON.stringify(draft));
+      const byId = new Map(lines.map((l) => [l.id, l]));
+      for (const f of [...fixes].reverse()) {
+        const line = byId.get(f.id);
+        if (!line) continue;
+        const v = stripDashes(String(f.fixed || '')).replace(/\s*\n\s*/g, ' ').trim();
+        if (!v && !line.deletable) continue;
+        line.set(next, v);
+      }
+      // A criterion whose text only echoes its own label keeps the label
+      // alone ("Convey care that comes to you"), never the echo.
+      next.aim.points = next.aim.points
+        .map((pt) => (echoesLabel(pt.label, pt.text) ? { ...pt, text: '' } : pt))
+        .filter((pt) => pt.text || pt.label);
+      next.directions.explore = next.directions.explore.filter(Boolean);
+      next.directions.avoid = next.directions.avoid.filter(Boolean);
+      return dropRepeatedFacts(next);
     };
 
     let doc = await ask();
@@ -441,17 +559,18 @@ Deno.serve(async (req) => {
       flagged = unverifiedNames(doc, source);
     }
 
-    // Editor pass. Kept only if it did not lose a name the draft had, drop
-    // a whole part, or introduce a word the host never wrote.
+    // Line-by-line check. Kept only if it lost no name or part and brought
+    // in no word the host never wrote; otherwise the draft stands.
     try {
-      const edited = await polish(doc);
-      const namesKept = edited.directions.names.length >= doc.directions.names.length;
-      const partsKept = missingParts(edited, source).length <= missingParts(doc, source).length;
-      const noNewWords = unverifiedNames(edited, source).every((w) => flagged.includes(w));
-      if (namesKept && partsKept && noNewWords) doc = edited;
-      else console.warn('[compose-brief] editor result rejected:', JSON.stringify({ namesKept, partsKept, noNewWords }));
+      const checked = await verify(doc);
+      const namesKept = checked.directions.names.length === doc.directions.names.length;
+      const rulesKept = checked.rules.points.length === doc.rules.points.length;
+      const partsKept = missingParts(checked, source).length <= missingParts(doc, source).length;
+      const noNewWords = unverifiedNames(checked, source).every((w) => flagged.includes(w));
+      if (namesKept && rulesKept && partsKept && noNewWords) doc = checked;
+      else console.warn('[compose-brief] check result rejected:', JSON.stringify({ namesKept, rulesKept, partsKept, noNewWords }));
     } catch (e) {
-      console.warn('[compose-brief] editor pass failed, keeping the draft:', String(e));
+      console.warn('[compose-brief] check failed, keeping the draft:', String(e));
     }
 
     return json({
