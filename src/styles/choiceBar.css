@@ -2,24 +2,24 @@
    The review page's dark "Update brief" bar (.v4-bupd), in its card form
    (the phone shape: 20px corners) because it carries a paragraph: ink
    surface, white text, solid white buttons with the site's ink hover wash.
-   As wide as the page's content column: the hero card's edges (the 1280px
-   page minus its 24px gutters, and 88px narrower than the screen below
-   that). Text on the left, the two answers on the right. Stacks below 760px.
+   Shaped like the site footer (same ink, 20px from the screen edges, 32px
+   corners, 56px side padding, 22px on phones), so the text starts where the
+   footer's content starts and the buttons end where it ends. Text on the
+   left, the two answers on the right. Stacks below 760px.
    Self-contained: it renders on every page, including ones that don't load
    v4.css or landing-v3.css, so the values are written out here. */
 .nc-choice {
   position: fixed;
-  left: 50%;
+  left: 20px;
+  right: 20px;
   bottom: 20px;
   z-index: 10100;
-  width: min(1232px, calc(100vw - 88px));
-  translate: -50% 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 28px;
-  padding: 18px 18px 18px 24px;
-  border-radius: 20px;
+  gap: 48px;
+  padding: 22px 56px;
+  border-radius: 32px;
   background: #030302;
   color: #fff;
   font-family: "Inter", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
@@ -30,9 +30,27 @@
   from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.nc-choice-copy { display: grid; gap: 4px; min-width: 0; }
-/* Opened from "Cookie settings": room for the close button on the right. */
-.nc-choice.is-settings { padding-right: 56px; }
+/* The paragraph keeps a readable measure on very wide screens. */
+.nc-choice-copy { display: grid; gap: 4px; min-width: 0; max-width: 920px; }
+.nc-choice-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+/* Where the visitor stands, shown when reopened from "Cookie settings":
+   a small on-ink pill with a status dot (green on, grey off). */
+.nc-choice-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+.nc-choice-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, 0.45); }
+.nc-choice-status.is-on .nc-choice-dot { background: #8fd9a0; }
 .nc-choice-title {
   margin: 0;
   font-size: 14px;
@@ -40,14 +58,12 @@
   line-height: 1.35;
   color: #fff;
 }
-.nc-choice-text,
-.nc-choice-state {
+.nc-choice-text {
   margin: 0;
   font-size: 13px;
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.7);
 }
-.nc-choice-state { color: #fff; }
 .nc-choice-link {
   color: #fff;
   white-space: nowrap;
@@ -85,7 +101,7 @@
 .nc-choice-close {
   position: absolute;
   top: 50%;
-  right: 14px;
+  right: 16px;
   translate: 0 -50%;
   display: inline-flex;
   align-items: center;
@@ -108,17 +124,15 @@ body:has(.nc-choice) .v4-resume-pill { visibility: hidden; }
 }
 @media (max-width: 760px) {
   .nc-choice {
-    width: min(640px, calc(100vw - 32px));
     grid-template-columns: minmax(0, 1fr);
-    gap: 14px;
-    padding: 16px 16px 16px 20px;
+    gap: 16px;
+    padding: 24px 56px;
   }
-  .nc-choice.is-settings { padding-right: 16px; }
-  .nc-choice.is-settings .nc-choice-copy { padding-right: 32px; }
-  .nc-choice-btns { justify-content: flex-end; }
-  .nc-choice-close { top: 10px; right: 10px; translate: none; }
+  .nc-choice.is-settings .nc-choice-copy { padding-right: 24px; }
+  .nc-choice-btns { justify-content: flex-start; }
+  .nc-choice-close { top: 14px; right: 14px; translate: none; }
 }
 @media (max-width: 560px) {
-  .nc-choice { bottom: 14px; padding: 16px 14px 14px; }
+  .nc-choice { padding: 22px 22px 20px; }
   .nc-choice-btns > .nc-choice-btn { flex: 1; }
 }

@@ -9,9 +9,10 @@
 //
 // Look: the site's dark bottom bar (the review page's "Update brief" bar):
 // ink surface, white text, solid white buttons with the ink hover wash.
-// As wide as the page's content column (the hero card's edges), with the
-// text on the left and the two answers on the right; stacked on narrow
-// screens.
+// Shaped like the site footer, a dark card of the same colour: 20px from
+// the screen edges, 32px corners, the footer's side padding, so its text and
+// buttons line up with the footer's content. Text on the left, the two
+// answers on the right; stacked on narrow screens.
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
@@ -66,7 +67,16 @@ export default function ChoiceBar() {
   return createPortal(
     <section className={`nc-choice${mode === 'settings' ? ' is-settings' : ''}`} role="region" aria-label="Cookie choices">
       <div className="nc-choice-copy">
-        <p className="nc-choice-title">Cookies on NamingContest</p>
+        <div className="nc-choice-head">
+          <p className="nc-choice-title">Cookies on NamingContest</p>
+          {/* Opened from "Cookie settings": where the visitor stands now. */}
+          {mode === 'settings' && current !== null && (
+            <span className={`nc-choice-status ${current ? 'is-on' : 'is-off'}`}>
+              <span className="nc-choice-dot" aria-hidden="true" />
+              {current ? 'Analytics on' : 'Analytics off'}
+            </span>
+          )}
+        </div>
         {/* First-layer notice (GDPR art. 7 and 13, EDPB guidance): what is
             essential, what we ask permission for, who provides it, why, how
             to change your mind, and where to read more. One link, to the
@@ -81,11 +91,6 @@ export default function ChoiceBar() {
           choice at any time under Cookie settings in the footer.{' '}
           <Link to="/cookies" className="nc-choice-link" onClick={close}>Cookie policy</Link>
         </p>
-        {mode === 'settings' && current !== null && (
-          <p className="nc-choice-state">
-            {current ? 'Analytics is on for you right now.' : 'Analytics is off for you right now.'}
-          </p>
-        )}
       </div>
       <div className="nc-choice-btns">
         <button type="button" className="nc-choice-btn" onClick={() => choose(false)} disabled={saving}>
