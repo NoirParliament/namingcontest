@@ -12755,8 +12755,9 @@ button.v4-exit {
   animation: v4-bupd-turn 0.8s linear infinite;
 }
 @keyframes v4-bupd-turn { to { transform: rotate(360deg); } }
-/* The footer's dark-surface control reversed: solid white at rest, a soft
-   warm grey on hover, nothing moves. */
+/* The footer's dark-surface control reversed: solid white at rest, and on
+   hover the site's own hover tint (the soft ink wash used on rows and on the
+   resume pill's dismiss, rgba(3,3,2,.06)) laid over the white. Nothing moves. */
 .v4-bupd-btn {
   flex: none;
   display: inline-flex;
@@ -12775,7 +12776,7 @@ button.v4-exit {
   cursor: pointer;
   transition: background-color .2s ease;
 }
-.v4-bupd-btn:hover { background: #e6e2db; }
+.v4-bupd-btn:hover { background: linear-gradient(rgba(3, 3, 2, 0.06), rgba(3, 3, 2, 0.06)), #fff; }
 .v4-bupd-btn:focus-visible {
   outline: 2px solid #fff;
   outline-offset: 2px;
