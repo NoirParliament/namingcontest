@@ -54,7 +54,7 @@ const ROLE_RULES: Record<string, string> = {
   exploreAvoid: 'contains both, split it into what to lean toward and what to avoid',
   reference: 'reference names, keep each name and the host\'s own reason; if the host wants to avoid sounding like some of them, say which',
   antiReference: 'names of other things the host dislikes or does not want to be mistaken for, with reasons; say what style to steer away from, never call them banned words',
-  constraint: 'hard requirement, a name that fails it is out',
+  constraint: 'sort each point: a hard rule that rules a name out goes in constraints; a preference, wish or piece of context goes in notes',
 };
 
 // Output shape. Fixed sections, so the app renders it with the same section
@@ -80,9 +80,22 @@ const SCHEMA = {
       type: 'string',
       description: 'One paragraph, 2 to 5 sentences, addressed to participants: what to lean toward, what is off-limits, and each reference name with the host\'s own reason. Prose, no labels, no lists.',
     },
+    notes: {
+      type: 'array',
+      description: 'Soft points from constraint answers that do not rule a name out (preferences, wishes, context), same shape as shouldDo. Empty when there are none.',
+      items: {
+        type: 'object',
+        properties: {
+          label: { type: 'string', description: '2 to 4 words.' },
+          text: { type: 'string', description: 'One sentence, phrased as a note, not a rule.' },
+        },
+        required: ['label', 'text'],
+        additionalProperties: false,
+      },
+    },
     constraints: {
       type: 'array',
-      description: 'Hard requirements, only from constraint answers, same shape as shouldDo. Empty when there are none.',
+      description: 'Hard rules only (a name that fails one is out), from constraint answers, same shape as shouldDo. Empty when there are none.',
       items: {
         type: 'object',
         properties: {
@@ -94,7 +107,7 @@ const SCHEMA = {
       },
     },
   },
-  required: ['about', 'shouldDo', 'directions', 'constraints'],
+  required: ['about', 'shouldDo', 'directions', 'constraints', 'notes'],
   additionalProperties: false,
 };
 
@@ -105,7 +118,7 @@ Rules:
 2. Every answer carries a role that says how it may be used: fact (background, state it plainly), direction (turn it into an instruction for participants), explore (lean toward), avoid (off-limits), exploreAvoid (split into lean toward and avoid), reference (keep the name and the host's own reason), antiReference (names of other things the host dislikes: say what style to steer away from and why, in the directions paragraph), constraint (hard requirement, a name that fails it is out).
 3. Voice: plain and confident, like a good creative brief, in the register the framing line gives (warm and personal for a baby or a pet, energetic for a team, professional and concise for a business). The framing is for voice only; it is never a source of requirements. Address participants as "you". Pronouns for the host: when the host's first name is clearly male or female (Matt, Emma), use he or she; when it could be either (Sam, Dana, Alex), or the host is a company, team or group, use the name or "they". If the host's answers say how they refer to themselves, that wins. People the host mentions keep the pronouns the host used for them. Refer to the host by the name given, in the third person. Follow the host's own spelling (British or American) and write in the language the host answered in.
 4. The host's own note to participants is shown directly above your brief. Do not greet, do not repeat or paraphrase that note; start where it stops.
-5. about: 2 to 4 sentences of background written as flowing prose about the host and what they are naming, facts only, no advice. Never list fields ("The sibling name listed is Theo"); say it the way a friend would ("She will be a little sister to Theo"). shouldDo: 3 to 6 items, each a short label plus one instruction sentence. directions: one paragraph of prose, 2 to 5 sentences, that tells participants what to lean toward, what is off-limits, and what to make of each reference name the host mentioned (keep the host's reason, e.g. "They love Lucy but worry about the Lucifer association, so aim for that feel without the awkward link"). When the host left both open and named no names, the paragraph is one sentence saying nothing is ruled in or out and they should explore freely within the brief above. Never write labels like "Lean toward:" inside it; write sentences. constraints: same shape as shouldDo (a short label plus one sentence), only from constraint answers, one item per requirement, otherwise an empty array.
+5. about: 2 to 4 sentences of background written as flowing prose about the host and what they are naming, facts only, no advice. Never list fields ("The sibling name listed is Theo"); say it the way a friend would ("She will be a little sister to Theo"). shouldDo: 3 to 6 items, each a short label plus one instruction sentence. directions: one paragraph of prose, 2 to 5 sentences, that tells participants what to lean toward, what is off-limits, and what to make of each reference name the host mentioned (keep the host's reason, e.g. "They love Lucy but worry about the Lucifer association, so aim for that feel without the awkward link"). When the host left both open and named no names, the paragraph is one sentence saying nothing is ruled in or out and they should explore freely within the brief above. Never write labels like "Lean toward:" inside it; write sentences. constraints and notes: both come only from constraint answers, same shape as shouldDo (a short label plus one sentence), one item per point. Sort every point: if it rules a name out (a syllable limit, a domain that must be free, no family names) it is a constraint; if it is a preference, wish or piece of context ("we'd love it to work in French", "have fun with it") it is a note, phrased as a note, never as a rule. Do not repeat a point that the rest of the brief already makes. Either can be an empty array.
 6. Never suggest names yourself; the brief describes what to aim for, participants supply the names. Names quoted from the host's answers are fine.
 7. Under 300 words in total. No em dashes (the character "—"): use commas, colons or full stops. No markdown, no emoji, no headings or labels inside the strings.`;
 
@@ -144,6 +157,9 @@ function cleanDoc(doc: Record<string, unknown>) {
       ? doc.shouldDo.map((b: Record<string, unknown>) => ({ label: str(b?.label).replace(/[.:]$/, ''), text: str(b?.text) })).filter((b) => b.text)
       : [],
     directions: str(doc.directions),
+    notes: Array.isArray(doc.notes)
+      ? doc.notes.map((c: Record<string, unknown>) => ({ label: str(c?.label).replace(/[.:]$/, ''), text: str(c?.text) })).filter((c) => c.text)
+      : [],
     constraints: Array.isArray(doc.constraints)
       ? doc.constraints.map((c: Record<string, unknown>) => ({ label: str(c?.label).replace(/[.:]$/, ''), text: str(c?.text) })).filter((c) => c.text)
       : [],
@@ -161,6 +177,7 @@ function unverifiedNames(doc: ReturnType<typeof cleanDoc>, source: Source): stri
     ...doc.shouldDo.map((b) => `${b.label}. ${b.text}`),
     doc.directions,
     ...doc.constraints.map((c) => `${c.label}. ${c.text}`),
+    ...doc.notes.map((c) => `${c.label}. ${c.text}`),
   ].join('\n');
   const out = new Set<string>();
   for (const sentence of text.split(/(?<=[.!?:])\s+|\n/)) {

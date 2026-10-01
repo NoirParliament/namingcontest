@@ -108,7 +108,7 @@ export async function composeBriefDoc({ rewrite = false } = {}) {
 }
 
 // The doc in its current shape: { about, shouldDo[{label,text}], directions,
-// constraints[{label,text}] }. Docs written by the first version of compose-brief carried
+// constraints[{label,text}], notes[{label,text}] }. Docs written by the first version of compose-brief carried
 // explore / avoid / watchouts lists instead of the directions paragraph;
 // those are folded into one paragraph here so they still read.
 export function normalizeBriefDoc(doc) {
@@ -137,6 +137,10 @@ export function normalizeBriefDoc(doc) {
     constraints: Array.isArray(doc.constraints)
       ? doc.constraints.map((c) => (typeof c === 'string' ? { label: '', text: c } : { label: str(c?.label), text: str(c?.text) }))
       : [],
+    // Soft points from "Anything else" that don't rule a name out.
+    notes: Array.isArray(doc.notes)
+      ? doc.notes.map((c) => ({ label: str(c?.label), text: str(c?.text) }))
+      : [],
   };
 }
 
@@ -154,6 +158,7 @@ export function cleanBriefDoc(doc) {
     shouldDo: d.shouldDo.map((b) => ({ label: t(b.label), text: t(b.text) })).filter((b) => b.label || b.text),
     directions: t(d.directions),
     constraints: d.constraints.map((c) => ({ label: t(c.label), text: t(c.text) })).filter((c) => c.label || c.text),
+    notes: d.notes.map((c) => ({ label: t(c.label), text: t(c.text) })).filter((c) => c.label || c.text),
   };
 }
 
@@ -162,5 +167,5 @@ export function cleanBriefDoc(doc) {
 export function briefDocHasContent(doc) {
   if (!doc) return false;
   const d = cleanBriefDoc(doc);
-  return !!(d.about || d.shouldDo.length || d.directions || d.constraints.length);
+  return !!(d.about || d.shouldDo.length || d.directions || d.constraints.length || d.notes.length);
 }

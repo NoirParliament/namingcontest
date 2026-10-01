@@ -6,13 +6,13 @@
 import {
   Package, Target, Compass, ListChecks, Sparkle, BookOpen,
   Buildings, ArrowsClockwise, SoccerBall, MusicNote, HandsClapping, Microphone,
-  UsersThree, Baby, PawPrint, House, Flag, Storefront, MapPin,
+  UsersThree, Baby, PawPrint, House, Flag, Storefront, MapPin, Info,
 } from '@phosphor-icons/react';
 
 const ICONS = {
   Package, Target, Compass, ListChecks, Sparkle, BookOpen,
   Buildings, ArrowsClockwise, SoccerBall, MusicNote, HandsClapping, Microphone,
-  UsersThree, Baby, PawPrint, House, Flag, Storefront, MapPin,
+  UsersThree, Baby, PawPrint, House, Flag, Storefront, MapPin, Info,
 };
 
 export default function BriefSectionHead({ title, sub, icon, tone }) {

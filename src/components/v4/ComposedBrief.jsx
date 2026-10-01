@@ -5,7 +5,8 @@
 // It reads top to bottom like a brief, not a form: a background paragraph,
 // the instructions as lines with a bold lead (Mark's own example), one
 // written paragraph on what to explore and avoid (with the names already in
-// the picture), and the hard requirements as sentences when there are any.
+// the picture), the hard requirements when there are any, and softer notes
+// ("Good to know") from "Anything else you'd like to add?".
 // A section with nothing in it is simply not there, for everyone.
 //
 // Read-only everywhere: the creator's review, the participant submit/vote
@@ -73,6 +74,13 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
         <div className="v4-brief-group">
           <BriefSectionHead title={meta.constraints.title} icon={meta.constraints.icon} tone={tone} />
           <Points items={doc.constraints} />
+        </div>
+      )}
+
+      {doc.notes.some((c) => !isBlank(c.text) || !isBlank(c.label)) && (
+        <div className="v4-brief-group">
+          <BriefSectionHead title={meta.notes.title} icon={meta.notes.icon} tone={tone} />
+          <Points items={doc.notes} />
         </div>
       )}
     </div>
