@@ -12637,8 +12637,31 @@ button.v4-exit {
   background: color-mix(in srgb, var(--sec-accent) 16%, #fff);
   color: var(--sec-accent);
 }
+/* Steer clear of reads apart from lean toward: the same soft panel in the
+   site ink at 4% instead of the category tint (the button hover tint is the
+   same ink at 6%), a grey x, and short dashes for its lines. */
+.v4-cbrief-col.is-avoid {
+  background: color-mix(in srgb, var(--v4-fg) 4%, #fff);
+}
 .v4-cbrief-col.is-avoid .v4-cbrief-col-icon {
-  background: color-mix(in srgb, var(--v4-fg) 8%, #fff);
+  background: color-mix(in srgb, var(--v4-fg) 10%, #fff);
+  color: var(--v4-fg);
+}
+.v4-cbrief-col.is-avoid .v4-cbrief-lines li::before {
+  top: 0.74em;
+  width: 7px;
+  height: 1.5px;
+  border-radius: 1px;
+}
+/* A side the host left open. */
+.v4-cbrief-open {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--v4-muted);
+}
+.v4-cbrief-open-tag {
+  font-weight: 600;
   color: var(--v4-fg);
 }
 .v4-cbrief-lines {

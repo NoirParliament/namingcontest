@@ -69,6 +69,15 @@ function Names({ names, labels }) {
   ));
 }
 
+// A side the host left open: "Open." then what that means here.
+function OpenLine({ line }) {
+  return (
+    <p className="v4-cbrief-open">
+      <span className="v4-cbrief-open-tag">{line.tag}</span> {line.text}
+    </p>
+  );
+}
+
 function Lines({ items }) {
   return (
     <ul className="v4-cbrief-lines">
@@ -85,17 +94,19 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
 
   const hasAbout = !isBlank(about.story) || about.facts.length > 0;
   const hasAim = !isBlank(aim.lead) || aim.points.length > 0;
-  const hasDir = dir.explore.length > 0 || dir.avoid.length > 0 || !isBlank(dir.prose)
-    || (dir.names.length > 0 && !meta.names.section);
   const hasRules = rules.points.length > 0;
-  const twoCols = dir.explore.length > 0 && dir.avoid.length > 0;
-  // The heading says what is there: "Directions to explore and avoid" when
-  // the host gave both sides, trimmed to "Directions to explore" (or "to
-  // avoid") when they gave one. A lone panel then needs no label of its own.
-  const oneSide = !twoCols && (dir.explore.length > 0 || dir.avoid.length > 0);
-  const dirTitle = oneSide && /explore and avoid/i.test(meta.exploreAvoid.title)
-    ? meta.exploreAvoid.title.replace(/explore and avoid/i, dir.explore.length > 0 ? 'explore' : 'avoid')
-    : meta.exploreAvoid.title;
+  // Explore and avoid always show as a pair (Mark's brief: "Directions to
+  // Avoid: Open..."). A side the host gave nothing for says so in the app's
+  // own words, never the writer's, so it reads the same in every brief and
+  // never contradicts the rules: when the avoids all became hard rules, the
+  // avoid side points at them instead of claiming nothing is off-limits.
+  // Older briefs written as one paragraph keep their paragraph.
+  const legacyProse = !isBlank(dir.prose) && dir.explore.length === 0 && dir.avoid.length === 0;
+  const hasDir = true;
+  const openExplore = { tag: 'Open.', text: 'Range as widely as you like.' };
+  const openAvoid = hasRules
+    ? { tag: 'Open,', text: `apart from the ${meta.constraints.title.toLowerCase()} below.` }
+    : { tag: 'Open.', text: 'Nothing is off-limits.' };
 
   // The segment's tone reaches the panels and number tiles the same way it
   // reaches the section heads.
@@ -140,32 +151,25 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
 
       {hasDir && (
         <div className="v4-brief-group">
-          <BriefSectionHead title={dirTitle} icon={meta.exploreAvoid.icon} tone={tone} />
-          {!isBlank(dir.prose) && <p className="v4-cbrief-para">{dir.prose}</p>}
-          {(dir.explore.length > 0 || dir.avoid.length > 0) && (
-            <div className={`v4-cbrief-cols${twoCols ? ' is-two' : ''}`}>
-              {dir.explore.length > 0 && (
-                <div className="v4-cbrief-col">
-                  {!oneSide && (
-                    <div className="v4-cbrief-col-head">
-                      <span className="v4-cbrief-col-icon" aria-hidden="true"><Check size={12} weight="bold" /></span>
-                      Lean toward
-                    </div>
-                  )}
-                  <Lines items={dir.explore} />
+          <BriefSectionHead title={meta.exploreAvoid.title} icon={meta.exploreAvoid.icon} tone={tone} />
+          {legacyProse ? (
+            <p className="v4-cbrief-para">{dir.prose}</p>
+          ) : (
+            <div className="v4-cbrief-cols is-two">
+              <div className="v4-cbrief-col">
+                <div className="v4-cbrief-col-head">
+                  <span className="v4-cbrief-col-icon" aria-hidden="true"><Check size={12} weight="bold" /></span>
+                  Lean toward
                 </div>
-              )}
-              {dir.avoid.length > 0 && (
-                <div className="v4-cbrief-col is-avoid">
-                  {!oneSide && (
-                    <div className="v4-cbrief-col-head">
-                      <span className="v4-cbrief-col-icon" aria-hidden="true"><X size={12} weight="bold" /></span>
-                      Steer clear of
-                    </div>
-                  )}
-                  <Lines items={dir.avoid} />
+                {dir.explore.length > 0 ? <Lines items={dir.explore} /> : <OpenLine line={openExplore} />}
+              </div>
+              <div className="v4-cbrief-col is-avoid">
+                <div className="v4-cbrief-col-head">
+                  <span className="v4-cbrief-col-icon" aria-hidden="true"><X size={12} weight="bold" /></span>
+                  Steer clear of
                 </div>
-              )}
+                {dir.avoid.length > 0 ? <Lines items={dir.avoid} /> : <OpenLine line={openAvoid} />}
+              </div>
             </div>
           )}
           {dir.names.length > 0 && !meta.names.section && <Names names={dir.names} labels={meta.names} />}
