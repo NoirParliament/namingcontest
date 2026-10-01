@@ -277,7 +277,7 @@ export default function ReviewLaunch() {
     const skipped = !isAnswered(val);
     // All rewrites used: the brief is final, so changing an answer would do
     // nothing. The answers stay readable but stop being buttons.
-    if (briefDoc && answersLocked && q.id !== 'intro') {
+    if (briefDoc && answersLocked) {
       return (
         <li key={q.id}>
           <div className={`v4-review-row v4-review-row-edit is-locked${skipped ? ' is-skipped' : ''}`}>
@@ -299,7 +299,7 @@ export default function ReviewLaunch() {
           <span className="v4-review-row-label">
             {/* Once a brief exists, the list is "the questions you were
                 asked", so show each exactly as the chat asked it. */}
-            {q.id === 'intro' ? 'Your note to participants' : briefDoc ? questionAsAsked(q) : getBriefLabel(q)}
+            {briefDoc ? questionAsAsked(q) : getBriefLabel(q)}
           </span>
           <span className={`v4-review-row-value${skipped ? ' v4-review-row-skipped' : ''}`}>
             {skipped
@@ -805,11 +805,6 @@ export default function ReviewLaunch() {
                       ? 'Only you see these. Your brief was written from them.'
                       : 'Only you see these. Click a question to change your answer or answer it.'}
                   </p>
-                  <div className="v4-qa-group">
-                    <ul className="v4-review-list v4-review-list-editable">
-                      {renderBriefRow(introQuestion)}
-                    </ul>
-                  </div>
                   {(briefGroups || [{ title: null, items: answerQuestions }]).map((group, gi) => {
                     const items = group.items.filter((q) => q.id !== 'intro');
                     if (!items.length) return null;
