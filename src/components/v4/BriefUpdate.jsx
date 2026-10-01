@@ -1,84 +1,78 @@
-// The two pieces that tie the written brief to the answers on the review
-// page:
+// The one control that ties the written brief to the answers on the review
+// page: a small bar pinned to the bottom of the screen that exists only
+// while the answers differ from what the brief was written from (or while
+// an update is running / just landed / just failed). One sentence, one
+// button, the rewrites left beside it.
 //
-//   BriefUpdateNotice  above the brief, only when the answers no longer match
-//                      what the brief was written from. One action: "Update
-//                      the brief", with the rewrites left beside it.
-//   BriefUpdatedNote   a short confirmation after a rewrite lands.
-//
-// The rule they make visible: the answers are the source, the brief is
+// The rule it makes visible: the answers are the source, the brief is
 // written from them, and nothing rewrites until the creator asks (at most
 // MAX_REWRITES times per contest).
 
+import { createPortal } from 'react-dom';
 import { ArrowsClockwise, CheckCircle, WarningCircle } from '@phosphor-icons/react';
 import { MAX_REWRITES } from '../../utils/composeBrief';
 
-export function RewritesLeft({ left }) {
-  return (
-    <span className={`v4-bupd-left${left === 0 ? ' is-none' : ''}`}>
-      <span className="v4-bupd-pips" aria-hidden="true">
-        {Array.from({ length: MAX_REWRITES }, (_, i) => (
-          <span key={i} className={i < left ? 'is-on' : ''} />
-        ))}
-      </span>
-      {left === 0 ? 'No rewrites left' : `${left} of ${MAX_REWRITES} rewrites left`}
-    </span>
-  );
-}
+const plural = (n, one, many) => (n === 1 ? one : many);
+const leftText = (left) => (left === 0
+  ? 'No rewrites left'
+  : `${left} ${plural(left, 'rewrite', 'rewrites')} left`);
 
-export function BriefUpdateNotice({ changes, edited, left, onUpdate, failed, nudge, tone }) {
-  const n = changes.filter((c) => c !== '*').length;
-  const title = n > 0
-    ? `You changed ${n} ${n === 1 ? 'answer' : 'answers'} since this brief was written.`
-    : 'Your answers have changed since this brief was written.';
-  const vars = tone ? { '--bupd-tint': tone.bg, '--bupd-accent': tone.fg } : undefined;
-  return (
-    <div className={`v4-bupd${nudge ? ' is-nudged' : ''}`} style={vars} role="status">
-      <div className="v4-bupd-body">
-        <p className="v4-bupd-title">{title}</p>
-        {left > 0 ? (
-          <p className="v4-bupd-text">
-            Update the brief to rewrite it from your answers.
-            {edited && ' This replaces the wording you changed by hand.'}
-          </p>
-        ) : (
-          <p className="v4-bupd-text">
-            You’ve used all {MAX_REWRITES} rewrites, so reword the brief below yourself to match.
-          </p>
-        )}
-        {nudge && (
-          <p className="v4-bupd-text v4-bupd-strong">
-            If you launch now, participants get the brief exactly as it reads below.
-          </p>
-        )}
-        {failed && (
-          <p className="v4-bupd-text v4-bupd-error">
-            <WarningCircle size={13} weight="fill" aria-hidden="true" />
-            The rewrite didn’t go through and your brief is unchanged. It didn’t use a rewrite.
-          </p>
-        )}
-      </div>
-      <div className="v4-bupd-actions">
-        {left > 0 && (
+export default function BriefUpdateBar({ count, left, edited, state, nudge, onUpdate }) {
+  // state: 'pending' | 'updating' | 'done' | 'failed'
+  let icon = null;
+  let text;
+  let sub = null;
+  let action = null;
+
+  if (state === 'updating') {
+    icon = <span className="v4-bupd-spin" aria-hidden="true" />;
+    text = 'Updating your brief from your answers…';
+  } else if (state === 'done') {
+    icon = <CheckCircle size={16} weight="fill" className="v4-bupd-ok" aria-hidden="true" />;
+    text = 'Your brief is up to date.';
+    sub = left === 0 ? 'That was your last rewrite.' : `${leftText(left)}.`;
+  } else {
+    const what = count > 0
+      ? `You’ve changed ${count} ${plural(count, 'answer', 'answers')} since your brief was written.`
+      : 'Your answers have changed since your brief was written.';
+    if (state === 'failed') {
+      icon = <WarningCircle size={16} weight="fill" className="v4-bupd-err" aria-hidden="true" />;
+      text = 'The update didn’t go through, so your brief is unchanged.';
+      sub = 'It didn’t use a rewrite.';
+    } else if (left === 0) {
+      text = what;
+      sub = `You’ve used all ${MAX_REWRITES} rewrites, so reword the brief yourself to match.`;
+    } else {
+      text = what;
+      if (nudge) sub = 'Launch now and participants get the brief without these changes.';
+      else if (edited) sub = 'Updating replaces any wording you changed yourself.';
+    }
+    if (left > 0) {
+      action = (
+        <span className="v4-bupd-act">
           <button type="button" className="v4-bupd-btn" onClick={onUpdate}>
             <ArrowsClockwise size={14} weight="bold" aria-hidden="true" />
-            {failed ? 'Try again' : 'Update the brief'}
+            {state === 'failed' ? 'Try again' : 'Update brief'}
           </button>
-        )}
-        <RewritesLeft left={left} />
-      </div>
-    </div>
-  );
-}
+          <span className="v4-bupd-left">{leftText(left)}</span>
+        </span>
+      );
+    }
+  }
 
-export function BriefUpdatedNote({ left }) {
-  return (
-    <p className="v4-bupd-done" role="status">
-      <CheckCircle size={14} weight="fill" aria-hidden="true" />
-      Brief rewritten from your answers.
-      <span className="v4-bupd-done-meta">
-        {left === 0 ? 'That was your last rewrite.' : `${left} of ${MAX_REWRITES} rewrites left.`}
-      </span>
-    </p>
+  // Portaled to <body>: the review column animates in with a transform,
+  // which would otherwise pin this "fixed" bar to the column, not the screen.
+  return createPortal(
+    <div className={`v4-bupd-bar is-${state}${nudge ? ' is-nudged' : ''}`} role="status" aria-live="polite">
+      <div className="v4-bupd-msg">
+        {icon}
+        <span className="v4-bupd-copy">
+          <span className="v4-bupd-text">{text}</span>
+          {sub && <span className="v4-bupd-sub">{sub}</span>}
+        </span>
+      </div>
+      {action}
+    </div>,
+    document.body,
   );
 }

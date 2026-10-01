@@ -28,7 +28,7 @@ import GuideExpandable from '../../components/v4/GuideExpandable';
 import BriefSectionHead from '../../components/v4/BriefSectionHead';
 import ComposedBrief, { ComposedBriefSkeleton } from '../../components/v4/ComposedBrief';
 import { currentBriefDoc, composeBriefDoc, saveBriefDoc, briefDocHasContent, cleanBriefDoc, briefChanges, rewritesLeft } from '../../utils/composeBrief';
-import { BriefUpdateNotice, BriefUpdatedNote, RewritesLeft } from '../../components/v4/BriefUpdate';
+import BriefUpdateBar from '../../components/v4/BriefUpdate';
 import { ContestScheduleInput } from '../../components/v4/QuestionInput';
 import ExitLink from '../../components/v4/ExitLink';
 import '../../styles/landing-v3.css';
@@ -100,6 +100,12 @@ async function applyIdentityToProfile() {
   } catch (e) {
     console.error('[launch] applying identity to profile failed:', e?.message || e);
   }
+}
+
+// A question exactly as the chat asked it (merged prompts included, since
+// getQuestionsFor applies them), falling back to its short label.
+function questionAsAsked(q) {
+  return (typeof q.prompt === 'string' && q.prompt.trim()) || q.label;
 }
 
 export default function ReviewLaunch() {
@@ -198,6 +204,9 @@ export default function ReviewLaunch() {
         setBriefState('ready');
         setJustRewritten(true);
         setStaleNudge(false);
+        // Back to the brief: fold the questions away and show the new text.
+        setAnswersOpen(false);
+        setTimeout(() => briefRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
       })
       .catch((e) => {
         console.error('[review] brief not rewritten:', e);
@@ -207,7 +216,7 @@ export default function ReviewLaunch() {
   };
   useEffect(() => {
     if (!justRewritten) return undefined;
-    const t = setTimeout(() => setJustRewritten(false), 6000);
+    const t = setTimeout(() => setJustRewritten(false), 4500);
     return () => clearTimeout(t);
   }, [justRewritten]);
   useEffect(() => {
@@ -231,6 +240,12 @@ export default function ReviewLaunch() {
   // longer match the brief, and how many rewrites are left.
   const pendingChanges = briefDoc && briefState !== 'writing' ? briefChanges() : [];
   const rewritesLeftNow = rewritesLeft();
+  // The bottom bar's state; null = no bar.
+  const changedCount = pendingChanges.filter((c) => c !== '*').length;
+  const updateBarState = briefState === 'rewriting' ? 'updating'
+    : pendingChanges.length > 0 ? (rewriteFailed ? 'failed' : 'pending')
+    : justRewritten ? 'done'
+    : null;
 
   const segmentTone = getSegmentTone(subId);
   const SegmentIcon = getSegmentIcon(subId);
@@ -270,19 +285,17 @@ export default function ReviewLaunch() {
   const renderBriefRow = (q) => {
     const val = briefAnswers[q.id];
     const skipped = !isAnswered(val);
-    // Changed since the brief was written (the answers panel marks these so
-    // the creator can see what the next update will pick up).
-    const changed = pendingChanges.includes(q.id);
     return (
       <li key={q.id}>
         <button
           type="button"
-          className={`v4-review-row v4-review-row-edit${skipped ? ' is-skipped' : ''}${changed ? ' is-changed' : ''}`}
+          className={`v4-review-row v4-review-row-edit${skipped ? ' is-skipped' : ''}`}
           onClick={() => setEditingQuestion({ question: q, section: 'brief' })}
         >
           <span className="v4-review-row-label">
-            {getBriefLabel(q)}
-            {changed && <span className="v4-answers-changed">Changed</span>}
+            {/* Once a brief exists, the list is "the questions you were
+                asked", so show each exactly as the chat asked it. */}
+            {briefDoc ? questionAsAsked(q) : getBriefLabel(q)}
           </span>
           <span className={`v4-review-row-value${skipped ? ' v4-review-row-skipped' : ''}`}>
             {skipped
@@ -691,18 +704,6 @@ export default function ReviewLaunch() {
                     <PencilSimple size={12} weight="bold" aria-hidden="true" />
                     This is what participants read, written from your answers. Click any text to reword it; clear a line to remove it.
                   </p>
-                  {pendingChanges.length > 0 && (
-                    <BriefUpdateNotice
-                      changes={pendingChanges}
-                      edited={!!briefDoc?.edited}
-                      left={rewritesLeftNow}
-                      onUpdate={rewriteBrief}
-                      failed={rewriteFailed}
-                      nudge={staleNudge}
-                      tone={segmentTone}
-                    />
-                  )}
-                  {justRewritten && pendingChanges.length === 0 && <BriefUpdatedNote left={rewritesLeftNow} />}
                   <ComposedBrief
                     doc={briefDoc}
                     subId={subId}
@@ -712,6 +713,48 @@ export default function ReviewLaunch() {
                     onChange={editBrief}
                   />
                 </>
+              )}
+
+              {/* The questions behind the brief: one quiet line until asked
+                  for, then the full list in place, each question as the
+                  chat asked it. Changing one doesn't touch the brief; the
+                  bar at the bottom of the screen offers the update. */}
+              {(showComposed || briefState === 'rewriting') && answerQuestions.length > 0 && (
+                <div className={`v4-qa${answersOpen ? ' is-open' : ''}`}>
+                  {!answersOpen ? (
+                    <button type="button" className="v4-qa-open" onClick={() => setAnswersOpen(true)}>
+                      <span>Missed a question, or want to change an answer?</span>
+                      <span className="v4-qa-link">See all questions</span>
+                    </button>
+                  ) : (
+                    <>
+                      <div className="v4-qa-head">
+                        <div>
+                          <h3 className="v4-qa-title">Your questions and answers</h3>
+                          <p className="v4-qa-sub">
+                            Only you see these. Click one to change it or answer it.
+                            {skippedCount > 0 && ` ${skippedCount} ${skippedCount === 1 ? 'is' : 'are'} still unanswered.`}
+                          </p>
+                        </div>
+                        <button type="button" className="v4-qa-close" onClick={() => setAnswersOpen(false)}>
+                          Hide
+                        </button>
+                      </div>
+                      {(briefGroups || [{ title: null, items: answerQuestions }]).map((group, gi) => {
+                        const items = group.items.filter((q) => q.id !== 'intro');
+                        if (!items.length) return null;
+                        return (
+                          <div key={group.title || gi} className="v4-qa-group">
+                            {group.title && <h4 className="v4-qa-group-title">{group.title}</h4>}
+                            <ul className="v4-review-list v4-review-list-editable">
+                              {items.map(renderBriefRow)}
+                            </ul>
+                          </div>
+                        );
+                      })}
+                    </>
+                  )}
+                </div>
               )}
               {briefState === 'failed' && (
                 <p className="v4-cbrief-fallback" role="status">
@@ -761,79 +804,6 @@ export default function ReviewLaunch() {
             </section>
           )}
 
-          {/* Your answers — the source the brief is written from. Private
-              (participants never see these once a brief exists), collapsed
-              by default, and the one place to change an answer or fill in a
-              skipped one. Changes wait for "Update the brief". Hidden while
-              the first brief is being written, and when it couldn't be
-              (the brief card already shows these rows then). */}
-          {briefDoc && briefState !== 'writing' && answerQuestions.length > 0 && (
-            <section className="v4-review-section v4-review-section--private v4-answers">
-              <button
-                type="button"
-                className="v4-answers-toggle"
-                onClick={() => setAnswersOpen((o) => !o)}
-                aria-expanded={answersOpen}
-              >
-                <span className="v4-answers-toggle-text">
-                  <span className="v4-answers-title">Your answers</span>
-                  <span className="v4-answers-sub">
-                    Change an answer or fill in one you skipped, then update the brief.
-                  </span>
-                </span>
-                <span className="v4-answers-meta">
-                  {skippedCount > 0 && (
-                    <span className="v4-answers-chip">{skippedCount} skipped</span>
-                  )}
-                  {pendingChanges.length > 0 && (
-                    <span className="v4-answers-chip is-changed">
-                      {pendingChanges.filter((c) => c !== '*').length || 'Some'} changed
-                    </span>
-                  )}
-                  <span className="v4-answers-caret">{answersOpen ? 'Hide' : 'Show'}</span>
-                </span>
-              </button>
-              {answersOpen && (
-                <div className="v4-answers-body">
-                  <div className="v4-answers-note">
-                    <span>Only you see these. Changing one doesn’t touch the brief until you press Update the brief.</span>
-                    <RewritesLeft left={rewritesLeftNow} />
-                  </div>
-                  {(briefGroups || [{ title: null, items: answerQuestions }]).map((group, gi) => (
-                    <div key={group.title || gi} className="v4-answers-group">
-                      {group.title && <h3 className="v4-answers-group-title">{group.title}</h3>}
-                      <ul className="v4-review-list v4-review-list-editable">
-                        {group.items.filter((q) => q.id !== 'intro').map(renderBriefRow)}
-                      </ul>
-                    </div>
-                  ))}
-                  {pendingChanges.length > 0 && (
-                    <div className="v4-answers-foot">
-                      <span>
-                        {rewritesLeftNow > 0
-                          ? 'Your brief doesn’t include these changes yet.'
-                          : 'You’ve used all your rewrites, so reword the brief above to match these changes.'}
-                      </span>
-                      {rewritesLeftNow > 0 && (
-                        <span className="v4-answers-foot-actions">
-                          <RewritesLeft left={rewritesLeftNow} />
-                          <button
-                            type="button"
-                            className="v4-bupd-btn"
-                            onClick={rewriteBrief}
-                            disabled={briefState === 'rewriting'}
-                          >
-                            Update the brief
-                          </button>
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
-            </section>
-          )}
-
           {/* Schedule — its own card, working exactly like the chat: the
               vertical roadmap with tappable stages, picker swapping in
               place, every change saved live. No modal-on-roadmap. */}
@@ -877,6 +847,20 @@ export default function ReviewLaunch() {
                 ))}
               </ul>
             </section>
+          )}
+
+          {/* The one "Update brief" control, pinned to the bottom of the
+              screen, present only while the answers have moved on from the
+              brief (or an update is running / just landed). */}
+          {updateBarState && (
+            <BriefUpdateBar
+              state={updateBarState}
+              count={changedCount}
+              left={rewritesLeftNow}
+              edited={!!briefDoc?.edited}
+              nudge={staleNudge}
+              onUpdate={rewriteBrief}
+            />
           )}
 
           {/* Launch CTA */}
