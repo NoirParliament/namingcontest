@@ -12458,6 +12458,8 @@ button.v4-exit {
    lines with a bold lead. One block of styles for the creator's review
    (editable), the participant cards and the dashboard recap. */
 .v4-cbrief { position: relative; }
+/* Dashboard recap: same 12px inset as the note above and the rows below. */
+.v4-manage-recap-group > .v4-cbrief { padding: 4px 12px 0; }
 /* Inside the participant card the header (eyebrow + name) and the host's
    note sit above; breathe before the first section head. */
 .v4-pchat-brief > .v4-cbrief { margin-top: 18px; }

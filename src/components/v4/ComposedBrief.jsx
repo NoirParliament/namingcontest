@@ -20,6 +20,27 @@ import { normalizeBriefDoc } from '../../utils/composeBrief';
 
 const isBlank = (v) => !String(v ?? '').trim();
 
+// Lines with a bold lead ("Keep it short. Suggest first names of one or two
+// syllables..."), Mark's own brief format. Used for the instructions and the
+// requirements alike, so the brief has one pattern for "points".
+function Points({ items }) {
+  return (
+    <ul className="v4-cbrief-points">
+      {items.filter((it) => !isBlank(it.text) || !isBlank(it.label)).map((it, i) => (
+        <li key={i} className="v4-cbrief-point">
+          {!isBlank(it.label) && (
+            <>
+              <strong className="v4-cbrief-point-lead">{it.label}</strong>
+              <span className="v4-cbrief-point-dot">.</span>{' '}
+            </>
+          )}
+          <span className="v4-cbrief-point-text">{it.text}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
   const doc = normalizeBriefDoc(rawDoc);
   if (!doc) return null;
@@ -37,19 +58,7 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
       {doc.shouldDo.some((it) => !isBlank(it.text) || !isBlank(it.label)) && (
         <div className="v4-brief-group">
           <BriefSectionHead title={meta.shouldDo.title} icon={meta.shouldDo.icon} tone={tone} />
-          <ul className="v4-cbrief-points">
-            {doc.shouldDo.filter((it) => !isBlank(it.text) || !isBlank(it.label)).map((it, i) => (
-              <li key={i} className="v4-cbrief-point">
-                {!isBlank(it.label) && (
-                  <>
-                    <strong className="v4-cbrief-point-lead">{it.label}</strong>
-                    <span className="v4-cbrief-point-dot">.</span>{' '}
-                  </>
-                )}
-                <span className="v4-cbrief-point-text">{it.text}</span>
-              </li>
-            ))}
-          </ul>
+          <Points items={doc.shouldDo} />
         </div>
       )}
 
@@ -60,16 +69,10 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
         </div>
       )}
 
-      {doc.constraints.some((s) => !isBlank(s)) && (
+      {doc.constraints.some((c) => !isBlank(c.text) || !isBlank(c.label)) && (
         <div className="v4-brief-group">
           <BriefSectionHead title={meta.constraints.title} icon={meta.constraints.icon} tone={tone} />
-          <ul className="v4-cbrief-points">
-            {doc.constraints.filter((s) => !isBlank(s)).map((s, i) => (
-              <li key={i} className="v4-cbrief-point">
-                <span className="v4-cbrief-point-text">{s}</span>
-              </li>
-            ))}
-          </ul>
+          <Points items={doc.constraints} />
         </div>
       )}
     </div>

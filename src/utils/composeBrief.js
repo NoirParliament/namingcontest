@@ -108,7 +108,7 @@ export async function composeBriefDoc({ rewrite = false } = {}) {
 }
 
 // The doc in its current shape: { about, shouldDo[{label,text}], directions,
-// constraints[] }. Docs written by the first version of compose-brief carried
+// constraints[{label,text}] }. Docs written by the first version of compose-brief carried
 // explore / avoid / watchouts lists instead of the directions paragraph;
 // those are folded into one paragraph here so they still read.
 export function normalizeBriefDoc(doc) {
@@ -132,7 +132,11 @@ export function normalizeBriefDoc(doc) {
     about: str(doc.about),
     shouldDo: Array.isArray(doc.shouldDo) ? doc.shouldDo.map((b) => ({ label: str(b?.label), text: str(b?.text) })) : [],
     directions,
-    constraints: Array.isArray(doc.constraints) ? doc.constraints.map(str) : [],
+    // Requirements are { label, text } since 2026-10-01; earlier docs carried
+    // plain sentences, which become a text with no label.
+    constraints: Array.isArray(doc.constraints)
+      ? doc.constraints.map((c) => (typeof c === 'string' ? { label: '', text: c } : { label: str(c?.label), text: str(c?.text) }))
+      : [],
   };
 }
 
@@ -149,7 +153,7 @@ export function cleanBriefDoc(doc) {
     about: t(d.about),
     shouldDo: d.shouldDo.map((b) => ({ label: t(b.label), text: t(b.text) })).filter((b) => b.label || b.text),
     directions: t(d.directions),
-    constraints: d.constraints.map(t).filter(Boolean),
+    constraints: d.constraints.map((c) => ({ label: t(c.label), text: t(c.text) })).filter((c) => c.label || c.text),
   };
 }
 

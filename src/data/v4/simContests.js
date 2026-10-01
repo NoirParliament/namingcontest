@@ -68,7 +68,10 @@ export const SIM_CONTESTS = {
         { label: 'Honour the roots', text: 'Lean on British and Irish names that are still easy to spell abroad.' },
       ],
       directions: 'Emma has not ruled any direction in, so explore freely within the brief above. The one thing to steer clear of is anything in this year’s top 10: she does not want three of them in the class.',
-      constraints: ['Nothing too trendy, it should still suit a grown adult.', 'No family names already taken.'],
+      constraints: [
+        { label: 'Not too trendy', text: 'It should still suit a grown adult.' },
+        { label: 'No family names taken', text: 'Skip any name already used in the family.' },
+      ],
       edited: false,
       generatedAt: '2026-10-01T09:00:00.000Z',
       model: 'claude-opus-5-5',
