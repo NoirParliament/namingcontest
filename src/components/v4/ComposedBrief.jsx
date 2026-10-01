@@ -69,13 +69,13 @@ function Names({ names, labels }) {
       </div>
     );
   }
-  // Each group's label in a left column, its names on the right (the
-  // label-left rows of Schedule and Settings on the same page): the column
-  // says which group a name is in, no rules, icons or tints needed.
+  // Stacked groups, each opened by an eyebrow in the host note's style ("A
+  // NOTE FROM MARK"): the liked group in the category colour, the missed one
+  // in ink, with clear space between. Type and space do the separating.
   return (
     <div className="v4-cbrief-namegroups">
       {groups.map((g) => (
-        <div key={g.label} className="v4-cbrief-namegroup">
+        <div key={g.label} className={`v4-cbrief-namegroup is-${g.kind}`}>
           <div className="v4-cbrief-namegroup-label">{g.label}</div>
           <Points items={g.items} leadKey="name" textKey="note" variant="names" />
         </div>

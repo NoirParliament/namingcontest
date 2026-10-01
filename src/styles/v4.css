@@ -12689,31 +12689,24 @@ button.v4-exit {
 .v4-cbrief-cols + .v4-cbrief-names,
 .v4-cbrief-para + .v4-cbrief-cols,
 .v4-cbrief-para + .v4-cbrief-names { margin-top: 24px; }
-/* Names the host mentioned, by group: the group label in a left column,
-   its names on the right (the label-left rows of Schedule and Settings). */
+/* Names the host mentioned, by group, stacked. Each group opens with an
+   eyebrow in the host note's style ("A NOTE FROM MARK"): liked in the
+   category colour, missed in ink. Space, not rules, between groups. */
 .v4-cbrief-names .v4-cbrief-sublabel { margin-bottom: 12px; }
 .v4-cbrief-namegroups {
   display: grid;
-  gap: 22px;
+  gap: 28px;
 }
-.v4-cbrief-cols + .v4-cbrief-namegroups { margin-top: 26px; }
-.v4-cbrief-namegroup {
-  display: grid;
-  grid-template-columns: 150px 1fr;
-  gap: 4px 20px;
-  align-items: start;
-}
+.v4-cbrief-cols + .v4-cbrief-namegroups { margin-top: 28px; }
 .v4-cbrief-namegroup-label {
-  padding-top: 4px;
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.35;
-  color: var(--v4-muted);
+  margin-bottom: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v4-fg);
 }
-@media (max-width: 640px) {
-  .v4-cbrief-namegroup { grid-template-columns: 1fr; }
-  .v4-cbrief-namegroup-label { padding-top: 0; margin-bottom: 6px; }
-}
+.v4-cbrief-namegroup.is-liked .v4-cbrief-namegroup-label { color: var(--sec-accent, var(--v4-fg)); }
 
 @media (max-width: 640px) {
   .v4-cbrief-cols.is-two { grid-template-columns: 1fr; }
