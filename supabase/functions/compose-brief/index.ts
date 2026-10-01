@@ -198,7 +198,7 @@ const CHECKER = `You are now checking a finished brief line by line against the 
 4. Not repeated: the line does not say again what another line already says, in any words, including the fact pills (a criterion "a floor lamp and a wall light follow next year" repeats the pill "Coming next: Floor lamp, wall light"), and does not repeat itself ("sounds like broadband, so avoid names that sound like broadband").
 5. Reads well: clear and natural.
 6. Adds something: a criterion's or rule's text must give a detail, reason or how that its label does not. Text that only rewords its own label ("Go direct or abstract" then "Either a direct or an abstract name works for Sam") fails: return an empty fixed text so the label stands alone.
-To fix a line, change as little as possible: remove the unsupported or filler part, correct the grammar, cut the repeat, keep the host's own words. Never add information. Labels stay short (2 to 5 words; criteria and rules start with a verb). Return an empty fixed text to delete a line that is entirely filler or entirely repeated, except for name notes, rules and pill values, which are never deleted. Lines marked "known problem" have a problem found by code; fix it.`;
+To fix a line, change as little as possible: remove the unsupported or filler part, correct the grammar, cut the repeat, keep the host's own words. Never add information. Labels stay short (2 to 5 words; criteria and rules start with a verb). Return an empty fixed text to delete a line that is entirely filler or entirely repeated, except for name notes, rules and pill values, which are never deleted. When a whole criterion (its label as well as its text) only repeats a fact pill, a direction, a rule or another criterion, return an empty fixed text for its label: that removes the criterion. Never leave a bare label that repeats something else. Lines marked "known problem" have a problem found by code; fix it.`;
 
 const CHECK_SCHEMA = {
   type: 'object',
@@ -244,7 +244,9 @@ function briefLines(doc: Doc): Line[] {
   });
   add('aim lead', doc.aim.lead, (d, v) => { d.aim.lead = v; }, false);
   doc.aim.points.forEach((pt, i) => {
-    add('criterion label', pt.label, (d, v) => { if (v) d.aim.points[i].label = v; }, false);
+    // An empty label removes the whole criterion (one that only repeats a
+    // pill, a direction or another criterion); its text goes with it.
+    add('criterion label', pt.label, (d, v) => { d.aim.points[i].label = v; if (!v) d.aim.points[i].text = ''; }, true);
     add('criterion text', pt.text, (d, v) => { d.aim.points[i].text = v; }, true);
   });
   doc.directions.explore.forEach((t, i) => add('lean toward line', t, (d, v) => { d.directions.explore[i] = v; }, true));
