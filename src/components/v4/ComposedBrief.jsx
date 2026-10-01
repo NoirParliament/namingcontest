@@ -92,18 +92,15 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
   const hasAbout = !isBlank(about.story) || about.facts.length > 0;
   const hasAim = !isBlank(aim.lead) || aim.points.length > 0;
   const hasRules = rules.points.length > 0;
-  // Lean toward and steer clear of always show as a pair. A side the host
-  // gave nothing for says so in the app's own words, never the writer's, so
-  // it reads the same in every brief and never contradicts the rules: when
-  // the avoids all became hard rules, the avoid side points at them instead
-  // of claiming nothing is off-limits. Older briefs written as one
-  // paragraph keep their paragraph.
+  // Lean toward and steer clear of always show as a pair. Everything the
+  // host said to avoid (bans included) is listed under Steer clear of; a
+  // side the host gave nothing for says so in the app's own words, never
+  // the writer's, read as the end of its label ("Steer clear of: nothing in
+  // particular"). Older briefs written as one paragraph keep their paragraph.
   const legacyProse = !isBlank(dir.prose) && dir.explore.length === 0 && dir.avoid.length === 0;
   const hasDir = true;
-  const openExplore = 'Anything goes, so range as widely as you like.';
-  const openAvoid = hasRules
-    ? `Anything that breaks the ${meta.constraints.title.toLowerCase()} below.`
-    : 'Nothing is off-limits.';
+  const openExplore = 'Nothing specific, so range as widely as you like.';
+  const openAvoid = 'Nothing in particular. Every idea is welcome.';
 
   // The segment's tone reaches the panels and number tiles the same way it
   // reaches the section heads.

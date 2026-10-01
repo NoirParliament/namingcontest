@@ -50,7 +50,7 @@ const ROLE_RULES: Record<string, string> = {
   fact: 'background fact, state it plainly in the about paragraph',
   direction: 'what the name should do, turn it into an instruction for participants',
   explore: 'something to lean toward',
-  avoid: 'off-limits',
+  avoid: 'something to steer clear of, bans included ("no names starting with K"): one avoid line each, with the host\'s reason',
   exploreAvoid: 'contains both, split it into what to lean toward and what to avoid',
   reference: 'reference names, keep each name and the host\'s own reason; if the host wants to avoid sounding like some of them, say which',
   antiReference: 'things the host dislikes or does not want to be mistaken for, with reasons; each NAME goes in names as missed with the host\'s reason (not also an avoid line); a style or kind with no name ("anything that sounds like a tribute act") is one avoid line; never call them banned words',
@@ -113,7 +113,7 @@ const SCHEMA = {
       description: 'What to lean toward, what to steer clear of, and the names the host mentioned.',
       properties: {
         explore: { type: 'array', description: 'Short lines, one direction each (a style, a feel, a theme, a source of inspiration). Empty when the material has nothing on it (the app then shows this side as open).', items: { type: 'string' } },
-        avoid: { type: 'array', description: 'Short lines, one thing to steer clear of each: styles, feels, associations, trends. Hard disqualifiers belong in rules, not here. Empty when the material has nothing on it (the app then shows this side as open).', items: { type: 'string' } },
+        avoid: { type: 'array', description: 'Short lines, one thing to steer clear of each, with the host\'s reason where they gave one: bans ("Names starting with K, which clash with Kowalski"), names or words that are off the table ("Barbara, Anna\'s mother\'s name"), styles, feels, associations, trends. Empty when the host gave nothing to avoid (the app then says so).', items: { type: 'string' } },
         names: {
           type: 'array',
           description: 'Each name the host mentioned (names they like, considered, or do not want to resemble), with what to make of it. Only names the host wrote; empty when there are none.',
@@ -134,9 +134,9 @@ const SCHEMA = {
     },
     rules: {
       type: 'object',
-      description: 'Hard rules that rule a name out.',
+      description: 'What every name must be or have: length limits, a free domain, a naming convention, easy to say on the phone, real words only. Never a ban on something (bans go in directions.avoid).',
       properties: {
-        points: { type: 'array', description: 'Bold-lead points, one rule each. Empty when the host gave no hard rules.', items: POINT },
+        points: { type: 'array', description: 'Bold-lead points, one requirement each. Empty when the host gave none.', items: POINT },
       },
       required: ['points'],
       additionalProperties: false,
@@ -152,15 +152,15 @@ Facts (strict):
 1. Use only what the host wrote. Never invent facts, preferences, names, people, places or reasons. Every line must trace back to an answer. Copy names, places and people exactly as written. If an answer is thin, write less; never pad, never fill a list to make it look complete.
 2. Every answer carries a role that says how it may be used: fact (background), direction (what the name should do or feel like), explore (lean toward), avoid (steer clear of), exploreAvoid (split into lean toward and steer clear of), reference (names the host likes or considered: keep each name and the host's own reason), antiReference (names of other things the host dislikes or does not want to be mistaken for: say what style to steer away from and why, never call them banned words), constraint (a mixed bag from "anything else" or practical requirements: see rule 4).
 3. Never suggest names yourself; participants supply the names. Names quoted from the host's answers are fine. Never add colour, imagery, detail or explanation the host did not write: if they said "eagles and salmon", write eagles and salmon, not "salmon and their upstream fight"; if they said "rural", write rural, not "far from big hospitals".
-4. Constraint answers are a mixed bag; put each point where it belongs. A hard rule that rules a name out (a syllable limit, a domain that must be free, no family names, no names starting with a letter) goes in rules. A wish that shapes the names ("we'd love it to work in French") belongs in the aim or in explore. Context ("Anna's grandma is from Lyon") goes in the about part or with the wish it explains. Pleasantries and encouragement ("have fun with it!", "thanks everyone") are left out.
+4. Constraint answers are a mixed bag; put each point where it belongs. Something to stay away from (no family names, no names starting with a letter, nothing with "fest") goes in directions.avoid. A requirement every name must meet (a syllable limit, a domain that must be free, a naming convention) goes in rules. A wish that shapes the names ("we'd love it to work in French") belongs in the aim or in explore. Context ("Anna's grandma is from Lyon") goes in the about part or with the wish it explains. Pleasantries and encouragement ("have fun with it!", "thanks everyone") are left out.
 
 Shape (the app shows each part under a fixed heading, so never write headings or restate them):
 5. One home per point. Every point the host made lands in exactly one place in the brief. Before writing any line, check that the brief does not already say it somewhere else, in any words. Fact sheet, story, lead, criteria, directions, names and rules never repeat each other.
 6. about.facts first: 2 to 5 specifics with a 1 to 3 word label and a 1 to 5 word value copied from the answers, the things a participant checks a name against. Then about.story: 2 to 3 sentences the way a friend would tell it (who the host is, what they are naming, the moment they are in), and it never covers a topic the fact sheet covers (if roots, looks or a breed are in the facts, the story does not mention them at all); one specific is fine only where a sentence cannot stand without it ("a little sister for Theo"), and then it stays out of the fact sheet. Fact labels only name what the value is ("Lives with", "Surname"); they never add a fact the host did not give ("Big sister" for a cat is an invention). Never list fields ("The sibling name listed is Theo"). Never talk around a fact to avoid naming it.
 7. aim.lead is one short line in broad strokes. aim.points are the criteria, only as many as the material supports: one point per distinct thing the host asked for (length, familiarity, feel, how it sits with a surname or siblings, what it should say to customers, how it will be used). Never split one answer into several points or pad a list; when the host gave one or two directions, write one or two points, or none and let the lead carry them. Labels are short instructions, verb first, a different verb each ("Keep it short", "Pair well with Theo", "Earn trust fast"), never a bare noun phrase. The text is one or two sentences carrying the host's own detail and reason. A criterion never repeats the lead's words, and never restates a direction line or a name's lesson: criteria say how the name should work or feel, directions say what to draw on.
-8. directions.explore and directions.avoid come only from what the host explicitly offered to draw on or steer clear of (explore, avoid, references, local inspiration, quirks, interests, things the name should reflect, and themes or ideas named inside any other answer, such as "themes: roads, bridges, lanterns" in what the name should communicate): short lines of 3 to 12 words, one idea each, the host's own specifics, no labels inside a line. A lesson that comes from a name the host mentioned lives in that name's entry only, never also as a direction line or a criterion. Hard disqualifiers go in rules, never in avoid. Never write a "nothing is ruled in" or "nothing is off-limits" line: when the host gave nothing for a side, leave that list empty and the app shows it as open.
+8. directions.explore and directions.avoid come only from what the host explicitly offered to draw on or steer clear of (explore, avoid, references, local inspiration, quirks, interests, things the name should reflect, and themes or ideas named inside any other answer, such as "themes: roads, bridges, lanterns" in what the name should communicate): short lines of 3 to 12 words, one idea each, the host's own specifics, no labels inside a line. A lesson that comes from a name the host mentioned lives in that name's entry only, never also as a direction line or a criterion. directions.avoid holds everything the host said to stay away from, bans included, each with the host's reason; the participant reads it under the label "Steer clear of", so write each line as the thing itself ("Names starting with K, which clash with Kowalski"), not as an instruction. Never write a "nothing is ruled in" or "nothing is off-limits" line: when the host gave nothing for a side, leave that list empty and the app says so.
 9. directions.names lists every name the host mentioned, each with kind (liked, or missed) and a one-sentence note: the host's own reason, then what to take from it only when the reason itself points somewhere concrete ("so steer away from telecom-style blends"). When it does not, the note is just the reason; never a vague tail like "it shows the feel they are after". Names the host grouped under one reason share one entry ("Thunder, Blaze and Storm"). Vary the openings.
-10. rules.points are the hard rules only, one bold-lead point each, verb-first labels, a different verb each. A rule is never also a criterion or a direction, and a wish and its opposite never land in both ("Use real words" as a criterion and "No invented words" as a rule is one point said twice: a hard ban belongs in rules, so keep it there only). Empty when there are none.
+10. rules.points are the requirements every name must meet (what it must be or have: a length limit, a free domain, a naming convention, easy to say on the phone), one bold-lead point each, verb-first labels, a different verb each. A ban on something is never a rule; it goes in avoid. A rule is never also a criterion or a direction, and a wish and its opposite never land in both ("Use real words" as a criterion and "Invented words" under avoid is one point said twice: keep it in one place). Empty when there are none.
 11. Some answers are picks from a list, with our explanation of the option in brackets after the pick ("Silly (names with a little mischief in them...)"). That explanation describes the option; it is not the host's words. Never quote examples from it, and never present it as the host's view.
 
 Voice:
@@ -252,8 +252,8 @@ function missingParts(doc: Doc, source: Source): string[] {
   if (has('reference', 'antiReference') && doc.directions.names.length === 0) {
     out.push('the names the host mentioned (list every one in names, liked or missed, with the host\'s reason)');
   }
-  if (has('avoid') && doc.rules.points.length === 0 && doc.directions.avoid.length === 0) {
-    out.push('what the host asked to avoid (as rules, or as steer-clear lines when they are not hard bans)');
+  if (has('avoid') && doc.directions.avoid.length === 0) {
+    out.push('what the host asked to avoid (every item belongs in directions.avoid, bans included)');
   }
   if (has('explore', 'exploreAvoid') && doc.directions.explore.length === 0) {
     out.push('what the host asked participants to explore');

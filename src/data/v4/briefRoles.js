@@ -194,7 +194,7 @@ const CATEGORY_FRAMING = {
 const CATEGORY_SHAPE = {
   p1: {
     liked: 'On the shortlist', missed: 'Ruled out',
-    writer: 'Baby. Fact pills: due date, surname, middle name (if given), siblings by name, gender only when it is a surprise. The story: who is expecting and the family the baby joins, in a sentence or two; heritage lives in the story or in one criterion, never both, and never as a pill as well. Criteria come from length, familiarity and personality answers, plus how the name sits with the surname, middle name and siblings. Shortlist names the host still loves are liked even when they carry a worry (the worry goes in the note); names taken by someone else or dropped are missed.',
+    writer: 'Baby. Fact pills: due date, surname, middle name (if given), siblings by name, gender only when it is a surprise. The story: who is expecting and the family the baby joins, in a sentence or two, without the heritage. Heritage the host wants honoured goes under explore only (one line); a spelling worry about it is one criterion that does not restate the roots. Criteria come from length, familiarity and personality answers, plus how the name sits with the surname, middle name and siblings. Shortlist names the host still loves are liked even when they carry a worry (the worry goes in the note); names taken by someone else or dropped are missed.',
   },
   p2: {
     liked: 'Names they love', missed: 'Names that did not fit',
