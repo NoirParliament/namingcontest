@@ -1541,31 +1541,35 @@ function BriefRecapCollapser({
   // Brief / Settings groups (schedule renders as a row within Settings).
   const briefRows = filledBrief.filter((q) => q.id !== 'intro');
 
-  return (
-    <section className={`v4-manage-recap ${open ? 'is-open' : ''}`}>
-      <button
-        type="button"
-        className="v4-manage-recap-trigger"
-        onClick={() => setOpen((v) => !v)}
-      >
-        <span className="v4-manage-recap-icon" aria-hidden="true">
-          <LockSimple weight="duotone" size={16} />
-        </span>
-        <span className="v4-manage-recap-text">
-          Your brief · can’t be edited after launch
-        </span>
-        <span className="v4-manage-recap-meta">
-          {open ? 'Hide' : 'Show'}
-        </span>
-      </button>
-
-      {open && (
-        <div className="v4-manage-recap-body">
-          {/* The brief exactly as participants read it: the same white card,
-              host note panel and colours. Only the marker in its corner says
-              it is locked. */}
-          {briefDocHasContent(briefDoc) && (
-            <section className="v4-pchat-brief v4-manage-recap-brief">
+  // A written brief opens full size, straight under the line, as its own
+  // card the width of the dashboard (Matt): the brief as participants read
+  // it, then the settings in their own private card, the way the review
+  // page pairs them. Older contests without one keep the rows in the box.
+  const full = briefDocHasContent(briefDoc);
+  if (full) {
+    return (
+      <>
+        <section className="v4-manage-recap">
+          <button
+            type="button"
+            className="v4-manage-recap-trigger"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+          >
+            <span className="v4-manage-recap-icon" aria-hidden="true">
+              <LockSimple weight="duotone" size={16} />
+            </span>
+            <span className="v4-manage-recap-text">
+              Your brief · can’t be edited after launch
+            </span>
+            <span className="v4-manage-recap-meta">
+              {open ? 'Hide' : 'Show'}
+            </span>
+          </button>
+        </section>
+        {open && (
+          <>
+            <section className="v4-pchat-brief v4-manage-recap-brief v4-manage-brief-full">
               <header className="v4-pchat-brief-head">
                 <div className="v4-manage-recap-brief-top">
                   <div className="v4-pchat-brief-eyebrow" style={tone ? { color: tone.fg } : undefined}>
@@ -1587,14 +1591,55 @@ function BriefRecapCollapser({
               />
               <ComposedBrief doc={briefDoc} subId={subId} questions={filledBrief} tone={tone} />
             </section>
-          )}
-          {!briefDocHasContent(briefDoc) && briefAnswers.intro && (
+            {filledSettings.length > 0 && (
+              <section className="v4-manage-recap is-open v4-manage-recap-settings">
+                <div className="v4-manage-recap-body">
+                  <div className="v4-manage-recap-group">
+                    <h3 className="v4-manage-recap-group-title">Settings</h3>
+                    <ul className="v4-manage-recap-list">
+                      {filledSettings.map((q) => (
+                        <li key={q.id}>
+                          <Row q={q} value={settingsAnswers[q.id]} />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </section>
+            )}
+          </>
+        )}
+      </>
+    );
+  }
+
+  return (
+    <section className={`v4-manage-recap ${open ? 'is-open' : ''}`}>
+      <button
+        type="button"
+        className="v4-manage-recap-trigger"
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className="v4-manage-recap-icon" aria-hidden="true">
+          <LockSimple weight="duotone" size={16} />
+        </span>
+        <span className="v4-manage-recap-text">
+          Your brief · can’t be edited after launch
+        </span>
+        <span className="v4-manage-recap-meta">
+          {open ? 'Hide' : 'Show'}
+        </span>
+      </button>
+
+      {open && (
+        <div className="v4-manage-recap-body">
+          {briefAnswers.intro && (
             <div className="v4-manage-recap-group">
               <h3 className="v4-manage-recap-group-title">A note from you</h3>
               <p className="v4-manage-recap-intro">{briefAnswers.intro}</p>
             </div>
           )}
-          {!briefDocHasContent(briefDoc) && briefRows.length > 0 && (
+          {briefRows.length > 0 && (
             <div className="v4-manage-recap-group">
               <h3 className="v4-manage-recap-group-title">Brief</h3>
               <ul className="v4-manage-recap-list">

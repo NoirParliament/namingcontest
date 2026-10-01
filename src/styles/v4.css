@@ -2790,6 +2790,13 @@ input.v4-launch-email-input::placeholder {
   opacity: 1;
   animation: none;
 }
+/* Opened straight under the line, full size: the brief card the width of
+   the dashboard, then the settings in their own private card. */
+.v4-manage-brief-full { margin: -12px 0 24px; }
+.v4-manage-recap-settings .v4-manage-recap-body {
+  border-top: 0;
+  padding-top: 4px;
+}
 .v4-manage-recap-brief-top {
   display: flex;
   align-items: center;

@@ -41,7 +41,8 @@ const DRAFT_MAX = 6;
 // TESTING: 100/h while Matt tests (2026-10-01). Production: 20 per hour.
 const IP_PER_HOUR = 100;
 const IP_PER_DAY = 200;
-const GLOBAL_PER_DAY = 1000;
+// 200 a day (Matt, 2026-10-01: start here, raise if real demand needs it).
+const GLOBAL_PER_DAY = 200;
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
