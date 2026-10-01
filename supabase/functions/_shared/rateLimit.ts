@@ -26,8 +26,8 @@ function clientIp(req: Request): string {
  * SHA-256 of an IPv4 address is trivially reversible by brute force, since
  * there are only ~4 billion of them.
  */
-async function hashBucket(scope: string, value: string): Promise<string> {
-  const day = new Date().toISOString().slice(0, 10);
+async function hashBucket(scope: string, value: string, salted = true): Promise<string> {
+  const day = salted ? new Date().toISOString().slice(0, 10) : 'fixed';
   const bytes = new TextEncoder().encode(`${value}|${day}`);
   const digest = await crypto.subtle.digest('SHA-256', bytes);
   const hex = Array.from(new Uint8Array(digest))
@@ -52,6 +52,9 @@ export async function rateLimitOk(
   limit: number,
   window: string,
   extraKey?: string,
+  // false for keys that must hold across days (a random draft id). The
+  // date salt exists to protect IP addresses; a random id needs none.
+  salted = true,
 ): Promise<boolean> {
   try {
     // When an extra key is given it REPLACES the IP rather than joining it.
@@ -59,7 +62,7 @@ export async function rateLimitOk(
     // value gets a fresh allowance — which defeats the point of limiting on
     // that value at all. Callers wanting both do two calls with two scopes.
     const key = extraKey ? extraKey.toLowerCase() : clientIp(req);
-    const bucket = await hashBucket(scope, key);
+    const bucket = await hashBucket(scope, key, salted);
     const { data, error } = await admin.rpc('rate_limit_take', {
       p_bucket: bucket,
       p_limit: limit,

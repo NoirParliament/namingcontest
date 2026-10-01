@@ -26,6 +26,23 @@ const MODEL = 'claude-opus-5-5';
 const MAX_ITEMS = 40;
 const MAX_SOURCE_CHARS = 12000;
 
+// Abuse limits. The 3-update cap the creator sees lives in the browser,
+// which anyone can reset, so the server enforces its own:
+//   per draft  (a random id the page sends): first brief + 3 updates, with
+//              slack for a retry, per day (rate_limit_hits is pruned daily)
+//   per IP     per hour and per day
+//   global     a daily ceiling across everyone, so no amount of IPs or
+//              drafts can run up the bill; past it the review page shows
+//              the answers, exactly as on any writer failure
+// Cost is about 3 cents a brief, so the global ceiling caps a bad day at
+// roughly GLOBAL_PER_DAY x $0.03. Keep a monthly spend limit on the
+// Anthropic key as the last line.
+const DRAFT_MAX = 6;
+// TESTING: 100/h while Matt tests (2026-10-01). Production: 20 per hour.
+const IP_PER_HOUR = 100;
+const IP_PER_DAY = 200;
+const GLOBAL_PER_DAY = 1000;
+
 const cors = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -337,10 +354,21 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     );
     // Unauthenticated (guests write briefs before they have an account) and
-    // it spends money, so a per-IP cap. 20 an hour is far above honest use:
-    // one brief per set of answers, cached in the browser.
-    if (!await rateLimitOk(admin, req, 'compose-ip', 100, '1 hour')) {
-      return json({ error: 'Too many briefs from here. Please try again in an hour.' }, 429);
+    // it spends money: see the limits at the top. Checked cheapest-to-hit
+    // first, so a caller over one limit does not use up the others.
+    if (!await rateLimitOk(admin, req, 'compose-ip', IP_PER_HOUR, '1 hour')) {
+      return json({ error: 'Too many briefs from here. Please try again in an hour.', code: 'ip-hour' }, 429);
+    }
+    if (!await rateLimitOk(admin, req, 'compose-ip-day', IP_PER_DAY, '1 day')) {
+      return json({ error: 'Too many briefs from here today. Please try again tomorrow.', code: 'ip-day' }, 429);
+    }
+    const draftId = typeof body?.draftId === 'string' && /^[A-Za-z0-9-]{8,64}$/.test(body.draftId) ? body.draftId : null;
+    if (draftId && !await rateLimitOk(admin, req, 'compose-draft', DRAFT_MAX, '1 day', draftId, false)) {
+      return json({ error: 'This brief has used all its updates.', code: 'draft' }, 429);
+    }
+    if (!await rateLimitOk(admin, req, 'compose-global', GLOBAL_PER_DAY, '1 day', 'all')) {
+      console.error('[compose-brief] global daily ceiling reached');
+      return json({ error: 'The brief writer is resting. Your answers are shown as they are.', code: 'global' }, 503);
     }
 
     const client = new Anthropic({ apiKey });

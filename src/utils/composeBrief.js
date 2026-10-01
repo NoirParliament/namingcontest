@@ -51,7 +51,16 @@ export function saveBriefDoc(doc) {
 }
 
 // Forget the brief and its rewrite count (new category, new contest).
-export const RESET_BRIEF_PATCH = { briefDoc: null, briefRewrites: 0 };
+export const RESET_BRIEF_PATCH = { briefDoc: null, briefRewrites: 0, briefDraftId: null };
+
+// A random id for this draft, sent with each write so the server can hold
+// the draft to its own cap (the count in the browser is only for the UI).
+function draftIdFor(setup) {
+  if (setup.briefDraftId) return setup.briefDraftId;
+  const id = (globalThis.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`);
+  writeSetup({ briefDraftId: id });
+  return id;
+}
 
 // Answer per question id, as the brief writer saw it.
 function answerMap(source) {
@@ -89,7 +98,7 @@ export async function composeBriefDoc({ rewrite = false } = {}) {
   if (rewrite && rewritesLeft(setup) <= 0) throw new Error('No rewrites left.');
   const source = buildSourceFromSetup(setup);
   if (!source || source.items.length === 0) throw new Error('Nothing to write from yet.');
-  const { data, error } = await supabase.functions.invoke('compose-brief', { body: { source } });
+  const { data, error } = await supabase.functions.invoke('compose-brief', { body: { source, draftId: draftIdFor(setup) } });
   if (error) throw new Error(error.message || 'Could not write the brief.');
   if (!data?.doc) throw new Error(data?.error || 'Could not write the brief.');
   if (data.warnings?.length) console.warn('[brief] unverified names in the composed brief:', data.warnings);
