@@ -12689,16 +12689,11 @@ button.v4-exit {
 .v4-cbrief-cols + .v4-cbrief-names,
 .v4-cbrief-para + .v4-cbrief-cols,
 .v4-cbrief-para + .v4-cbrief-names { margin-top: 24px; }
-/* Each group of names (shortlist, ruled out...) opens with a hairline, so
-   the groups read as separate blocks. Not straight under a section head,
-   which already opens it. */
-.v4-cbrief-names {
+/* One hairline between groups of names (after the shortlist, before ruled
+   out), never above the first group. */
+.v4-cbrief-names + .v4-cbrief-names {
   border-top: 1px solid var(--v4-faint);
   padding-top: 18px;
-}
-.v4-brief-group-head + .v4-cbrief-names {
-  border-top: 0;
-  padding-top: 0;
 }
 .v4-cbrief-names .v4-cbrief-sublabel { margin-bottom: 12px; }
 
