@@ -186,6 +186,15 @@ Voice:
 13. The host's own note to participants is shown directly above your brief. Do not greet, do not repeat or paraphrase that note, and do not reuse what it says (if the note says they are stuck, the brief does not). The brief never talks about the search for the name itself (being stuck, looking for one they both love, hoping for help): the note already says that. Start where it stops.
 14. Under 320 words in total. Use the room to carry every detail and reason the host gave; never to pad, repeat or add anything the answers do not say. No em dashes (the character "—"): use commas, colons or full stops. No stock endings ("however good it sounds", "out of the question"); say it once, plainly. No markdown, no emoji, and no brackets, placeholders or template text (never write "[first]" or "[name]").`;
 
+// The editor's checklist: a second read of the finished draft. The draft
+// rules above still apply; this pass only removes and repairs.
+const EDITOR = `You are now the editor. Below the material is a draft brief another writer produced from it, as JSON in the output shape. Return the same brief, changed only where one of these applies:
+1. Unsupported: every clause must be backed by the material. Delete or rewrite any phrase that adds a fact, number, image, feeling, reason or interpretation the host did not give (examples of what to cut: "eleven and twelve year olds" from "U12", "shouted across a park", "chaos merchant", "may set the tone for the pieces that follow", "made to work where others do not", "chosen" for a name the host only liked).
+2. Grammar: fix grammar, agreement and typos ("which the band have heard them all" becomes "which the band have heard many times").
+3. Filler: cut sentences or tails that say nothing specific, and anything about the search for the name itself ("her first name is the last piece still to settle").
+4. Repeats: if a point, fact or name appears in two places, keep it only where the rules put it.
+Keep everything else exactly: the structure, the order, every name and its kind, every fact pill, every avoid line and rule, and wording that is already fine. Never add anything new. When nothing needs changing, return the draft unchanged.`;
+
 function render(source: Source): string {
   const lines: string[] = [];
   lines.push(`Contest type: ${source.segment}.`);
@@ -394,6 +403,27 @@ Deno.serve(async (req) => {
       return dropRepeatedFacts(cleanDoc(JSON.parse(text.text)));
     };
 
+    // The editor: the same model, the same rules, the draft to repair.
+    const polish = async (draft: Doc): Promise<Doc> => {
+      const res = await client.beta.messages.create({
+        model: MODEL,
+        max_tokens: 4000,
+        output_config: { effort: 'low', format: { type: 'json_schema', schema: SCHEMA } },
+        betas: ['server-side-fallback-2026-07-01'],
+        fallbacks: 'default',
+        system: SYSTEM,
+        messages: [{
+          role: 'user',
+          content: `${render(source)}\n\n${EDITOR}\n\nDraft brief:\n${JSON.stringify({ about: draft.about, aim: draft.aim, directions: draft.directions, rules: draft.rules })}`,
+        }],
+      });
+      if (res.stop_reason === 'refusal') throw new Error('refused');
+      const text = res.content.find((b) => b.type === 'text');
+      if (!text || text.type !== 'text') throw new Error('empty');
+      console.log('[compose-brief]', source.subId, 'editor usage', JSON.stringify(res.usage));
+      return dropRepeatedFacts(cleanDoc(JSON.parse(text.text)));
+    };
+
     let doc = await ask();
     let flagged = unverifiedNames(doc, source);
     const missing = missingParts(doc, source);
@@ -409,6 +439,19 @@ Deno.serve(async (req) => {
       ].filter(Boolean).join(' ');
       doc = await ask(`${notes} Rewrite the whole brief using only the material above.`);
       flagged = unverifiedNames(doc, source);
+    }
+
+    // Editor pass. Kept only if it did not lose a name the draft had, drop
+    // a whole part, or introduce a word the host never wrote.
+    try {
+      const edited = await polish(doc);
+      const namesKept = edited.directions.names.length >= doc.directions.names.length;
+      const partsKept = missingParts(edited, source).length <= missingParts(doc, source).length;
+      const noNewWords = unverifiedNames(edited, source).every((w) => flagged.includes(w));
+      if (namesKept && partsKept && noNewWords) doc = edited;
+      else console.warn('[compose-brief] editor result rejected:', JSON.stringify({ namesKept, partsKept, noNewWords }));
+    } catch (e) {
+      console.warn('[compose-brief] editor pass failed, keeping the draft:', String(e));
     }
 
     return json({
