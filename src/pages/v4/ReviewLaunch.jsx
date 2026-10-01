@@ -712,7 +712,7 @@ export default function ReviewLaunch() {
               )}
               {(briefState === 'writing' || briefState === 'rewriting' || flash) && (
                 <BriefProgressLine
-                  key={briefState === 'writing' || briefState === 'rewriting' ? 'working' : flash}
+                  key={flash === 'reveal' ? 'reveal' : 'line'}
                   phase={briefState === 'writing' || briefState === 'rewriting' ? 'working' : flash}
                   stage={live.stage}
                   partial={live.partial}

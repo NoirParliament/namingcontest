@@ -294,7 +294,8 @@ export function BriefProgressLine({ phase, stage, partial, subId, questions, ans
       if (checkStart && working && stage === 'checking') goal = Math.min(96, 72 + ((Date.now() - checkStart) / 1000) * 1.5);
       // Before the first words, it creeps too (up to 18), never sitting still.
       else if (reading) goal = Math.min(18, 2 + ((Date.now() - readStart) / 1000) * 2);
-      setShown((v) => (Math.abs(goal - v) < 0.6 ? goal : v + (goal - v) * 0.18));
+      // Only ever forward: a redraft or a stage change never counts back.
+      setShown((v) => (goal <= v ? v : goal - v < 0.6 ? goal : v + (goal - v) * 0.18));
     }, 60);
     return () => clearInterval(t);
   }, [target, checkStart, working, stage, reading, readStart]);

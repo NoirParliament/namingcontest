@@ -12911,6 +12911,9 @@ button.v4-exit {
   align-items: center;
   gap: 12px;
   min-width: 0;
+  /* The same height with or without a quote under the step, so the card
+     never nudges as the steps change. */
+  min-height: 44px;
 }
 .v4-bpl-icon {
   position: relative;
@@ -12921,7 +12924,8 @@ button.v4-exit {
   align-items: center;
   justify-content: center;
 }
-.v4-bpl-icon svg {
+/* The ring only (the icon inside is an svg too and must stay put). */
+.v4-bpl-icon > svg {
   position: absolute;
   inset: 0;
   transform: rotate(-90deg);
@@ -12947,7 +12951,11 @@ button.v4-exit {
   background: color-mix(in srgb, var(--sec-accent, var(--v4-fg)) 14%, #fff);
   color: var(--sec-accent, var(--v4-fg));
 }
-.v4-bpl.is-working .v4-bpl-glyph { animation: v4-cbrief-breathe 1.8s ease-in-out infinite; }
+.v4-bpl.is-working .v4-bpl-glyph { animation: v4-bpl-pulse 1.8s ease-in-out infinite; }
+@keyframes v4-bpl-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
 .v4-bpl-text {
   flex: 1;
   min-width: 0;
