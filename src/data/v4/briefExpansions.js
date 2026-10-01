@@ -531,7 +531,7 @@ export const BRIEF_SECTIONS = {
     { title: 'About the pet', icon: 'PawPrint',
       ids: ['petType', 'origin', 'sexAge', 'breed', 'petPersonality', 'otherPets'] },
     { title: 'Directions to explore and avoid', icon: 'Compass',
-      ids: ['nameTone', 'quirks', 'interests', 'admiredNames', 'customRequirements'] },
+      ids: ['nameTone', 'quirks', 'interests', 'avoidNames', 'admiredNames', 'customRequirements'] },
   ],
   p1: [
     { title: 'About the baby', icon: 'Baby',
