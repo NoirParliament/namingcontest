@@ -31,4 +31,4 @@ create policy choice_records_insert on choice_records
   with check (true);
 
 grant insert on choice_records to anon, authenticated;
-grant usage, select on sequence choice_records_id_seq to anon, authenticated;
+grant usage on sequence choice_records_id_seq to anon, authenticated;
