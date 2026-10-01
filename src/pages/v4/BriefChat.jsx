@@ -28,7 +28,7 @@ import {
   Confetti,
 } from '@phosphor-icons/react';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
-import { currentBriefDoc, composeBriefDoc } from '../../utils/composeBrief';
+import { currentBriefDoc, composeBriefDoc, RESET_BRIEF_PATCH } from '../../utils/composeBrief';
 import { useAuth } from '../../lib/AuthContext';
 import { useProfile } from '../../lib/useProfile';
 import AvatarMenu from '../../components/v4/AvatarMenu';
@@ -560,7 +560,7 @@ export default function BriefChat() {
     const turn = history[turnIndex];
     persistAnswer(turn.question, value);
     const cur = readSetup();
-    writeSetup({ ...cur, brief: {}, settings: {}, workingName: '' });
+    writeSetup({ ...cur, brief: {}, settings: {}, workingName: '', ...RESET_BRIEF_PATCH });
     setHistory([{
       ...turn,
       answer: value,

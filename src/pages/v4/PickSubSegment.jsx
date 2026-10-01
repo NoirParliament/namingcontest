@@ -106,6 +106,9 @@ export default function PickSubSegment() {
         group,
         subSegmentId: option.id,
         subSegmentTitle: option.title,
+        // A new pick starts a new brief (and a fresh rewrite allowance).
+        briefDoc: null,
+        briefRewrites: 0,
       };
       localStorage.setItem('v4_contest_setup', JSON.stringify(next));
     } catch {

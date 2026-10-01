@@ -1,22 +1,23 @@
 // The composed brief on the client: build the material from the setup draft,
-// ask compose-brief once per set of answers, keep the result in the draft.
+// ask compose-brief, keep the result in the draft.
 //
-// Lifecycle of `setup.briefDoc`:
-//   - written here when the edge function answers (sourceHash = the answers
-//     it was written from, edited = false);
-//   - the review page lets the creator edit the text in place and flips
-//     edited = true;
-//   - buildContestRow copies it into contests.brief_doc at launch;
-//   - after launch it is read back from the row, never regenerated.
-//
-// When the answers change after a brief exists (browser-back into the chat):
-// an unedited brief is rewritten from the new answers; an edited one is kept,
-// since the creator's own words win and nothing is overwritten silently.
+// The answers are the source; the brief is written from them.
+//   - The first brief is written at the chat hand-off (free).
+//   - The review page lets the creator reword the text in place
+//     (edited = true) and change any answer or fill in a skipped one.
+//   - When the answers no longer match what the brief was written from,
+//     the review page offers "Update the brief": a rewrite from the current
+//     answers, at most MAX_REWRITES times per contest. Nothing rewrites
+//     on its own.
+//   - buildContestRow copies the brief as shown into contests.brief_doc at
+//     launch; after launch it is read back from the row, never rewritten.
 
 import { supabase } from '../lib/supabaseClient';
 import { readSetup, writeSetup, getQuestionsFor } from './v4Brief';
 import { BRIEF_QUESTIONS } from '../data/v4/briefQuestions';
 import { buildBriefSource, briefSourceHash } from '../data/v4/briefRoles';
+
+export const MAX_REWRITES = 3;
 
 export function buildSourceFromSetup(setup = readSetup()) {
   const subId = setup.subSegmentId;
@@ -34,14 +35,14 @@ export function buildSourceFromSetup(setup = readSetup()) {
   });
 }
 
-// The doc to show for the current answers, or null when one has to be
-// written (or the answers changed under an unedited one).
+// The brief for this draft, or null when none has been written yet. A brief
+// written for another category (the draft was reused for a new contest) is
+// never shown.
 export function currentBriefDoc(setup = readSetup()) {
   const doc = setup.briefDoc;
   if (!doc) return null;
-  if (doc.edited) return doc;
-  const source = buildSourceFromSetup(setup);
-  return source && briefSourceHash(source) === doc.sourceHash ? doc : null;
+  if (doc.subId && doc.subId !== setup.subSegmentId) return null;
+  return doc;
 }
 
 export function saveBriefDoc(doc) {
@@ -49,22 +50,61 @@ export function saveBriefDoc(doc) {
   return doc;
 }
 
-export function clearBriefDoc() {
-  const cur = readSetup();
-  if (cur.briefDoc) writeSetup({ briefDoc: null });
+// Forget the brief and its rewrite count (new category, new contest).
+export const RESET_BRIEF_PATCH = { briefDoc: null, briefRewrites: 0 };
+
+// Answer per question id, as the brief writer saw it.
+function answerMap(source) {
+  const out = {};
+  (source?.items || []).forEach((it) => { out[it.id] = it.answer; });
+  return out;
 }
 
-// Ask the edge function. Resolves to the doc, or throws; callers show the
-// Q&A fallback on a throw. Never called for participants.
-export async function composeBriefDoc() {
+// What changed in the answers since the brief was written: ids whose answer
+// is new, different or now empty. Empty list = the brief is up to date.
+export function briefChanges(setup = readSetup()) {
+  const doc = currentBriefDoc(setup);
+  const source = buildSourceFromSetup(setup);
+  if (!doc || !source) return [];
+  if (!doc.sourceAnswers) {
+    // Written before answers were snapshotted: all we can say is whether
+    // anything differs.
+    return doc.sourceHash && doc.sourceHash !== briefSourceHash(source) ? ['*'] : [];
+  }
+  const now = answerMap(source);
+  const then = doc.sourceAnswers;
+  const ids = new Set([...Object.keys(now), ...Object.keys(then)]);
+  return [...ids].filter((id) => (now[id] || '') !== (then[id] || ''));
+}
+
+export function rewritesLeft(setup = readSetup()) {
+  return Math.max(0, MAX_REWRITES - (setup.briefRewrites || 0));
+}
+
+// Ask the edge function. Resolves to the doc, or throws; the caller keeps
+// whatever was on screen before. A rewrite counts against MAX_REWRITES only
+// when it succeeds. Never called for participants.
+export async function composeBriefDoc({ rewrite = false } = {}) {
   const setup = readSetup();
+  if (rewrite && rewritesLeft(setup) <= 0) throw new Error('No rewrites left.');
   const source = buildSourceFromSetup(setup);
   if (!source || source.items.length === 0) throw new Error('Nothing to write from yet.');
   const { data, error } = await supabase.functions.invoke('compose-brief', { body: { source } });
   if (error) throw new Error(error.message || 'Could not write the brief.');
   if (!data?.doc) throw new Error(data?.error || 'Could not write the brief.');
   if (data.warnings?.length) console.warn('[brief] unverified names in the composed brief:', data.warnings);
-  return saveBriefDoc({ ...data.doc, sourceHash: briefSourceHash(source), edited: false });
+  const doc = {
+    ...data.doc,
+    subId: source.subId,
+    sourceHash: briefSourceHash(source),
+    sourceAnswers: answerMap(source),
+    edited: false,
+  };
+  writeSetup({
+    briefDoc: doc,
+    ...(rewrite ? { briefRewrites: (readSetup().briefRewrites || 0) + 1 } : {}),
+  });
+  return doc;
 }
 
 // The doc in its current shape: { about, shouldDo[{label,text}], directions,

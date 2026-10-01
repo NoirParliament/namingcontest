@@ -27,7 +27,8 @@ import { getBriefLabel, getBriefSections } from '../../data/v4/briefExpansions';
 import GuideExpandable from '../../components/v4/GuideExpandable';
 import BriefSectionHead from '../../components/v4/BriefSectionHead';
 import ComposedBrief, { ComposedBriefSkeleton } from '../../components/v4/ComposedBrief';
-import { currentBriefDoc, composeBriefDoc, saveBriefDoc, briefDocHasContent, cleanBriefDoc } from '../../utils/composeBrief';
+import { currentBriefDoc, composeBriefDoc, saveBriefDoc, briefDocHasContent, cleanBriefDoc, briefChanges, rewritesLeft } from '../../utils/composeBrief';
+import { BriefUpdateNotice, BriefUpdatedNote, RewritesLeft } from '../../components/v4/BriefUpdate';
 import { ContestScheduleInput } from '../../components/v4/QuestionInput';
 import ExitLink from '../../components/v4/ExitLink';
 import '../../styles/landing-v3.css';
@@ -160,19 +161,55 @@ export default function ReviewLaunch() {
   // page so a contest looks like itself everywhere. Tier-icon
   // fallback for unknown segments only.
   // ── The written brief ─────────────────────────────────────────────
-  // What participants read (compose-brief, from the answers). Written once
-  // per set of answers (the chat usually started it already), editable in
-  // place, saved into the contest at launch. 'writing' shows the skeleton;
-  // 'failed' shows the Q&A rows with a retry link. Once a doc exists the
-  // answer rows are gone: the text is the thing being edited now.
+  // What participants read (compose-brief, from the answers). The answers
+  // are the source: the brief is written from them (the chat usually
+  // started the first one), the creator can reword it in place, and "Your
+  // answers" below it lets them change an answer or fill in a skipped one.
+  // Changed answers don't touch the brief until the creator presses "Update
+  // the brief" (at most MAX_REWRITES times). Saved into the contest at
+  // launch exactly as shown.
+  //   briefState: 'writing' (first brief) | 'rewriting' | 'ready' |
+  //               'failed' (first brief couldn't be written: the answer rows
+  //               stand in, with a retry link)
   const [briefDoc, setBriefDoc] = useState(() => currentBriefDoc());
   const [briefState, setBriefState] = useState(() => (currentBriefDoc() ? 'ready' : 'writing'));
+  const [rewriteFailed, setRewriteFailed] = useState(false);
+  const [justRewritten, setJustRewritten] = useState(false);
+  const [answersOpen, setAnswersOpen] = useState(false);
+  // Launch pressed while the brief is behind the answers: say so once, then
+  // let the next press through.
+  const [staleNudge, setStaleNudge] = useState(false);
+  const briefRef = useRef(null);
   const writeBrief = () => {
     setBriefState('writing');
     composeBriefDoc()
       .then((doc) => { setBriefDoc(doc); setBriefState('ready'); })
       .catch((e) => { console.error('[review] brief not written:', e); setBriefState('failed'); });
   };
+  const rewriteBrief = () => {
+    if (rewritesLeft() <= 0 || briefState === 'rewriting') return;
+    setRewriteFailed(false);
+    setJustRewritten(false);
+    setBriefState('rewriting');
+    briefRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    composeBriefDoc({ rewrite: true })
+      .then((doc) => {
+        setBriefDoc(doc);
+        setBriefState('ready');
+        setJustRewritten(true);
+        setStaleNudge(false);
+      })
+      .catch((e) => {
+        console.error('[review] brief not rewritten:', e);
+        setBriefState('ready');
+        setRewriteFailed(true);
+      });
+  };
+  useEffect(() => {
+    if (!justRewritten) return undefined;
+    const t = setTimeout(() => setJustRewritten(false), 6000);
+    return () => clearTimeout(t);
+  }, [justRewritten]);
   useEffect(() => {
     if (briefDoc) return undefined;
     // The chat may have a request in flight for these same answers; give it
@@ -190,6 +227,10 @@ export default function ReviewLaunch() {
     setBriefDoc(next);
   };
   const showComposed = briefState === 'ready' && briefDocHasContent(briefDoc);
+  // Recomputed every render (answer edits bump editTick): which answers no
+  // longer match the brief, and how many rewrites are left.
+  const pendingChanges = briefDoc && briefState !== 'writing' ? briefChanges() : [];
+  const rewritesLeftNow = rewritesLeft();
 
   const segmentTone = getSegmentTone(subId);
   const SegmentIcon = getSegmentIcon(subId);
@@ -229,17 +270,23 @@ export default function ReviewLaunch() {
   const renderBriefRow = (q) => {
     const val = briefAnswers[q.id];
     const skipped = !isAnswered(val);
+    // Changed since the brief was written (the answers panel marks these so
+    // the creator can see what the next update will pick up).
+    const changed = pendingChanges.includes(q.id);
     return (
       <li key={q.id}>
         <button
           type="button"
-          className={`v4-review-row v4-review-row-edit${skipped ? ' is-skipped' : ''}`}
+          className={`v4-review-row v4-review-row-edit${skipped ? ' is-skipped' : ''}${changed ? ' is-changed' : ''}`}
           onClick={() => setEditingQuestion({ question: q, section: 'brief' })}
         >
-          <span className="v4-review-row-label">{getBriefLabel(q)}</span>
+          <span className="v4-review-row-label">
+            {getBriefLabel(q)}
+            {changed && <span className="v4-answers-changed">Changed</span>}
+          </span>
           <span className={`v4-review-row-value${skipped ? ' v4-review-row-skipped' : ''}`}>
             {skipped
-              ? 'Skipped'
+              ? (briefDoc ? 'Skipped. Click to answer.' : 'Skipped')
               : <BriefRowValue id={q.id} value={val} fallback={formatAnswer} subId={subId} />}
           </span>
           <PencilSimple size={12} weight="bold" className="v4-review-row-edit-icon" />
@@ -274,7 +321,11 @@ export default function ReviewLaunch() {
   // Show every brief question — answered ones with their answer, skipped
   // ones flagged (grey "Skipped") and still editable, so nothing silently
   // vanishes and the creator can fill any gap right here before launch.
-  const isAnswered = (v) => v !== undefined && v !== null && v !== '';
+  const isAnswered = (v) => v !== undefined && v !== null && v !== ''
+    && !(Array.isArray(v) && v.length === 0);
+  // The brief's questions minus the intro (edited in its own card above).
+  const answerQuestions = briefQuestions.filter((q) => q.id !== 'intro');
+  const skippedCount = answerQuestions.filter((q) => !isAnswered(briefAnswers[q.id])).length;
   const filledSettings = SHARED_SETTINGS_QUESTIONS.filter(
     (q) => q.type !== 'contestSchedule' && settingsAnswers[q.id] !== undefined
   );
@@ -305,6 +356,14 @@ export default function ReviewLaunch() {
       setIntroNudge(true);
       introRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       introRef.current?.querySelector('textarea')?.focus();
+      return;
+    }
+    // The brief is behind the answers: point at it once. A second press
+    // launches with the brief as shown (that's a fine choice to make, as
+    // long as it's made knowingly).
+    if (pendingChanges.length > 0 && !staleNudge) {
+      setStaleNudge(true);
+      briefRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
     }
     // Open the combined Launch modal (email + Stripe payment).
@@ -423,7 +482,7 @@ export default function ReviewLaunch() {
     }
     setLaunchOpen(false);
     if (user?.id) {
-      writeSetup({ contestId, launchedAt: Date.now() });
+      writeSetup({ contestId, launchedAt: Date.now(), briefDoc: null, briefRewrites: 0 });
       setTimeout(() => navigate(`/v4/contest/${contestId}`), 400);
     } else {
       // Guest just paid. Their account was created server-side at launch, so
@@ -440,7 +499,7 @@ export default function ReviewLaunch() {
         if (verifyError) console.error('[launch] instant sign-in failed:', verifyError.message);
         signedIn = !verifyError;
       }
-      writeSetup({ contestId, launchedAt: Date.now() });
+      writeSetup({ contestId, launchedAt: Date.now(), briefDoc: null, briefRewrites: 0 });
       if (signedIn) {
         // Apply the identity chosen during the brief (name + uploaded photo)
         // to the account. launch-contest only does this for freshly created
@@ -619,19 +678,31 @@ export default function ReviewLaunch() {
               EditQuestionModal in place. The old "Edit" section link
               that bounced back to the full chat is gone. */}
           {briefQuestions.length > 0 && (
-            <section className="v4-review-section">
+            <section className="v4-review-section v4-review-section--brief" ref={briefRef}>
               <header className="v4-review-section-head">
                 <h2>Your brief</h2>
               </header>
-              {briefState === 'writing' && (
+              {(briefState === 'writing' || briefState === 'rewriting') && (
                 <ComposedBriefSkeleton subId={subId} questions={briefQuestions} tone={segmentTone} />
               )}
               {showComposed && (
                 <>
                   <p className="v4-cbrief-hint">
                     <PencilSimple size={12} weight="bold" aria-hidden="true" />
-                    Written from your answers. Click any text to edit it; clear a line to remove it.
+                    This is what participants read, written from your answers. Click any text to reword it; clear a line to remove it.
                   </p>
+                  {pendingChanges.length > 0 && (
+                    <BriefUpdateNotice
+                      changes={pendingChanges}
+                      edited={!!briefDoc?.edited}
+                      left={rewritesLeftNow}
+                      onUpdate={rewriteBrief}
+                      failed={rewriteFailed}
+                      nudge={staleNudge}
+                      tone={segmentTone}
+                    />
+                  )}
+                  {justRewritten && pendingChanges.length === 0 && <BriefUpdatedNote left={rewritesLeftNow} />}
                   <ComposedBrief
                     doc={briefDoc}
                     subId={subId}
@@ -648,7 +719,7 @@ export default function ReviewLaunch() {
                   <button type="button" onClick={writeBrief}>Try again</button>
                 </p>
               )}
-              {briefState === 'writing' || showComposed ? null : briefGroups ? (
+              {briefState === 'writing' || briefState === 'rewriting' || showComposed ? null : briefGroups ? (
                 briefGroups.map((group) => (
                   <div key={group.title} className="v4-brief-group">
                     <BriefSectionHead
@@ -685,6 +756,79 @@ export default function ReviewLaunch() {
                       <GuideExpandable key={a.id} article={a} compact tone={segmentTone} />
                     ))}
                   </div>
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* Your answers — the source the brief is written from. Private
+              (participants never see these once a brief exists), collapsed
+              by default, and the one place to change an answer or fill in a
+              skipped one. Changes wait for "Update the brief". Hidden while
+              the first brief is being written, and when it couldn't be
+              (the brief card already shows these rows then). */}
+          {briefDoc && briefState !== 'writing' && answerQuestions.length > 0 && (
+            <section className="v4-review-section v4-review-section--private v4-answers">
+              <button
+                type="button"
+                className="v4-answers-toggle"
+                onClick={() => setAnswersOpen((o) => !o)}
+                aria-expanded={answersOpen}
+              >
+                <span className="v4-answers-toggle-text">
+                  <span className="v4-answers-title">Your answers</span>
+                  <span className="v4-answers-sub">
+                    Change an answer or fill in one you skipped, then update the brief.
+                  </span>
+                </span>
+                <span className="v4-answers-meta">
+                  {skippedCount > 0 && (
+                    <span className="v4-answers-chip">{skippedCount} skipped</span>
+                  )}
+                  {pendingChanges.length > 0 && (
+                    <span className="v4-answers-chip is-changed">
+                      {pendingChanges.filter((c) => c !== '*').length || 'Some'} changed
+                    </span>
+                  )}
+                  <span className="v4-answers-caret">{answersOpen ? 'Hide' : 'Show'}</span>
+                </span>
+              </button>
+              {answersOpen && (
+                <div className="v4-answers-body">
+                  <div className="v4-answers-note">
+                    <span>Only you see these. Changing one doesn’t touch the brief until you press Update the brief.</span>
+                    <RewritesLeft left={rewritesLeftNow} />
+                  </div>
+                  {(briefGroups || [{ title: null, items: answerQuestions }]).map((group, gi) => (
+                    <div key={group.title || gi} className="v4-answers-group">
+                      {group.title && <h3 className="v4-answers-group-title">{group.title}</h3>}
+                      <ul className="v4-review-list v4-review-list-editable">
+                        {group.items.filter((q) => q.id !== 'intro').map(renderBriefRow)}
+                      </ul>
+                    </div>
+                  ))}
+                  {pendingChanges.length > 0 && (
+                    <div className="v4-answers-foot">
+                      <span>
+                        {rewritesLeftNow > 0
+                          ? 'Your brief doesn’t include these changes yet.'
+                          : 'You’ve used all your rewrites, so reword the brief above to match these changes.'}
+                      </span>
+                      {rewritesLeftNow > 0 && (
+                        <span className="v4-answers-foot-actions">
+                          <RewritesLeft left={rewritesLeftNow} />
+                          <button
+                            type="button"
+                            className="v4-bupd-btn"
+                            onClick={rewriteBrief}
+                            disabled={briefState === 'rewriting'}
+                          >
+                            Update the brief
+                          </button>
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </section>

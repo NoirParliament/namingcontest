@@ -12617,3 +12617,234 @@ button.v4-exit {
   .v4-cbrief-skeleton-lines span,
   .v4-cbrief-skeleton-pen { animation: none; }
 }
+
+/* ── Brief update notice ──
+   Above the brief, only when the answers have moved on. Segment-tinted
+   callout (same family as the guide callout), one action, the rewrites
+   left as three pips beside it. */
+.v4-bupd {
+  --bupd-tint: var(--v4-bubble-bg);
+  --bupd-accent: var(--v4-fg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 22px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--bupd-tint) 45%, #fff);
+  box-shadow: inset 3px 0 0 var(--bupd-accent);
+  animation: v4-bubble-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.v4-bupd.is-nudged {
+  box-shadow: inset 3px 0 0 var(--bupd-accent), 0 0 0 2px color-mix(in srgb, var(--bupd-accent) 45%, transparent);
+}
+.v4-bupd-body { min-width: 0; }
+.v4-bupd-title {
+  margin: 0 0 2px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--v4-fg);
+  line-height: 1.45;
+}
+.v4-bupd-text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(3, 3, 2, 0.68);
+}
+.v4-bupd-strong { margin-top: 4px; color: var(--v4-fg); font-weight: 500; }
+.v4-bupd-error {
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #a8321f;
+}
+.v4-bupd-actions {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 7px;
+}
+.v4-bupd-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 14px;
+  background: var(--v4-fg);
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 120ms ease, opacity 120ms ease;
+}
+.v4-bupd-btn:hover { transform: translateY(-1px); }
+.v4-bupd-btn:active { transform: translateY(0); }
+.v4-bupd-btn:disabled { opacity: 0.45; cursor: default; transform: none; }
+.v4-bupd-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--v4-muted);
+  white-space: nowrap;
+}
+.v4-bupd-left.is-none { color: rgba(3, 3, 2, 0.45); }
+.v4-bupd-pips { display: inline-flex; gap: 3px; }
+.v4-bupd-pips span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(3, 3, 2, 0.3);
+}
+.v4-bupd-pips span.is-on {
+  background: var(--v4-fg);
+  border-color: var(--v4-fg);
+}
+.v4-bupd-done {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: -4px 0 18px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #2f6b3a;
+  animation: v4-fade-in 0.35s ease both;
+}
+.v4-bupd-done-meta { color: var(--v4-muted); font-weight: 400; }
+
+/* ── Your answers ──
+   Private panel under the brief: a full-width toggle row (title, one-line
+   purpose, chips for skipped / changed), the answer rows when open, and a
+   footer repeating the update action where the creator's eyes are. */
+.v4-answers { padding: 0; overflow: hidden; }
+.v4-answers-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 24px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.v4-answers-toggle:hover { background: rgba(3, 3, 2, 0.025); }
+.v4-answers-toggle-text { display: grid; gap: 3px; min-width: 0; }
+.v4-answers-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--v4-muted);
+}
+.v4-answers-sub {
+  font-size: 14px;
+  color: var(--v4-fg);
+  line-height: 1.45;
+}
+.v4-answers-meta {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.v4-answers-chip {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(3, 3, 2, 0.06);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--v4-muted);
+  white-space: nowrap;
+}
+.v4-answers-chip.is-changed {
+  background: #fdf0d8;
+  color: #8a5a00;
+}
+.v4-answers-caret {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--v4-fg);
+}
+.v4-answers-body {
+  padding: 0 24px 20px;
+  animation: v4-fade-in 0.25s ease both;
+}
+.v4-answers-note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0 0 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(3, 3, 2, 0.1);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--v4-muted);
+}
+.v4-answers-group + .v4-answers-group { margin-top: 18px; }
+.v4-answers-group-title {
+  margin: 0 0 2px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--v4-fg);
+}
+.v4-answers-changed {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #fdf0d8;
+  color: #8a5a00;
+  font-size: 11px;
+  font-weight: 600;
+  vertical-align: 1px;
+}
+.v4-answers-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fdf6e8;
+  font-size: 13px;
+  color: #6b4a00;
+}
+@media (max-width: 640px) {
+  .v4-bupd { flex-direction: column; align-items: stretch; }
+  .v4-bupd-actions { flex-direction: column; align-items: stretch; gap: 8px; }
+  .v4-bupd-actions .v4-bupd-left { justify-content: center; }
+  .v4-answers-toggle { padding: 16px 18px; align-items: flex-start; }
+  .v4-answers-meta { flex-direction: column; align-items: flex-end; gap: 6px; }
+  .v4-answers-body { padding: 0 18px 18px; }
+  .v4-answers-foot { flex-direction: column; align-items: stretch; text-align: center; }
+}
+.v4-answers-note > span:first-child { flex: 1 1 260px; }
+.v4-answers-foot-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex: none;
+}
+.v4-answers-foot .v4-bupd-left { color: #8a6a20; }
+@media (max-width: 640px) {
+  .v4-answers-foot-actions { flex-direction: column-reverse; align-items: stretch; gap: 8px; }
+  .v4-answers-foot-actions .v4-bupd-btn { justify-content: center; }
+  .v4-answers-foot-actions .v4-bupd-left { justify-content: center; }
+  .v4-bupd-actions .v4-bupd-btn { justify-content: center; }
+}
