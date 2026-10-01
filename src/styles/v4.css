@@ -12471,6 +12471,8 @@ button.v4-exit {
   color: var(--v4-fg);
   white-space: pre-wrap;
 }
+/* Prose then points in one section: a little air between them. */
+.v4-cbrief-para + .v4-cbrief-points { margin-top: 10px; }
 .v4-cbrief-points {
   list-style: none;
   margin: 0;

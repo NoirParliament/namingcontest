@@ -212,7 +212,5 @@ export function composedSectionMeta(subId, questions) {
     constraints: practical
       ? { title: practical.title, icon: practical.icon || 'ListChecks' }
       : { title: 'Must-haves', icon: 'ListChecks' },
-    // Soft points that don't rule a name out.
-    notes: { title: 'Good to know', icon: 'Info' },
   };
 }

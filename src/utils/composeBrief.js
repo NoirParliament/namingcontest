@@ -107,13 +107,36 @@ export async function composeBriefDoc({ rewrite = false } = {}) {
   return doc;
 }
 
-// The doc in its current shape: { about, shouldDo[{label,text}], directions,
-// constraints[{label,text}], notes[{label,text}] }. Docs written by the first version of compose-brief carried
-// explore / avoid / watchouts lists instead of the directions paragraph;
-// those are folded into one paragraph here so they still read.
+// The doc in its current shape: { sections: [{ kind, heading, body, points }] },
+// a short document the writer composes for this contest. kind is one of
+// about / aim / directions / references / rules and only picks the icon.
+//
+// Older docs are converted on read so every saved brief still renders:
+//   v1-v3 { about, shouldDo, directions | explore/avoid/watchouts,
+//           requirements | constraints[] , notes[] }
+// become sections in the same reading order, with an empty heading (the
+// renderer falls back to the category's authored section title).
+const SECTION_KINDS = ['about', 'aim', 'directions', 'references', 'rules'];
+
 export function normalizeBriefDoc(doc) {
   if (!doc) return null;
   const str = (v) => (typeof v === 'string' ? v : '');
+  const pts = (list) => (Array.isArray(list) ? list : [])
+    .map((b) => (typeof b === 'string' ? { label: '', text: b } : { label: str(b?.label), text: str(b?.text) }));
+
+  if (Array.isArray(doc.sections)) {
+    return {
+      ...doc,
+      sections: doc.sections.map((sec) => ({
+        kind: SECTION_KINDS.includes(sec?.kind) ? sec.kind : 'aim',
+        heading: str(sec?.heading),
+        body: str(sec?.body),
+        points: pts(sec?.points),
+      })),
+    };
+  }
+
+  // Legacy shapes.
   const open = (l) => !l?.length || (l.length === 1 && /^open$/i.test(l[0]));
   let directions = str(doc.directions);
   if (!directions && (doc.explore || doc.avoid || doc.watchouts)) {
@@ -127,45 +150,39 @@ export function normalizeBriefDoc(doc) {
     (doc.watchouts || []).forEach((w) => { if (w?.note) parts.push(w.note); else if (w?.name) parts.push(w.name); });
     directions = parts.join(' ');
   }
-  return {
-    ...doc,
-    about: str(doc.about),
-    shouldDo: Array.isArray(doc.shouldDo) ? doc.shouldDo.map((b) => ({ label: str(b?.label), text: str(b?.text) })) : [],
-    directions,
-    // Requirements are { label, text } since 2026-10-01; earlier docs carried
-    // plain sentences, which become a text with no label.
-    constraints: Array.isArray(doc.constraints)
-      ? doc.constraints.map((c) => (typeof c === 'string' ? { label: '', text: c } : { label: str(c?.label), text: str(c?.text) }))
-      : [],
-    // Soft points from "Anything else" that don't rule a name out.
-    notes: Array.isArray(doc.notes)
-      ? doc.notes.map((c) => ({ label: str(c?.label), text: str(c?.text) }))
-      : [],
-  };
+  const requirements = str(doc.requirements) || pts(doc.constraints).map((c) => c.text).filter(Boolean).join(' ');
+  const sections = [
+    { kind: 'about', heading: '', body: str(doc.about), points: [] },
+    { kind: 'aim', heading: '', body: '', points: pts(doc.shouldDo) },
+    { kind: 'directions', heading: '', body: directions, points: [] },
+    { kind: 'rules', heading: '', body: requirements, points: [] },
+  ];
+  const { about, shouldDo, explore, avoid, watchouts, constraints, notes, ...rest } = doc;
+  void about; void shouldDo; void explore; void avoid; void watchouts; void constraints; void notes;
+  return { ...rest, sections };
 }
 
-// The doc without blank lines (a line added on the review page and never
-// filled in). Used at launch, so what is saved is exactly what reads.
+// The doc as saved at launch: trimmed, empty points and sections dropped.
 export function cleanBriefDoc(doc) {
   const d = normalizeBriefDoc(doc);
   if (!d) return d;
   const t = (v) => (typeof v === 'string' ? v.trim() : '');
-  const { explore, avoid, watchouts, ...rest } = d;
-  void explore; void avoid; void watchouts;
   return {
-    ...rest,
-    about: t(d.about),
-    shouldDo: d.shouldDo.map((b) => ({ label: t(b.label), text: t(b.text) })).filter((b) => b.label || b.text),
-    directions: t(d.directions),
-    constraints: d.constraints.map((c) => ({ label: t(c.label), text: t(c.text) })).filter((c) => c.label || c.text),
-    notes: d.notes.map((c) => ({ label: t(c.label), text: t(c.text) })).filter((c) => c.label || c.text),
+    ...d,
+    sections: d.sections
+      .map((sec) => ({
+        kind: sec.kind,
+        heading: t(sec.heading),
+        body: t(sec.body),
+        points: sec.points.map((p) => ({ label: t(p.label), text: t(p.text) })).filter((p) => p.label || p.text),
+      }))
+      .filter((sec) => sec.body || sec.points.length),
   };
 }
 
-// True when the doc has anything worth rendering. A doc of empty arrays and
-// an empty paragraph (the model given almost nothing) falls back to the Q&A.
+// True when the doc has anything worth rendering. An empty doc (the model
+// given almost nothing) falls back to the Q&A.
 export function briefDocHasContent(doc) {
   if (!doc) return false;
-  const d = cleanBriefDoc(doc);
-  return !!(d.about || d.shouldDo.length || d.directions || d.constraints.length || d.notes.length);
+  return cleanBriefDoc(doc).sections.length > 0;
 }

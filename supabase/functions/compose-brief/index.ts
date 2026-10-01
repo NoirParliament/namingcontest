@@ -53,74 +53,69 @@ const ROLE_RULES: Record<string, string> = {
   avoid: 'off-limits',
   exploreAvoid: 'contains both, split it into what to lean toward and what to avoid',
   reference: 'reference names, keep each name and the host\'s own reason; if the host wants to avoid sounding like some of them, say which',
-  antiReference: 'names of other things the host dislikes or does not want to be mistaken for, with reasons; say what style to steer away from, never call them banned words',
-  constraint: 'sort each point: a hard rule that rules a name out goes in constraints; a preference, wish or piece of context goes in notes',
+  antiReference: 'names of other things the host dislikes or does not want to be mistaken for, with reasons; say what style to steer away from and why, never call them banned words',
+  constraint: 'a mixed bag ("anything else"): put each point where it belongs, see rule 4',
 };
 
-// Output shape. Fixed sections, so the app renders it with the same section
-// heads as the Q&A card, and the creator edits text in known slots.
+// Output shape: a short document of 3 to 5 sections the writer composes for
+// this contest. Each section has its own heading (written for this contest,
+// not a template), flowing prose, and optionally a few bold-lead points when
+// the content really is a list. `kind` only picks the section's icon and
+// keeps the order sensible; the words are the writer's.
+const KINDS = ['about', 'aim', 'directions', 'references', 'rules'];
 const SCHEMA = {
   type: 'object',
   properties: {
-    about: { type: 'string', description: 'One paragraph of background, 2 to 4 sentences, facts only.' },
-    shouldDo: {
+    sections: {
       type: 'array',
-      description: '3 to 6 instructions for participants.',
+      description: '3 to 5 sections, in reading order. The first is always kind "about".',
       items: {
         type: 'object',
         properties: {
-          label: { type: 'string', description: '2 to 4 words, no trailing punctuation.' },
-          text: { type: 'string', description: 'One sentence addressed to participants.' },
+          kind: { type: 'string', enum: KINDS, description: 'about = background; aim = what the name should do or feel like; directions = what to lean toward and steer clear of; references = names the host mentioned and what to take from them; rules = hard rules a name must meet.' },
+          heading: { type: 'string', description: '2 to 6 words, sentence case, written for this contest and drawn from its facts (e.g. "A little sister for Theo", "The sound they are after", "Lucy, Nora and the shortlist"). No colon, no question.' },
+          body: { type: 'string', description: 'Flowing prose, 1 to 4 sentences. May be empty only when points carry the section.' },
+          points: {
+            type: 'array',
+            description: 'Optional bold-lead points, only when the content is genuinely a list of distinct instructions. Use in at most one section of the brief. Otherwise an empty array.',
+            items: {
+              type: 'object',
+              properties: {
+                label: { type: 'string', description: '2 to 4 words.' },
+                text: { type: 'string', description: 'One sentence.' },
+              },
+              required: ['label', 'text'],
+              additionalProperties: false,
+            },
+          },
         },
-        required: ['label', 'text'],
-        additionalProperties: false,
-      },
-    },
-    directions: {
-      type: 'string',
-      description: 'One paragraph, 2 to 5 sentences, addressed to participants: what to lean toward, what is off-limits, and each reference name with the host\'s own reason. Prose, no labels, no lists.',
-    },
-    notes: {
-      type: 'array',
-      description: 'Soft points from constraint answers that do not rule a name out (preferences, wishes, context), same shape as shouldDo. Empty when there are none.',
-      items: {
-        type: 'object',
-        properties: {
-          label: { type: 'string', description: '2 to 4 words.' },
-          text: { type: 'string', description: 'One sentence, phrased as a note, not a rule.' },
-        },
-        required: ['label', 'text'],
-        additionalProperties: false,
-      },
-    },
-    constraints: {
-      type: 'array',
-      description: 'Hard rules only (a name that fails one is out), from constraint answers, same shape as shouldDo. Empty when there are none.',
-      items: {
-        type: 'object',
-        properties: {
-          label: { type: 'string', description: '2 to 4 words naming the requirement, e.g. "Domain available", "Three syllables max".' },
-          text: { type: 'string', description: 'One sentence stating it; vary the openings, never start every item with "The name must".' },
-        },
-        required: ['label', 'text'],
+        required: ['kind', 'heading', 'body', 'points'],
         additionalProperties: false,
       },
     },
   },
-  required: ['about', 'shouldDo', 'directions', 'constraints', 'notes'],
+  required: ['sections'],
   additionalProperties: false,
 };
 
-const SYSTEM = `You write naming briefs for NamingContest.com. A host has answered questions about something they need to name. Their friends, family or colleagues will read your brief, then suggest names and vote. Turn the host's answers into a brief those participants can act on.
+const SYSTEM = `You write naming briefs for NamingContest.com. A host has answered questions about something they need to name. Their friends, family or colleagues will read your brief, then suggest names and vote. Turn the host's answers into a short, lively brief those participants want to read and can act on.
 
-Rules:
-1. Use only what the host wrote. Never invent facts, preferences, names, people or reasons. Every sentence must trace back to an answer. Copy names, places and people exactly as written. If an answer is thin, write less; never pad.
-2. Every answer carries a role that says how it may be used: fact (background, state it plainly), direction (turn it into an instruction for participants), explore (lean toward), avoid (off-limits), exploreAvoid (split into lean toward and avoid), reference (keep the name and the host's own reason), antiReference (names of other things the host dislikes: say what style to steer away from and why, in the directions paragraph), constraint (hard requirement, a name that fails it is out).
-3. Voice: plain and confident, like a good creative brief, in the register the framing line gives (warm and personal for a baby or a pet, energetic for a team, professional and concise for a business). The framing is for voice only; it is never a source of requirements. Address participants as "you". Pronouns for the host: when the host's first name is clearly male or female (Matt, Emma), use he or she; when it could be either (Sam, Dana, Alex), or the host is a company, team or group, use the name or "they". If the host's answers say how they refer to themselves, that wins. People the host mentions keep the pronouns the host used for them. Refer to the host by the name given, in the third person. Follow the host's own spelling (British or American) and write in the language the host answered in.
-4. The host's own note to participants is shown directly above your brief. Do not greet, do not repeat or paraphrase that note; start where it stops.
-5. about: 2 to 4 sentences of background written as flowing prose about the host and what they are naming, facts only, no advice. Never list fields ("The sibling name listed is Theo"); say it the way a friend would ("She will be a little sister to Theo"). shouldDo: 3 to 6 items, each a short label plus one instruction sentence. directions: one paragraph of prose, 2 to 5 sentences, that tells participants what to lean toward, what is off-limits, and what to make of each reference name the host mentioned (keep the host's reason, e.g. "They love Lucy but worry about the Lucifer association, so aim for that feel without the awkward link"). When the host left both open and named no names, the paragraph is one sentence saying nothing is ruled in or out and they should explore freely within the brief above. Never write labels like "Lean toward:" inside it; write sentences. constraints and notes: both come only from constraint answers, same shape as shouldDo (a short label plus one sentence), one item per point. Sort every point: if it rules a name out (a syllable limit, a domain that must be free, no family names) it is a constraint; if it is a preference, wish or piece of context ("we'd love it to work in French", "have fun with it") it is a note, phrased as a note, never as a rule. Do not repeat a point that the rest of the brief already makes. Either can be an empty array.
-6. Never suggest names yourself; the brief describes what to aim for, participants supply the names. Names quoted from the host's answers are fine.
-7. Under 300 words in total. No em dashes (the character "—"): use commas, colons or full stops. No markdown, no emoji, no headings or labels inside the strings.`;
+Facts (strict):
+1. Use only what the host wrote. Never invent facts, preferences, names, people, places or reasons. Every sentence must trace back to an answer. Copy names, places and people exactly as written. If an answer is thin, write less; never pad.
+2. Every answer carries a role that says how it may be used: fact (background), direction (what the name should do or feel like), explore (lean toward), avoid (off-limits), exploreAvoid (split into lean toward and avoid), reference (names the host likes or considered: keep each name and the host's own reason), antiReference (names of other things the host dislikes or does not want to be mistaken for: say what style to steer away from and why, never call them banned words), constraint (a mixed bag from "anything else" or practical requirements: see rule 4).
+3. Never suggest names yourself; participants supply the names. Names quoted from the host's answers are fine.
+4. Constraint answers are a mixed bag; put each point where it belongs. A hard rule that rules a name out (a syllable limit, a domain that must be free, no family names) goes in a "rules" section. A wish that shapes the names ("we'd love it to work in French") belongs with the aim or the directions. Context ("Anna's grandma is from Lyon") goes with the background or the wish it explains. Pleasantries and encouragement ("have fun with it!", "thanks everyone") are left out.
+
+Shape:
+5. Write it like a good creative brief written for this one contest, not a form. 3 to 5 sections in a natural reading order: start with the background (kind "about"), then what the name should do, then directions and the names already in the picture, and hard rules last if there are any. Merge or skip sections the material does not support; never write an empty or filler section.
+6. Headings are written for this contest from its own facts ("A little sister for Theo", "The sound they are after", "Gigs, flour and Byres Road"), 2 to 6 words, sentence case, no colons. Avoid generic headings like "About the baby" or "Requirements".
+7. Keep every section body to 4 sentences at most (count them; a fifth sentence means a new section or a cut); when the material runs longer, split it into another section with its own heading rather than writing a long block. Prefer flowing prose. Use bold-lead points in at most one section, and only when the content really is a list of distinct instructions; 3 to 5 points, each a short label plus one sentence. Never repeat a point in two places.
+8. When the host gave nothing to explore or avoid, say so in a sentence where it fits; do not give it a section of its own.
+
+Voice:
+9. Plain, warm and confident, in the register the framing line gives (warm and personal for a baby or a pet, energetic for a team, professional and concise for a business). The framing is for voice only; it is never a source of facts or requirements. Address participants as "you". Refer to the host by the name given, in the third person, and never write as the host: no "we", "us" or "our" for the host ("Give us a name" is wrong; "Northwind Health wants a name" is right). Pronouns for the host: when the first name is clearly male or female (Matt, Emma), use he or she; when it could be either (Sam, Dana, Alex), or the host is a company, team or group, use the name or "they". People the host mentions keep the pronouns the host used for them. Follow the host's own spelling (British or American) and write in the language the host answered in.
+10. The host's own note to participants is shown directly above your brief. Do not greet, do not repeat or paraphrase that note; start where it stops.
+11. Under 300 words in total. No em dashes (the character "—"): use commas, colons or full stops. No markdown, no emoji, and no brackets, placeholders or template text (never write "[first]" or "[name]"); write it as a sentence ("her first name has to flow into Rose Kowalski").`;
 
 function render(source: Source): string {
   const lines: string[] = [];
@@ -137,8 +132,8 @@ function render(source: Source): string {
     const rule = ROLE_RULES[it.role] ? ` {${ROLE_RULES[it.role]}}` : '';
     lines.push(`- [${it.role}]${rule} ${it.question}: ${it.answer}${it.note ? ` (note: ${it.note})` : ''}`);
   }
-  if (source.openExplore) lines.push('- [explore] The host gave nothing specific to explore (say so in the directions paragraph).');
-  if (source.openAvoid) lines.push('- [avoid] The host gave nothing to avoid (say so in the directions paragraph).');
+  if (source.openExplore) lines.push('- [explore] The host gave nothing specific to explore (say so in a sentence where it fits).');
+  if (source.openAvoid) lines.push('- [avoid] The host gave nothing to avoid (say so in a sentence where it fits).');
   return lines.join('\n');
 }
 
@@ -150,19 +145,20 @@ function stripDashes(s: string): string {
 
 function cleanDoc(doc: Record<string, unknown>) {
   const str = (v: unknown) => stripDashes(String(v ?? '')).trim();
-  const list = (v: unknown) => (Array.isArray(v) ? v.map(str).filter(Boolean) : []);
+  const sections = Array.isArray(doc.sections) ? doc.sections : [];
   return {
-    about: str(doc.about),
-    shouldDo: Array.isArray(doc.shouldDo)
-      ? doc.shouldDo.map((b: Record<string, unknown>) => ({ label: str(b?.label).replace(/[.:]$/, ''), text: str(b?.text) })).filter((b) => b.text)
-      : [],
-    directions: str(doc.directions),
-    notes: Array.isArray(doc.notes)
-      ? doc.notes.map((c: Record<string, unknown>) => ({ label: str(c?.label).replace(/[.:]$/, ''), text: str(c?.text) })).filter((c) => c.text)
-      : [],
-    constraints: Array.isArray(doc.constraints)
-      ? doc.constraints.map((c: Record<string, unknown>) => ({ label: str(c?.label).replace(/[.:]$/, ''), text: str(c?.text) })).filter((c) => c.text)
-      : [],
+    sections: sections
+      .map((sec: Record<string, unknown>) => ({
+        kind: KINDS.includes(String(sec?.kind)) ? String(sec.kind) : 'aim',
+        heading: str(sec?.heading).replace(/[.:]$/, ''),
+        body: str(sec?.body),
+        points: Array.isArray(sec?.points)
+          ? (sec.points as Record<string, unknown>[])
+            .map((pt) => ({ label: str(pt?.label).replace(/[.:]$/, ''), text: str(pt?.text) }))
+            .filter((pt) => pt.text)
+          : [],
+      }))
+      .filter((sec) => sec.heading && (sec.body || sec.points.length)),
   };
 }
 
@@ -172,13 +168,9 @@ function cleanDoc(doc: Record<string, unknown>) {
 // names). Reported, not blocked: the creator reads the brief before launch.
 function unverifiedNames(doc: ReturnType<typeof cleanDoc>, source: Source): string[] {
   const material = JSON.stringify(source).toLowerCase();
-  const text = [
-    doc.about,
-    ...doc.shouldDo.map((b) => `${b.label}. ${b.text}`),
-    doc.directions,
-    ...doc.constraints.map((c) => `${c.label}. ${c.text}`),
-    ...doc.notes.map((c) => `${c.label}. ${c.text}`),
-  ].join('\n');
+  const text = doc.sections
+    .flatMap((sec) => [sec.heading, sec.body, ...sec.points.map((pt) => `${pt.label}. ${pt.text}`)])
+    .join('\n');
   const out = new Set<string>();
   for (const sentence of text.split(/(?<=[.!?:])\s+|\n/)) {
     const words = sentence.trim().split(/\s+/);

@@ -1,13 +1,13 @@
 // The composed brief: the participant-facing document written from the
-// creator's answers (compose-brief), rendered under the same section heads
-// as the Q&A card it replaces so it reads as the same brief, just finished.
+// creator's answers (compose-brief).
 //
-// It reads top to bottom like a brief, not a form: a background paragraph,
-// the instructions as lines with a bold lead (Mark's own example), one
-// written paragraph on what to explore and avoid (with the names already in
-// the picture), the hard requirements when there are any, and softer notes
-// ("Good to know") from "Anything else you'd like to add?".
-// A section with nothing in it is simply not there, for everyone.
+// It reads like a brief written for this one contest: 3 to 5 sections the
+// writer composes, each with its own heading drawn from the contest's facts
+// ("A little sister for Theo", "No bread puns, no Britpop"), flowing prose,
+// and bold-lead points only where the content really is a list. A section's
+// kind (about / aim / directions / references / rules) only picks its icon.
+// Older saved briefs are converted on read (normalizeBriefDoc) and fall back
+// to the category's authored section titles.
 //
 // Read-only everywhere: the creator's review, the participant submit/vote
 // cards and the dashboard recap. The brief changes only by changing an
@@ -22,8 +22,8 @@ import { normalizeBriefDoc } from '../../utils/composeBrief';
 const isBlank = (v) => !String(v ?? '').trim();
 
 // Lines with a bold lead ("Keep it short. Suggest first names of one or two
-// syllables..."), Mark's own brief format. Used for the instructions and the
-// requirements alike, so the brief has one pattern for "points".
+// syllables..."), Mark's own brief format, for the one section (if any) that
+// is genuinely a list.
 function Points({ items }) {
   return (
     <ul className="v4-cbrief-points">
@@ -46,43 +46,29 @@ export default function ComposedBrief({ doc: rawDoc, subId, questions, tone }) {
   const doc = normalizeBriefDoc(rawDoc);
   if (!doc) return null;
   const meta = composedSectionMeta(subId, questions);
+  // Icon per kind; the heading fallback (legacy docs) is the category's own
+  // authored title for that part of the brief.
+  const look = {
+    about: meta.about,
+    aim: meta.shouldDo,
+    directions: meta.exploreAvoid,
+    references: { title: 'Names already in the picture', icon: 'Sparkle' },
+    rules: meta.constraints,
+  };
+  const sections = doc.sections.filter((sec) => !isBlank(sec.body) || sec.points.some((p) => !isBlank(p.text)));
 
   return (
     <div className="v4-cbrief">
-      {!isBlank(doc.about) && (
-        <div className="v4-brief-group">
-          <BriefSectionHead title={meta.about.title} icon={meta.about.icon} tone={tone} />
-          <p className="v4-cbrief-para">{doc.about}</p>
-        </div>
-      )}
-
-      {doc.shouldDo.some((it) => !isBlank(it.text) || !isBlank(it.label)) && (
-        <div className="v4-brief-group">
-          <BriefSectionHead title={meta.shouldDo.title} icon={meta.shouldDo.icon} tone={tone} />
-          <Points items={doc.shouldDo} />
-        </div>
-      )}
-
-      {!isBlank(doc.directions) && (
-        <div className="v4-brief-group">
-          <BriefSectionHead title={meta.exploreAvoid.title} icon={meta.exploreAvoid.icon} tone={tone} />
-          <p className="v4-cbrief-para">{doc.directions}</p>
-        </div>
-      )}
-
-      {doc.constraints.some((c) => !isBlank(c.text) || !isBlank(c.label)) && (
-        <div className="v4-brief-group">
-          <BriefSectionHead title={meta.constraints.title} icon={meta.constraints.icon} tone={tone} />
-          <Points items={doc.constraints} />
-        </div>
-      )}
-
-      {doc.notes.some((c) => !isBlank(c.text) || !isBlank(c.label)) && (
-        <div className="v4-brief-group">
-          <BriefSectionHead title={meta.notes.title} icon={meta.notes.icon} tone={tone} />
-          <Points items={doc.notes} />
-        </div>
-      )}
+      {sections.map((sec, i) => {
+        const l = look[sec.kind] || look.aim;
+        return (
+          <div key={i} className="v4-brief-group">
+            <BriefSectionHead title={isBlank(sec.heading) ? l.title : sec.heading} icon={l.icon} tone={tone} />
+            {!isBlank(sec.body) && <p className="v4-cbrief-para">{sec.body}</p>}
+            {sec.points.length > 0 && <Points items={sec.points} />}
+          </div>
+        );
+      })}
     </div>
   );
 }
