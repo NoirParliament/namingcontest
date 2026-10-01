@@ -54,7 +54,13 @@ export default function EditQuestionModal({
   if (!open || !question) return null;
 
   const handleSubmit = (newValue) => {
-    onSave?.(newValue);
+    // Typed fields open empty here (the current answer shows above), so an
+    // empty submit means "no change", never "erase what I wrote".
+    const blank = newValue === '' || newValue == null
+      || (typeof newValue === 'object' && !Array.isArray(newValue) && 'enabled' in newValue
+        && newValue.enabled && !String(newValue.text || newValue.name || '').trim());
+    const hadAnswer = currentAnswer !== undefined && currentAnswer !== '' && currentAnswer !== null;
+    if (!(blank && hadAnswer)) onSave?.(newValue);
     onClose?.();
   };
 
@@ -126,12 +132,16 @@ export default function EditQuestionModal({
           </div>
         )}
 
+        {/* The current answer shows above, so typed fields open empty for
+            the new one (Matt, 2026-10-01); picks still highlight the
+            current choice. */}
         <div className="v4-edit-modal-input">
           <QuestionInput
             question={question}
             onSubmit={handleSubmit}
             autoFocus
             currentAnswer={currentAnswer}
+            prefillText={false}
           />
         </div>
       </div>

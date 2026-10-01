@@ -35,8 +35,12 @@ const SEGMENT_ICONS = {
 // the creator re-picked only one chip.
 import CreatorIdentityInput from './CreatorIdentityInput';
 
-export default function QuestionInput({ question, onSubmit, autoFocus = true, currentAnswer }) {
+// prefillText=false: typed fields open empty even when editing (the edit
+// modal shows the current answer above them); picks still show the current
+// choice. The chat edit keeps the default (prefilled).
+export default function QuestionInput({ question, onSubmit, autoFocus = true, currentAnswer, prefillText = true }) {
   const { type } = question;
+  const typed = prefillText ? currentAnswer : undefined;
 
   // Optional free-text questions get an explicit Skip affordance — the
   // "answer as many or as few as you'd like" promise needs a visible way
@@ -44,7 +48,7 @@ export default function QuestionInput({ question, onSubmit, autoFocus = true, cu
   if (type === 'text') {
     return (
       <>
-        <TextInput question={question} onSubmit={onSubmit} autoFocus={autoFocus} currentAnswer={currentAnswer} />
+        <TextInput question={question} onSubmit={onSubmit} autoFocus={autoFocus} currentAnswer={typed} />
         {!question.required && <SkipLink onSkip={() => onSubmit('')} />}
       </>
     );
@@ -52,7 +56,7 @@ export default function QuestionInput({ question, onSubmit, autoFocus = true, cu
   if (type === 'textarea') {
     return (
       <>
-        <TextareaInput question={question} onSubmit={onSubmit} autoFocus={autoFocus} currentAnswer={currentAnswer} />
+        <TextareaInput question={question} onSubmit={onSubmit} autoFocus={autoFocus} currentAnswer={typed} />
         {!question.required && <SkipLink onSkip={() => onSubmit('')} />}
       </>
     );
@@ -66,8 +70,8 @@ export default function QuestionInput({ question, onSubmit, autoFocus = true, cu
   if (type === 'voterTier')      return <VoterTierInput question={question} onSubmit={onSubmit} />;
   if (type === 'toggle')         return <ToggleInput question={question} onSubmit={onSubmit} />;
   if (type === 'date')           return <DateInput question={question} onSubmit={onSubmit} currentAnswer={currentAnswer} />;
-  if (type === 'toggleTextarea') return <ToggleTextareaInput question={question} onSubmit={onSubmit} currentAnswer={currentAnswer} />;
-  if (type === 'toggleNameDesc') return <ToggleNameDescInput question={question} onSubmit={onSubmit} currentAnswer={currentAnswer} />;
+  if (type === 'toggleTextarea') return <ToggleTextareaInput question={question} onSubmit={onSubmit} currentAnswer={currentAnswer} prefillText={prefillText} />;
+  if (type === 'toggleNameDesc') return <ToggleNameDescInput question={question} onSubmit={onSubmit} currentAnswer={currentAnswer} prefillText={prefillText} />;
   if (type === 'brandingBlock')  return <BrandingBlockInput question={question} onSubmit={onSubmit} />;
   if (type === 'brandingFull')   return <BrandingFullInput question={question} onSubmit={onSubmit} />;
   if (type === 'segmentCards')   return <SegmentCardsInput question={question} onSubmit={onSubmit} />;

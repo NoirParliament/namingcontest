@@ -7,14 +7,14 @@ import { ArrowRight, CheckCircle, UploadSimple, Image as ImageIcon } from '@phos
 
 // ── toggleTextarea — yes/no, if yes show textarea ───────────────────
 // Used for: customRequirements
-export function ToggleTextareaInput({ question, onSubmit, currentAnswer }) {
+export function ToggleTextareaInput({ question, onSubmit, currentAnswer, prefillText = true }) {
   // Editing an existing note opens straight into the field with the text
   // already there, instead of asking Yes/No again and losing what was written.
   const existing = currentAnswer && typeof currentAnswer === 'object' && currentAnswer.enabled
     ? (currentAnswer.text || '')
     : '';
   const [step, setStep] = useState(existing ? 'detail' : 'toggle');
-  const [text, setText] = useState(existing);
+  const [text, setText] = useState(prefillText ? existing : '');
   const taRef = useRef(null);
 
   useEffect(() => {
@@ -91,12 +91,12 @@ export function ToggleTextareaInput({ question, onSubmit, currentAnswer }) {
 
 // ── toggleNameDesc — yes/no, if yes show name input (desc cut for chat) ─
 // Used for: submitterPrize, voterPrize
-export function ToggleNameDescInput({ question, onSubmit, currentAnswer }) {
+export function ToggleNameDescInput({ question, onSubmit, currentAnswer, prefillText = true }) {
   const existingName = currentAnswer && typeof currentAnswer === 'object' && currentAnswer.enabled
     ? (currentAnswer.name || '')
     : '';
   const [step, setStep] = useState(existingName ? 'detail' : 'toggle');
-  const [name, setName] = useState(existingName);
+  const [name, setName] = useState(prefillText ? existingName : '');
   const inputRef = useRef(null);
 
   useEffect(() => {
