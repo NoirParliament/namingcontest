@@ -44,6 +44,8 @@ import AvatarMenu from '../../components/v4/AvatarMenu';
 import CreditNameEntry from '../../components/v4/CreditNameEntry';
 import BriefRowValue from '../../components/v4/BriefRowValue';
 import { getBriefLabel, getBriefSections, getParticipantLabel } from '../../data/v4/briefExpansions';
+import ComposedBrief from '../../components/v4/ComposedBrief';
+import { briefDocHasContent } from '../../utils/composeBrief';
 import { useFadeNav } from '../../components/v4/useFadeNav';
 import ConfirmModal from '../../components/v4/ConfirmModal';
 import '../../styles/landing-v3.css';
@@ -278,6 +280,8 @@ export default function ParticipantChat() {
     group: dbContest.tier,
     settings: dbContest.settings || {},
     brief: dbContest.brief || {},
+    // The written brief, frozen at launch (null = show the answers).
+    briefDoc: dbContest.brief_doc || null,
     creator: {},
   } : null);
   // Real participants got here by joining (real participant row); the DB
@@ -1269,7 +1273,17 @@ function ParticipantBriefCard({ contest, tone, briefRows, settingsRows, articles
         photoUrl={cardHost.photoUrl}
         tone={tone}
       />
-      {(() => {
+      {briefDocHasContent(contest.briefDoc) ? (
+        /* The written brief, frozen at launch. Contests launched before it
+           existed (or where it could not be written) fall through to the
+           answer rows below. */
+        <ComposedBrief
+          doc={contest.briefDoc}
+          subId={contest.subSegmentId}
+          questions={getQuestionsFor(contest.subSegmentId)}
+          tone={tone}
+        />
+      ) : (() => {
         // Participant-facing note: the naming implication, under the question
         // on the left rail so the right column stays pure answer. Rich picks
         // carry their expansion instead. See BRIEF_PARTICIPANT_NOTES.

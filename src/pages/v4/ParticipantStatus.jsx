@@ -139,9 +139,13 @@ export default function ParticipantStatus() {
               <h1 className="v4-pstatus-hero-name">
                 {contest.workingName || contest.name}
               </h1>
-              {contest.brief?.projectSummary && (
+              {/* The host's own note, as on the join page. projectSummary
+                  is the fallback for contests from before the intro existed
+                  (and is empty for baby/pet contests, which have no such
+                  question). */}
+              {(contest.brief?.intro || contest.brief?.projectSummary) && (
                 <p className="v4-pstatus-hero-sub">
-                  “{contest.brief.projectSummary}”
+                  “{contest.brief.intro || contest.brief.projectSummary}”
                 </p>
               )}
             </section>

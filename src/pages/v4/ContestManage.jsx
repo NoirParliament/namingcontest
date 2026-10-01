@@ -47,6 +47,8 @@ import SignInModal from '../../components/v4/SignInModal';
 import WinnerHero from '../../components/v4/WinnerHero';
 import CatchwordConsultBlock from '../../components/v4/CatchwordConsultBlock';
 import PdfReport from '../../components/v4/PdfReport';
+import ComposedBrief from '../../components/v4/ComposedBrief';
+import { briefDocHasContent } from '../../utils/composeBrief';
 // downloadShareCard still exists in v4ContestExport for future use — nothing
 // calls it now that Instagram's button is gone (it downloaded a card while
 // claiming to share) and the share-card button was replaced by Copy link.
@@ -187,6 +189,7 @@ export default function ContestManage() {
           subSegmentTitle: dbContest.sub_segment_title,
           group: dbContest.tier,
           brief: dbContest.brief || {},
+          briefDoc: dbContest.brief_doc || null,
           settings: dbContest.settings || {},
           voterTier: dbContest.voter_tier,
           launchedAt: dbContest.launched_at ? new Date(dbContest.launched_at).getTime() : Date.now(),
@@ -1323,6 +1326,8 @@ export default function ContestManage() {
                 and creators come back to compare the ask with the answer.
                 (Was hidden post-crown; client asked for it back.) */}
             <BriefRecapCollapser
+              subId={setup.subSegmentId}
+              briefDoc={setup.briefDoc}
               filledBrief={filledBrief}
               filledSettings={filledSettings}
               briefAnswers={liveBriefAnswers}
@@ -1510,7 +1515,7 @@ export default function ContestManage() {
 // so with a lock glyph, and every row is a plain read-only reference line
 // (no pencils, no hover, no edit paths).
 function BriefRecapCollapser({
-  filledBrief, filledSettings, briefAnswers, settingsAnswers,
+  subId, briefDoc, filledBrief, filledSettings, briefAnswers, settingsAnswers,
 }) {
   const [open, setOpen] = useState(false);
 
@@ -1553,7 +1558,16 @@ function BriefRecapCollapser({
               <p className="v4-manage-recap-intro">{briefAnswers.intro}</p>
             </div>
           )}
-          {briefRows.length > 0 && (
+          {/* The written brief participants read, when the contest has one;
+              the raw answers otherwise (older contests, or the writer was
+              down at launch). */}
+          {briefDocHasContent(briefDoc) && (
+            <div className="v4-manage-recap-group">
+              <h3 className="v4-manage-recap-group-title">Brief</h3>
+              <ComposedBrief doc={briefDoc} subId={subId} questions={filledBrief} />
+            </div>
+          )}
+          {!briefDocHasContent(briefDoc) && briefRows.length > 0 && (
             <div className="v4-manage-recap-group">
               <h3 className="v4-manage-recap-group-title">Brief</h3>
               <ul className="v4-manage-recap-list">

@@ -36,6 +36,8 @@ import { useAuth } from '../../lib/AuthContext';
 import { readProfileCache } from '../../lib/useProfile';
 import BriefRowValue from '../../components/v4/BriefRowValue';
 import { getBriefLabel, getBriefSections, getParticipantLabel } from '../../data/v4/briefExpansions';
+import ComposedBrief from '../../components/v4/ComposedBrief';
+import { briefDocHasContent } from '../../utils/composeBrief';
 import GuideExpandable from '../../components/v4/GuideExpandable';
 import BriefSectionHead from '../../components/v4/BriefSectionHead';
 import HostNote from '../../components/v4/HostNote';
@@ -174,6 +176,8 @@ export default function ParticipantVote() {
     group: dbContest.tier,
     settings: dbContest.settings || {},
     brief: dbContest.brief || {},
+    // The written brief, frozen at launch (null = show the answers).
+    briefDoc: dbContest.brief_doc || null,
     status: dbContest.status,
     creator: {},
   } : null);
@@ -739,7 +743,16 @@ function ParticipantBriefCard({ contest, tone, briefRows, settingsRows, articles
         photoUrl={cardHost.photoUrl}
         tone={tone}
       />
-      {(() => {
+      {briefDocHasContent(contest.briefDoc) ? (
+        /* The written brief, frozen at launch; older contests fall through
+           to the answer rows. Same component as the submit chat. */
+        <ComposedBrief
+          doc={contest.briefDoc}
+          subId={contest.subSegmentId}
+          questions={getQuestionsFor(contest.subSegmentId)}
+          tone={tone}
+        />
+      ) : (() => {
         const renderRow = (r) => {
           return (
             <li key={r.id} className="v4-pchat-brief-row">

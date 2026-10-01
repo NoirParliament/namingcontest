@@ -28,6 +28,7 @@ import {
   Confetti,
 } from '@phosphor-icons/react';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
+import { currentBriefDoc, composeBriefDoc } from '../../utils/composeBrief';
 import { useAuth } from '../../lib/AuthContext';
 import { useProfile } from '../../lib/useProfile';
 import AvatarMenu from '../../components/v4/AvatarMenu';
@@ -570,10 +571,15 @@ export default function BriefChat() {
     setEditingIndex(null);
   };
 
-  // After every question answered, head to review
+  // After every question answered, head to review. The written brief takes
+  // the model ~15s, so start it here, before the hand-off: by the time the
+  // review page renders it is usually ready. The review page shows a
+  // skeleton and finishes the wait if not (and it just asks again on a
+  // failure here, so this is fire-and-forget).
   useEffect(() => {
     if (isDone && history.length > 0 && !isEditing) {
       track('brief_completed', { tier: initial.group, category: subId });
+      if (!currentBriefDoc()) composeBriefDoc().catch(() => {});
       const t = setTimeout(() => navigate('/v4/setup/review'), 1400);
       return () => clearTimeout(t);
     }

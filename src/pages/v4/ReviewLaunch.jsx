@@ -26,6 +26,8 @@ import BriefRowValue from '../../components/v4/BriefRowValue';
 import { getBriefLabel, getBriefSections } from '../../data/v4/briefExpansions';
 import GuideExpandable from '../../components/v4/GuideExpandable';
 import BriefSectionHead from '../../components/v4/BriefSectionHead';
+import ComposedBrief, { ComposedBriefSkeleton } from '../../components/v4/ComposedBrief';
+import { currentBriefDoc, composeBriefDoc, saveBriefDoc, briefDocHasContent } from '../../utils/composeBrief';
 import { ContestScheduleInput } from '../../components/v4/QuestionInput';
 import ExitLink from '../../components/v4/ExitLink';
 import '../../styles/landing-v3.css';
@@ -157,6 +159,38 @@ export default function ReviewLaunch() {
   // sports team, PawPrint for any pet, etc.) — matches the Manage
   // page so a contest looks like itself everywhere. Tier-icon
   // fallback for unknown segments only.
+  // ── The written brief ─────────────────────────────────────────────
+  // What participants read (compose-brief, from the answers). Written once
+  // per set of answers (the chat usually started it already), editable in
+  // place, saved into the contest at launch. 'writing' shows the skeleton;
+  // 'failed' shows the Q&A rows with a retry link. Once a doc exists the
+  // answer rows are gone: the text is the thing being edited now.
+  const [briefDoc, setBriefDoc] = useState(() => currentBriefDoc());
+  const [briefState, setBriefState] = useState(() => (currentBriefDoc() ? 'ready' : 'writing'));
+  const writeBrief = () => {
+    setBriefState('writing');
+    composeBriefDoc()
+      .then((doc) => { setBriefDoc(doc); setBriefState('ready'); })
+      .catch((e) => { console.error('[review] brief not written:', e); setBriefState('failed'); });
+  };
+  useEffect(() => {
+    if (briefDoc) return undefined;
+    // The chat may have a request in flight for these same answers; give it
+    // a moment to land in the draft before asking again.
+    let cancelled = false;
+    const poll = setInterval(() => {
+      const d = currentBriefDoc();
+      if (d) { clearInterval(poll); if (!cancelled) { setBriefDoc(d); setBriefState('ready'); } }
+    }, 400);
+    const kick = setTimeout(() => { clearInterval(poll); if (!cancelled && !currentBriefDoc()) writeBrief(); }, 4000);
+    return () => { cancelled = true; clearInterval(poll); clearTimeout(kick); };
+  }, []);
+  const editBrief = (patch) => {
+    const next = saveBriefDoc({ ...briefDoc, ...patch, edited: true });
+    setBriefDoc(next);
+  };
+  const showComposed = briefState === 'ready' && briefDocHasContent(briefDoc);
+
   const segmentTone = getSegmentTone(subId);
   const SegmentIcon = getSegmentIcon(subId);
   const segmentPalette = getSegmentPalette(subId);
@@ -294,6 +328,10 @@ export default function ReviewLaunch() {
       sub_segment_id: cur.subSegmentId || null,
       sub_segment_title: cur.subSegmentTitle || null,
       brief: cur.brief || {},
+      // The written brief as it stands on screen (with the creator's edits),
+      // frozen from here on. Null when it was never written: participants
+      // then get the answers, exactly as before.
+      brief_doc: briefDocHasContent(currentBriefDoc(cur)) ? currentBriefDoc(cur) : null,
       // Creator identity from the opening step rides in settings (jsonb, no
       // migration): the anonymity choice participants must respect, and the
       // display name so it survives the guest path to launch.
@@ -585,7 +623,32 @@ export default function ReviewLaunch() {
               <header className="v4-review-section-head">
                 <h2>Your brief</h2>
               </header>
-              {briefGroups ? (
+              {briefState === 'writing' && (
+                <ComposedBriefSkeleton subId={subId} questions={briefQuestions} tone={segmentTone} />
+              )}
+              {showComposed && (
+                <>
+                  <p className="v4-cbrief-hint">
+                    <PencilSimple size={12} weight="bold" aria-hidden="true" />
+                    Written from your answers. Click any text to change it.
+                  </p>
+                  <ComposedBrief
+                    doc={briefDoc}
+                    subId={subId}
+                    questions={briefQuestions}
+                    tone={segmentTone}
+                    editable
+                    onChange={editBrief}
+                  />
+                </>
+              )}
+              {briefState === 'failed' && (
+                <p className="v4-cbrief-fallback" role="status">
+                  We couldn’t write your brief just now, so your answers are shown as they are.{' '}
+                  <button type="button" onClick={writeBrief}>Try again</button>
+                </p>
+              )}
+              {briefState === 'writing' || showComposed ? null : briefGroups ? (
                 briefGroups.map((group) => (
                   <div key={group.title} className="v4-brief-group">
                     <BriefSectionHead
