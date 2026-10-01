@@ -12689,17 +12689,15 @@ button.v4-exit {
 .v4-cbrief-cols + .v4-cbrief-names,
 .v4-cbrief-para + .v4-cbrief-cols,
 .v4-cbrief-para + .v4-cbrief-names { margin-top: 24px; }
-/* Groups of names (shortlist, ruled out...) open with the panels' check / x
-   head, no rules between them, just air. Ruled-out names sit a shade
-   lighter: they are there to learn from, not to aim at. */
-.v4-cbrief-names + .v4-cbrief-names { margin-top: 28px; }
+/* Names the host mentioned, as the same pair of panels as the directions:
+   liked in the tint, missed in the grey. Under the directions panels with
+   the same gap they keep between themselves. */
 .v4-cbrief-names .v4-cbrief-sublabel { margin-bottom: 12px; }
-.v4-cbrief-names .v4-cbrief-col-head { margin-bottom: 12px; }
-.v4-cbrief-names.is-missed .v4-cbrief-col-icon {
-  background: color-mix(in srgb, var(--v4-fg) 10%, #fff);
-  color: var(--v4-fg);
-}
-.v4-cbrief-names.is-missed .v4-cbrief-point-lead { color: rgba(3, 3, 2, 0.72); }
+.v4-cbrief-cols + .v4-cbrief-names-cols { margin-top: 12px; }
+.v4-brief-group-head + .v4-cbrief-names-cols { margin-top: 0; }
+.v4-cbrief-col .v4-cbrief-points.is-names { gap: 12px; }
+.v4-cbrief-col .v4-cbrief-points.is-names .v4-cbrief-point-lead { font-size: 17px; }
+.v4-cbrief-col .v4-cbrief-points.is-names .v4-cbrief-point-text { font-size: 14px; }
 
 @media (max-width: 640px) {
   .v4-cbrief-cols.is-two { grid-template-columns: 1fr; }

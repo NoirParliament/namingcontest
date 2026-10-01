@@ -61,23 +61,31 @@ function Names({ names, labels }) {
       { kind: 'missed', label: labels.missed, items: names.filter((n) => n.kind === 'missed') },
     ].filter((g) => g.items.length)
     : [{ kind: '', label: 'Names already mentioned', items: names }];
-  // The same check / x tiles as Lean toward / Steer clear of, so the whole
-  // brief speaks one language: check = this way, x = not this.
-  return groups.map((g) => (
-    <div key={g.label} className={`v4-cbrief-names${g.kind ? ` is-${g.kind}` : ''}`}>
-      {g.kind ? (
-        <div className="v4-cbrief-col-head">
-          <span className="v4-cbrief-col-icon" aria-hidden="true">
-            {g.kind === 'missed' ? <X size={12} weight="bold" /> : <Check size={12} weight="bold" />}
-          </span>
-          {g.label}
+  if (!split) {
+    return (
+      <div className="v4-cbrief-names">
+        <SubLabel>{groups[0].label}</SubLabel>
+        <Points items={groups[0].items} leadKey="name" textKey="note" variant="names" />
+      </div>
+    );
+  }
+  // The same pair as Lean toward / Steer clear of: the names they like in
+  // the tinted panel, the ones that missed in the grey one, side by side.
+  return (
+    <div className={`v4-cbrief-cols v4-cbrief-names-cols${groups.length > 1 ? ' is-two' : ''}`}>
+      {groups.map((g) => (
+        <div key={g.label} className={`v4-cbrief-col${g.kind === 'missed' ? ' is-avoid' : ''}`}>
+          <div className="v4-cbrief-col-head">
+            <span className="v4-cbrief-col-icon" aria-hidden="true">
+              {g.kind === 'missed' ? <X size={12} weight="bold" /> : <Check size={12} weight="bold" />}
+            </span>
+            {g.label}
+          </div>
+          <Points items={g.items} leadKey="name" textKey="note" variant="names" />
         </div>
-      ) : (
-        <SubLabel>{g.label}</SubLabel>
-      )}
-      <Points items={g.items} leadKey="name" textKey="note" variant="names" />
+      ))}
     </div>
-  ));
+  );
 }
 
 // A side the host gave nothing for: one plain line that finishes the
