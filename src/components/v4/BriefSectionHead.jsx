@@ -15,6 +15,12 @@ const ICONS = {
   UsersThree, Baby, PawPrint, House, Flag, Storefront, MapPin, Info,
 };
 
+// The section icon on its own (the brief progress line uses it).
+export function SectionIcon({ name, size = 15 }) {
+  const Icon = ICONS[name] || Sparkle;
+  return <Icon weight="duotone" size={size} />;
+}
+
 export default function BriefSectionHead({ title, sub, icon, tone }) {
   const Icon = ICONS[icon] || Sparkle;
   const toneVars = tone

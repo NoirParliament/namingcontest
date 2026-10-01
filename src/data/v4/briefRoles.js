@@ -16,6 +16,7 @@
 
 import { getBriefSections, getParticipantLabel, getParticipantNote, getExpansion } from './briefExpansions';
 import { formatDateAnswer } from '../../utils/v4Brief';
+import { BRIEF_QUESTIONS } from './briefQuestions';
 
 // Role per question id. Shared ids mean the same thing in every segment, so
 // one flat table; the two segment-specific collisions are noted inline.
@@ -198,7 +199,7 @@ const CATEGORY_SHAPE = {
   },
   p2: {
     liked: 'Names they love', missed: 'Names that did not fit',
-    writer: 'Pet. Fact pills: the animal and breed or mix, sex and age, a short look ("white, brown ear patch"), other pets by name under the label "Lives with". The story: only how the pet arrived and what they are like, in the owner\'s words; breed, size and looks stay in the pills. The story opens with the pet as the host\'s ("Jess\'s new pup"), never a bare "He". Criteria come from the kind of name the host picked (a human name, silly, regal...) and how the new name should sit beside the other pets\' names (the new name differs in style from theirs, not the other way round). Explore holds only the quirks and the household\'s interests, in the host\'s own details (the sneezes, the kettle), never the personality or the arrival already told in the story. What the host wants avoided (a past pet\'s name, names that sound like a command) goes under avoid, with their reason. Admired names are liked.',
+    writer: 'Pet. Fact pills: the animal and breed or mix, sex and age, a short look ("white, brown ear patch"), other pets by name under the label "Lives with". The story: only how the pet arrived and what they are like, in the owner\'s words; breed, size and looks stay in the pills. The story opens with the pet as the host\'s ("Jess\'s new pup"), never a bare "He". Criteria come from the kind of name the host picked (a human name, silly, regal...). Explore holds only the quirks and the household\'s interests, in the host\'s own details (the sneezes, the kettle), never the personality or the arrival already told in the story. The pet chat has no avoid question, so avoid holds only what other answers ask to steer clear of: when the host wants something different from the other pets, one line naming those pets\' names or style with that reason ("Names in the same style as Mrs Biscuit, so the two stand apart"), plus anything they rule out in their other notes. That point lives in avoid only, not also as a criterion. Otherwise avoid stays empty. Admired names are liked.',
   },
   p4: {
     liked: 'Names they like', missed: 'Names they do not',
@@ -265,7 +266,15 @@ export function composedSectionMeta(subId, questions) {
   // from") shows the names under that heading instead of inside the
   // directions.
   const namesSec = shape.namesSection ? find(/names/i) : null;
+  // Does this category's chat ask what to avoid at all? From its full
+  // question list, not the answered ones, so every page agrees. A pet chat
+  // does not, so an empty avoid side there is not shown as a claim.
+  const allQs = BRIEF_QUESTIONS[subId]?.questions;
+  const asksAvoid = allQs
+    ? allQs.some((q) => ['avoid', 'exploreAvoid', 'antiReference'].includes(roleFor(q.id)))
+    : true;
   return {
+    asksAvoid,
     names: {
       liked: shape.liked,
       missed: shape.missed,

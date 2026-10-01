@@ -93,14 +93,160 @@ export function rewritesLeft(setup = readSetup()) {
 // Ask the edge function. Resolves to the doc, or throws; the caller keeps
 // whatever was on screen before. A rewrite counts against MAX_REWRITES only
 // when it succeeds. Never called for participants.
-export async function composeBriefDoc({ rewrite = false } = {}) {
+// ── Live progress ─────────────────────────────────────────────────────
+// What the writer is doing right now, for any page that wants to show it:
+//   stage    'drafting' | 'redrafting' | 'checking' | 'done' | 'error' | null
+//   partial  the brief so far, rebuilt from the half-written JSON (drafting)
+//   draft    the finished draft (checking), so fixes can be shown landing
+//   rewrite  true for an "Update brief"
+let progress = { stage: null, partial: null, draft: null, rewrite: false };
+const listeners = new Set();
+function setProgress(patch) {
+  progress = { ...progress, ...patch };
+  listeners.forEach((cb) => cb(progress));
+}
+export function subscribeBriefProgress(cb) {
+  listeners.add(cb);
+  cb(progress);
+  return () => listeners.delete(cb);
+}
+export function briefProgress() {
+  return progress;
+}
+
+// The lines of the final brief that the check changed from the draft, so
+// the page can show them landing. Empty when there was no live draft.
+export function changedTexts(draft, doc) {
+  if (!draft || !doc) return null;
+  const texts = (d) => {
+    const n = normalizeBriefDoc(d);
+    if (!n) return [];
+    return [
+      n.about.story, n.aim.lead,
+      ...n.about.facts.map((f) => f.value),
+      ...n.aim.points.flatMap((p) => [p.label, p.text]),
+      ...n.directions.explore, ...n.directions.avoid,
+      ...n.directions.names.map((x) => x.note),
+      ...n.rules.points.flatMap((p) => [p.label, p.text]),
+    ].filter(Boolean);
+  };
+  const before = new Set(texts(draft));
+  const changed = texts(doc).filter((t) => !before.has(t));
+  return changed.length ? new Set(changed) : null;
+}
+
+// The brief from half-written JSON: close whatever is open (a string, then
+// arrays and objects) and parse; if the cut lands mid-token, step back to an
+// earlier comma and try again. Null until there is something to show.
+export function parsePartialBrief(text) {
+  let s = text;
+  for (let tries = 0; tries < 40 && s.length > 1; tries++) {
+    const stack = [];
+    let inStr = false;
+    let esc = false;
+    for (const ch of s) {
+      if (inStr) {
+        if (esc) esc = false;
+        else if (ch === '\\') esc = true;
+        else if (ch === '"') inStr = false;
+      } else if (ch === '"') inStr = true;
+      else if (ch === '{' || ch === '[') stack.push(ch);
+      else if (ch === '}' || ch === ']') stack.pop();
+    }
+    let candidate = s.replace(/\\$/, '') + (inStr ? '"' : '');
+    candidate = candidate.replace(/[,:]\s*$/, '');
+    candidate += stack.reverse().map((c) => (c === '{' ? '}' : ']')).join('');
+    try {
+      return JSON.parse(candidate);
+    } catch {
+      const cut = s.lastIndexOf(',');
+      if (cut <= 0) return null;
+      s = s.slice(0, cut);
+    }
+  }
+  return null;
+}
+
+// One request at a time per set of answers: the chat starts the brief early,
+// the hand-off and the review page may ask again while it is still being
+// written, and all of them get the same answer from the one request.
+let inflight = null;
+let inflightKey = null;
+
+export function composeBriefDoc({ rewrite = false } = {}) {
   const setup = readSetup();
-  if (rewrite && rewritesLeft(setup) <= 0) throw new Error('No rewrites left.');
+  if (rewrite && rewritesLeft(setup) <= 0) return Promise.reject(new Error('No rewrites left.'));
   const source = buildSourceFromSetup(setup);
-  if (!source || source.items.length === 0) throw new Error('Nothing to write from yet.');
-  const { data, error } = await supabase.functions.invoke('compose-brief', { body: { source, draftId: draftIdFor(setup) } });
-  if (error) throw new Error(error.message || 'Could not write the brief.');
-  if (!data?.doc) throw new Error(data?.error || 'Could not write the brief.');
+  if (!source || source.items.length === 0) return Promise.reject(new Error('Nothing to write from yet.'));
+  const key = briefSourceHash(source);
+  if (!rewrite && inflight && inflightKey === key) return inflight;
+  const run = writeBriefDoc(setup, source, rewrite).finally(() => {
+    if (inflight === run) { inflight = null; inflightKey = null; }
+  });
+  inflight = run;
+  inflightKey = key;
+  return run;
+}
+
+// The writer, live: Server-Sent Events from the edge function (the draft as
+// it is written, then the check), published through setProgress.
+async function streamBrief(body) {
+  const base = import.meta.env.VITE_SUPABASE_URL;
+  const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const res = await fetch(`${base}/functions/v1/compose-brief`, {
+    method: 'POST',
+    headers: { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...body, stream: true }),
+  });
+  if (!res.ok || !(res.headers.get('content-type') || '').includes('text/event-stream')) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `Could not write the brief (${res.status}).`);
+  }
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buf = '';
+  let result = null;
+  // During a redraft the first draft stays on screen (soft) until the new
+  // one is finished, instead of the brief shrinking back to nothing.
+  let hold = false;
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream: true });
+    let i;
+    while ((i = buf.indexOf('\n\n')) >= 0) {
+      const chunk = buf.slice(0, i);
+      buf = buf.slice(i + 2);
+      if (!chunk.startsWith('data: ')) continue;
+      const e = JSON.parse(chunk.slice(6));
+      if (e.type === 'stage') {
+        if (e.stage === 'redrafting') hold = true;
+        if (e.draft) hold = false;
+        setProgress({ stage: e.stage, ...(e.draft ? { draft: e.draft, partial: e.draft } : {}) });
+      } else if (e.type === 'draft') {
+        if (hold) continue;
+        const partial = parsePartialBrief(e.text);
+        if (partial) setProgress({ partial });
+      } else if (e.type === 'done') {
+        result = e;
+      } else if (e.type === 'error') {
+        throw new Error(e.error || 'Could not write the brief.');
+      }
+    }
+  }
+  if (!result?.doc) throw new Error('Could not write the brief.');
+  return result;
+}
+
+async function writeBriefDoc(setup, source, rewrite) {
+  setProgress({ stage: 'drafting', partial: null, draft: null, rewrite });
+  let data;
+  try {
+    data = await streamBrief({ source, draftId: draftIdFor(setup) });
+  } catch (e) {
+    setProgress({ stage: 'error', partial: null });
+    throw e;
+  }
   if (data.warnings?.length) console.warn('[brief] unverified names in the composed brief:', data.warnings);
   const doc = {
     ...data.doc,
@@ -113,6 +259,7 @@ export async function composeBriefDoc({ rewrite = false } = {}) {
     briefDoc: doc,
     ...(rewrite ? { briefRewrites: (readSetup().briefRewrites || 0) + 1 } : {}),
   });
+  setProgress({ stage: 'done', partial: null });
   return doc;
 }
 
