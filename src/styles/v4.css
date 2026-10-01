@@ -12755,27 +12755,18 @@ button.v4-exit {
   animation: v4-bupd-turn 0.8s linear infinite;
 }
 @keyframes v4-bupd-turn { to { transform: rotate(360deg); } }
-/* Same treatment as the footer's social buttons (the site's control on a
-   dark surface): translucent white, brighter on hover, no movement. */
-.v4-bupd-btn {
+/* The site's primary button as is (ink, white fills up from the bottom on
+   hover, text turns ink); only the border is lightened so the button's
+   edge reads on the ink bar. */
+.lp-v3 .btn.btn-primary.v4-bupd-btn {
   flex: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  height: 40px;
-  padding: 0 18px;
-  border: 0;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  font-family: var(--font-text);
-  font-size: 14px;
+  padding: 10px 18px;
   font-weight: 600;
-  white-space: nowrap;
-  cursor: pointer;
+  border-color: rgba(255, 255, 255, 0.45);
+  box-shadow: none;
 }
-.v4-bupd-btn:hover { background: rgba(255, 255, 255, 0.25); }
-.v4-bupd-btn:focus-visible {
+.lp-v3 .btn.btn-primary.v4-bupd-btn:hover { border-color: #fff; }
+.lp-v3 .btn.btn-primary.v4-bupd-btn:focus-visible {
   outline: 2px solid #fff;
   outline-offset: 2px;
 }
@@ -12793,7 +12784,7 @@ button.v4-exit {
     gap: 12px;
     padding: 14px;
   }
-  .v4-bupd-btn { justify-content: center; }
+  .lp-v3 .btn.btn-primary.v4-bupd-btn { justify-content: center; }
   .v4-qa-open { flex-direction: column; align-items: stretch; gap: 12px; }
   .v4-qa-open-cta { justify-content: center; }
 }

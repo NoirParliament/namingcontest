@@ -3,9 +3,10 @@
 // answers differ from what the brief was written from, or while an update
 // is running / has just landed / has just failed. One sentence, one button.
 //
-// The button takes the site's only control on a dark surface, the footer's
-// social buttons: translucent white that brightens on hover, nothing moves.
-// The bar enters like the resume-draft pill.
+// The button is the site's own primary button (.lp-v3 .btn-primary: ink,
+// white fills it from the bottom on hover). The only change for the dark
+// bar is a light border, so its edge shows against the ink. The bar enters
+// like the resume-draft pill.
 //
 // The rule it makes visible: the answers are the source, the brief is
 // written from them, and nothing rewrites until the creator asks (at most
@@ -62,7 +63,7 @@ export default function BriefUpdateBar({ count, left, state, nudge, onUpdate }) 
           </span>
         </div>
         {canUpdate && (
-          <button type="button" className="v4-bupd-btn" onClick={onUpdate}>
+          <button type="button" className="btn btn-primary v4-bupd-btn" onClick={onUpdate}>
             <ArrowClockwise size={14} weight="bold" aria-hidden="true" />
             {state === 'failed' ? 'Try again' : 'Update brief'}
           </button>

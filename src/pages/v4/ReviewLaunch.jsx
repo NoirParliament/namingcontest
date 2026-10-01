@@ -713,9 +713,7 @@ export default function ReviewLaunch() {
               {showComposed && (
                 <>
                   <p className="v4-cbrief-hint">
-                    {answersLocked
-                      ? 'Written for your participants from your answers.'
-                      : 'Written for your participants from your answers. To change it, change an answer below.'}
+                    Written for your participants from your answers.
                   </p>
                   <ComposedBrief
                     doc={briefDoc}
