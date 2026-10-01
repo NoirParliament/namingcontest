@@ -195,8 +195,9 @@ const CHECKER = `You are now checking a finished brief line by line against the 
 1. Supported: the line states nothing the material does not give. No number, age, date, place, person, feeling, image, reason, quality or interpretation the host did not write. "U12" does not say the players are eleven or twelve. "Rural" does not say "far from hospitals". A name the host only liked was not "chosen".
 2. Grammar: no grammar, agreement or spelling errors.
 3. Not filler: the line gives participants something they can use. A summing-up tail ("built around the communities it serves"), a line about the search for the name ("the last piece still to settle") or a line that only restates its own label is filler.
-4. Not repeated: the line does not say again what another line already says, in any words, and does not repeat itself ("sounds like broadband, so avoid names that sound like broadband").
+4. Not repeated: the line does not say again what another line already says, in any words, including the fact pills (a criterion "a floor lamp and a wall light follow next year" repeats the pill "Coming next: Floor lamp, wall light"), and does not repeat itself ("sounds like broadband, so avoid names that sound like broadband").
 5. Reads well: clear and natural.
+6. Adds something: a criterion's or rule's text must give a detail, reason or how that its label does not. Text that only rewords its own label ("Go direct or abstract" then "Either a direct or an abstract name works for Sam") fails: return an empty fixed text so the label stands alone.
 To fix a line, change as little as possible: remove the unsupported or filler part, correct the grammar, cut the repeat, keep the host's own words. Never add information. Labels stay short (2 to 5 words; criteria and rules start with a verb). Return an empty fixed text to delete a line that is entirely filler or entirely repeated, except for name notes, rules and pill values, which are never deleted. Lines marked "known problem" have a problem found by code; fix it.`;
 
 const CHECK_SCHEMA = {
@@ -256,11 +257,13 @@ function briefLines(doc: Doc): Line[] {
   return out;
 }
 
-const FILLER_WORDS = new Set(['the', 'a', 'an', 'name', 'names', 'should', 'say', 'says', 'it', 'its', 'to', 'be', 'and', 'of', 'that', 'this', 'is', 'are', 'with', 'for', 'feel', 'feels', 'will', 'want', 'wants']);
-function echoesLabel(label: string, text: string): boolean {
+const FILLER_WORDS = new Set(['the', 'a', 'an', 'name', 'names', 'should', 'say', 'says', 'it', 'its', 'to', 'be', 'and', 'of', 'that', 'this', 'is', 'are', 'with', 'for', 'feel', 'feels', 'will', 'want', 'wants',
+  'either', 'or', 'both', 'works', 'work', 'fine', 'good', 'welcome', 'aim', 'go', 'keep', 'make', 'try', 'use', 'any', 'can', 'could', 'would', 'there', 'their', 'they', 'them', 'he', 'she', 'his', 'her']);
+function echoesLabel(label: string, text: string, host = ''): boolean {
   if (!label || !text) return false;
+  const hostWords = host.toLowerCase().split(/\s+/).filter(Boolean);
   const words = (x: string) => x.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter((w) => w && !FILLER_WORDS.has(w));
-  const own = new Set(words(label));
+  const own = new Set([...words(label), ...hostWords]);
   return words(text).every((w) => own.has(w));
 }
 
@@ -270,16 +273,31 @@ function splitSentences(t: string): string[] {
 
 // Problems code can see for itself, handed to the checker as known.
 const NUMBER_WORDS = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty', 'thirty', 'forty', 'fifty', 'hundred', 'dozen'];
-function knownProblems(lines: Line[], source: Source): Record<string, string> {
+function contentWords(x: string): string[] {
+  return x.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter((w) => w.length > 2 && !FILLER_WORDS.has(w));
+}
+
+function knownProblems(lines: Line[], source: Source, pills: { label: string; value: string }[]): Record<string, string> {
   const material = JSON.stringify(source).toLowerCase();
   const out: Record<string, string> = {};
   for (const l of lines) {
     const t = l.text.toLowerCase();
+    const lineWords = new Set(contentWords(l.text));
     const issues: string[] = [];
     // Numbers: a digit run or a number word the material never contains.
     for (const m of t.match(/\d+/g) || []) if (!material.includes(m)) issues.push(`the number "${m}" is not in the material`);
     for (const w of NUMBER_WORDS) {
       if (new RegExp(`\\b${w}\\b`).test(t) && !new RegExp(`\\b${w}\\b`).test(material)) issues.push(`"${w}" is not in the material`);
+    }
+    // A line restating a fact pill (every content word of the pill value).
+    if (!l.kind.startsWith('fact pill')) {
+      for (const f of pills) {
+        const want = contentWords(f.value);
+        if (want.length >= 2 && want.every((w) => lineWords.has(w))) {
+          issues.push(`repeats the fact pill "${f.label}: ${f.value}"`);
+          break;
+        }
+      }
     }
     // A line repeating its own phrase (three words or more).
     const words = t.replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean);
@@ -505,7 +523,7 @@ Deno.serve(async (req) => {
     // The line-by-line check: the same model and rules, one line at a time.
     const verify = async (draft: Doc): Promise<Doc> => {
       const lines = briefLines(draft);
-      const known = knownProblems(lines, source);
+      const known = knownProblems(lines, source, draft.about.facts);
       const listing = lines.map((l) => `${l.id} [${l.kind}]${known[l.id] ? ` (known problem: ${known[l.id]})` : ''}: ${l.text}`).join('\n');
       const res = await client.beta.messages.create({
         model: MODEL,
@@ -535,7 +553,7 @@ Deno.serve(async (req) => {
       // A criterion whose text only echoes its own label keeps the label
       // alone ("Convey care that comes to you"), never the echo.
       next.aim.points = next.aim.points
-        .map((pt) => (echoesLabel(pt.label, pt.text) ? { ...pt, text: '' } : pt))
+        .map((pt) => (echoesLabel(pt.label, pt.text, source.host) ? { ...pt, text: '' } : pt))
         .filter((pt) => pt.text || pt.label);
       next.directions.explore = next.directions.explore.filter(Boolean);
       next.directions.avoid = next.directions.avoid.filter(Boolean);
