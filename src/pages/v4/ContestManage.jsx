@@ -1547,38 +1547,36 @@ function BriefRecapCollapser({
   // page pairs them. Older contests without one keep the rows in the box.
   const full = briefDocHasContent(briefDoc);
   if (full) {
+    // Closed: the dashed line. Open: the line becomes the top of the brief
+    // card itself, so the brief unfolds straight out of it (Matt).
+    const trigger = (
+      <button
+        type="button"
+        className="v4-manage-recap-trigger"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+      >
+        <span className="v4-manage-recap-icon" aria-hidden="true">
+          <LockSimple weight="duotone" size={16} />
+        </span>
+        <span className="v4-manage-recap-text">
+          Your brief · can’t be edited after launch
+        </span>
+        <span className="v4-manage-recap-meta">
+          {open ? 'Hide' : 'Show'}
+        </span>
+      </button>
+    );
     return (
       <>
-        <section className="v4-manage-recap">
-          <button
-            type="button"
-            className="v4-manage-recap-trigger"
-            onClick={() => setOpen((v) => !v)}
-            aria-expanded={open}
-          >
-            <span className="v4-manage-recap-icon" aria-hidden="true">
-              <LockSimple weight="duotone" size={16} />
-            </span>
-            <span className="v4-manage-recap-text">
-              Your brief · can’t be edited after launch
-            </span>
-            <span className="v4-manage-recap-meta">
-              {open ? 'Hide' : 'Show'}
-            </span>
-          </button>
-        </section>
+        {!open && <section className="v4-manage-recap">{trigger}</section>}
         {open && (
           <>
             <section className="v4-pchat-brief v4-manage-recap-brief v4-manage-brief-full">
+              <div className="v4-manage-brief-full-bar">{trigger}</div>
               <header className="v4-pchat-brief-head">
-                <div className="v4-manage-recap-brief-top">
-                  <div className="v4-pchat-brief-eyebrow" style={tone ? { color: tone.fg } : undefined}>
-                    The brief
-                  </div>
-                  <span className="v4-manage-recap-lock">
-                    <LockSimple weight="bold" size={11} aria-hidden="true" />
-                    Locked at launch
-                  </span>
+                <div className="v4-pchat-brief-eyebrow" style={tone ? { color: tone.fg } : undefined}>
+                  The brief
                 </div>
                 <h2 className="v4-pchat-brief-name">{workingName || 'Your contest'}</h2>
               </header>

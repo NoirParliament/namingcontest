@@ -2792,7 +2792,17 @@ input.v4-launch-email-input::placeholder {
 }
 /* Opened straight under the line, full size: the brief card the width of
    the dashboard, then the settings in their own private card. */
-.v4-manage-brief-full { margin: -12px 0 24px; }
+.v4-manage-brief-full {
+  margin: 0 0 24px;
+  padding-top: 0;
+  overflow: hidden;
+}
+/* The line, now the top strip of the open card: same row, a hairline under it. */
+.v4-manage-brief-full-bar {
+  margin: 0 -24px 20px;
+  border-bottom: 1px solid var(--v4-faint);
+}
+.v4-manage-brief-full-bar .v4-manage-recap-trigger { padding: 16px 24px; }
 .v4-manage-recap-settings .v4-manage-recap-body {
   border-top: 0;
   padding-top: 4px;
