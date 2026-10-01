@@ -5,7 +5,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import {
-  X, PencilSimple, CheckCircle, Rocket,
+  X, PencilSimple, CheckCircle, Rocket, CaretDown,
   Heart, UsersThree, Briefcase,
 } from '@phosphor-icons/react';
 import namingContestLogo from '../../assets/namingcontestlogo-cropped.svg';
@@ -715,47 +715,6 @@ export default function ReviewLaunch() {
                 </>
               )}
 
-              {/* The questions behind the brief: one quiet line until asked
-                  for, then the full list in place, each question as the
-                  chat asked it. Changing one doesn't touch the brief; the
-                  bar at the bottom of the screen offers the update. */}
-              {(showComposed || briefState === 'rewriting') && answerQuestions.length > 0 && (
-                <div className={`v4-qa${answersOpen ? ' is-open' : ''}`}>
-                  {!answersOpen ? (
-                    <button type="button" className="v4-qa-open" onClick={() => setAnswersOpen(true)}>
-                      <span>Missed a question, or want to change an answer?</span>
-                      <span className="v4-qa-link">See all questions</span>
-                    </button>
-                  ) : (
-                    <>
-                      <div className="v4-qa-head">
-                        <div>
-                          <h3 className="v4-qa-title">Your questions and answers</h3>
-                          <p className="v4-qa-sub">
-                            Only you see these. Click one to change it or answer it.
-                            {skippedCount > 0 && ` ${skippedCount} ${skippedCount === 1 ? 'is' : 'are'} still unanswered.`}
-                          </p>
-                        </div>
-                        <button type="button" className="v4-qa-close" onClick={() => setAnswersOpen(false)}>
-                          Hide
-                        </button>
-                      </div>
-                      {(briefGroups || [{ title: null, items: answerQuestions }]).map((group, gi) => {
-                        const items = group.items.filter((q) => q.id !== 'intro');
-                        if (!items.length) return null;
-                        return (
-                          <div key={group.title || gi} className="v4-qa-group">
-                            {group.title && <h4 className="v4-qa-group-title">{group.title}</h4>}
-                            <ul className="v4-review-list v4-review-list-editable">
-                              {items.map(renderBriefRow)}
-                            </ul>
-                          </div>
-                        );
-                      })}
-                    </>
-                  )}
-                </div>
-              )}
               {briefState === 'failed' && (
                 <p className="v4-cbrief-fallback" role="status">
                   We couldn’t write your brief just now, so your answers are shown as they are.{' '}
@@ -799,6 +758,59 @@ export default function ReviewLaunch() {
                       <GuideExpandable key={a.id} article={a} compact tone={segmentTone} />
                     ))}
                   </div>
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* Your answers: the questions behind the brief, in the same
+              private card language as Schedule and Settings (only the
+              creator sees it). One line until asked for; then the full
+              list, each question exactly as the chat asked it. Changing
+              one doesn't touch the brief; the pill at the bottom of the
+              screen offers the update. */}
+          {(showComposed || briefState === 'rewriting') && answerQuestions.length > 0 && (
+            <section className="v4-review-section v4-review-section--private v4-qa">
+              <header className="v4-review-section-head">
+                <h2>Your answers</h2>
+                {answersOpen && (
+                  <button type="button" className="v4-qa-close" onClick={() => setAnswersOpen(false)}>
+                    Hide
+                  </button>
+                )}
+              </header>
+              {!answersOpen ? (
+                <button type="button" className="v4-qa-open" onClick={() => setAnswersOpen(true)}>
+                  <span className="v4-qa-open-text">
+                    Missed a question, or want to change an answer?
+                    {skippedCount > 0 && (
+                      <span className="v4-qa-open-meta">
+                        {skippedCount} {skippedCount === 1 ? 'question is' : 'questions are'} still unanswered.
+                      </span>
+                    )}
+                  </span>
+                  <span className="v4-qa-open-cta">
+                    Show all questions
+                    <CaretDown size={12} weight="bold" aria-hidden="true" />
+                  </span>
+                </button>
+              ) : (
+                <div className="v4-qa-body">
+                  <p className="v4-qa-sub">
+                    Only you see these. Click a question to change your answer or answer it.
+                  </p>
+                  {(briefGroups || [{ title: null, items: answerQuestions }]).map((group, gi) => {
+                    const items = group.items.filter((q) => q.id !== 'intro');
+                    if (!items.length) return null;
+                    return (
+                      <div key={group.title || gi} className="v4-qa-group">
+                        {group.title && <h3 className="v4-qa-group-title">{group.title}</h3>}
+                        <ul className="v4-review-list v4-review-list-editable">
+                          {items.map(renderBriefRow)}
+                        </ul>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </section>
