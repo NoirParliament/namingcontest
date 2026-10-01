@@ -9,10 +9,9 @@
 //
 // Look: the site's dark bottom bar (the review page's "Update brief" bar):
 // ink surface, white text, solid white buttons with the ink hover wash.
-// Shaped like the site footer, a dark card of the same colour: 20px from
-// the screen edges, 32px corners, the footer's side padding, so its text and
-// buttons line up with the footer's content. Text on the left, the two
-// answers on the right; stacked on narrow screens.
+// As wide as the page's content column (the hero card's edges), with the
+// text on the left and the two answers on the right; stacked on narrow
+// screens.
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
