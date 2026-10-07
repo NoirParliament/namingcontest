@@ -38,7 +38,56 @@ const CALLOUT_META = {
   warning: { Icon: ShieldWarning,  label: 'Heads up' },
 };
 
-export default function GuideExpandable({ article, compact = false, tone = null }) {
+// The article itself: sections, callout, optional close. Shared by the
+// inline expandable and the setup chat's guides drawer (which shows it as a
+// full reading view with its own back control, so no close button there).
+export function GuideBody({ article, onClose, showClose = true }) {
+  const HeaderIcon = ICONS[article.icon] || BookOpen;
+  const callout = article.callout;
+  const calloutMeta = callout ? CALLOUT_META[callout.type] : null;
+  return (
+    <div className="v4-guide-body">
+      <div className="v4-guide-head">
+        <span className="v4-guide-head-icon" aria-hidden="true">
+          <HeaderIcon weight="duotone" size={20} />
+        </span>
+        <div className="v4-guide-head-text">
+          <h3 className="v4-guide-title">{article.title}</h3>
+          <span className="v4-guide-readtime">{article.readTime} read</span>
+        </div>
+      </div>
+
+      {article.sections?.map((sec, i) => (
+        <section key={i} className="v4-guide-section">
+          <h4 className="v4-guide-section-head">{sec.heading}</h4>
+          <p className="v4-guide-section-body">{sec.body}</p>
+        </section>
+      ))}
+
+      {callout && calloutMeta && (
+        <aside className="v4-guide-callout">
+          <div className="v4-guide-callout-label">
+            <calloutMeta.Icon weight="duotone" size={14} />
+            <span>{calloutMeta.label}</span>
+          </div>
+          <p className="v4-guide-callout-quote">{callout.text}</p>
+        </aside>
+      )}
+
+      {showClose && (
+        <button type="button" className="v4-guide-close" onClick={onClose}>
+          <CloseIcon weight="bold" size={14} />
+          <span>Close guide</span>
+        </button>
+      )}
+    </div>
+  );
+}
+
+// onOpen: when given, the card is a plain button that hands the article to
+// the caller (the guides drawer opens it in its reading view) instead of
+// expanding in place.
+export default function GuideExpandable({ article, compact = false, tone = null, onOpen = null }) {
   const [open, setOpen] = useState(false);
   if (!article) return null;
 
@@ -50,8 +99,6 @@ export default function GuideExpandable({ article, compact = false, tone = null 
     : undefined;
 
   const HeaderIcon = ICONS[article.icon] || BookOpen;
-  const callout = article.callout;
-  const calloutMeta = callout ? CALLOUT_META[callout.type] : null;
   // Authored teaser: the article's first section heading doubles as a
   // one-line takeaway, so the card reads as an editorial object (title +
   // what you'll get) instead of a second block of instructions after the
@@ -67,8 +114,8 @@ export default function GuideExpandable({ article, compact = false, tone = null 
       <button
         type="button"
         className="v4-guide-trigger"
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
+        onClick={onOpen ? () => onOpen(article) : () => setOpen((v) => !v)}
+        aria-expanded={onOpen ? undefined : open}
       >
         <span className="v4-guide-trigger-icon" aria-hidden="true">
           <HeaderIcon weight="duotone" size={compact ? 17 : 19} />
@@ -91,45 +138,7 @@ export default function GuideExpandable({ article, compact = false, tone = null 
         </span>
       </button>
 
-      {open && (
-        <div className="v4-guide-body">
-          <div className="v4-guide-head">
-            <span className="v4-guide-head-icon" aria-hidden="true">
-              <HeaderIcon weight="duotone" size={20} />
-            </span>
-            <div className="v4-guide-head-text">
-              <h3 className="v4-guide-title">{article.title}</h3>
-              <span className="v4-guide-readtime">{article.readTime} read</span>
-            </div>
-          </div>
-
-          {article.sections?.map((sec, i) => (
-            <section key={i} className="v4-guide-section">
-              <h4 className="v4-guide-section-head">{sec.heading}</h4>
-              <p className="v4-guide-section-body">{sec.body}</p>
-            </section>
-          ))}
-
-          {callout && calloutMeta && (
-            <aside className="v4-guide-callout">
-              <div className="v4-guide-callout-label">
-                <calloutMeta.Icon weight="duotone" size={14} />
-                <span>{calloutMeta.label}</span>
-              </div>
-              <p className="v4-guide-callout-quote">{callout.text}</p>
-            </aside>
-          )}
-
-          <button
-            type="button"
-            className="v4-guide-close"
-            onClick={() => setOpen(false)}
-          >
-            <CloseIcon weight="bold" size={14} />
-            <span>Close guide</span>
-          </button>
-        </div>
-      )}
+      {open && !onOpen && <GuideBody article={article} onClose={() => setOpen(false)} />}
     </div>
   );
 }

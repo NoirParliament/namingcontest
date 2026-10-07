@@ -28,7 +28,7 @@ import {
   Confetti,
   BookOpen,
 } from '@phosphor-icons/react';
-import { SegmentThemeBackdrop, getSegmentTone, getSegmentPalette } from '../../data/v4/segmentTheme';
+import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
 import { currentBriefDoc, composeBriefDoc, briefChanges, RESET_BRIEF_PATCH } from '../../utils/composeBrief';
 import { useAuth } from '../../lib/AuthContext';
 import { useProfile } from '../../lib/useProfile';
@@ -61,7 +61,7 @@ import { track } from '../../utils/measure';
 import { SHARED_SETTINGS_QUESTIONS, getIntroQuestionFor } from '../../data/v4/briefQuestions';
 import { VOTER_TIER_QUESTION, priceForVoters } from '../../data/v4/voterTiers';
 import { SUB_SEGMENTS } from '../../data/v4/subSegments';
-import GuidesSheet from '../../components/v4/GuidesSheet';
+import GuidesDrawer from '../../components/v4/GuidesDrawer';
 import QuestionInput from '../../components/v4/QuestionInput';
 import AuthModal from '../../components/v4/AuthModal';
 import EditQuestionModal from '../../components/v4/EditQuestionModal';
@@ -311,6 +311,32 @@ export default function BriefChat() {
         }]
       : []
   );
+
+  // The spotlight on the header's Guides button: once the price is picked
+  // and the brief is about to start, the button fills with the category's
+  // tint, shows a count, pulses twice, and a small callout drops from it
+  // for a few seconds (or until the next tap anywhere). The tint and count
+  // stay for the rest of setup, so the door is always visible. Nothing is
+  // added to the conversation itself.
+  const voterAnswered = history.some((t) => t.question.section === 'voter');
+  const [nudge, setNudge] = useState('idle'); // idle | shown | done
+  useEffect(() => {
+    if (nudge === 'idle' && voterAnswered && chatArticles.length > 0) setNudge('shown');
+  }, [nudge, voterAnswered, chatArticles.length]);
+  useEffect(() => {
+    if (nudge !== 'shown') return undefined;
+    const t = setTimeout(() => setNudge('done'), 7000);
+    const dismiss = () => setNudge('done');
+    document.addEventListener('pointerdown', dismiss, { capture: true, once: true });
+    return () => { clearTimeout(t); document.removeEventListener('pointerdown', dismiss, { capture: true }); };
+  }, [nudge]);
+  const guidesLit = nudge !== 'idle';
+  const namingPhrase = (() => {
+    const label = (getSegmentLabel(subId) || '').trim();
+    if (!label || /something else/i.test(label)) return 'choosing a great name';
+    const lower = label.toLowerCase();
+    return `naming ${/^[aeiou]/.test(lower) ? 'an' : 'a'} ${lower}`;
+  })();
   const [idx, setIdx] = useState(preSeededSegment ? 1 : 0);
   const [phase, setPhase] = useState(0);
   const [userReply, setUserReply] = useState(null);
@@ -652,15 +678,33 @@ export default function BriefChat() {
               close a guide) plus, for a signed-in host, their avatar. */}
           <div className="v4-nav-right">
             {chatArticles.length > 0 && (
-              <button
-                type="button"
-                className="v4-exit v4-nav-guides"
-                aria-label="Naming guides"
-                onClick={() => setGuidesOpen(true)}
-              >
-                <BookOpen weight="regular" size={14} />
-                <span>Guides</span>
-              </button>
+              <div className="v4-nav-guides-wrap">
+                <button
+                  type="button"
+                  className={`v4-exit v4-nav-guides${guidesLit ? ' is-lit' : ''}${nudge === 'shown' ? ' is-pulsing' : ''}`}
+                  style={navTone ? { '--nav-tint': navTone.bg, '--nav-accent': navTone.fg } : undefined}
+                  aria-label={`Naming guides (${chatArticles.length})`}
+                  onClick={() => { setNudge('done'); setGuidesOpen(true); }}
+                >
+                  <BookOpen weight={guidesLit ? 'fill' : 'regular'} size={14} />
+                  <span>Guides</span>
+                  {guidesLit && <span className="v4-nav-guides-count" aria-hidden="true">{chatArticles.length}</span>}
+                </button>
+                {nudge === 'shown' && (
+                  <div className="v4-gnudge" role="status">
+                    <span className="v4-gnudge-text">
+                      {chatArticles.length} short {chatArticles.length === 1 ? 'read' : 'reads'} on {namingPhrase}
+                    </span>
+                    <button
+                      type="button"
+                      className="v4-resume-pill-cta v4-gnudge-open"
+                      onClick={() => { setNudge('done'); setGuidesOpen(true); }}
+                    >
+                      Open
+                    </button>
+                  </div>
+                )}
+              </div>
             )}
             <button
               type="button"
@@ -730,11 +774,10 @@ export default function BriefChat() {
         </main>
       </div>
 
-      <GuidesSheet
+      <GuidesDrawer
         open={guidesOpen}
         articles={chatArticles}
         tone={navTone}
-        palette={subId ? getSegmentPalette(subId) : null}
         onClose={() => setGuidesOpen(false)}
       />
 
