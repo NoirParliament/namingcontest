@@ -288,16 +288,27 @@ export function BriefProgressLine({ phase, stage, partial, subId, questions, ans
   useEffect(() => {
     if (stage === 'checking' && working) setCheckStart((t) => t ?? Date.now());
   }, [stage, working]);
+  // The number and the ring move every frame, easing toward the goal on a
+  // time base (so a fast replay and a slow live write look the same), not
+  // in 60ms steps.
   useEffect(() => {
-    const t = setInterval(() => {
+    let raf = 0;
+    let last = performance.now();
+    const loop = (now) => {
+      const dt = Math.min(100, now - last);
+      last = now;
       let goal = target;
       if (checkStart && working && stage === 'checking') goal = Math.min(96, 72 + ((Date.now() - checkStart) / 1000) * 1.5);
       // Before the first words, it creeps too (up to 18), never sitting still.
       else if (reading) goal = Math.min(18, 2 + ((Date.now() - readStart) / 1000) * 2);
       // Only ever forward: a redraft or a stage change never counts back.
-      setShown((v) => (goal <= v ? v : goal - v < 0.6 ? goal : v + (goal - v) * 0.18));
-    }, 60);
-    return () => clearInterval(t);
+      // Closes about a fifth of the gap every 60ms, whatever the frame rate.
+      const k = 1 - Math.pow(0.82, dt / 60);
+      setShown((v) => (goal <= v ? v : goal - v < 0.3 ? goal : v + (goal - v) * k));
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
   }, [target, checkStart, working, stage, reading, readStart]);
   const pct = Math.round(shown);
 
