@@ -76,6 +76,11 @@ const Q_PHASE_TIMINGS = [
 ];
 const POST_SUBMIT_DELAY = 1100; // hold user-reply bubble before advancing
 const NARRATOR_HOLD = 1500;     // narrator section break visible duration
+// Guides nudge: how long after the first brief question has fully revealed
+// the button and callout arrive (time to read the question first), and how
+// long the callout stays before fading on its own.
+const NUDGE_READ_PAUSE = 1400;
+const NUDGE_HOLD = 9000;
 
 // Build the sub-segment pick question — shown first when no subId yet
 function makeSubSegmentQuestion(group) {
@@ -320,13 +325,13 @@ export default function BriefChat() {
   // added to the conversation itself.
   const voterAnswered = history.some((t) => t.question.section === 'voter');
   const [nudge, setNudge] = useState('idle'); // idle | shown | leaving | done
-  useEffect(() => {
-    if (nudge === 'idle' && voterAnswered && chatArticles.length > 0) setNudge('shown');
-  }, [nudge, voterAnswered, chatArticles.length]);
+  // (The trigger lives below, after the current question and its reveal
+  // phase are known: the door opens once the first brief question has
+  // fully landed, not at the price pick.)
   // The callout leaves with a short fade (leaving) before it unmounts.
   useEffect(() => {
     if (nudge === 'shown') {
-      const t = setTimeout(() => setNudge('leaving'), 7000);
+      const t = setTimeout(() => setNudge('leaving'), NUDGE_HOLD);
       const dismiss = () => setNudge('leaving');
       document.addEventListener('pointerdown', dismiss, { capture: true, once: true });
       return () => { clearTimeout(t); document.removeEventListener('pointerdown', dismiss, { capture: true }); };
@@ -354,6 +359,22 @@ export default function BriefChat() {
   const currentArticle = currentQ && subId ? getArticleFor(subId, currentQ.guideId) : null;
   const isDone = subId !== null && idx >= questions.length;
   const isEditing = editingIndex !== null;
+
+  // When the guides arrive. The price pick is followed by the narrator's
+  // intro and then the first real brief question; the Guides button and its
+  // callout come in only once that question has fully revealed (its input is
+  // showing) and the host has had a moment to read it, so nothing competes
+  // with the question itself. A session resumed past that point gets the lit
+  // button straight away, with no callout.
+  useEffect(() => {
+    if (nudge !== 'idle' || !voterAnswered || chatArticles.length === 0 || isEditing) return undefined;
+    const voterAt = questions.findIndex((q) => q.section === 'voter');
+    const isBriefQ = (q) => !!q && q.type !== 'narrator' && questions.indexOf(q) > voterAt;
+    if (history.some((t) => isBriefQ(t.question))) { setNudge('done'); return undefined; }
+    if (!isBriefQ(currentQ) || phase < 3) return undefined;
+    const t = setTimeout(() => setNudge('shown'), NUDGE_READ_PAUSE);
+    return () => clearTimeout(t);
+  }, [nudge, voterAnswered, chatArticles.length, isEditing, questions, history, currentQ, phase]);
 
   // "X/Y" counter — counts every step including the tier pick that
   // happened on the previous screen (which was step 1). So segment pick
