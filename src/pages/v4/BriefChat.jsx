@@ -26,7 +26,6 @@ import {
   GraduationCap, GameController, Buildings, Package, Target, ArrowsClockwise,
   // Used only inside the section-break divider badge
   Confetti,
-  BookOpen,
 } from '@phosphor-icons/react';
 import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
 import { currentBriefDoc, composeBriefDoc, briefChanges, RESET_BRIEF_PATCH } from '../../utils/composeBrief';
@@ -61,7 +60,7 @@ import { track } from '../../utils/measure';
 import { SHARED_SETTINGS_QUESTIONS, getIntroQuestionFor } from '../../data/v4/briefQuestions';
 import { VOTER_TIER_QUESTION, priceForVoters } from '../../data/v4/voterTiers';
 import { SUB_SEGMENTS } from '../../data/v4/subSegments';
-import GuidesDrawer from '../../components/v4/GuidesDrawer';
+import GuidesDoor from '../../components/v4/GuidesDoor';
 import QuestionInput from '../../components/v4/QuestionInput';
 import AuthModal from '../../components/v4/AuthModal';
 import EditQuestionModal from '../../components/v4/EditQuestionModal';
@@ -76,11 +75,6 @@ const Q_PHASE_TIMINGS = [
 ];
 const POST_SUBMIT_DELAY = 1100; // hold user-reply bubble before advancing
 const NARRATOR_HOLD = 1500;     // narrator section break visible duration
-// Guides nudge: how long after the first brief question has fully revealed
-// the button and callout arrive (time to read the question first), and how
-// long the callout stays before fading on its own.
-const NUDGE_READ_PAUSE = 1400;
-const NUDGE_HOLD = 9000;
 
 // Build the sub-segment pick question — shown first when no subId yet
 function makeSubSegmentQuestion(group) {
@@ -291,7 +285,6 @@ export default function BriefChat() {
       .map((id) => getArticleFor(subId, id))
       .filter(Boolean);
   }, [subId, questions]);
-  const [guidesOpen, setGuidesOpen] = useState(false);
 
   // If we arrive with a sub-segment already chosen (e.g. opened straight
   // into a specific segment's chat from the Platform Map), hydrate the
@@ -317,39 +310,10 @@ export default function BriefChat() {
       : []
   );
 
-  // The spotlight on the header's Guides button: once the price is picked
-  // and the brief is about to start, the button fills with the category's
-  // tint, shows a count, pulses twice, and a small callout drops from it
-  // for a few seconds (or until the next tap anywhere). The tint and count
-  // stay for the rest of setup, so the door is always visible. Nothing is
-  // added to the conversation itself.
+  // The guides live behind the header's Guides button (GuidesDoor), which
+  // makes its entrance once the price is picked and the first brief
+  // question has landed; nothing is added to the conversation itself.
   const voterAnswered = history.some((t) => t.question.section === 'voter');
-  const [nudge, setNudge] = useState('idle'); // idle | shown | leaving | done
-  // (The trigger lives below, after the current question and its reveal
-  // phase are known: the door opens once the first brief question has
-  // fully landed, not at the price pick.)
-  // The callout leaves with a short fade (leaving) before it unmounts.
-  useEffect(() => {
-    if (nudge === 'shown') {
-      const t = setTimeout(() => setNudge('leaving'), NUDGE_HOLD);
-      const dismiss = () => setNudge('leaving');
-      document.addEventListener('pointerdown', dismiss, { capture: true, once: true });
-      return () => { clearTimeout(t); document.removeEventListener('pointerdown', dismiss, { capture: true }); };
-    }
-    if (nudge === 'leaving') {
-      const t = setTimeout(() => setNudge('done'), 260);
-      return () => clearTimeout(t);
-    }
-    return undefined;
-  }, [nudge]);
-  const guidesLit = nudge !== 'idle';
-  // "Curious what makes a great band or club name?"; categories without a
-  // clear noun ("something else") ask about a great name, full stop.
-  const nudgeQuestion = (() => {
-    const label = (getSegmentLabel(subId) || '').trim();
-    if (!label || /something else/i.test(label)) return 'Curious what makes a great name?';
-    return `Curious what makes a great ${label.toLowerCase()} name?`;
-  })();
   const [idx, setIdx] = useState(preSeededSegment ? 1 : 0);
   const [phase, setPhase] = useState(0);
   const [userReply, setUserReply] = useState(null);
@@ -361,20 +325,15 @@ export default function BriefChat() {
   const isEditing = editingIndex !== null;
 
   // When the guides arrive. The price pick is followed by the narrator's
-  // intro and then the first real brief question; the Guides button and its
-  // callout come in only once that question has fully revealed (its input is
-  // showing) and the host has had a moment to read it, so nothing competes
-  // with the question itself. A session resumed past that point gets the lit
-  // button straight away, with no callout.
-  useEffect(() => {
-    if (nudge !== 'idle' || !voterAnswered || chatArticles.length === 0 || isEditing) return undefined;
-    const voterAt = questions.findIndex((q) => q.section === 'voter');
-    const isBriefQ = (q) => !!q && q.type !== 'narrator' && questions.indexOf(q) > voterAt;
-    if (history.some((t) => isBriefQ(t.question))) { setNudge('done'); return undefined; }
-    if (!isBriefQ(currentQ) || phase < 3) return undefined;
-    const t = setTimeout(() => setNudge('shown'), NUDGE_READ_PAUSE);
-    return () => clearTimeout(t);
-  }, [nudge, voterAnswered, chatArticles.length, isEditing, questions, history, currentQ, phase]);
+  // intro and then the first real brief question; the door comes in only
+  // once that question has fully revealed (its input is showing), and
+  // GuidesDoor waits a moment more so the host reads the question first. A
+  // session resumed past that point gets the lit button straight away, with
+  // no callout.
+  const voterAt = questions.findIndex((q) => q.section === 'voter');
+  const isBriefQ = (q) => !!q && q.type !== 'narrator' && questions.indexOf(q) > voterAt;
+  const pastFirstBriefQ = history.some((t) => isBriefQ(t.question));
+  const guidesReady = voterAnswered && chatArticles.length > 0 && (pastFirstBriefQ || (isBriefQ(currentQ) && phase >= 3));
 
   // "X/Y" counter — counts every step including the tier pick that
   // happened on the previous screen (which was step 1). So segment pick
@@ -707,34 +666,10 @@ export default function BriefChat() {
               close a guide) plus, for a signed-in host, their avatar. */}
           <div className="v4-nav-right">
             {/* The Guides button doesn't exist until the price is picked and
-                the brief is about to begin; then it arrives, already in the
-                category's colour, and stays for the rest of setup. */}
-            {guidesLit && (
-              <div className="v4-nav-guides-wrap">
-                <button
-                  type="button"
-                  className={`v4-exit v4-nav-guides is-lit${nudge === 'shown' || nudge === 'leaving' ? ' is-pulsing' : ''}`}
-                  style={navTone ? { '--nav-tint': navTone.bg, '--nav-accent': navTone.fg } : undefined}
-                  aria-label={`Naming guides (${chatArticles.length})`}
-                  onClick={() => { setNudge((n) => (n === 'idle' ? n : 'done')); setGuidesOpen(true); }}
-                >
-                  <BookOpen weight="fill" size={14} />
-                  <span>Guides</span>
-                  <span className="v4-nav-guides-count" aria-hidden="true">{chatArticles.length}</span>
-                </button>
-                {(nudge === 'shown' || nudge === 'leaving') && (
-                  <div className={`v4-gnudge${nudge === 'leaving' ? ' is-leaving' : ''}`} role="status">
-                    <span className="v4-gnudge-text">{nudgeQuestion}</span>
-                    <button
-                      type="button"
-                      className="v4-gnudge-open"
-                      onClick={() => { setNudge('done'); setGuidesOpen(true); }}
-                    >
-                      Show me
-                    </button>
-                  </div>
-                )}
-              </div>
+                the first brief question has landed; then it arrives, already
+                in the category's colour, and stays for the rest of setup. */}
+            {guidesReady && (
+              <GuidesDoor articles={chatArticles} tone={navTone} subId={subId} nudge={!pastFirstBriefQ} />
             )}
             <button
               type="button"
@@ -803,14 +738,6 @@ export default function BriefChat() {
           </div>
         </main>
       </div>
-
-      {guidesOpen && <GuidesDrawer
-        open
-        articles={chatArticles}
-        tone={navTone}
-        subId={subId}
-        onClose={() => setGuidesOpen(false)}
-      />}
 
       {/* Edit-answer popup — same EditQuestionModal pattern used by
           ReviewLaunch and ContestManage so the editing experience is

@@ -37,7 +37,7 @@ import { anonymityMode, hostIdentity } from '../../utils/v4Anonymity';
 import { getChecklist } from '../../data/v4/participantArticles';
 import { getQuestionsFor, getArticleFor } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
-import GuideExpandable from '../../components/v4/GuideExpandable';
+import GuidesDoor from '../../components/v4/GuidesDoor';
 import BriefSectionHead from '../../components/v4/BriefSectionHead';
 import HostNote from '../../components/v4/HostNote';
 import AvatarMenu from '../../components/v4/AvatarMenu';
@@ -761,6 +761,17 @@ export default function ParticipantChat() {
               <span className="v4-step-label">Suggest names</span>
             </div>
             <div className="v4-nav-right">
+              {/* The guides, behind the same door the host has. It makes its
+                  entrance once the first "suggest a name" prompt and its form
+                  have landed (the brief has been read by then), once per
+                  contest on this device; after that it is simply lit. */}
+              <GuidesDoor
+                articles={articles}
+                tone={tone}
+                subId={contest.subSegmentId}
+                nudge={introStage >= 6}
+                once={`nc_guides_nudged:${contest.id}:suggest`}
+              />
               {/* Exit → landing, guarded by the same confirm the creator
                   setup uses. Drafts are saved, so it's a soft leave. */}
               <button
@@ -862,7 +873,6 @@ export default function ParticipantChat() {
                 </div>
                 <ParticipantBriefCard
                   creatorName={creatorName}
-                  articles={articles}
                   contest={contest}
                   tone={tone}
                   briefRows={briefRows}
@@ -1252,7 +1262,7 @@ export default function ParticipantChat() {
 }
 
 // ── Brief card (full creator answers as label/value rows) ──────────
-function ParticipantBriefCard({ contest, tone, briefRows, settingsRows, articles = [], creatorName = 'the organizer' }) {
+function ParticipantBriefCard({ contest, tone, briefRows, settingsRows, creatorName = 'the organizer' }) {
   // Resolve the host as participants may see them (anonymity respected).
   const cardHost = hostIdentity(contest);
 
@@ -1333,23 +1343,6 @@ function ParticipantBriefCard({ contest, tone, briefRows, settingsRows, articles
         </ul>
       )}
 
-      {/* Same guides, same place as the creator's brief: one reading list per
-          contest, at the foot of the brief rather than floating in the chat. */}
-      {articles.length > 0 && (
-        <div className="v4-brief-guides">
-          <BriefSectionHead
-            title="Naming guides"
-            sub="Short reads that come with this brief"
-            icon="BookOpen"
-            tone={tone}
-          />
-          <div className="v4-brief-guides-list">
-            {articles.map((a) => (
-              <GuideExpandable key={a.id} article={a} compact tone={tone} />
-            ))}
-          </div>
-        </div>
-      )}
     </section>
   );
 }

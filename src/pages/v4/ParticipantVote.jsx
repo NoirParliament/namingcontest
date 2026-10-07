@@ -38,7 +38,7 @@ import BriefRowValue from '../../components/v4/BriefRowValue';
 import { getBriefLabel, getBriefSections, getParticipantLabel } from '../../data/v4/briefExpansions';
 import ComposedBrief from '../../components/v4/ComposedBrief';
 import { briefDocHasContent } from '../../utils/composeBrief';
-import GuideExpandable from '../../components/v4/GuideExpandable';
+import GuidesDoor from '../../components/v4/GuidesDoor';
 import BriefSectionHead from '../../components/v4/BriefSectionHead';
 import HostNote from '../../components/v4/HostNote';
 import { supabase } from '../../lib/supabaseClient';
@@ -457,6 +457,17 @@ export default function ParticipantVote() {
               </span>
             </div>
             <div className="v4-nav-right">
+              {/* The guides, behind the same door as everywhere else. The
+                  entrance comes once the ballot is on screen: what makes a
+                  great name is exactly what a voter is about to judge. Once
+                  per contest on this device; after that simply lit. */}
+              <GuidesDoor
+                articles={briefArticles}
+                tone={tone}
+                subId={subId}
+                nudge={introStage >= 6}
+                once={`nc_guides_nudged:${contest.id}:vote`}
+              />
               <AvatarMenu
                 email={userEmail}
                 name={userName}
@@ -535,7 +546,6 @@ export default function ParticipantVote() {
                   tone={tone}
                   briefRows={briefRows}
                   settingsRows={settingsRows}
-                  articles={briefArticles}
                 />
               </>
             )}
@@ -722,7 +732,7 @@ export default function ParticipantVote() {
 
 // ── Brief card — same exact classes as ParticipantChat's brief
 //    card so the layout reads identically across the two pages.
-function ParticipantBriefCard({ contest, tone, briefRows, settingsRows, articles = [], creatorName = 'the organizer' }) {
+function ParticipantBriefCard({ contest, tone, briefRows, settingsRows, creatorName = 'the organizer' }) {
   // Resolve the host as participants may see them (anonymity respected).
   const cardHost = hostIdentity(contest);
 
@@ -796,23 +806,6 @@ function ParticipantBriefCard({ contest, tone, briefRows, settingsRows, articles
         </ul>
       )}
 
-      {/* Same guides, same foot-of-brief spot as the submit chat: voters
-          judge names against the brief, so the reading rides along. */}
-      {articles.length > 0 && (
-        <div className="v4-brief-guides">
-          <BriefSectionHead
-            title="Naming guides"
-            sub="Short reads that come with this brief"
-            icon="BookOpen"
-            tone={tone}
-          />
-          <div className="v4-brief-guides-list">
-            {articles.map((a) => (
-              <GuideExpandable key={a.id} article={a} compact tone={tone} />
-            ))}
-          </div>
-        </div>
-      )}
     </section>
   );
 }

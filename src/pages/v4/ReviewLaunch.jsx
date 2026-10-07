@@ -25,7 +25,7 @@ import EditQuestionModal from '../../components/v4/EditQuestionModal';
 import HostNote from '../../components/v4/HostNote';
 import BriefRowValue from '../../components/v4/BriefRowValue';
 import { getBriefLabel, getBriefSections } from '../../data/v4/briefExpansions';
-import GuideExpandable from '../../components/v4/GuideExpandable';
+import GuidesDoor from '../../components/v4/GuidesDoor';
 import BriefSectionHead from '../../components/v4/BriefSectionHead';
 import ComposedBrief, { ComposedBriefSkeleton, BriefProgressLine } from '../../components/v4/ComposedBrief';
 import { currentBriefDoc, composeBriefDoc, briefDocHasContent, cleanBriefDoc, briefChanges, rewritesLeft, subscribeBriefProgress, briefProgress, changedTexts, normalizeBriefDoc } from '../../utils/composeBrief';
@@ -715,6 +715,9 @@ export default function ReviewLaunch() {
               <span className="v4-step-label">Review</span>
             </div>
             <div className="v4-nav-right">
+              {/* The same door to the guides as in the chat; the host met
+                  its callout there, so here it is simply lit. */}
+              <GuidesDoor articles={briefArticles} tone={segmentTone} subId={subId} />
               <ExitLink to="/" aria-label="Exit" />
               {user && (
                 <AvatarMenu
@@ -875,25 +878,6 @@ export default function ReviewLaunch() {
                 </ul>
               )}
 
-              {/* Guides in ONE standardized place rather than scattered per
-                  section: on a finished brief they are reference reading for
-                  whoever names, not help for answering. Uneven guide counts
-                  per segment also make per-section placement look patchy. */}
-              {briefArticles.length > 0 && (
-                <div className="v4-brief-guides">
-                  <BriefSectionHead
-                    title="Naming guides"
-                    sub="Short reads on naming craft, shared with your participants"
-                    icon="BookOpen"
-                    tone={segmentTone}
-                  />
-                  <div className="v4-brief-guides-list">
-                    {briefArticles.map((a) => (
-                      <GuideExpandable key={a.id} article={a} compact tone={segmentTone} />
-                    ))}
-                  </div>
-                </div>
-              )}
             </section>
           )}
 
