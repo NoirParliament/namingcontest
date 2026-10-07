@@ -191,25 +191,52 @@ export default function ReviewLaunch() {
     if (!replay) return undefined;
     const d = normalizeBriefDoc(currentBriefDoc());
     if (!d) { setReplay(null); return undefined; }
-    const { names, ...dirNoNames } = d.directions;
-    const partials = [
-      { about: d.about },
-      { about: d.about, aim: d.aim },
-      { about: d.about, aim: d.aim, directions: dirNoNames },
-      { about: d.about, aim: d.aim, directions: { ...dirNoNames, names } },
-      { about: d.about, aim: d.aim, directions: { ...dirNoNames, names }, rules: d.rules },
-    ];
-    const steps = [
-      [500, { stage: 'drafting', partial: partials[0] }],
-      [1100, { stage: 'drafting', partial: partials[1] }],
-      [1700, { stage: 'drafting', partial: partials[2] }],
-      [2200, { stage: 'drafting', partial: partials[3] }],
-      [2700, { stage: 'drafting', partial: partials[4] }],
-      [3100, { stage: 'checking', partial: partials[4] }],
-    ];
-    const timers = steps.map(([at, s]) => setTimeout(() => setReplay(s), at));
-    timers.push(setTimeout(() => { markReplayed(); setReplay(null); setFlash('done'); }, 3600));
-    return () => timers.forEach(clearTimeout);
+    // The finished text as the writer would have streamed it: every field
+    // in writing order, so the replay types it out the way a live write
+    // appears, growing word by word, part after part.
+    const fields = [];
+    const push = (path, text) => { if (text) fields.push({ path, text }); };
+    push(['about', 'story'], d.about.story);
+    d.about.facts.forEach((f, i) => { push(['about', 'facts', i, 'label'], f.label); push(['about', 'facts', i, 'value'], f.value); });
+    push(['aim', 'lead'], d.aim.lead);
+    d.aim.points.forEach((p, i) => { push(['aim', 'points', i, 'label'], p.label); push(['aim', 'points', i, 'text'], p.text); });
+    d.directions.explore.forEach((l, i) => push(['directions', 'explore', i], l));
+    d.directions.avoid.forEach((l, i) => push(['directions', 'avoid', i], l));
+    push(['directions', 'prose'], d.directions.prose);
+    d.directions.names.forEach((n, i) => { push(['directions', 'names', i, 'name'], n.name); push(['directions', 'names', i, 'note'], n.note); });
+    d.rules.points.forEach((p, i) => { push(['rules', 'points', i, 'label'], p.label); push(['rules', 'points', i, 'text'], p.text); });
+    const total = fields.reduce((n, f) => n + f.text.length, 0);
+    const setPath = (obj, path, value) => {
+      let o = obj;
+      path.slice(0, -1).forEach((k, i) => {
+        if (o[k] == null) o[k] = typeof path[i + 1] === 'number' ? [] : {};
+        o = o[k];
+      });
+      o[path[path.length - 1]] = value;
+    };
+    // 0.6s reading the answers (skeleton), ~2.6s of typing, 0.5s check.
+    const READ = 600; const TYPE = 2600; const CHECK = 500;
+    const start = performance.now();
+    let doneTimer = null;
+    const tick = setInterval(() => {
+      const el = performance.now() - start - READ;
+      if (el < 0) return;
+      const p = Math.min(1, el / TYPE);
+      let budget = Math.floor(p * total);
+      const partial = {};
+      for (const f of fields) {
+        if (budget <= 0) break;
+        const take = Math.min(budget, f.text.length);
+        setPath(partial, f.path, f.text.slice(0, take));
+        budget -= take;
+      }
+      setReplay({ stage: p < 1 ? 'drafting' : 'checking', partial });
+      if (p >= 1) {
+        clearInterval(tick);
+        doneTimer = setTimeout(() => { markReplayed(); setReplay(null); setFlash('done'); }, CHECK);
+      }
+    }, 50);
+    return () => { clearInterval(tick); clearTimeout(doneTimer); };
     // Runs once, for the brief the page opened on.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
