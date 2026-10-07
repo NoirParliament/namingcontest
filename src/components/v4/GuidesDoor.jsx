@@ -13,10 +13,15 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { BookOpen } from '@phosphor-icons/react';
 import GuidesDrawer from './GuidesDrawer';
-import { getSegmentLabel } from '../../utils/v4Brief';
 
 const READ_PAUSE = 1400; // after the trigger, before the entrance
 const HOLD = 9000;       // how long the callout stays on its own
+
+const CALLOUT_NOUN = {
+  p1: 'baby', p2: 'pet',
+  t1: 'team', t2: 'band or club', t3: 'podcast', t4: 'club', t5: 'gaming group',
+  b1: 'company', b2: 'product', b3: 'project',
+};
 
 const remembered = (key) => { if (!key) return false; try { return localStorage.getItem(key) === '1'; } catch { return true; } };
 const remember = (key) => { if (!key) return; try { localStorage.setItem(key, '1'); } catch { /* storage off: nudge again next time */ } };
@@ -57,12 +62,11 @@ export default function GuidesDoor({ articles = [], tone = null, subId = null, e
   // callout arrive together.
   if (entrance && state === 'idle') return null;
 
-  // "Curious what makes a great band or club name?"; categories without a
-  // clear noun ("something else") ask about a great name, full stop.
-  const label = (getSegmentLabel(subId) || '').trim();
-  const question = !label || /something else/i.test(label)
-    ? 'Curious what makes a great name?'
-    : `Curious what makes a great ${label.toLowerCase()} name?`;
+  // "Curious what makes a great band or club name?": one plain noun per
+  // category (the brief labels read "Baby name", "Company / startup"), and
+  // categories without a clear noun ask about a great name, full stop.
+  const noun = CALLOUT_NOUN[subId];
+  const question = noun ? `Curious what makes a great ${noun} name?` : 'Curious what makes a great name?';
   const nudging = state === 'shown' || state === 'leaving';
   const openDrawer = () => { setState('done'); setOpen(true); };
 
