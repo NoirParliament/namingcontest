@@ -14,21 +14,31 @@ import '../../styles/v4.css';
 
 export default function GuidesDrawer({ open, articles = [], tone = null, onClose }) {
   const [active, setActive] = useState(null);
+  const [closing, setClosing] = useState(false);
   const bodyRef = useRef(null);
   const touchStartY = useRef(null);
+  const closeTimer = useRef(null);
 
   // Fresh list every time it opens.
-  useEffect(() => { if (open) setActive(null); }, [open]);
+  useEffect(() => { if (open) { setActive(null); setClosing(false); } }, [open]);
+  useEffect(() => () => clearTimeout(closeTimer.current), []);
+
+  // Leave the way it came: the out animation runs, then the parent unmounts.
+  const requestClose = () => {
+    if (closing) return;
+    setClosing(true);
+    closeTimer.current = setTimeout(() => onClose?.(), 240);
+  };
 
   useEffect(() => {
     if (!open) return undefined;
     const onKey = (e) => {
       if (e.key !== 'Escape') return;
-      if (active) setActive(null); else onClose?.();
+      if (active) setActive(null); else requestClose();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [open, active, onClose]);
+  });
 
   // Reading view starts at the top.
   useEffect(() => { if (bodyRef.current) bodyRef.current.scrollTop = 0; }, [active]);
@@ -43,13 +53,13 @@ export default function GuidesDrawer({ open, articles = [], tone = null, onClose
     if (touchStartY.current == null) return;
     const dy = e.changedTouches[0].clientY - touchStartY.current;
     touchStartY.current = null;
-    if (dy > 80) onClose?.();
+    if (dy > 80) requestClose();
   };
 
   return (
-    <div className="v4 lp-v3 v4-gdrawer-backdrop" onClick={onClose}>
+    <div className={`v4 lp-v3 v4-gdrawer-backdrop${closing ? ' is-closing' : ''}`} onClick={requestClose}>
       <aside
-        className={`v4-gdrawer${active ? ' is-reading' : ''}`}
+        className={`v4-gdrawer${active ? ' is-reading' : ''}${closing ? ' is-closing' : ''}`}
         style={toneVars}
         role="dialog"
         aria-modal="true"
@@ -69,11 +79,11 @@ export default function GuidesDrawer({ open, articles = [], tone = null, onClose
               <span className="v4-gdrawer-icon" aria-hidden="true"><BookOpen weight="duotone" size={18} /></span>
               <div>
                 <h2 id="v4-gdrawer-title" className="v4-gdrawer-title">Naming guides</h2>
-                <p className="v4-gdrawer-sub">Short reads on naming craft, shared with your participants</p>
+                <p className="v4-gdrawer-sub">Short reads on what makes a name work.</p>
               </div>
             </div>
           )}
-          <button type="button" className="v4-auth-close v4-gdrawer-close" onClick={onClose} aria-label="Close">
+          <button type="button" className="v4-auth-close v4-gdrawer-close" onClick={requestClose} aria-label="Close">
             <X weight="regular" size={16} />
           </button>
         </header>

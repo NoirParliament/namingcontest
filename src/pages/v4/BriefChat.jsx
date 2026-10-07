@@ -319,23 +319,31 @@ export default function BriefChat() {
   // stay for the rest of setup, so the door is always visible. Nothing is
   // added to the conversation itself.
   const voterAnswered = history.some((t) => t.question.section === 'voter');
-  const [nudge, setNudge] = useState('idle'); // idle | shown | done
+  const [nudge, setNudge] = useState('idle'); // idle | shown | leaving | done
   useEffect(() => {
     if (nudge === 'idle' && voterAnswered && chatArticles.length > 0) setNudge('shown');
   }, [nudge, voterAnswered, chatArticles.length]);
+  // The callout leaves with a short fade (leaving) before it unmounts.
   useEffect(() => {
-    if (nudge !== 'shown') return undefined;
-    const t = setTimeout(() => setNudge('done'), 7000);
-    const dismiss = () => setNudge('done');
-    document.addEventListener('pointerdown', dismiss, { capture: true, once: true });
-    return () => { clearTimeout(t); document.removeEventListener('pointerdown', dismiss, { capture: true }); };
+    if (nudge === 'shown') {
+      const t = setTimeout(() => setNudge('leaving'), 7000);
+      const dismiss = () => setNudge('leaving');
+      document.addEventListener('pointerdown', dismiss, { capture: true, once: true });
+      return () => { clearTimeout(t); document.removeEventListener('pointerdown', dismiss, { capture: true }); };
+    }
+    if (nudge === 'leaving') {
+      const t = setTimeout(() => setNudge('done'), 260);
+      return () => clearTimeout(t);
+    }
+    return undefined;
   }, [nudge]);
   const guidesLit = nudge !== 'idle';
-  const namingPhrase = (() => {
+  // "Curious what makes a great band or club name?"; categories without a
+  // clear noun ("something else") ask about a great name, full stop.
+  const nudgeQuestion = (() => {
     const label = (getSegmentLabel(subId) || '').trim();
-    if (!label || /something else/i.test(label)) return 'choosing a great name';
-    const lower = label.toLowerCase();
-    return `naming ${/^[aeiou]/.test(lower) ? 'an' : 'a'} ${lower}`;
+    if (!label || /something else/i.test(label)) return 'Curious what makes a great name?';
+    return `Curious what makes a great ${label.toLowerCase()} name?`;
   })();
   const [idx, setIdx] = useState(preSeededSegment ? 1 : 0);
   const [phase, setPhase] = useState(0);
@@ -681,26 +689,24 @@ export default function BriefChat() {
               <div className="v4-nav-guides-wrap">
                 <button
                   type="button"
-                  className={`v4-exit v4-nav-guides${guidesLit ? ' is-lit' : ''}${nudge === 'shown' ? ' is-pulsing' : ''}`}
+                  className={`v4-exit v4-nav-guides${guidesLit ? ' is-lit' : ''}${nudge === 'shown' || nudge === 'leaving' ? ' is-pulsing' : ''}`}
                   style={navTone ? { '--nav-tint': navTone.bg, '--nav-accent': navTone.fg } : undefined}
                   aria-label={`Naming guides (${chatArticles.length})`}
-                  onClick={() => { setNudge('done'); setGuidesOpen(true); }}
+                  onClick={() => { setNudge((n) => (n === 'idle' ? n : 'done')); setGuidesOpen(true); }}
                 >
                   <BookOpen weight={guidesLit ? 'fill' : 'regular'} size={14} />
                   <span>Guides</span>
                   {guidesLit && <span className="v4-nav-guides-count" aria-hidden="true">{chatArticles.length}</span>}
                 </button>
-                {nudge === 'shown' && (
-                  <div className="v4-gnudge" role="status">
-                    <span className="v4-gnudge-text">
-                      {chatArticles.length} short {chatArticles.length === 1 ? 'read' : 'reads'} on {namingPhrase}
-                    </span>
+                {(nudge === 'shown' || nudge === 'leaving') && (
+                  <div className={`v4-gnudge${nudge === 'leaving' ? ' is-leaving' : ''}`} role="status">
+                    <span className="v4-gnudge-text">{nudgeQuestion}</span>
                     <button
                       type="button"
                       className="v4-resume-pill-cta v4-gnudge-open"
                       onClick={() => { setNudge('done'); setGuidesOpen(true); }}
                     >
-                      Open
+                      Show me
                     </button>
                   </div>
                 )}
