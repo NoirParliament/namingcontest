@@ -215,11 +215,11 @@ export default function ReviewLaunch() {
       o[path[path.length - 1]] = value;
     };
     // The writer's rhythm, not a metronome: the text arrives in bursts of
-    // two to five words at an uneven 40 to 120ms, with a breath between the
-    // parts so the progress line settles on each step the way it does live.
-    // About 7s all told (1.2s reading the answers, ~4s typing, 1s check): a
-    // third of a real write, shaped like one.
-    const READ = 1200; const BREATH = 300; const CHECK = 1000;
+    // three to seven words at an uneven 30 to 110ms, with a breath between
+    // the parts so the progress line settles on each step the way it does
+    // live. About 4s all told (0.7s reading the answers, ~2s typing, 0.6s
+    // check): a glimpse of the real write, shaped like one.
+    const READ = 700; const BREATH = 180; const CHECK = 600;
     const part = (p) => (p[0] === 'directions' && p[1] === 'names' ? 'names' : p[0]);
     const bursts = [];
     let k = 0;
@@ -228,10 +228,10 @@ export default function ReviewLaunch() {
       const words = f.text.split(/(?<=\s)/);
       let pos = 0;
       for (let wi = 0; wi < words.length; k++) {
-        const n = 2 + ((k * 31) % 4);
+        const n = 3 + ((k * 31) % 5);
         pos += words.slice(wi, wi + n).join('').length;
         wi += n;
-        bursts.push({ fi, upto: Math.min(pos, f.text.length), wait: 40 + ((k * 7919) % 80) });
+        bursts.push({ fi, upto: Math.min(pos, f.text.length), wait: 30 + ((k * 7919) % 80) });
       }
     });
     void total;
