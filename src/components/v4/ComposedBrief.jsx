@@ -292,18 +292,21 @@ export function BriefProgressLine({ phase, stage, partial, subId, questions, ans
   // time base (so a fast replay and a slow live write look the same), not
   // in 60ms steps.
   useEffect(() => {
+    // Done is 100, the moment it says so.
+    if (!working) { setShown(100); return undefined; }
     let raf = 0;
     let last = performance.now();
     const loop = (now) => {
       const dt = Math.min(100, now - last);
       last = now;
       let goal = target;
-      if (checkStart && working && stage === 'checking') goal = Math.min(96, 72 + ((Date.now() - checkStart) / 1000) * 1.5);
+      if (checkStart && stage === 'checking') goal = Math.min(96, 72 + ((Date.now() - checkStart) / 1000) * 1.5);
       // Before the first words, it creeps too (up to 18), never sitting still.
       else if (reading) goal = Math.min(18, 2 + ((Date.now() - readStart) / 1000) * 2);
       // Only ever forward: a redraft or a stage change never counts back.
-      // Closes about a fifth of the gap every 60ms, whatever the frame rate.
-      const k = 1 - Math.pow(0.82, dt / 60);
+      // Closes about a fifth of the gap every 30ms, whatever the frame rate,
+      // so the number keeps up with the step it belongs to.
+      const k = 1 - Math.pow(0.82, dt / 30);
       setShown((v) => (goal <= v ? v : goal - v < 0.3 ? goal : v + (goal - v) * k));
       raf = requestAnimationFrame(loop);
     };

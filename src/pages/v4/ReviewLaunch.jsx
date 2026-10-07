@@ -219,7 +219,7 @@ export default function ReviewLaunch() {
     // the parts so the progress line settles on each step the way it does
     // live. About 4s all told (0.7s reading the answers, ~2s typing, 0.6s
     // check): a glimpse of the real write, shaped like one.
-    const READ = 700; const BREATH = 180; const CHECK = 600;
+    const READ = 700; const BREATH = 220; const CHECK = 800;
     const part = (p) => (p[0] === 'directions' && p[1] === 'names' ? 'names' : p[0]);
     const bursts = [];
     let k = 0;
