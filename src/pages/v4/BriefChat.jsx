@@ -685,25 +685,28 @@ export default function BriefChat() {
           {/* Right cluster: Exit (asks first — a client hit this trying to
               close a guide) plus, for a signed-in host, their avatar. */}
           <div className="v4-nav-right">
-            {chatArticles.length > 0 && (
+            {/* The Guides button doesn't exist until the price is picked and
+                the brief is about to begin; then it arrives, already in the
+                category's colour, and stays for the rest of setup. */}
+            {guidesLit && (
               <div className="v4-nav-guides-wrap">
                 <button
                   type="button"
-                  className={`v4-exit v4-nav-guides${guidesLit ? ' is-lit' : ''}${nudge === 'shown' || nudge === 'leaving' ? ' is-pulsing' : ''}`}
+                  className={`v4-exit v4-nav-guides is-lit${nudge === 'shown' || nudge === 'leaving' ? ' is-pulsing' : ''}`}
                   style={navTone ? { '--nav-tint': navTone.bg, '--nav-accent': navTone.fg } : undefined}
                   aria-label={`Naming guides (${chatArticles.length})`}
                   onClick={() => { setNudge((n) => (n === 'idle' ? n : 'done')); setGuidesOpen(true); }}
                 >
-                  <BookOpen weight={guidesLit ? 'fill' : 'regular'} size={14} />
+                  <BookOpen weight="fill" size={14} />
                   <span>Guides</span>
-                  {guidesLit && <span className="v4-nav-guides-count" aria-hidden="true">{chatArticles.length}</span>}
+                  <span className="v4-nav-guides-count" aria-hidden="true">{chatArticles.length}</span>
                 </button>
                 {(nudge === 'shown' || nudge === 'leaving') && (
                   <div className={`v4-gnudge${nudge === 'leaving' ? ' is-leaving' : ''}`} role="status">
                     <span className="v4-gnudge-text">{nudgeQuestion}</span>
                     <button
                       type="button"
-                      className="v4-resume-pill-cta v4-gnudge-open"
+                      className="v4-gnudge-open"
                       onClick={() => { setNudge('done'); setGuidesOpen(true); }}
                     >
                       Show me

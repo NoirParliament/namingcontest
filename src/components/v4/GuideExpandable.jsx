@@ -18,7 +18,8 @@ import {
 
 // Map Phosphor icon names (string from data file) to component refs.
 // Supports both casing variants Phosphor has used over versions.
-const ICONS = {
+// Shared with the guides drawer's cards.
+export const ICONS = {
   TextAa, Quotes, BookOpen, BookBookmark,
   Target, Compass, MagnifyingGlass,
   UsersThree, Heart, Hand,

@@ -1,16 +1,50 @@
 // The organizer's guides reader for the setup chat.
 //
-// Desktop: a drawer that slides in from the right edge, full height, with
-// the chat dimmed but visible behind it. Phone: the same panel rises from
-// the bottom as a sheet with a handle. It opens on the category's guides as
-// a list (the review page's compact cards); tapping one slides the article
-// in as a reading view with "Back to guides". Closes on the X, the
-// backdrop, Escape, or a swipe down on the handle (phone).
+// A panel that fits its content: on desktop a card anchored under the
+// header's Guides button, top right, as tall as what's in it (two guides
+// make a compact card; an opened guide grows it to near the screen height
+// and it scrolls inside). On phones the same panel rises from the bottom as
+// a sheet with a handle. It opens on the category's guides as full cards
+// (icon, title, a two-line excerpt and what's inside); tapping one slides
+// the article in as a reading view with "Back to guides". Closes on the X,
+// the backdrop, Escape, or a swipe down on the handle (phone).
 import { useEffect, useRef, useState } from 'react';
-import { X, CaretLeft, BookOpen } from '@phosphor-icons/react';
-import GuideExpandable, { GuideBody } from './GuideExpandable';
+import { X, CaretLeft, CaretRight, BookOpen } from '@phosphor-icons/react';
+import { GuideBody, ICONS } from './GuideExpandable';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
+
+// One guide in the list: enough to decide whether to read it.
+function GuideCard({ article, onOpen }) {
+  const Icon = ICONS[article.icon] || BookOpen;
+  const sections = article.sections || [];
+  const excerpt = sections[0]?.body || '';
+  const topics = sections.map((s) => s.heading).filter(Boolean);
+  const shown = topics.slice(0, 3);
+  const more = topics.length - shown.length;
+  return (
+    <button type="button" className="v4-gcard" onClick={() => onOpen(article)}>
+      <span className="v4-gcard-icon" aria-hidden="true"><Icon weight="duotone" size={20} /></span>
+      <span className="v4-gcard-main">
+        <span className="v4-gcard-eyebrow">
+          <BookOpen weight="fill" size={11} aria-hidden="true" />
+          Guide · {article.readTime} read
+        </span>
+        <span className="v4-gcard-title">{article.title}</span>
+        {excerpt && <span className="v4-gcard-excerpt">{excerpt}</span>}
+        {shown.length > 0 && (
+          <span className="v4-gcard-inside">
+            {shown.map((t) => <span key={t} className="v4-gcard-topic">{t}</span>)}
+            {more > 0 && <span className="v4-gcard-topic v4-gcard-topic-more">+{more}</span>}
+          </span>
+        )}
+      </span>
+      <span className="v4-gcard-cta" aria-hidden="true">
+        Read <CaretRight weight="bold" size={12} />
+      </span>
+    </button>
+  );
+}
 
 export default function GuidesDrawer({ open, articles = [], tone = null, onClose }) {
   const [active, setActive] = useState(null);
@@ -94,10 +128,8 @@ export default function GuidesDrawer({ open, articles = [], tone = null, onClose
               <GuideBody article={active} showClose={false} />
             </div>
           ) : (
-            <div key="list" className="v4-brief-guides-list v4-gdrawer-list">
-              {articles.map((a) => (
-                <GuideExpandable key={a.id} article={a} compact tone={tone} onOpen={setActive} />
-              ))}
+            <div key="list" className="v4-gdrawer-list">
+              {articles.map((a) => <GuideCard key={a.id} article={a} onOpen={setActive} />)}
             </div>
           )}
         </div>
