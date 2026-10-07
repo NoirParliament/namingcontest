@@ -12,7 +12,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { X, CaretLeft, CaretRight, BookOpen } from '@phosphor-icons/react';
 import { GuideBody, ICONS } from './GuideExpandable';
-import { DASH_IMAGE, DASH_BOTTOM_GAP } from '../../data/v4/segmentTheme';
+import { DASH_IMAGE, DASH_BOTTOM_GAP, DASH_TOP_GAP } from '../../data/v4/segmentTheme';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -45,7 +45,6 @@ export default function GuidesDrawer({ open, articles = [], tone = null, subId =
   const [active, setActive] = useState(null);
   const [leaving, setLeaving] = useState(null); // the view on its way out: { kind, article }
   const [closing, setClosing] = useState(false);
-  const [settled, setSettled] = useState(false); // the opening stagger has finished
   const [sheetH, setSheetH] = useState(null); // phone: the current view's natural height
   const asideRef = useRef(null);
   const bodyRef = useRef(null);
@@ -56,11 +55,8 @@ export default function GuidesDrawer({ open, articles = [], tone = null, subId =
   const later = (fn, ms) => { timers.current.push(setTimeout(fn, ms)); };
 
   // Mounted fresh on every open (the parent renders it only while open),
-  // so the state starts clean; the content stagger runs once per mount.
-  useEffect(() => {
-    later(() => setSettled(true), 700);
-    return () => { timers.current.forEach(clearTimeout); timers.current = []; };
-  }, []);
+  // so the state starts clean. Pending timers die with it.
+  useEffect(() => () => { timers.current.forEach(clearTimeout); timers.current = []; }, []);
 
   // Leave the way it came: the out animation runs, then the parent unmounts.
   const requestClose = () => {
@@ -150,7 +146,7 @@ export default function GuidesDrawer({ open, articles = [], tone = null, subId =
     <div className={`v4 lp-v3 v4-gdrawer-backdrop${closing ? ' is-closing' : ''}`} onClick={requestClose}>
       <aside
         ref={asideRef}
-        className={`v4-gdrawer${active ? ' is-reading' : ''}${closing ? ' is-closing' : ''}${settled ? ' is-settled' : ''}${leaving ? ' is-turning' : ''}`}
+        className={`v4-gdrawer${active ? ' is-reading' : ''}${closing ? ' is-closing' : ''}${leaving ? ' is-turning' : ''}`}
         style={style}
         role="dialog"
         aria-modal="true"
@@ -198,16 +194,20 @@ export default function GuidesDrawer({ open, articles = [], tone = null, subId =
           </div>
         </div>
 
-        {/* The segment's glow and scene, behind everything. The PNG is pushed
-            down by its own blank bottom margin so the drawing stands on the
-            edge with no white strip under it. */}
+        {/* The segment's glow and scene, behind everything. The PNG is sized
+            so the drawing itself (its blank margins taken out) is the same
+            height for every segment, and pushed down by its blank bottom
+            margin so it stands on the edge with no white strip under it. */}
         <div className="v4-gdrawer-scene" aria-hidden="true">
           <span className="v4-gdrawer-glow" />
           {subId && DASH_IMAGE[subId] && (
             <img
               className="v4-gdrawer-art"
               src={DASH_IMAGE[subId]}
-              style={{ '--gd-art-drop': `${DASH_BOTTOM_GAP[subId] || 0}%` }}
+              style={{
+                '--gd-art-drop': `${DASH_BOTTOM_GAP[subId] || 0}%`,
+                '--gd-art-scale': 100 / (100 - (DASH_TOP_GAP[subId] || 0) - (DASH_BOTTOM_GAP[subId] || 0)),
+              }}
               alt=""
             />
           )}

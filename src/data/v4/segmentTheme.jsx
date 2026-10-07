@@ -384,14 +384,21 @@ const DASH_SHIFT = {
   t2: '30.5%', b2: '30.5%', b3: '30.5%', b4: '30.5%', b5: '30.5%',
 };
 
-// Blank margin under the drawing in each scene PNG, as % of the image's own
-// height (measured from the alpha channel, 2026-10-07). A surface that wants
-// the drawing to stand right on its bottom edge pushes the image down by this
-// much; without it the band scene, for one, leaves a 10% white strip.
+// Blank margins above and under the drawing in each scene PNG, as % of the
+// image's own height (measured from the alpha channel, 2026-10-07). A surface
+// that wants the drawing to stand right on its bottom edge pushes the image
+// down by the bottom gap (without it the band scene leaves a 10% white
+// strip); one that wants every drawing the same height sizes the image by
+// 100 / (100 - top - bottom) of that height.
 export const DASH_BOTTOM_GAP = {
   t1: 2.8, t2: 10.3, t3: 5.4, t4: 3.6, t5: 6.4, t6: 2.1,
   p1: 5.6, p2: 9.4, p3: 4.3, p4: 6.7,
   b1: 6.8, b2: 1.2, b3: 8.2, b4: 3.6, b5: 4.2,
+};
+export const DASH_TOP_GAP = {
+  t1: 2.7, t2: 10.7, t3: 9.5, t4: 3.3, t5: 4.3, t6: 3.2,
+  p1: 5.1, p2: 1.1, p3: 1.7, p4: 3.5,
+  b1: 5.1, b2: 0, b3: 3, b4: 0, b5: 14.3,
 };
 
 /**

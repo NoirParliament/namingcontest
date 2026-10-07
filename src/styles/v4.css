@@ -12109,6 +12109,8 @@ button.v4-exit {
 }
 .v4-nav-guides.is-lit:hover { background: color-mix(in srgb, var(--nav-tint, #eee) 75%, var(--nav-accent, #000)); }
 .v4-nav-guides-count {
+  position: relative;
+  top: 1px; /* optically centred on the lowercase label */
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -12253,20 +12255,10 @@ button.v4-exit {
   from { transform: none; }
   to { transform: translateX(100%); }
 }
-/* The contents follow the panel in, one beat behind it. */
+/* One motion per event. The panel slides in with its content already in
+   place; nothing inside animates a second time. */
 @keyframes v4-gdrawer-rise {
-  from { transform: translateY(10px); opacity: 0; }
-  to { transform: none; opacity: 1; }
-}
-@keyframes v4-gdrawer-fade { from { opacity: 0; } to { opacity: 1; } }
-.v4-gdrawer-head { animation: v4-gdrawer-rise 0.45s var(--gd-ease) 0.14s both; }
-.v4-gdrawer-scene { animation: v4-gdrawer-fade 0.6s ease 0.26s both; }
-.v4-gdrawer-list .v4-gcard { animation: v4-gdrawer-rise 0.45s var(--gd-ease) both; animation-delay: calc(0.2s + var(--i, 0) * 0.05s); }
-/* Once open, the list comes back as a page turn, not a re-entrance. */
-.v4-gdrawer.is-settled .v4-gdrawer-list .v4-gcard { animation: none; }
-.v4-gdrawer.is-settled .v4-gdrawer-list { animation: v4-gdrawer-list-in 0.38s var(--gd-ease) 0.14s both; }
-@keyframes v4-gdrawer-list-in {
-  from { transform: translateX(-16px); opacity: 0; }
+  from { transform: translateY(6px); opacity: 0; }
   to { transform: none; opacity: 1; }
 }
 .v4-gdrawer-handle { display: none; }
@@ -12350,16 +12342,15 @@ button.v4-exit {
   width: 100%;
   pointer-events: none;
 }
-.v4-gdrawer-view.is-leaving.from-list { animation: v4-gdrawer-list-out 0.2s ease-out forwards; }
-@keyframes v4-gdrawer-list-out {
-  from { transform: none; opacity: 1; }
-  to { transform: translateX(-12px); opacity: 0; }
-}
-.v4-gdrawer-view.is-leaving.from-article { animation: v4-gdrawer-article-out 0.2s ease-out forwards; }
-@keyframes v4-gdrawer-article-out {
-  from { transform: none; opacity: 1; }
-  to { transform: translateX(16px); opacity: 0; }
-}
+.v4-gdrawer-view.is-leaving { animation: v4-gdrawer-fade-out 0.18s ease-out forwards; }
+/* The outgoing copy is a fresh mount: it must not replay its own rise-in. */
+.v4-gdrawer-view.is-leaving .v4-gdrawer-article,
+.v4-gdrawer-view.is-leaving .v4-gdrawer-list { animation: none; }
+@keyframes v4-gdrawer-fade-out { from { opacity: 1; } to { opacity: 0; } }
+/* The incoming list, after reading: the same quiet rise as an article. */
+.v4-gdrawer-view:not(.is-leaving) .v4-gdrawer-list { animation: v4-gdrawer-rise 0.32s var(--gd-ease) 0.1s both; }
+/* ...except on the way in with the panel, where it is simply there. */
+.v4-gdrawer:not(.is-turning) .v4-gdrawer-view .v4-gdrawer-list { animation: none; }
 .v4-gdrawer-list { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
 
 /* The scene, laid out like the chat behind it: the segment's soft glow at
@@ -12377,19 +12368,27 @@ button.v4-exit {
   top: 0;
   left: 0;
   right: 0;
-  height: 360px;
-  background: radial-gradient(80% 70% at 50% -10%, var(--guide-tint) 0%, var(--guide-tint) 28%, transparent 75%);
-  opacity: 0.5;
+  height: 640px; /* the chat backdrop's glow, anchored top left and softer */
+  background: radial-gradient(110% 75% at 0% -10%, var(--guide-tint) 0%, var(--guide-tint) 24%, transparent 72%);
+  opacity: 0.38;
+}
+.v4-gdrawer {
+  --gd-art-draw: 430px; /* the drawing's height, the same for every scene */
 }
 .v4-gdrawer-art {
   position: absolute;
   left: 50%;
   bottom: 0;
-  width: 200%; /* twice the panel: a scene, not a strip; the sides run off */
-  height: auto;
-  /* Each PNG carries a blank margin under the drawing (--gd-art-drop, set
-     per scene from DASH_BOTTOM_GAP); pushing the image down by exactly that
-     puts the drawing on the edge with nothing white under it. */
+  /* The scenes differ in aspect and in blank margins, so sizing by width
+     would land their tops anywhere. Instead the image is sized so the
+     drawing itself is --gd-art-draw tall (--gd-art-scale = the image's
+     height over its drawing's, from the measured margins) and pushed down
+     by its blank bottom margin (--gd-art-drop). Every scene then stands on
+     the edge with its top on the same line; the wide ones run off the
+     sides. */
+  height: calc(var(--gd-art-draw) * var(--gd-art-scale, 1));
+  width: auto;
+  max-width: none;
   transform: translateX(-50%) translateY(var(--gd-art-drop, 0%));
   opacity: 0.55;
   transition: opacity 0.35s ease;
@@ -12474,15 +12473,11 @@ button.v4-exit {
 .v4-gcard-cta svg { transition: transform 0.2s ease; }
 .v4-gcard:hover .v4-gcard-cta svg { transform: translateX(2px); }
 /* The reading view: the inline guide's body, standing on its own. */
-.v4-gdrawer-article { margin: 0; max-width: none; opacity: 1; animation: v4-gdrawer-article-in 0.4s var(--gd-ease) 0.14s both; }
-/* The inline card's own expand animation would double up with the slide. */
+.v4-gdrawer-article { margin: 0; max-width: none; opacity: 1; animation: v4-gdrawer-rise 0.32s var(--gd-ease) 0.1s both; }
+/* The inline card's own expand animation would double up with the rise. */
 .v4-gdrawer-article .v4-guide-body { margin: 0; animation: none; }
-@keyframes v4-gdrawer-article-in {
-  from { transform: translateX(24px); opacity: 0; }
-  to { transform: none; opacity: 1; }
-}
 @media (prefers-reduced-motion: reduce) {
-  .v4-gdrawer, .v4-gdrawer-head, .v4-gdrawer-scene, .v4-gdrawer-article, .v4-gdrawer-list, .v4-gdrawer-list .v4-gcard, .v4-gnudge, .v4-nav-guides.is-lit, .v4-nav-guides-count, .v4-nav-guides.is-pulsing::after { animation: none; opacity: 1; transform: none; }
+  .v4-gdrawer, .v4-gdrawer-article, .v4-gdrawer-list, .v4-gnudge, .v4-nav-guides.is-lit, .v4-nav-guides-count, .v4-nav-guides.is-pulsing::after { animation: none; opacity: 1; transform: none; }
   .v4-gdrawer-view.is-leaving { display: none; }
   .v4-gdrawer { transition: none; }
   .v4-gdrawer.is-closing, .v4-gdrawer-backdrop.is-closing, .v4-gnudge.is-leaving { opacity: 0; }
@@ -12527,16 +12522,8 @@ button.v4-exit {
   .v4-gdrawer-close { top: 12px; right: 12px; }
   .v4-gdrawer-body { padding: 0 16px var(--gd-list-pad); }
   .v4-gdrawer.is-reading .v4-gdrawer-body { padding-bottom: var(--gd-read-pad); }
-  .v4-gdrawer-art { width: 180%; }
+  .v4-gdrawer { --gd-art-draw: 250px; }
   .v4-gdrawer-glow { height: 260px; }
-  /* The sheet is growing or shrinking at the same time, so the page turn
-     moves on the same axis: content rises in and fades out in place, no
-     sideways slide against a moving edge. */
-  .v4-gdrawer-article { animation-name: v4-gdrawer-rise; }
-  .v4-gdrawer.is-settled .v4-gdrawer-list { animation-name: v4-gdrawer-rise; }
-  .v4-gdrawer-view.is-leaving.from-list,
-  .v4-gdrawer-view.is-leaving.from-article { animation-name: v4-gdrawer-fade-out; }
-  @keyframes v4-gdrawer-fade-out { from { opacity: 1; } to { opacity: 0; } }
   .v4-gcard { padding: 14px 14px 14px 12px; gap: 12px; }
   .v4-gcard-main { padding-right: 44px; }
   .v4-gcard-title { font-size: 16px; }
@@ -12548,17 +12535,22 @@ button.v4-exit {
      button becomes a small horizontal pill: book icon and count side by
      side, instead of a tall square with a corner badge. */
   .v4-nav-guides.is-lit {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    min-height: 32px;
-    padding: 0;
-    gap: 0;
-    border-radius: 50%;
-    justify-content: center;
+    background: transparent;
+    color: var(--v4-fg);
   }
-  .v4-nav-guides.is-lit .v4-nav-guides-count { display: none; }
-  .v4-nav-guides.is-pulsing::after { border-radius: 50%; inset: -4px; }
+  .v4-nav-guides.is-lit:hover { background: rgba(3, 3, 2, 0.05); }
+  .v4-nav-guides.is-lit .v4-nav-guides-count {
+    display: inline-flex;
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    font-size: 10px;
+    box-shadow: 0 0 0 2px var(--v4-bg, #fff);
+  }
+  .v4-nav-guides.is-pulsing::after { border-radius: 12px; }
 }
 /* First row sits directly under the heading, so it needs no rule above. */
 .v4-review-list-editable > li:first-child .v4-review-row-edit {
