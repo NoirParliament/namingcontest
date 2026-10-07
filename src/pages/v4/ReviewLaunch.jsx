@@ -214,31 +214,48 @@ export default function ReviewLaunch() {
       });
       o[path[path.length - 1]] = value;
     };
-    // About 7s all told, a third of a real write: 1s reading the answers
-    // (skeleton, a quote), 5s of typing across the parts, 1s check. Faster
-    // than this and the text jumps rather than types.
-    const READ = 1000; const TYPE = 5000; const CHECK = 900;
-    const start = performance.now();
-    let doneTimer = null;
-    const tick = setInterval(() => {
-      const el = performance.now() - start - READ;
-      if (el < 0) return;
-      const p = Math.min(1, el / TYPE);
-      let budget = Math.floor(p * total);
+    // The writer's rhythm, not a metronome: the text arrives in bursts of
+    // one to four words at an uneven 60 to 160ms, with a breath between the
+    // parts so the progress line settles on each step the way it does live.
+    // About 12s all told (2.5s reading the answers, the typing, 1.5s check):
+    // under half a real write, shaped like one.
+    const READ = 2500; const BREATH = 450; const CHECK = 1500;
+    const part = (p) => (p[0] === 'directions' && p[1] === 'names' ? 'names' : p[0]);
+    const bursts = [];
+    let k = 0;
+    fields.forEach((f, fi) => {
+      if (fi > 0 && part(f.path) !== part(fields[fi - 1].path)) bursts.push({ fi, upto: 0, wait: BREATH, pause: true });
+      const words = f.text.split(/(?<=\s)/);
+      let pos = 0;
+      for (let wi = 0; wi < words.length; k++) {
+        const n = 1 + ((k * 31) % 4);
+        pos += words.slice(wi, wi + n).join('').length;
+        wi += n;
+        bursts.push({ fi, upto: Math.min(pos, f.text.length), wait: 60 + ((k * 7919) % 100) });
+      }
+    });
+    void total;
+    const revealed = fields.map(() => 0);
+    const emit = (stage) => {
       const partial = {};
-      for (const f of fields) {
-        if (budget <= 0) break;
-        const take = Math.min(budget, f.text.length);
-        setPath(partial, f.path, f.text.slice(0, take));
-        budget -= take;
+      fields.forEach((f, fi) => { if (revealed[fi] > 0) setPath(partial, f.path, f.text.slice(0, revealed[fi])); });
+      setReplay({ stage, partial: Object.keys(partial).length ? partial : null });
+    };
+    let i = 0;
+    let timer = null;
+    const step = () => {
+      if (i >= bursts.length) {
+        emit('checking');
+        timer = setTimeout(() => { markReplayed(); setReplay(null); setFlash('done'); }, CHECK);
+        return;
       }
-      setReplay({ stage: p < 1 ? 'drafting' : 'checking', partial });
-      if (p >= 1) {
-        clearInterval(tick);
-        doneTimer = setTimeout(() => { markReplayed(); setReplay(null); setFlash('done'); }, CHECK);
-      }
-    }, 40);
-    return () => { clearInterval(tick); clearTimeout(doneTimer); };
+      const b = bursts[i++];
+      if (!b.pause) revealed[b.fi] = b.upto;
+      emit('drafting');
+      timer = setTimeout(step, b.wait);
+    };
+    timer = setTimeout(step, READ);
+    return () => clearTimeout(timer);
     // Runs once, for the brief the page opened on.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
