@@ -1049,10 +1049,10 @@ export default function ContestManage() {
               />
             )}
 
-            {/* ── Share card (PRIMARY action) — hidden when winner
-                has been picked since voting is closed and asking for
-                more votes no longer makes sense. */}
-            {!isWinnerPicked && (
+            {/* ── Share card (PRIMARY action) — hidden once voting has
+                ended (winner pending or picked): there is nothing left to
+                invite people to, so asking for more votes makes no sense. */}
+            {!isWinnerPicked && phase !== 'winner' && (
             <section className="v4-manage-share">
               <header className="v4-manage-share-head">
                 <div>

@@ -6,6 +6,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { X, Trophy, Gift, Check, ArrowRight } from '@phosphor-icons/react';
+import { plural } from '../../utils/plural';
 import '../../styles/landing-v3.css';
 
 // Re-seed each time the modal opens so the scattered shapes land in
@@ -96,7 +97,12 @@ export default function PickWinnerModal({
 
   const selectedName = sortedNames.find((n) => n.id === selectedId) || topName;
   const submitter = selectedName ? getParticipantById(selectedName.submittedBy) : null;
-  const isTopVote = !!selectedName && selectedName.id === topName?.id;
+  // Ties: every name on the top count is "top"; with nobody voting there is
+  // no top at all. The copy says which, instead of crowning the first in
+  // the list as if it had won outright.
+  const topVotes = topName?.voteCount || 0;
+  const tiedCount = topVotes > 0 ? sortedNames.filter((n) => n.voteCount === topVotes).length : 0;
+  const isTopVote = !!selectedName && topVotes > 0 && selectedName.voteCount === topVotes;
   const fallbackTone = { bg: '#fadecc', fg: '#9c4818' };
   const t = tone || fallbackTone;
 
@@ -159,7 +165,11 @@ export default function PickWinnerModal({
               Pick the winner
             </h2>
             <p className="v4-pickwinner-subtitle">
-              Top vote is pre-selected. Pick a different name if you want.
+              {topVotes === 0
+                ? 'No votes came in. Pick the name you like best.'
+                : tiedCount > 1
+                  ? `${tiedCount} names are tied on ${plural(topVotes, 'vote')}. Pick the one you like best.`
+                  : 'Top vote is pre-selected. Pick a different name if you want.'}
             </p>
           </div>
         </div>
@@ -179,11 +189,11 @@ export default function PickWinnerModal({
               {isTopVote ? (
                 <>
                   <Trophy weight="bold" size={11} />
-                  TOP VOTE · {selectedName.voteCount} votes
+                  {tiedCount > 1 ? 'TIED FOR TOP' : 'TOP VOTE'} · {plural(selectedName.voteCount, 'vote')}
                 </>
               ) : (
                 <>
-                  Your pick · {selectedName.voteCount} votes
+                  Your pick · {plural(selectedName.voteCount, 'vote')}
                 </>
               )}
             </div>
