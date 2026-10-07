@@ -3,17 +3,16 @@
 // Desktop: a full-height panel from the right edge, the chat dimmed behind
 // it. Phone: a sheet from the bottom with a handle, sized to its content.
 // The panel is laid out like the chat behind it: the segment's soft glow
-// at the top and its line-art scene standing on the bottom edge, drawn in
-// the segment's colour, so it reads as part of the page it slides over;
-// the scene fades away while a guide is open and the text takes the whole
-// height. Tapping a card
+// at the top and its faint line-art scene standing right on the bottom
+// edge, so it reads as part of the page it slides over; the scene fades
+// away while a guide is open and the text takes the whole height. Tapping a card
 // turns the page: the list drifts out to the left as the article arrives
 // from the right, and "Back to guides" reverses it. Closes on the X, the
 // backdrop, Escape, or a swipe down on the handle.
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { X, CaretLeft, CaretRight, BookOpen } from '@phosphor-icons/react';
 import { GuideBody, ICONS } from './GuideExpandable';
-import { DASH_IMAGE } from '../../data/v4/segmentTheme';
+import { DASH_IMAGE, DASH_BOTTOM_GAP } from '../../data/v4/segmentTheme';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -199,12 +198,18 @@ export default function GuidesDrawer({ open, articles = [], tone = null, subId =
           </div>
         </div>
 
-        {/* The segment's glow and scene, behind everything. The art is the
-            segment's line-art PNG used as a mask over its accent colour. */}
+        {/* The segment's glow and scene, behind everything. The PNG is pushed
+            down by its own blank bottom margin so the drawing stands on the
+            edge with no white strip under it. */}
         <div className="v4-gdrawer-scene" aria-hidden="true">
           <span className="v4-gdrawer-glow" />
           {subId && DASH_IMAGE[subId] && (
-            <span className="v4-gdrawer-art" style={{ '--gd-art': `url(${DASH_IMAGE[subId]})` }} />
+            <img
+              className="v4-gdrawer-art"
+              src={DASH_IMAGE[subId]}
+              style={{ '--gd-art-drop': `${DASH_BOTTOM_GAP[subId] || 0}%` }}
+              alt=""
+            />
           )}
         </div>
       </aside>

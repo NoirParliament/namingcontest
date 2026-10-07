@@ -12204,8 +12204,8 @@ button.v4-exit {
   cursor: pointer;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
-/* The chat bubble's edit hover: a 1px lift and a soft shadow. */
-.v4-gnudge-open:hover { transform: translateY(-1px); box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.35); }
+/* The chat bubble's edit hover shadow, sized down for a 32px pill; no lift. */
+.v4-gnudge-open:hover { box-shadow: 0 5px 12px -6px rgba(0, 0, 0, 0.35); }
 .v4-gnudge-open:active { transform: scale(0.96); box-shadow: none; }
 
 /* The drawer. Desktop: a full-height panel from the right edge, the chat
@@ -12363,10 +12363,8 @@ button.v4-exit {
 .v4-gdrawer-list { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
 
 /* The scene, laid out like the chat behind it: the segment's soft glow at
-   the top, white in the middle, and the segment's line-art standing on the
-   bottom edge, drawn in the segment colour (the PNG is a mask over the
-   accent) so the colour is in the drawing, not in a wash. The art fades
-   out while reading; the glow stays. */
+   the top, white in the middle, the faint line-art standing right on the
+   bottom edge. The art fades out while reading; the glow stays. */
 .v4-gdrawer-scene {
   position: absolute;
   inset: 0;
@@ -12386,21 +12384,14 @@ button.v4-exit {
 .v4-gdrawer-art {
   position: absolute;
   left: 50%;
-  /* The PNGs carry a blank margin under the drawing; push it past the edge. */
-  bottom: -28px;
+  bottom: 0;
   width: 200%; /* twice the panel: a scene, not a strip; the sides run off */
-  height: 100%;
-  transform: translateX(-50%);
-  background: var(--guide-accent);
-  opacity: 0.38;
-  -webkit-mask-image: var(--gd-art);
-  mask-image: var(--gd-art);
-  -webkit-mask-size: 100% auto;
-  mask-size: 100% auto;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center bottom;
-  mask-position: center bottom;
+  height: auto;
+  /* Each PNG carries a blank margin under the drawing (--gd-art-drop, set
+     per scene from DASH_BOTTOM_GAP); pushing the image down by exactly that
+     puts the drawing on the edge with nothing white under it. */
+  transform: translateX(-50%) translateY(var(--gd-art-drop, 0%));
+  opacity: 0.55;
   transition: opacity 0.35s ease;
 }
 .v4-gdrawer.is-reading .v4-gdrawer-art { opacity: 0; }
@@ -12536,7 +12527,7 @@ button.v4-exit {
   .v4-gdrawer-close { top: 12px; right: 12px; }
   .v4-gdrawer-body { padding: 0 16px var(--gd-list-pad); }
   .v4-gdrawer.is-reading .v4-gdrawer-body { padding-bottom: var(--gd-read-pad); }
-  .v4-gdrawer-art { width: 180%; bottom: -18px; }
+  .v4-gdrawer-art { width: 180%; }
   .v4-gdrawer-glow { height: 260px; }
   /* The sheet is growing or shrinking at the same time, so the page turn
      moves on the same axis: content rises in and fades out in place, no

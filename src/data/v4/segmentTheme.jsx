@@ -384,6 +384,16 @@ const DASH_SHIFT = {
   t2: '30.5%', b2: '30.5%', b3: '30.5%', b4: '30.5%', b5: '30.5%',
 };
 
+// Blank margin under the drawing in each scene PNG, as % of the image's own
+// height (measured from the alpha channel, 2026-10-07). A surface that wants
+// the drawing to stand right on its bottom edge pushes the image down by this
+// much; without it the band scene, for one, leaves a 10% white strip.
+export const DASH_BOTTOM_GAP = {
+  t1: 2.8, t2: 10.3, t3: 5.4, t4: 3.6, t5: 6.4, t6: 2.1,
+  p1: 5.6, p2: 9.4, p3: 4.3, p4: 6.7,
+  b1: 6.8, b2: 1.2, b3: 8.2, b4: 3.6, b5: 4.2,
+};
+
 /**
  * @param invert  Render the line-art scene in white instead of ink. For the
  *   participant-facing pages, which sit on a saturated segment colour rather
