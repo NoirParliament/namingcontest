@@ -783,12 +783,13 @@ export default function BriefChat() {
         </main>
       </div>
 
-      <GuidesDrawer
-        open={guidesOpen}
+      {guidesOpen && <GuidesDrawer
+        open
         articles={chatArticles}
         tone={navTone}
+        subId={subId}
         onClose={() => setGuidesOpen(false)}
-      />
+      />}
 
       {/* Edit-answer popup — same EditQuestionModal pattern used by
           ReviewLaunch and ContestManage so the editing experience is
