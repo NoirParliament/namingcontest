@@ -769,6 +769,7 @@ export default function ParticipantChat() {
                 articles={articles}
                 tone={tone}
                 subId={contest.subSegmentId}
+                entrance
                 nudge={introStage >= 6}
                 once={`nc_guides_nudged:${contest.id}:suggest`}
               />

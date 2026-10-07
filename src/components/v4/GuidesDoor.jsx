@@ -21,15 +21,18 @@ const HOLD = 9000;       // how long the callout stays on its own
 const remembered = (key) => { if (!key) return false; try { return localStorage.getItem(key) === '1'; } catch { return true; } };
 const remember = (key) => { if (!key) return; try { localStorage.setItem(key, '1'); } catch { /* storage off: nudge again next time */ } };
 
-export default function GuidesDoor({ articles = [], tone = null, subId = null, nudge = false, once = null }) {
+// `entrance`: this page introduces the door (nothing shows until `nudge`
+// fires, then button and callout arrive together). Without it the button
+// is simply there from the start.
+export default function GuidesDoor({ articles = [], tone = null, subId = null, entrance = false, nudge = false, once = null }) {
   // idle: waiting for the trigger · shown / leaving: the callout is up ·
-  // done: lit button only.
-  const [state, setState] = useState('idle');
+  // done: lit button only. A visitor who has had the callout before on
+  // this device starts at done: lit from the first frame, no entrance.
+  const [state, setState] = useState(() => (remembered(once) ? 'done' : 'idle'));
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (state !== 'idle' || !nudge || articles.length === 0) return undefined;
-    if (remembered(once)) { setState('done'); return undefined; }
     const t = setTimeout(() => { remember(once); setState('shown'); }, READ_PAUSE);
     return () => clearTimeout(t);
   }, [state, nudge, articles.length, once]);
@@ -52,7 +55,7 @@ export default function GuidesDoor({ articles = [], tone = null, subId = null, n
   if (articles.length === 0) return null;
   // Making an entrance: nothing until the callout is ready, so button and
   // callout arrive together.
-  if (nudge && state === 'idle') return null;
+  if (entrance && state === 'idle') return null;
 
   // "Curious what makes a great band or club name?"; categories without a
   // clear noun ("something else") ask about a great name, full stop.

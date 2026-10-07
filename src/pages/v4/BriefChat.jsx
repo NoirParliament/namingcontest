@@ -669,7 +669,7 @@ export default function BriefChat() {
                 the first brief question has landed; then it arrives, already
                 in the category's colour, and stays for the rest of setup. */}
             {guidesReady && (
-              <GuidesDoor articles={chatArticles} tone={navTone} subId={subId} nudge={!pastFirstBriefQ} />
+              <GuidesDoor articles={chatArticles} tone={navTone} subId={subId} entrance={!pastFirstBriefQ} nudge={!pastFirstBriefQ} />
             )}
             <button
               type="button"

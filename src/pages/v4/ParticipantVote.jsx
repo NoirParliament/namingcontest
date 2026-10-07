@@ -465,6 +465,7 @@ export default function ParticipantVote() {
                 articles={briefArticles}
                 tone={tone}
                 subId={subId}
+                entrance
                 nudge={introStage >= 6}
                 once={`nc_guides_nudged:${contest.id}:vote`}
               />
