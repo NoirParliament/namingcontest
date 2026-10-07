@@ -39,6 +39,7 @@ import { getBriefLabel, getBriefSections, getParticipantLabel } from '../../data
 import ComposedBrief from '../../components/v4/ComposedBrief';
 import { briefDocHasContent } from '../../utils/composeBrief';
 import GuidesDoor from '../../components/v4/GuidesDoor';
+import { pinToTop, toBottom, BRIEF_OPENED_STAGE, useReachedEnd } from '../../utils/chatScroll';
 import BriefSectionHead from '../../components/v4/BriefSectionHead';
 import HostNote from '../../components/v4/HostNote';
 import { supabase } from '../../lib/supabaseClient';
@@ -132,6 +133,10 @@ export default function ParticipantVote() {
   const mockContest = getMockContestById(contestId);
   const chatRef = useRef(null);
   const didFirstAutoscrollRef = useRef(false);
+  // The "Show me the brief" bubble: the brief is pinned from here; the
+  // marker at its end tells us it has been read.
+  const briefStartRef = useRef(null);
+  const briefEndRef = useRef(null);
 
   // ── Real contest data (DB) ─────────────────────────────────────────
   // Load the contest, all its submissions, this user's existing votes, and
@@ -253,7 +258,7 @@ export default function ParticipantVote() {
   //   5 → user "Yes, show me" + typing for vote prompt
   //   6 → "Pick up to N…" prompt + toolbar + vote cards + sticky bar
   const [introStage, setIntroStage] = useState(0);
-  const INTRO_AUTO_TIMINGS = { 0: 700, 1: 900, 3: 1000, 5: 800 };
+  const INTRO_AUTO_TIMINGS = { 0: 700, 1: 900, 5: 800 };
 
   // ── Voter credit gate ───────────────────────────────────────────────
   // A voter who never submitted a name has no profile name on record here yet.
@@ -340,13 +345,30 @@ export default function ParticipantVote() {
     return () => clearTimeout(t);
   }, [introStage]);
 
+  const briefRead = useReachedEnd(chatRef, briefEndRef, introStage === BRIEF_OPENED_STAGE);
+  // Read to the end: the next message types for a moment, then arrives.
+  useEffect(() => {
+    if (introStage !== BRIEF_OPENED_STAGE || !briefRead) return undefined;
+    toBottom(chatRef.current);
+    const t = setTimeout(() => setIntroStage((s) => (s === BRIEF_OPENED_STAGE ? s + 1 : s)), 1000);
+    return () => clearTimeout(t);
+  }, [introStage, briefRead]);
+
   // Autoscroll on stage changes (but not on initial mount — start at top).
+  // The brief opening pins its start under the header and the prompt that
+  // follows while it is read stays put; everything else follows the bottom.
   useEffect(() => {
     if (!didFirstAutoscrollRef.current) {
       didFirstAutoscrollRef.current = true;
       return;
     }
-    chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight, behavior: 'smooth' });
+    const el = chatRef.current;
+    if (!el) return;
+    if (introStage === BRIEF_OPENED_STAGE) {
+      requestAnimationFrame(() => pinToTop(el, briefStartRef.current));
+      return;
+    }
+    toBottom(el);
   }, [introStage]);
 
   // Guards
@@ -538,7 +560,7 @@ export default function ParticipantVote() {
             {/* ── Stage 3+ → user reply + brief card ─────────────────── */}
             {introStage >= 3 && (
               <>
-                <div className="v4-bubble v4-bubble-user" style={{ animationDelay: '0.05s' }}>
+                <div ref={briefStartRef} className="v4-bubble v4-bubble-user" style={{ animationDelay: '0.05s' }}>
                   <span>Show me the brief</span>
                 </div>
                 <ParticipantBriefCard
@@ -548,11 +570,13 @@ export default function ParticipantVote() {
                   briefRows={briefRows}
                   settingsRows={settingsRows}
                 />
+                {/* The end of the brief: the next message waits until this is read. */}
+                <div ref={briefEndRef} aria-hidden="true" />
               </>
             )}
 
             {/* ── Stage 3 → typing for the "ready to vote?" prompt ──── */}
-            {introStage === 3 && (
+            {introStage === 3 && briefRead && (
               <div className="v4-typing" aria-hidden="true">
                 <span></span><span></span><span></span>
               </div>

@@ -38,6 +38,7 @@ import { getChecklist } from '../../data/v4/participantArticles';
 import { getQuestionsFor, getArticleFor } from '../../utils/v4Brief';
 import { SHARED_SETTINGS_QUESTIONS } from '../../data/v4/briefQuestions';
 import GuidesDoor from '../../components/v4/GuidesDoor';
+import { pinToTop, toBottom, BRIEF_OPENED_STAGE, useReachedEnd } from '../../utils/chatScroll';
 import BriefSectionHead from '../../components/v4/BriefSectionHead';
 import HostNote from '../../components/v4/HostNote';
 import AvatarMenu from '../../components/v4/AvatarMenu';
@@ -431,7 +432,6 @@ export default function ParticipantChat() {
   const INTRO_AUTO_TIMINGS = {
     0: 800,
     1: 1100,
-    3: 1100,
     5: 800,
   };
 
@@ -452,7 +452,22 @@ export default function ParticipantChat() {
   // <Navigate>` below — render-time redirect is more reliable than
   // useEffect + null-return because there's no blank frame.
 
+  // The "Show me the brief" bubble: the brief is pinned from here; the
+  // marker at its end tells us it has been read.
+  const briefStartRef = useRef(null);
+  const briefEndRef = useRef(null);
+  const briefRead = useReachedEnd(chatRef, briefEndRef, introStage === BRIEF_OPENED_STAGE);
+  // Read to the end: the next message types for a moment, then arrives.
   useEffect(() => {
+    if (introStage !== BRIEF_OPENED_STAGE || !briefRead) return undefined;
+    toBottom(chatRef.current);
+    const t = setTimeout(() => setIntroStage((s) => (s === BRIEF_OPENED_STAGE ? s + 1 : s)), 1000);
+    return () => clearTimeout(t);
+  }, [introStage, briefRead]);
+  const prevStageRef = useRef(introStage);
+  useEffect(() => {
+    const prevStage = prevStageRef.current;
+    prevStageRef.current = introStage;
     // Skip initial mount — let the user start at the top so they
     // actually read the welcome / brief / article before the chat
     // begins. Subsequent state changes (added a draft, hit submit
@@ -463,7 +478,13 @@ export default function ParticipantChat() {
     }
     const el = chatRef.current;
     if (!el) return;
-    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+    // The brief just opened: pin its start under the header. The prompt that
+    // follows while it is read stays put (the reader scrolls down to it).
+    if (introStage !== prevStage && introStage === BRIEF_OPENED_STAGE) {
+      requestAnimationFrame(() => pinToTop(el, briefStartRef.current));
+      return;
+    }
+    toBottom(el);
   }, [drafts.length, showForm, submittedDone, typingFor, introStage]);
 
   // Intro reveal sequencer — auto-advances only on stages with a
@@ -869,7 +890,7 @@ export default function ParticipantChat() {
             {/* ── Stage 3+ → user replied "yes" → reply bubble + brief ── */}
             {introStage >= 3 && (
               <>
-                <div className="v4-bubble v4-bubble-user" style={{ animationDelay: '0.05s' }}>
+                <div ref={briefStartRef} className="v4-bubble v4-bubble-user" style={{ animationDelay: '0.05s' }}>
                   <span>Show me the brief</span>
                 </div>
                 <ParticipantBriefCard
@@ -879,11 +900,13 @@ export default function ParticipantChat() {
                   briefRows={briefRows}
                   settingsRows={settingsRows}
                 />
+                {/* The end of the brief: the next message waits until this is read. */}
+                <div ref={briefEndRef} aria-hidden="true" />
               </>
             )}
 
             {/* ── Stage 3 → typing for the "ready to name?" prompt ── */}
-            {introStage === 3 && (
+            {introStage === 3 && briefRead && (
               <div className="v4-typing" aria-hidden="true">
                 <span></span><span></span><span></span>
               </div>
