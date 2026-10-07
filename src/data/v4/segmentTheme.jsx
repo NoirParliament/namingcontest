@@ -354,7 +354,7 @@ import React from 'react';
 
 // Per-segment faint line-art scene anchored at the bottom of the dashboard.
 // Segments without one fall back to the scattered theme icons.
-const DASH_IMAGE = {
+export const DASH_IMAGE = {
   t1: aSportsTeamPng,
   t2: aBandMusicPng,
   t3: aPodcastPng,

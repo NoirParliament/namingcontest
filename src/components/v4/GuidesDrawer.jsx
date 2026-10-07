@@ -3,16 +3,17 @@
 // Desktop: a full-height panel from the right edge, the chat dimmed behind
 // it. Phone: a sheet from the bottom with a handle, sized to its content.
 // The panel is laid out like the chat behind it: the segment's soft glow
-// at the top and its faint line-art scene standing on the bottom edge, so
-// it reads as part of the page it slides over; the scene fades away while
-// a guide is open and the text takes the whole height. Tapping a card
+// at the top and its line-art scene standing on the bottom edge, drawn in
+// the segment's colour, so it reads as part of the page it slides over;
+// the scene fades away while a guide is open and the text takes the whole
+// height. Tapping a card
 // turns the page: the list drifts out to the left as the article arrives
 // from the right, and "Back to guides" reverses it. Closes on the X, the
 // backdrop, Escape, or a swipe down on the handle.
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { X, CaretLeft, CaretRight, BookOpen } from '@phosphor-icons/react';
 import { GuideBody, ICONS } from './GuideExpandable';
-import { SegmentThemeBackdrop } from '../../data/v4/segmentTheme';
+import { DASH_IMAGE } from '../../data/v4/segmentTheme';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -75,7 +76,10 @@ export default function GuidesDrawer({ open, articles = [], tone = null, subId =
     later(() => setLeaving(null), TURN_MS);
   };
   const backToList = () => {
-    setLeaving({ kind: 'article', article: active });
+    // The outgoing article keeps its scroll position while it fades, so it
+    // doesn't jump to its top when the body scrolls back to 0 for the list.
+    const offset = bodyRef.current ? bodyRef.current.scrollTop : 0;
+    setLeaving({ kind: 'article', article: active, offset });
     setActive(null);
     later(() => setLeaving(null), TURN_MS);
   };
@@ -147,7 +151,7 @@ export default function GuidesDrawer({ open, articles = [], tone = null, subId =
     <div className={`v4 lp-v3 v4-gdrawer-backdrop${closing ? ' is-closing' : ''}`} onClick={requestClose}>
       <aside
         ref={asideRef}
-        className={`v4-gdrawer${active ? ' is-reading' : ''}${closing ? ' is-closing' : ''}${settled ? ' is-settled' : ''}`}
+        className={`v4-gdrawer${active ? ' is-reading' : ''}${closing ? ' is-closing' : ''}${settled ? ' is-settled' : ''}${leaving ? ' is-turning' : ''}`}
         style={style}
         role="dialog"
         aria-modal="true"
@@ -181,7 +185,11 @@ export default function GuidesDrawer({ open, articles = [], tone = null, subId =
             {/* The view on its way out sits under the incoming one for the
                 length of the page turn, then unmounts. */}
             {leaving && (
-              <div className={`v4-gdrawer-view is-leaving from-${leaving.kind}`} aria-hidden="true">
+              <div
+                className={`v4-gdrawer-view is-leaving from-${leaving.kind}`}
+                style={leaving.offset ? { top: -leaving.offset } : undefined}
+                aria-hidden="true"
+              >
                 {leaving.kind === 'list' ? list : articleView(leaving.article)}
               </div>
             )}
@@ -191,9 +199,13 @@ export default function GuidesDrawer({ open, articles = [], tone = null, subId =
           </div>
         </div>
 
-        {/* The segment's glow and scene, behind everything. */}
+        {/* The segment's glow and scene, behind everything. The art is the
+            segment's line-art PNG used as a mask over its accent colour. */}
         <div className="v4-gdrawer-scene" aria-hidden="true">
-          <SegmentThemeBackdrop subId={subId} minimal />
+          <span className="v4-gdrawer-glow" />
+          {subId && DASH_IMAGE[subId] && (
+            <span className="v4-gdrawer-art" style={{ '--gd-art': `url(${DASH_IMAGE[subId]})` }} />
+          )}
         </div>
       </aside>
     </div>

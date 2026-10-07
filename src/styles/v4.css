@@ -12202,10 +12202,11 @@ button.v4-exit {
   font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
-  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
-.v4-gnudge-open:hover { transform: translateY(-1px); }
-.v4-gnudge-open:active { transform: scale(0.96); }
+/* The chat bubble's edit hover: a 1px lift and a soft shadow. */
+.v4-gnudge-open:hover { transform: translateY(-1px); box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.35); }
+.v4-gnudge-open:active { transform: scale(0.96); box-shadow: none; }
 
 /* The drawer. Desktop: a full-height panel from the right edge, the chat
    dimmed behind it. Phone: a sheet from the bottom with a handle, sized to
@@ -12335,6 +12336,9 @@ button.v4-exit {
 }
 .v4-gdrawer.is-reading .v4-gdrawer-body { padding-bottom: 36px; }
 .v4-gdrawer-stage { position: relative; }
+/* While the page turns, nothing scrolls or spills past the stage. */
+.v4-gdrawer.is-turning .v4-gdrawer-body,
+.v4-gdrawer.is-turning .v4-gdrawer-stage { overflow: hidden; }
 .v4-gdrawer-view { position: relative; z-index: 1; }
 /* The outgoing view sits under the incoming one and is gone before the
    incoming one has really arrived, so the two never fight. */
@@ -12359,8 +12363,10 @@ button.v4-exit {
 .v4-gdrawer-list { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
 
 /* The scene, laid out like the chat behind it: the segment's soft glow at
-   the top, white in the middle, the line-art standing on the bottom edge.
-   The art fades out while reading; the glow stays. */
+   the top, white in the middle, and the segment's line-art standing on the
+   bottom edge, drawn in the segment colour (the PNG is a mask over the
+   accent) so the colour is in the drawing, not in a wash. The art fades
+   out while reading; the glow stays. */
 .v4-gdrawer-scene {
   position: absolute;
   inset: 0;
@@ -12368,18 +12374,36 @@ button.v4-exit {
   pointer-events: none;
   overflow: hidden;
 }
-.v4-gdrawer-scene .v4-aurora-gradient { height: 360px; opacity: 0.5; }
-.v4-gdrawer .v4-dash-image {
-  /* Wider than the panel so the scene fills its floor; whole, no chat
-     shift down. */
-  width: 150%;
-  transform: translateX(-50%);
-  opacity: 0.6;
-  transition: opacity 0.35s ease;
-  -webkit-mask-image: none;
-  mask-image: none;
+.v4-gdrawer-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 360px;
+  background: radial-gradient(80% 70% at 50% -10%, var(--guide-tint) 0%, var(--guide-tint) 28%, transparent 75%);
+  opacity: 0.5;
 }
-.v4-gdrawer.is-reading .v4-dash-image { opacity: 0; }
+.v4-gdrawer-art {
+  position: absolute;
+  left: 50%;
+  /* The PNGs carry a blank margin under the drawing; push it past the edge. */
+  bottom: -28px;
+  width: 200%; /* twice the panel: a scene, not a strip; the sides run off */
+  height: 100%;
+  transform: translateX(-50%);
+  background: var(--guide-accent);
+  opacity: 0.38;
+  -webkit-mask-image: var(--gd-art);
+  mask-image: var(--gd-art);
+  -webkit-mask-size: 100% auto;
+  mask-size: 100% auto;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center bottom;
+  mask-position: center bottom;
+  transition: opacity 0.35s ease;
+}
+.v4-gdrawer.is-reading .v4-gdrawer-art { opacity: 0; }
 
 /* A guide card in the list: icon tile, read time, title and the opening
    lines. The whole card is the button; hover is the site's quiet wash in
@@ -12512,7 +12536,16 @@ button.v4-exit {
   .v4-gdrawer-close { top: 12px; right: 12px; }
   .v4-gdrawer-body { padding: 0 16px var(--gd-list-pad); }
   .v4-gdrawer.is-reading .v4-gdrawer-body { padding-bottom: var(--gd-read-pad); }
-  .v4-gdrawer .v4-dash-image { width: 140%; }
+  .v4-gdrawer-art { width: 180%; bottom: -18px; }
+  .v4-gdrawer-glow { height: 260px; }
+  /* The sheet is growing or shrinking at the same time, so the page turn
+     moves on the same axis: content rises in and fades out in place, no
+     sideways slide against a moving edge. */
+  .v4-gdrawer-article { animation-name: v4-gdrawer-rise; }
+  .v4-gdrawer.is-settled .v4-gdrawer-list { animation-name: v4-gdrawer-rise; }
+  .v4-gdrawer-view.is-leaving.from-list,
+  .v4-gdrawer-view.is-leaving.from-article { animation-name: v4-gdrawer-fade-out; }
+  @keyframes v4-gdrawer-fade-out { from { opacity: 1; } to { opacity: 0; } }
   .v4-gcard { padding: 14px 14px 14px 12px; gap: 12px; }
   .v4-gcard-main { padding-right: 44px; }
   .v4-gcard-title { font-size: 16px; }
