@@ -28,7 +28,7 @@ import { getBriefLabel, getBriefSections } from '../../data/v4/briefExpansions';
 import GuideExpandable from '../../components/v4/GuideExpandable';
 import BriefSectionHead from '../../components/v4/BriefSectionHead';
 import ComposedBrief, { ComposedBriefSkeleton, BriefProgressLine } from '../../components/v4/ComposedBrief';
-import { currentBriefDoc, composeBriefDoc, briefDocHasContent, cleanBriefDoc, briefChanges, rewritesLeft, subscribeBriefProgress, briefProgress, changedTexts } from '../../utils/composeBrief';
+import { currentBriefDoc, composeBriefDoc, briefDocHasContent, cleanBriefDoc, briefChanges, rewritesLeft, subscribeBriefProgress, briefProgress, changedTexts, normalizeBriefDoc } from '../../utils/composeBrief';
 import BriefUpdateBar from '../../components/v4/BriefUpdate';
 import { ContestScheduleInput } from '../../components/v4/QuestionInput';
 import ExitLink from '../../components/v4/ExitLink';
@@ -176,7 +176,44 @@ export default function ReviewLaunch() {
   // changed, glowing for a moment.
   const [live, setLive] = useState(() => briefProgress());
   useEffect(() => subscribeBriefProgress(setLive), []);
-  const [flash, setFlash] = useState(() => (currentBriefDoc() ? 'reveal' : null));
+  // A brief that was finished before the page opened (the chat started it)
+  // is written in front of the host once, quickly: a 3.6s replay of the real
+  // writing (same steps, same quotes, parts appearing one by one) ending in
+  // the same 'done' moment a live write ends in. Later visits to a brief
+  // already shown this way (back from payment, from "Your answers") take
+  // the quiet 'reveal' instead.
+  const replayKey = `nc_brief_replayed:${readSetup().briefDraftId || 'brief'}`;
+  const seenReplay = () => { try { return sessionStorage.getItem(replayKey) === '1'; } catch { return true; } };
+  const markReplayed = () => { try { sessionStorage.setItem(replayKey, '1'); } catch { /* storage off: replay next time too */ } };
+  const [replay, setReplay] = useState(() => (currentBriefDoc() && !seenReplay() ? { stage: 'drafting', partial: null } : null));
+  const [flash, setFlash] = useState(() => (currentBriefDoc() && seenReplay() ? 'reveal' : null));
+  useEffect(() => {
+    if (!replay) return undefined;
+    const d = normalizeBriefDoc(currentBriefDoc());
+    if (!d) { setReplay(null); return undefined; }
+    const { names, ...dirNoNames } = d.directions;
+    const partials = [
+      { about: d.about },
+      { about: d.about, aim: d.aim },
+      { about: d.about, aim: d.aim, directions: dirNoNames },
+      { about: d.about, aim: d.aim, directions: { ...dirNoNames, names } },
+      { about: d.about, aim: d.aim, directions: { ...dirNoNames, names }, rules: d.rules },
+    ];
+    const steps = [
+      [500, { stage: 'drafting', partial: partials[0] }],
+      [1100, { stage: 'drafting', partial: partials[1] }],
+      [1700, { stage: 'drafting', partial: partials[2] }],
+      [2200, { stage: 'drafting', partial: partials[3] }],
+      [2700, { stage: 'drafting', partial: partials[4] }],
+      [3100, { stage: 'checking', partial: partials[4] }],
+    ];
+    const timers = steps.map(([at, s]) => setTimeout(() => setReplay(s), at));
+    timers.push(setTimeout(() => { markReplayed(); setReplay(null); setFlash('done'); }, 3600));
+    return () => timers.forEach(clearTimeout);
+    // Runs once, for the brief the page opened on.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const replaying = replay !== null;
   const [fixedTexts, setFixedTexts] = useState(null);
   useEffect(() => {
     if (!flash) return undefined;
@@ -190,6 +227,7 @@ export default function ReviewLaunch() {
     return () => clearTimeout(t);
   }, [fixedTexts]);
   const landed = (doc) => {
+    markReplayed(); // the host watched the real writing; no replay later
     setFlash('done');
     setFixedTexts(changedTexts(briefProgress().draft, doc));
   };
@@ -247,7 +285,11 @@ export default function ReviewLaunch() {
     const kick = setTimeout(() => { clearInterval(poll); if (!cancelled && !currentBriefDoc()) writeBrief(); }, 4000);
     return () => { cancelled = true; clearInterval(poll); clearTimeout(kick); };
   }, []);
-  const showComposed = briefState === 'ready' && briefDocHasContent(briefDoc);
+  const showComposed = briefState === 'ready' && briefDocHasContent(briefDoc) && !replaying;
+  // The writer's card runs on the live writer, or on the replay's clock.
+  const writing = briefState === 'writing' || briefState === 'rewriting' || replaying;
+  const shownStage = replaying ? replay.stage : live.stage;
+  const shownPartial = replaying ? replay.partial : live.partial;
   // Recomputed every render (answer edits bump editTick): which answers no
   // longer match the brief, and how many rewrites are left.
   const pendingChanges = briefDoc && briefState !== 'writing' ? briefChanges() : [];
@@ -710,12 +752,12 @@ export default function ReviewLaunch() {
                   <button type="button" onClick={writeBrief}>Try again</button>
                 </p>
               )}
-              {(briefState === 'writing' || briefState === 'rewriting' || flash) && (
+              {(writing || flash) && (
                 <BriefProgressLine
                   key={flash === 'reveal' ? 'reveal' : 'line'}
-                  phase={briefState === 'writing' || briefState === 'rewriting' ? 'working' : flash}
-                  stage={live.stage}
-                  partial={live.partial}
+                  phase={writing ? 'working' : flash}
+                  stage={shownStage}
+                  partial={shownPartial}
                   subId={subId}
                   questions={briefQuestions}
                   answers={briefAnswers}
@@ -749,9 +791,9 @@ export default function ReviewLaunch() {
                   Write a quick hello before launching; it’s the first thing your participants read.
                 </span>
               )}
-              {(briefState === 'writing' || briefState === 'rewriting') && (
-                live.partial
-                  ? <ComposedBrief doc={live.partial} subId={subId} questions={briefQuestions} tone={segmentTone} live />
+              {writing && (
+                shownPartial
+                  ? <ComposedBrief doc={shownPartial} subId={subId} questions={briefQuestions} tone={segmentTone} live />
                   : <ComposedBriefSkeleton subId={subId} questions={briefQuestions} tone={segmentTone} />
               )}
               {showComposed && (
@@ -767,7 +809,7 @@ export default function ReviewLaunch() {
                 </>
               )}
 
-              {briefState === 'writing' || briefState === 'rewriting' || showComposed ? null : briefGroups ? (
+              {writing || showComposed ? null : briefGroups ? (
                 briefGroups.map((group) => (
                   <div key={group.title} className="v4-brief-group">
                     <BriefSectionHead
