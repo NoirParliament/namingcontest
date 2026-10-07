@@ -12375,11 +12375,11 @@ button.v4-exit {
   top: 0;
   left: 0;
   right: 0;
-  /* A wide, shallow ellipse from the top-left corner: full tint there,
-     fading all the way out by a third of the way down the left edge and
+  /* A wide, shallow ellipse from the top-right corner: full tint there,
+     fading all the way out by a third of the way down the right edge and
      across the whole top, so it reads as light falling in, not a shape. */
   height: 520px;
-  background: radial-gradient(150% 72% at 0% 0%, var(--guide-tint) 0%, color-mix(in srgb, var(--guide-tint) 55%, transparent) 30%, transparent 72%);
+  background: radial-gradient(150% 72% at 100% 0%, var(--guide-tint) 0%, color-mix(in srgb, var(--guide-tint) 55%, transparent) 30%, transparent 72%);
   opacity: 0.5;
 }
 .v4-gdrawer {
