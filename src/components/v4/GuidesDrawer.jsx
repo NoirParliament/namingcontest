@@ -2,12 +2,13 @@
 //
 // Desktop: a full-height panel from the right edge, the chat dimmed behind
 // it. Phone: a sheet from the bottom with a handle, sized to its content.
-// The list view ends in the segment's faint line-art scene, the same one
-// behind the chat, so the panel reads as part of the page it slides over;
-// the scene fades away while a guide is open and the text takes the whole
-// height. Tapping a card turns the page: the list drifts out to the left
-// as the article arrives from the right, and "Back to guides" reverses it.
-// Closes on the X, the backdrop, Escape, or a swipe down on the handle.
+// The panel is laid out like the chat behind it: the segment's soft glow
+// at the top and its faint line-art scene standing on the bottom edge, so
+// it reads as part of the page it slides over; the scene fades away while
+// a guide is open and the text takes the whole height. Tapping a card
+// turns the page: the list drifts out to the left as the article arrives
+// from the right, and "Back to guides" reverses it. Closes on the X, the
+// backdrop, Escape, or a swipe down on the handle.
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { X, CaretLeft, CaretRight, BookOpen } from '@phosphor-icons/react';
 import { GuideBody, ICONS } from './GuideExpandable';
@@ -45,7 +46,7 @@ export default function GuidesDrawer({ open, articles = [], tone = null, subId =
   const [leaving, setLeaving] = useState(null); // the view on its way out: { kind, article }
   const [closing, setClosing] = useState(false);
   const [settled, setSettled] = useState(false); // the opening stagger has finished
-  const [sheetH, setSheetH] = useState(null); // phone: the list view's natural height
+  const [sheetH, setSheetH] = useState(null); // phone: the current view's natural height
   const asideRef = useRef(null);
   const bodyRef = useRef(null);
   const stageRef = useRef(null);
@@ -93,22 +94,25 @@ export default function GuidesDrawer({ open, articles = [], tone = null, subId =
   useEffect(() => { if (bodyRef.current) bodyRef.current.scrollTop = 0; }, [active]);
 
   // Phone: the sheet gets an explicit height so it can glide between the
-  // list's natural height and the full reading height. Measured from the
-  // parts, not the sheet itself, so the reading height never leaks in.
+  // list's height and the article's, each capped at 92dvh. Measured from
+  // the parts, not the sheet itself, so one view's height never leaks
+  // into the other's. The padding comes from a CSS variable because the
+  // computed padding is mid-transition at this point.
   useLayoutEffect(() => {
-    if (!open || active || !asideRef.current || !window.matchMedia(PHONE).matches) return;
+    if (!open || !asideRef.current || !window.matchMedia(PHONE).matches) return;
     const aside = asideRef.current;
     const body = bodyRef.current;
     const stage = stageRef.current;
     const head = aside.querySelector('.v4-gdrawer-head');
     const handle = aside.querySelector('.v4-gdrawer-handle');
     const px = (el, prop) => parseFloat(getComputedStyle(el)[prop]) || 0;
+    const pad = parseFloat(getComputedStyle(aside).getPropertyValue(active ? '--gd-read-pad' : '--gd-list-pad')) || 0;
     const h = (handle ? handle.offsetHeight + px(handle, 'marginTop') : 0)
       + (head ? head.offsetHeight : 0)
       + (stage ? stage.offsetHeight : 0)
       + (body ? px(body, 'paddingTop') : 0)
-      + (parseFloat(getComputedStyle(aside).getPropertyValue('--gd-list-pad')) || 0);
-    setSheetH(Math.ceil(h));
+      + pad;
+    setSheetH(Math.ceil(Math.min(h, window.innerHeight * 0.92)));
   }, [open, active, articles.length]);
 
   if (!open) return null;
@@ -116,7 +120,7 @@ export default function GuidesDrawer({ open, articles = [], tone = null, subId =
   const phone = typeof window !== 'undefined' && window.matchMedia(PHONE).matches;
   const style = {
     ...(tone ? { '--guide-tint': tone.bg, '--guide-accent': tone.fg } : null),
-    ...(phone && sheetH ? { height: active ? '92dvh' : `${sheetH}px` } : null),
+    ...(phone && sheetH ? { height: `${sheetH}px` } : null),
   };
 
   // Phone: drag the handle (or header) down to close.
@@ -174,7 +178,7 @@ export default function GuidesDrawer({ open, articles = [], tone = null, subId =
 
         <div className="v4-gdrawer-body" ref={bodyRef}>
           <div className="v4-gdrawer-stage" ref={stageRef}>
-            {/* The view on its way out sits on top of the incoming one for the
+            {/* The view on its way out sits under the incoming one for the
                 length of the page turn, then unmounts. */}
             {leaving && (
               <div className={`v4-gdrawer-view is-leaving from-${leaving.kind}`} aria-hidden="true">
@@ -187,7 +191,7 @@ export default function GuidesDrawer({ open, articles = [], tone = null, subId =
           </div>
         </div>
 
-        {/* The segment's scene, anchored to the bottom under the list. */}
+        {/* The segment's glow and scene, behind everything. */}
         <div className="v4-gdrawer-scene" aria-hidden="true">
           <SegmentThemeBackdrop subId={subId} minimal />
         </div>

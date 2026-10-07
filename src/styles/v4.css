@@ -12358,37 +12358,28 @@ button.v4-exit {
 }
 .v4-gdrawer-list { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
 
-/* The scene: the segment's line-art anchored to the panel's bottom edge
-   with a soft wash of the tint behind it. Fades out while reading. */
+/* The scene, laid out like the chat behind it: the segment's soft glow at
+   the top, white in the middle, the line-art standing on the bottom edge.
+   The art fades out while reading; the glow stays. */
 .v4-gdrawer-scene {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 400px;
+  inset: 0;
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
-  transition: opacity 0.35s ease;
 }
-.v4-gdrawer-scene::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  /* The ground the scene stands on: white above, the tint at the floor. */
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, color-mix(in srgb, var(--guide-tint) 55%, #fff) 100%);
-}
-.v4-gdrawer-scene .v4-aurora-gradient { display: none; }
+.v4-gdrawer-scene .v4-aurora-gradient { height: 360px; opacity: 0.5; }
 .v4-gdrawer .v4-dash-image {
   /* Wider than the panel so the scene fills its floor; whole, no chat
      shift down. */
   width: 150%;
   transform: translateX(-50%);
   opacity: 0.6;
+  transition: opacity 0.35s ease;
   -webkit-mask-image: none;
   mask-image: none;
 }
-.v4-gdrawer.is-reading .v4-gdrawer-scene { opacity: 0; }
+.v4-gdrawer.is-reading .v4-dash-image { opacity: 0; }
 
 /* A guide card in the list: icon tile, read time, title and the opening
    lines. The whole card is the button; hover is the site's quiet wash in
@@ -12495,7 +12486,8 @@ button.v4-exit {
     animation: v4-gdrawer-up 0.5s var(--gd-ease) both;
     /* The sheet glides between the list's height and the reading height. */
     transition: height 0.45s var(--gd-ease);
-    --gd-list-pad: 230px;
+    --gd-list-pad: 130px; /* the scene peeks out from under the last card */
+    --gd-read-pad: 28px;
   }
   .v4-gdrawer.is-closing { animation: v4-gdrawer-down 0.3s cubic-bezier(0.4, 0, 1, 1) forwards; }
   @keyframes v4-gdrawer-up {
@@ -12519,8 +12511,7 @@ button.v4-exit {
   .v4-gdrawer-head { padding: 12px 52px 10px 18px; min-height: 0; }
   .v4-gdrawer-close { top: 12px; right: 12px; }
   .v4-gdrawer-body { padding: 0 16px var(--gd-list-pad); }
-  .v4-gdrawer.is-reading .v4-gdrawer-body { padding-bottom: 28px; }
-  .v4-gdrawer-scene { height: 260px; }
+  .v4-gdrawer.is-reading .v4-gdrawer-body { padding-bottom: var(--gd-read-pad); }
   .v4-gdrawer .v4-dash-image { width: 140%; }
   .v4-gcard { padding: 14px 14px 14px 12px; gap: 12px; }
   .v4-gcard-main { padding-right: 44px; }
