@@ -177,7 +177,7 @@ export default function ReviewLaunch() {
   const [live, setLive] = useState(() => briefProgress());
   useEffect(() => subscribeBriefProgress(setLive), []);
   // A brief that was finished before the page opened (the chat started it)
-  // is written in front of the host once, quickly: a 3.6s replay of the real
+  // is written in front of the host once, quickly: a 7s replay of the real
   // writing (same steps, same quotes, parts appearing one by one) ending in
   // the same 'done' moment a live write ends in. Later visits to a brief
   // already shown this way (back from payment, from "Your answers") take
@@ -214,8 +214,10 @@ export default function ReviewLaunch() {
       });
       o[path[path.length - 1]] = value;
     };
-    // 0.6s reading the answers (skeleton), ~2.6s of typing, 0.5s check.
-    const READ = 600; const TYPE = 2600; const CHECK = 500;
+    // About 7s all told, a third of a real write: 1s reading the answers
+    // (skeleton, a quote), 5s of typing across the parts, 1s check. Faster
+    // than this and the text jumps rather than types.
+    const READ = 1000; const TYPE = 5000; const CHECK = 900;
     const start = performance.now();
     let doneTimer = null;
     const tick = setInterval(() => {
@@ -235,7 +237,7 @@ export default function ReviewLaunch() {
         clearInterval(tick);
         doneTimer = setTimeout(() => { markReplayed(); setReplay(null); setFlash('done'); }, CHECK);
       }
-    }, 50);
+    }, 40);
     return () => { clearInterval(tick); clearTimeout(doneTimer); };
     // Runs once, for the brief the page opened on.
     // eslint-disable-next-line react-hooks/exhaustive-deps
