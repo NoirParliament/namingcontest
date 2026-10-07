@@ -12261,6 +12261,9 @@ button.v4-exit {
   from { transform: translateY(6px); opacity: 0; }
   to { transform: none; opacity: 1; }
 }
+/* Text never moves while it appears: a transform on a block of text makes
+   it re-rasterise and shiver as it settles on the pixel grid. */
+@keyframes v4-gdrawer-fade-in { from { opacity: 0; } to { opacity: 1; } }
 .v4-gdrawer-handle { display: none; }
 .v4-gdrawer-head {
   position: relative;
@@ -12323,13 +12326,17 @@ button.v4-exit {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  /* The gutter is always reserved, so the text column keeps its width
+     whether or not the view scrolls; otherwise a scrollbar appearing with
+     a long article reflows every line as it fades in. */
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
   padding: 2px 20px var(--gd-list-pad);
   transition: padding-bottom 0.35s var(--gd-ease);
 }
 .v4-gdrawer.is-reading .v4-gdrawer-body { padding-bottom: 36px; }
 .v4-gdrawer-stage { position: relative; }
 /* While the page turns, nothing scrolls or spills past the stage. */
-.v4-gdrawer.is-turning .v4-gdrawer-body,
 .v4-gdrawer.is-turning .v4-gdrawer-stage { overflow: hidden; }
 .v4-gdrawer-view { position: relative; z-index: 1; }
 /* The outgoing view sits under the incoming one and is gone before the
@@ -12348,7 +12355,7 @@ button.v4-exit {
 .v4-gdrawer-view.is-leaving .v4-gdrawer-list { animation: none; }
 @keyframes v4-gdrawer-fade-out { from { opacity: 1; } to { opacity: 0; } }
 /* The incoming list, after reading: the same quiet rise as an article. */
-.v4-gdrawer-view:not(.is-leaving) .v4-gdrawer-list { animation: v4-gdrawer-rise 0.32s var(--gd-ease) 0.1s both; }
+.v4-gdrawer-view:not(.is-leaving) .v4-gdrawer-list { animation: v4-gdrawer-fade-in 0.3s ease 0.08s both; }
 /* ...except on the way in with the panel, where it is simply there. */
 .v4-gdrawer:not(.is-turning) .v4-gdrawer-view .v4-gdrawer-list { animation: none; }
 .v4-gdrawer-list { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
@@ -12368,9 +12375,12 @@ button.v4-exit {
   top: 0;
   left: 0;
   right: 0;
-  height: 640px; /* the chat backdrop's glow, anchored top left and softer */
-  background: radial-gradient(110% 75% at 0% -10%, var(--guide-tint) 0%, var(--guide-tint) 24%, transparent 72%);
-  opacity: 0.38;
+  /* A wide, shallow ellipse from the top-left corner: full tint there,
+     fading all the way out by a third of the way down the left edge and
+     across the whole top, so it reads as light falling in, not a shape. */
+  height: 520px;
+  background: radial-gradient(150% 72% at 0% 0%, var(--guide-tint) 0%, color-mix(in srgb, var(--guide-tint) 55%, transparent) 30%, transparent 72%);
+  opacity: 0.5;
 }
 .v4-gdrawer {
   --gd-art-draw: 430px; /* the drawing's height, the same for every scene */
@@ -12473,7 +12483,7 @@ button.v4-exit {
 .v4-gcard-cta svg { transition: transform 0.2s ease; }
 .v4-gcard:hover .v4-gcard-cta svg { transform: translateX(2px); }
 /* The reading view: the inline guide's body, standing on its own. */
-.v4-gdrawer-article { margin: 0; max-width: none; opacity: 1; animation: v4-gdrawer-rise 0.32s var(--gd-ease) 0.1s both; }
+.v4-gdrawer-article { margin: 0; max-width: none; opacity: 1; animation: v4-gdrawer-fade-in 0.3s ease 0.08s both; }
 /* The inline card's own expand animation would double up with the rise. */
 .v4-gdrawer-article .v4-guide-body { margin: 0; animation: none; }
 @media (prefers-reduced-motion: reduce) {
@@ -12523,7 +12533,7 @@ button.v4-exit {
   .v4-gdrawer-body { padding: 0 16px var(--gd-list-pad); }
   .v4-gdrawer.is-reading .v4-gdrawer-body { padding-bottom: var(--gd-read-pad); }
   .v4-gdrawer { --gd-art-draw: 250px; }
-  .v4-gdrawer-glow { height: 260px; }
+  .v4-gdrawer-glow { height: 320px; }
   .v4-gcard { padding: 14px 14px 14px 12px; gap: 12px; }
   .v4-gcard-main { padding-right: 44px; }
   .v4-gcard-title { font-size: 16px; }
