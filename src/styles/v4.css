@@ -12088,6 +12088,19 @@ button.v4-exit {
   opacity: 1;
   animation: none;
 }
+/* The setup chat's guides sheet (components/v4/GuidesSheet): the edit
+   modal's card, wider for a reading list, scrolling inside itself when
+   the guides are opened. */
+.v4-guides-sheet {
+  max-width: 600px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding: 32px 32px 28px;
+}
+.v4-guides-sheet-list { margin-top: 18px; }
+@media (max-width: 560px) {
+  .v4-guides-sheet { padding: 28px 18px 22px; max-height: calc(100vh - 32px); }
+}
 /* First row sits directly under the heading, so it needs no rule above. */
 .v4-review-list-editable > li:first-child .v4-review-row-edit {
   border-top: none;

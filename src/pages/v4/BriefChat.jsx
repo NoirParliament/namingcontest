@@ -26,8 +26,9 @@ import {
   GraduationCap, GameController, Buildings, Package, Target, ArrowsClockwise,
   // Used only inside the section-break divider badge
   Confetti,
+  BookOpen,
 } from '@phosphor-icons/react';
-import { SegmentThemeBackdrop, getSegmentTone } from '../../data/v4/segmentTheme';
+import { SegmentThemeBackdrop, getSegmentTone, getSegmentPalette } from '../../data/v4/segmentTheme';
 import { currentBriefDoc, composeBriefDoc, briefChanges, RESET_BRIEF_PATCH } from '../../utils/composeBrief';
 import { useAuth } from '../../lib/AuthContext';
 import { useProfile } from '../../lib/useProfile';
@@ -60,7 +61,7 @@ import { track } from '../../utils/measure';
 import { SHARED_SETTINGS_QUESTIONS, getIntroQuestionFor } from '../../data/v4/briefQuestions';
 import { VOTER_TIER_QUESTION, priceForVoters } from '../../data/v4/voterTiers';
 import { SUB_SEGMENTS } from '../../data/v4/subSegments';
-import GuideExpandable from '../../components/v4/GuideExpandable';
+import GuidesSheet from '../../components/v4/GuidesSheet';
 import QuestionInput from '../../components/v4/QuestionInput';
 import AuthModal from '../../components/v4/AuthModal';
 import EditQuestionModal from '../../components/v4/EditQuestionModal';
@@ -270,6 +271,22 @@ export default function BriefChat() {
     list.push(BRIEF_INTRO, ...brief, SECTION_BREAK, ...settings, { ...getIntroQuestionFor(subId), section: 'brief' });
     return list;
   }, [subId, initial]);
+
+  // The category's guides, one set for the "Guides" button in the header:
+  // the guides its questions carry, in question order, each once. Same list
+  // and order as the review page's "Naming guides" block. They used to sit
+  // under individual questions in the chat; Mark and Maria found that
+  // confusing (2026-10-07), so the chat itself shows none.
+  const chatArticles = useMemo(() => {
+    if (!subId) return [];
+    const seen = new Set();
+    return questions
+      .map((q) => q.guideId)
+      .filter((id) => id && !seen.has(id) && seen.add(id))
+      .map((id) => getArticleFor(subId, id))
+      .filter(Boolean);
+  }, [subId, questions]);
+  const [guidesOpen, setGuidesOpen] = useState(false);
 
   // If we arrive with a sub-segment already chosen (e.g. opened straight
   // into a specific segment's chat from the Platform Map), hydrate the
@@ -634,6 +651,17 @@ export default function BriefChat() {
           {/* Right cluster: Exit (asks first — a client hit this trying to
               close a guide) plus, for a signed-in host, their avatar. */}
           <div className="v4-nav-right">
+            {chatArticles.length > 0 && (
+              <button
+                type="button"
+                className="v4-exit v4-nav-guides"
+                aria-label="Naming guides"
+                onClick={() => setGuidesOpen(true)}
+              >
+                <BookOpen weight="regular" size={14} />
+                <span>Guides</span>
+              </button>
+            )}
             <button
               type="button"
               className="v4-exit"
@@ -701,6 +729,14 @@ export default function BriefChat() {
           </div>
         </main>
       </div>
+
+      <GuidesSheet
+        open={guidesOpen}
+        articles={chatArticles}
+        tone={navTone}
+        palette={subId ? getSegmentPalette(subId) : null}
+        onClose={() => setGuidesOpen(false)}
+      />
 
       {/* Edit-answer popup — same EditQuestionModal pattern used by
           ReviewLaunch and ContestManage so the editing experience is
@@ -884,7 +920,7 @@ function CreatorIdentityReply({ contestName, editable, onEdit, ariaLabel }) {
 
 // ── Single completed turn in history ────────────────────────────────
 function HistoryTurn({ turn, tone, isEditing, onStartEdit, onEditSubmit, onCancelEdit, onSaveProgress, alreadySaved }) {
-  const { question, answer, display, article } = turn;
+  const { question, answer, display } = turn;
   const isNarrator = question.type === 'narrator';
   const isSegment = question.section === 'segment';
   const isVoter = question.section === 'voter';
@@ -908,10 +944,6 @@ function HistoryTurn({ turn, tone, isEditing, onStartEdit, onEditSubmit, onCance
   return (
     <>
       <div className="v4-bubble">{question.prompt}</div>
-
-      {/* Guide stays attached to the question in history — collapsed by
-          default but always one tap away if the user wants to re-read. */}
-      {article && <GuideExpandable article={article} compact tone={tone} />}
 
 
       {/* Editable user reply — stays visible at all times (including
@@ -992,10 +1024,6 @@ function CurrentQuestion({ question, article, tone, phase, userReply, onSubmit }
 
       {phase >= 2 && question.hint && !userReply && (
         <div className="v4-hint">{question.hint}</div>
-      )}
-
-      {phase >= 2 && article && !userReply && (
-        <GuideExpandable article={article} tone={tone} />
       )}
 
       {phase >= 3 && !userReply && (
