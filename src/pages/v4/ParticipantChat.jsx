@@ -48,6 +48,7 @@ import ComposedBrief from '../../components/v4/ComposedBrief';
 import { briefDocHasContent } from '../../utils/composeBrief';
 import { useFadeNav } from '../../components/v4/useFadeNav';
 import ConfirmModal from '../../components/v4/ConfirmModal';
+import useHostRedirect from '../../utils/useHostRedirect';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -239,6 +240,8 @@ export default function ParticipantChat() {
   const navigate = useNavigate();
   const fadeNav = useFadeNav();
   const { user, loading: authLoading } = useAuth();
+  // The host can't suggest names in their own contest.
+  useHostRedirect(contestId, user, navigate, !getMockContestById(contestId));
 
   // Mock demo contest, or a real one loaded from the DB (a participant can
   // read the full contest — brief + settings — via RLS once they've joined).

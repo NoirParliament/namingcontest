@@ -15,6 +15,7 @@ import {
 } from '@phosphor-icons/react';
 import Avatar from 'boring-avatars';
 import AnimatedCount from './AnimatedCount';
+import { plural } from '../../utils/plural';
 import { participantStatsFrom } from '../../utils/v4LiveData';
 
 // Default Boring Avatars palette — only used if the caller doesn't
@@ -44,6 +45,10 @@ export default function LiveResults({
   palette = DEFAULT_AVATAR_PALETTE,
   names = [],
   participants = [],
+  // People who actually joined (real contests). The participants list groups
+  // every anonymous author into one "Anonymous" entry, so its length
+  // undercounts; this is the true head count when the caller has it.
+  participantCount,
   phase = 'voting',
   // Mock/demo contests fake a live "votes arriving" tick; real contests get
   // their live updates from the DB (realtime), so their counts must never be
@@ -102,8 +107,8 @@ export default function LiveResults({
           <div className="v4-results-eyebrow">Live results</div>
           <div className="v4-results-stats">
             {showVotes
-              ? `${names.length} names · ${participants.length} participants · ${totalVotes} votes`
-              : `${names.length} names submitted · ${participants.length} people`}
+              ? `${plural(names.length, 'name')} · ${plural(participantCount ?? participants.length, 'participant')} · ${plural(totalVotes, 'vote')}`
+              : `${plural(names.length, 'name')} submitted · ${plural(participantCount ?? participants.length, 'person', 'people')}`}
           </div>
         </div>
 

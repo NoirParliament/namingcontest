@@ -42,6 +42,7 @@ import GuideExpandable from '../../components/v4/GuideExpandable';
 import BriefSectionHead from '../../components/v4/BriefSectionHead';
 import HostNote from '../../components/v4/HostNote';
 import { supabase } from '../../lib/supabaseClient';
+import useHostRedirect from '../../utils/useHostRedirect';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -126,6 +127,8 @@ export default function ParticipantVote() {
   const { id: contestId } = useParams();
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
+  // The host can't vote in their own contest.
+  useHostRedirect(contestId, user, navigate, !getMockContestById(contestId));
   const mockContest = getMockContestById(contestId);
   const chatRef = useRef(null);
   const didFirstAutoscrollRef = useRef(false);

@@ -56,6 +56,7 @@ import { briefDocHasContent } from '../../utils/composeBrief';
 // claiming to share) and the share-card button was replaced by Copy link.
 import { downloadFullReport } from '../../utils/v4ContestExport';
 import { resolvePhaseEnd, calendarDaysUntil, formatTimeUntil } from '../../utils/contestDeadline';
+import { plural } from '../../utils/plural';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -690,7 +691,7 @@ export default function ContestManage() {
                   <>
                     <span className="v4-manage-status-label">SUBMISSIONS OPEN</span>
                     <span className="v4-manage-status-sep">·</span>
-                    <span>{stats.submissions} names so far</span>
+                    <span>{plural(stats.submissions, 'name')} so far</span>
                     <span className="v4-manage-status-sep">·</span>
                     <span>Closes {formatCloses(submissionEnd)}</span>
                   </>
@@ -719,7 +720,7 @@ export default function ContestManage() {
                   <>
                     <span className="v4-manage-status-label">WINNER PICKED</span>
                     <span className="v4-manage-status-sep">·</span>
-                    <span>Closed · {stats.votes} votes total</span>
+                    <span>Closed · {plural(stats.votes, 'vote')} total</span>
                   </>
                 )}
               </div>
@@ -1008,7 +1009,7 @@ export default function ContestManage() {
                   <header className="v4-winner-runners-head">
                     <h2>Close behind</h2>
                     <span className="v4-winner-runners-meta">
-                      {stats.submissions} names total
+                      {plural(stats.submissions, 'name')} total
                     </span>
                   </header>
                   <ul className="v4-winner-runners-list">
@@ -1042,6 +1043,7 @@ export default function ContestManage() {
                 palette={segmentPalette}
                 names={liveData.names}
                 participants={liveData.participants}
+                participantCount={mockContest ? undefined : stats.participants}
                 phase={phase}
                 simulateVotes={!!mockContest}
               />
@@ -1128,8 +1130,13 @@ export default function ContestManage() {
                     </div>
                   );
                 }
-                const names = featured.map((p) => p.name);
+                // Name the people who chose to be credited; everyone else is
+                // counted ("Anonymous" is a group, not a person).
+                const names = featured.filter((p) => !p.anonymous).map((p) => p.name);
                 const remaining = Math.max(0, stats.participants - names.length);
+                const listed = names.length > 1
+                  ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`
+                  : names[0];
                 return (
                   <div className="v4-manage-share-foot">
                     <div className="v4-manage-share-avatars" aria-hidden="true">
@@ -1158,9 +1165,11 @@ export default function ContestManage() {
                       ))}
                     </div>
                     <span className="v4-manage-share-meta-bold">
-                      {remaining > 0
-                        ? `${names.join(', ')} and ${remaining} others joined`
-                        : `${names.join(', ')} joined`}
+                      {names.length === 0
+                        ? `${plural(stats.participants, 'person', 'people')} joined`
+                        : remaining > 0
+                          ? `${names.join(', ')} and ${plural(remaining, 'other')} joined`
+                          : `${listed} joined`}
                     </span>
                   </div>
                 );
@@ -1221,8 +1230,8 @@ export default function ContestManage() {
                       {phase === 'submission' ? 'Now' : 'Done'}
                       <span className="v4-manage-wait-step-meta">
                         {phase === 'submission'
-                          ? `${stats.submissions} names so far · Closes ${formatCloses(submissionEnd)}`
-                          : `${stats.submissions} names · ${stats.participants} joined`}
+                          ? `${plural(stats.submissions, 'name')} so far · Closes ${formatCloses(submissionEnd)}`
+                          : `${plural(stats.submissions, 'name')} · ${stats.participants} joined`}
                       </span>
                     </div>
                     <h3>Submissions</h3>
@@ -1258,7 +1267,7 @@ export default function ContestManage() {
                           ? `Voting ends ${formatCloses(votingEnd)} (${formatDate(votingEnd)})`
                           : phase === 'submission'
                           ? `Opens ${formatDate(submissionEnd)}`
-                          : `${stats.votes} votes cast`}
+                          : `${plural(stats.votes, 'vote')} cast`}
                       </span>
                     </div>
                     <h3>Voting</h3>

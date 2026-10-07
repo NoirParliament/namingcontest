@@ -24,6 +24,7 @@ import { readProfileCache } from '../../lib/useProfile';
 import { supabase } from '../../lib/supabaseClient';
 import useCountdown, { pad2 } from '../../utils/useCountdown';
 import { resolvePhaseEnd } from '../../utils/contestDeadline';
+import useHostRedirect from '../../utils/useHostRedirect';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -39,6 +40,8 @@ export default function ParticipantVoteThanks() {
   const { id: contestId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  // Hosts don't take part in their own contest.
+  useHostRedirect(contestId, user, navigate, !getMockContestById(contestId));
   const mockContest = getMockContestById(contestId);
   // Real contest: load the contest, this user's votes (with the voted
   // submissions embedded for the cards), their submission count, and profile.

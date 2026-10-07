@@ -28,6 +28,7 @@ import { readSetup } from '../../utils/v4Brief';
 import { readParticipation } from '../../utils/v4Participant';
 import useCountdown, { pad2 } from '../../utils/useCountdown';
 import { resolvePhaseEnd } from '../../utils/contestDeadline';
+import useHostRedirect from '../../utils/useHostRedirect';
 import '../../styles/landing-v3.css';
 import '../../styles/v4.css';
 
@@ -46,6 +47,8 @@ export default function ParticipantThanks() {
   const { id: contestId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  // Hosts don't take part in their own contest.
+  useHostRedirect(contestId, user, navigate, !getMockContestById(contestId));
   // Real signed-in identity for the account menu (cached → no placeholder
   // flash). Without it this page showed the generated avatar even when the
   // participant had uploaded a photo.

@@ -107,10 +107,22 @@ export default function JoinContest() {
   //   • not a participant but a join is pending (clicked "I'm in" + returned
   //     via magic link) → create the participant row, then route
   //   • otherwise → stay and show the invitation
+  // The host opening their own invite link: hosts can't suggest names or
+  // vote in their own contest (also enforced in the database, 0031), so the
+  // invitation turns into a pointer to their dashboard.
+  const [isHost, setIsHost] = useState(false);
   useEffect(() => {
     if (!realContest || !user?.id) return;
     let active = true;
     (async () => {
+      const { data: own } = await supabase.from('contests').select('id')
+        .eq('id', realContest.id).eq('creator_id', user.id).maybeSingle();
+      if (!active) return;
+      if (own) {
+        setIsHost(true);
+        try { localStorage.removeItem('v4_pending_join'); } catch { /* ignore */ }
+        return;
+      }
       const [p, s, v] = await Promise.all([
         supabase.from('participants').select('id').eq('contest_id', realContest.id).eq('user_id', user.id).maybeSingle(),
         supabase.from('submissions').select('id').eq('contest_id', realContest.id).eq('user_id', user.id).limit(1),
@@ -378,6 +390,7 @@ export default function JoinContest() {
 
   // ── Magic-link handlers ────────────────────────────────────────────
   const handleRevealForm = () => {
+    if (isHost) return;
     // Real contest + already signed in → join immediately, no email needed.
     if (realContest && user?.id) { completeJoinAndGo(); return; }
     setPhase('form');
@@ -518,7 +531,31 @@ export default function JoinContest() {
                 When the user clicks "Yes, I'm in," the email field
                 reveals with the magic-link copy underneath. */}
             <section className="v4-join-action">
-              {phase === 'cta' && (
+              {/* The host on their own invite: the same card as "Magic link
+                  sent" (shapes, title, muted line, main button), pointing to
+                  the dashboard instead of the join flow. */}
+              {phase === 'cta' && isHost && (
+                <div className="v4-join-sent-card" role="status">
+                  <span className="v4-join-sent-shape v4-join-sent-shape-1" aria-hidden="true" />
+                  <span className="v4-join-sent-shape v4-join-sent-shape-2" aria-hidden="true" />
+                  <span className="v4-join-sent-shape v4-join-sent-shape-3" aria-hidden="true" />
+                  <span className="v4-join-sent-shape v4-join-sent-shape-4" aria-hidden="true" />
+                  <span className="v4-join-sent-shape v4-join-sent-shape-5" aria-hidden="true" />
+                  <h3 className="v4-join-sent-title">This is your contest</h3>
+                  <p className="v4-join-sent-sub">
+                    Suggesting names and voting are for the people you invite.
+                    Follow everything as it comes in from your dashboard.
+                  </p>
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-lg"
+                    onClick={() => navigate(`/v4/contest/${realContest.id}`)}
+                  >
+                    Go to your dashboard <span className="arrow">→</span>
+                  </button>
+                </div>
+              )}
+              {phase === 'cta' && !isHost && (
                 <div className="v4-join-cta-wrap">
                   {joinError && (
                     <p className="v4-join-error-note" role="alert">{joinError}</p>
