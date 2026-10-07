@@ -12548,6 +12548,9 @@ button.v4-exit {
     height: 17px;
     padding: 0 4px;
     font-size: 10px;
+    /* The drawer's "Naming guides" icon tile colours: tint behind, accent on. */
+    background: color-mix(in srgb, var(--nav-tint, #eee) 70%, #fff);
+    color: var(--nav-accent, var(--v4-fg));
     box-shadow: 0 0 0 2px var(--v4-bg, #fff);
   }
   .v4-nav-guides.is-pulsing::after { border-radius: 12px; }
