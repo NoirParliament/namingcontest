@@ -98,7 +98,7 @@ export default function PrivacyPolicy() {
 
       <h2>10. Your rights</h2>
       <p>Depending on where you live, you may have the right to access your personal information, correct it, delete it, receive a copy in a portable format, restrict or object to its use, and withdraw consent at any time without affecting earlier processing. In the EEA, the UK and Switzerland you can also complain to your local data protection authority.</p>
-      <p>Residents of California and other US states with privacy laws may have the right to know, access, correct and delete their personal information, and not to be treated differently for using these rights. We do not sell personal information or share it for cross-context behavioural advertising. We honour Global Privacy Control signals as an opt-out.</p>
+      <p>Residents of California and other US states with privacy laws may have the right to know, access, correct and delete their personal information, and not to be treated differently for using these rights. We do not sell personal information or share it for cross-context behavioural advertising.</p>
       <p>To use any of these rights, email <a href="mailto:hello@namingcontest.com">hello@namingcontest.com</a> from the address linked to your account. We may need to confirm your identity first. We will reply within the time the law requires, usually one month.</p>
       <h2>11. Security</h2>
       <p>We use reasonable technical and organisational measures to protect personal information, including encrypted connections, access rules in our database that limit each person to their own data, and limits on how often public actions can be used. No system is completely secure, and we cannot guarantee absolute security.</p>
