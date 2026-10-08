@@ -11,7 +11,7 @@ import { openChoiceSettings } from '../../utils/visitorChoice';
 export default function CookiePolicy() {
   const openSettings = (e) => { e.preventDefault(); openChoiceSettings(); };
   return (
-    <LegalPage title="Cookie policy" eyebrow="What we store" updated="October 1, 2026" decor="fresh">
+    <LegalPage title="Cookie policy" eyebrow="What we store" updated="October 8, 2026" decor="fresh">
       <p className="legal-lede">This Cookie Policy explains how NamingContest.com, operated by The Cypher Group, LLC (“we”, “us”), uses cookies and similar technologies, and how you can control them. It sits alongside our <a href="/privacy">Privacy Policy</a>, which explains how we handle personal information more broadly.</p>
 
       <h2>1. What cookies and similar technologies are</h2>
@@ -43,7 +43,7 @@ export default function CookiePolicy() {
       </tbody>
       </table>
       </div>
-      <p>Google Analytics and Microsoft Clarity are loaded through Google Tag Manager, which itself sets no cookies. Their advertising features are switched off. We also use Vercel Web Analytics, which counts page views without cookies and without identifying you.</p>
+      <p>Google Analytics and Microsoft Clarity are loaded through Google Tag Manager, which itself sets no cookies. Their advertising features are switched off. We also use Vercel Web Analytics, which counts page views without cookies and without identifying you. And we count the steps of contest setup anonymously in our own database (see the Privacy Policy); this uses no cookies and stores nothing on your device, so it runs whatever you choose.</p>
       <h2>3. How we ask for your choice</h2>
       <ul>
       <li><strong>European Economic Area, United Kingdom and Switzerland:</strong> a bar asks before any analytics cookie is used, with equal “Reject all” and “Accept all” buttons. Until you accept, analytics tools are not loaded at all. We find your country from your IP address. If it cannot be found, we ask.</li>
