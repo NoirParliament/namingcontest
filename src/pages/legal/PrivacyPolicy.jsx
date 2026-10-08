@@ -51,6 +51,7 @@ export default function PrivacyPolicy() {
       <tr><td>Analytics with Google Analytics and Microsoft Clarity</td><td>Consent in the EEA, UK and Switzerland; elsewhere legitimate interests, with an opt-out</td></tr>
       <tr><td>Cookieless page statistics (Vercel Web Analytics)</td><td>Legitimate interests (understanding overall use)</td></tr>
       <tr><td>Anonymous setup step counts</td><td>Legitimate interests (seeing where contest setup can be made easier)</td></tr>
+      <tr><td>Internal reporting from anonymous totals (Looker Studio dashboard)</td><td>Legitimate interests (running and improving the Service)</td></tr>
       <tr><td>Keeping records of cookie choices</td><td>Legal obligation (showing that consent was given)</td></tr>
       </tbody>
       </table>
@@ -69,6 +70,7 @@ export default function PrivacyPolicy() {
       <tr><td>Resend</td><td>Sending email</td><td>United States</td></tr>
       <tr><td>Anthropic</td><td>AI service that drafts the contest brief. Receives the Host’s brief answers, the contest name and the Host’s name unless the Host chose to stay anonymous. No email address or account identifier.</td><td>United States</td></tr>
       <tr><td>Google (Analytics, Tag Manager)</td><td>Analytics, only with consent where required. Advertising features are switched off.</td><td>United States; global</td></tr>
+      <tr><td>Google (Looker Studio)</td><td>Internal reporting dashboard for the people who run the Service. It reads only anonymous totals from our database (numbers of contests, payments, revenue, setup steps reached, participants, suggested names and votes, by tier, category and date), never names, email addresses, account identifiers, brief answers or suggested names.</td><td>United States; global</td></tr>
       <tr><td>Microsoft (Clarity)</td><td>Session recordings and heatmaps, only with consent where required. Advertising use is switched off.</td><td>United States; global</td></tr>
       </tbody>
       </table>
