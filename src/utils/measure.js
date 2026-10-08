@@ -10,9 +10,8 @@
 //
 // Nothing loads without the visitor's yes either (utils/visitorChoice): in
 // the EEA, UK and Switzerland GTM stays off until "Accept all"; elsewhere it
-// is on unless the visitor turned it off or their browser sends Global
-// Privacy Control. Until then track() only fills the dataLayer array in the
-// page, which never leaves the browser.
+// is on unless the visitor turned it off. Until then track() only fills the
+// dataLayer array in the page, which never leaves the browser.
 
 import { clearAnalyticsCookies, decide, onChoice, readChoice } from './visitorChoice';
 
