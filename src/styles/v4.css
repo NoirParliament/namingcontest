@@ -12538,8 +12538,20 @@ button.v4-exit {
   .v4-gcard { padding: 14px 14px 14px 12px; gap: 12px; }
   .v4-gcard-main { padding-right: 44px; }
   .v4-gcard-title { font-size: 16px; }
-  .v4-gnudge { right: -8px; }
-  .v4-gnudge::before { right: 26px; }
+  /* Phones: the callout can't hang off the button (it would run past the
+     left edge of the screen), so it spans the screen under the header, text
+     wrapping, with its arrow still under the book icon. */
+  .v4-gnudge {
+    position: fixed;
+    top: calc(var(--v4-nav-h, 64px) + 8px);
+    left: 12px;
+    right: 12px;
+    justify-content: space-between;
+    white-space: normal;
+    transform-origin: top right;
+  }
+  .v4-gnudge-text { line-height: 1.3; }
+  .v4-gnudge::before { right: 70px; }
 }
 @media (max-width: 560px) {
   /* Phones hide the pill's label (mobile.css: .v4-exit span). Lit, the
