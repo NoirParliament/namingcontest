@@ -5,7 +5,7 @@ import LegalPage from './LegalPage';
 
 export default function PrivacyPolicy() {
   return (
-    <LegalPage title="Privacy policy" eyebrow="What we collect" updated="October 1, 2026" decor="warm">
+    <LegalPage title="Privacy policy" eyebrow="What we collect" updated="October 8, 2026" decor="warm">
       <p className="legal-lede">This Privacy Policy explains how The Cypher Group, LLC (“Cypher”, “we”, “us” or “our”), operator of NamingContest.com (“NamingContest” or the “Service”), collects, uses, shares and protects personal information when you visit the website or use the Service as a contest host (“Host”), a participant who suggests names or votes (“Participant”), or a visitor.</p>
 
       <h2>1. Who we are</h2>
@@ -27,6 +27,7 @@ export default function PrivacyPolicy() {
       <li><strong>Essential browser storage.</strong> To keep you signed in, save unfinished contest drafts and remember your cookie choice. These are needed for the Service to work.</li>
       <li><strong>Analytics, with your consent where required.</strong> Google Analytics (pages viewed, steps completed in contest setup, payments completed, device type and approximate location) and Microsoft Clarity (session recordings of clicks, scrolling and page content, with what you type hidden). See section 5 and our <a href="/cookies">Cookie Policy</a>.</li>
       <li><strong>Cookieless page statistics.</strong> Vercel Web Analytics counts page views, referring sites, country and device type without cookies and without identifying you.</li>
+      <li><strong>Anonymous setup step counts.</strong> When anyone moves through contest setup, we count each step reached (for example, the third question of a pet brief), with the tier, category and time. The count holds no identifier, IP address, cookie or answer, and nothing is stored on your device, so it cannot be linked to you.</li>
       <li><strong>Technical data held by our providers.</strong> Our hosting, sign-in and payment providers receive your IP address and browser details when you use the Service. Our sign-in provider keeps the IP address and browser of signed-in sessions in its logs.</li>
       <li><strong>Abuse protection.</strong> For a few public actions (sending a contact message, starting a contest, writing a brief) we keep a one-way, daily-changing code derived from your IP address, and for contest launches from your email address, only to count requests and limit abuse. We do not store raw IP addresses for this.</li>
       <li><strong>Cookie choice records.</strong> When you answer the cookie bar we store an anonymous record: a random identifier kept only in your browser, your answer, the version of the bar, your country and the time. It contains no IP address, email or account.</li>
@@ -49,6 +50,7 @@ export default function PrivacyPolicy() {
       <tr><td>Keeping the Service secure and limiting abuse</td><td>Legitimate interests (security)</td></tr>
       <tr><td>Analytics with Google Analytics and Microsoft Clarity</td><td>Consent in the EEA, UK and Switzerland; elsewhere legitimate interests, with an opt-out</td></tr>
       <tr><td>Cookieless page statistics (Vercel Web Analytics)</td><td>Legitimate interests (understanding overall use)</td></tr>
+      <tr><td>Anonymous setup step counts</td><td>Legitimate interests (seeing where contest setup can be made easier)</td></tr>
       <tr><td>Keeping records of cookie choices</td><td>Legal obligation (showing that consent was given)</td></tr>
       </tbody>
       </table>
@@ -94,6 +96,7 @@ export default function PrivacyPolicy() {
       <li>Contact messages: as long as needed to answer and follow up.</li>
       <li>Abuse-protection codes: deleted daily.</li>
       <li>Cookie choice records: as long as needed to show that consent was given.</li>
+      <li>Anonymous setup step counts: kept as statistics. They contain no personal information.</li>
       </ul>
 
       <h2>10. Your rights</h2>

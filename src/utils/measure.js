@@ -12,8 +12,12 @@
 // the EEA, UK and Switzerland GTM stays off until "Accept all"; elsewhere it
 // is on unless the visitor turned it off. Until then track() only fills the
 // dataLayer array in the page, which never leaves the browser.
+//
+// Setup steps are also counted anonymously in our own database for every
+// visitor, whatever the cookie choice (utils/stepCount).
 
 import { clearAnalyticsCookies, decide, onChoice, readChoice } from './visitorChoice';
+import { countStep } from './stepCount';
 
 const GTM_ID = import.meta.env.VITE_GTM_ID;
 const DEV = import.meta.env.DEV;
@@ -118,6 +122,7 @@ export function track(event, params = {}) {
   }
   window.dataLayer.push(payload);
   if (DEV) console.debug('[measure]', event, params);
+  countStep(event, params);
 }
 
 // Fire an event at most once per browser session for a given key — used for
