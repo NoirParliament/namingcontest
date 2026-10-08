@@ -13,8 +13,6 @@
 //     says yes. The bar asks, with "Reject all" and "Accept all" side by side.
 //   - Everywhere else ("open"): on by default, no bar. The footer's
 //     "Cookie settings" link opens the same bar to switch it off.
-//   - A browser sending Global Privacy Control is treated as "Reject all"
-//     everywhere, with no bar.
 //   - If the country can't be found (endpoint down, local dev), the visitor
 //     is treated as strict.
 //
@@ -98,10 +96,6 @@ export function visitorCountry() {
 
 export const isStrictCountry = (code) => !code || STRICT_COUNTRIES.has(code);
 
-export function sendsGpc() {
-  return typeof navigator !== 'undefined' && navigator.globalPrivacyControl === true;
-}
-
 // ── The decision ───────────────────────────────────────────────────────────
 
 // Resolves to { analytics, ask, country, source }:
@@ -113,7 +107,6 @@ export function decide() {
     decisionPromise = (async () => {
       const stored = readChoice();
       if (stored) return { analytics: stored.analytics, ask: false, country: stored.country || null, source: 'stored' };
-      if (sendsGpc()) return { analytics: false, ask: false, country: null, source: 'gpc' };
       const country = await visitorCountry();
       if (isStrictCountry(country)) return { analytics: false, ask: true, country, source: 'strict' };
       return { analytics: true, ask: false, country, source: 'open' };

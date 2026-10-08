@@ -48,7 +48,6 @@ export default function CookiePolicy() {
       <ul>
       <li><strong>European Economic Area, United Kingdom and Switzerland:</strong> a bar asks before any analytics cookie is used, with equal “Reject all” and “Accept all” buttons. Until you accept, analytics tools are not loaded at all. We find your country from your IP address. If it cannot be found, we ask.</li>
       <li><strong>Everywhere else:</strong> analytics cookies are on by default, and you can turn them off at any time.</li>
-      <li><strong>Global Privacy Control:</strong> if your browser sends this signal, we treat it as “Reject all” and do not show the bar.</li>
       </ul>
       <p>We keep an anonymous record of each answer to the bar (a random identifier stored only in your browser, your answer, the version of the bar, your country and the time) so we can show that consent was given.</p>
 
